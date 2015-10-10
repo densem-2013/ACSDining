@@ -11,20 +11,41 @@
         self.MenuId = ko.observable();
         self.WeekNumber = ko.observable();
         self.SummaryPrice = ko.observable(0);
-        self.MFD_models = ko.observableArray();
-
-
-        var DayMenuInfo  = function () {
-
-            var self=this;
-
-            ID: ko.observable();
-            DayOfWeek: ko.observable();
-            TotalPrice: ko.observable();;
-            Dishes: ko.observableArray();
-        };
+        self.MFD_models = ko.observableArray([]);
 
         self.Message = ko.observable("");
+
+        
+        var obj = {
+            categories: ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"],
+            target: [4],
+            sortFunc : function (value) {
+                for (var i = 0; i < 4; i++) {
+                    if (value.category == this.categories[i]) this.target[i] = value;
+                }
+            }
+        }
+
+
+        var MenuForDayInfo = function (item) {
+
+            this.ID = ko.observable(item.id);
+            this.DayOfWeek = ko.observable(item.dayOfWeek);
+            this.TotalPrice = ko.observable(item.totalPrice);
+            this.Dishes - ko.observable(item.dishes);
+
+            this.Editing = ko.observable(false);
+            this.Editable = ko.observable();
+
+            this.Editable = function () {
+                this.Editing(true);
+            };
+
+            this.UnEditable = function () {
+                this.Editing(false);
+            };
+
+        }
 
         //self.Occupations =ko.observableArray(["Employeed","Self-Employeed","Doctor","Teacher","Other"]);
         //self.SelectedOccupation = ko.observable();
@@ -34,34 +55,36 @@
         //});
 
 
-
-
-
         loadInformation();
 
         function loadInformation() {
          
+
             $.ajax({
                 url: "/api/WeekMenu",
                 type:"GET"
             }).done(function(resp) {
                 self.MenuId(resp.id);
                 self.WeekNumber(resp.weekNumber);
-                self.SummaryPrice(resp.summaryPrice);
-                //self.MFD_models(resp.mfD_models);
-                $.each(resp.mfD_models, function(index, object) {
+                self.SummaryPrice(resp.summaryPrice.toFixed(2));
+                $.each(resp.mfD_models, function (index, object) {
+                    object.dishes.map(obj.sortFunc, obj);
+                    object.dishes = obj.target;
                     self.MFD_models.push(
-                 {
-                    ID: object.id,
-                    DayOfWeek: object.dayOfWeek,
-                    TotalPrice: object.totalPrice.toFixed(2),
-                    Dishes: object.dishes
+                        {
+                            ID: object.id,
+                            DayOfWeek: object.dayOfWeek,
+                            TotalPrice: object.totalPrice,
+                            Dishes: object.dishes,
+                            Editing: ko.observable(false),
+                            Editable: function () {
+                                this.Editing(true);
+                            },
+                            UnEditable: function () {
+                                this.Editing(false);
+                            }
+                        });
                 });
-            });
-            //});
-            //    for (var i = 0; i < resp.mfD_models.length; i++) {
-            //        self.MFD_models[i]=resp.mfD_models[i];
-            //    }
             }).error(function (err) {
                 self.Message("Error! " + err.status);
             });

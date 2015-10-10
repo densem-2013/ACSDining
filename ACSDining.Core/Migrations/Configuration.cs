@@ -103,29 +103,37 @@
                 {
                     ds.Add(dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(rand.Next(pair.Value)));
                 }
-                return ds;
+                List<Dish> ds_sort = new List<Dish>();
+                for (int i = 0; i < categories.Length; i++)
+                {
+                    ds_sort.Add(ds.FirstOrDefault(d => string.Equals(d.DishType.Category, categories[i])));
+                }
+                return ds_sort;
             };
 
-            List<MenuForDay> mfdays = new List<MenuForDay>();
+            for (int week = 0; week < 5; week++)
+            {                
+                List<MenuForDay> mfdays = new List<MenuForDay>();
 
-            for (int i = 1; i <= 5; i++)
-            {
-                List<Dish> dishes = getDishes();
-                MenuForDay dayMenu = new MenuForDay()
+                for (int i = 1; i <= 5; i++)
                 {
-                    Dishes = dishes,
-                    DayOfWeek = context.Days.FirstOrDefault(day => day.ID == i),
-                    TotalPrice = dishes.Select(d => d.Price).Sum()
-                };
+                    List<Dish> dishes = getDishes();
+                    MenuForDay dayMenu = new MenuForDay()
+                    {
+                        Dishes = dishes,
+                        DayOfWeek = context.Days.FirstOrDefault(day => day.ID == i),
+                        TotalPrice = dishes.Select(d => d.Price).Sum()
+                    };
 
-                mfdays.Add(dayMenu);
-            }
-            context.MenuForWeek.AddOrUpdate(m=>m.WeekNumber, new MenuForWeek()
-            {
-                MenuForDay = mfdays,
-                WeekNumber = context.CurrentWeek(),
-                SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
-            });
+                    mfdays.Add(dayMenu);
+                }
+                context.MenuForWeek.AddOrUpdate(m=>m.WeekNumber, new MenuForWeek()
+                {
+                    MenuForDay = mfdays,
+                    WeekNumber = context.CurrentWeek() - week,
+                    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
+                });
+                }
         }
     }
 }
