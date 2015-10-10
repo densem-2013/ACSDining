@@ -111,5 +111,13 @@
 
 	}); // End document ready
 
-	
+	$(window).on('resize', function (event) {
+	    var toogle = $(window).width() < 1200;
+	    if (toogle) {
+	        $('#sandbox-container >').hide()
+	    } else  {
+	        $('#sandbox-container >').show()
+	    }
+	});
+
 })(this.jQuery);

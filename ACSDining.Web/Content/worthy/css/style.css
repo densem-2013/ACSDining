@@ -296,13 +296,19 @@ blockquote {
 ----------------------------------------------------------------------------- */
 /* Buttons
 ---------------------------------- */
+.btn-xs {
+color:black;
+font-size:8px;
+border:1px solid;
+margin:1px;
+}
 .btn {
-	padding: 8px 15px;
+	padding: 0;
 	font-size: 14px;
 	line-height: 1.42857143;
-	min-width: 160px;
+	min-width: 70px;
 	text-align: center;
-	border-radius: 0;
+	border-radius: 3;
 	text-transform: uppercase;
 	-webkit-transition: all 0.2s ease-in-out;
 	-moz-transition: all 0.2s ease-in-out;
