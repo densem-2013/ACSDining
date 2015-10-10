@@ -103,12 +103,7 @@
                 {
                     ds.Add(dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(rand.Next(pair.Value)));
                 }
-                List<Dish> ds_sort = new List<Dish>();
-                for (int i = 0; i < categories.Length; i++)
-                {
-                    ds_sort.Add(ds.FirstOrDefault(d => string.Equals(d.DishType.Category, categories[i])));
-                }
-                return ds_sort;
+                return ds;
             };
 
             for (int week = 0; week < 5; week++)
