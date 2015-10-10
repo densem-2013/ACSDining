@@ -1,0 +1,52 @@
+﻿@model IEnumerable<ACSDining.Core.Domains.User>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th> № </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().LastName)
+        </th>
+        <th>
+
+        </th>
+    </tr>
+
+    @for (int i = 0; i < Model.Count(); i++)
+    {
+        <tr>
+            <td>
+               @Html.Label((i+1).ToString())
+            </td>
+            <td>
+                @Html.Label(Model.ElementAt(i).UserName)
+            </td>
+            <td>
+                @Html.Label(Model.ElementAt(i).FirstName)
+            </td>
+            <td>
+                @Html.Label(Model.ElementAt(i).LastName)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = Model.ElementAt(i).Id }) |
+                @Html.ActionLink("Details", "Details", new { id = Model.ElementAt(i).Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = Model.ElementAt(i).Id })
+            </td>
+        </tr>
+    }
+
+</table>

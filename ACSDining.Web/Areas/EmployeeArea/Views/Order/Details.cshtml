@@ -1,0 +1,50 @@
+﻿@model ACSDining.Core.Domains.OrderMenu
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>OrderMenu</h4>
+	<hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CurrentWeek.ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CurrentWeek.ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NextWeek.ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NextWeek.ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CurrentWeekIsPaid)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CurrentWeekIsPaid)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

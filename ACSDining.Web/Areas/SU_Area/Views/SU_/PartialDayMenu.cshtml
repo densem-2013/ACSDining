@@ -1,0 +1,21 @@
+﻿@using PerpetuumSoft.Knockout
+@model MenuForDayModel
+ @{
+     var ko = Html.CreateKnockoutContext();  
+     }
+@{
+           Func<DishModel,string> func=(mdl)=>
+           {
+               return string.Format(@"SU\Index\{0}",mdl.DishID);
+           };
+
+ }
+   @using (var dishes = ko.Foreach(m => m.Dishes))
+   {
+       int locind;
+       Int32.TryParse(dishes.GetIndex(), out locind);
+            <p> @Model.dTypes[locind] : @dishes.Html.Span(d=>d.Title)</p>
+    <a href="#" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#Modal" @ko.Bind.Visible(mfd => mfd.Editing) data-whatever=func(dm) > Выбрать</a>
+   }
+    
+@ko.Apply(Model)

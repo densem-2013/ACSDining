@@ -1,0 +1,87 @@
+﻿@using ACSDining.Web.Models.ViewModels
+@model LoginViewModel
+@{
+   // ViewBag.Title = "Выполнить вход";
+    ViewBag.LocalTitle = "Выполнить вход"; 
+}
+@Styles.Render("~/Content/modalcss")
+<!-- GOOGLE FONTS-->
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+<div class="row ">
+
+    @*<div class="col-md-8 col-md-offset-2 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">*@
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="myModalLabel">@ViewBag.LocalTitle</h4>
+               @* <strong>   @ViewBag.Title. </strong>*@
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form", id = "LoginForm" }))
+                {
+                    <br />
+                    @Html.AntiForgeryToken()
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group input-group">
+                        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+                        @*<input type="text" class="form-control" placeholder="Your Username " />*@
+                        @Html.TextBoxFor(m => m.LogIn, new { @class = "form-control", placeholder = "Your Username " })
+                        @Html.ValidationMessageFor(m => m.LogIn, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                        @*<input type="password" class="form-control" placeholder="Your Password" />*@
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Your Password" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" /> Remember me
+                        </label>
+                        <span class="pull-right">
+                            <strong>
+                                <a href="#" id="forgotLink"  data-whatever="/Account/Forgotpassword">Forget password ? </a>
+                            </strong>
+                        </span>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Login Now</button>
+                    <hr />
+                        <p>Not register ?<a href="#" id="regLink" data-whatever="/Account/Register">click here </a></p>
+                }
+            </div>
+
+        </div>
+    <script type="text/javascript">
+        (function () {
+            $('.modal-content').css('width', '350px');
+        })();
+        $('#regLink, #forgotLink').on('click', function (event) {
+
+            //var element = $(event.relatedTarget);
+
+
+            var url = $(this).data('whatever');
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    $('.modal-content').html(response);
+
+                },
+
+                error: function (xhr, status, error) {
+                    $('.modal-content').html(error);
+                }
+            });
+        });
+    </script>
+
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/Modal")
+}

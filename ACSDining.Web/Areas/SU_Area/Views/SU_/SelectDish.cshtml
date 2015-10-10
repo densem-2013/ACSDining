@@ -1,0 +1,59 @@
+﻿@using PerpetuumSoft.Knockout
+@model SelectDishModel
+
+@{
+    var ko = Html.CreateKnockoutContext();
+    //Func<string> getSelectedDishID = () =>
+    //    {
+    //        return Model.Where(d => d.IsSelected).FirstOrDefault().DishID;
+    //    };
+}
+
+<h2>View1</h2>
+<button class="close" data-dismiss="modal" data-target="#myModal">×</button>
+@using (ko.Html.Form("SelectDish", "SU_", null/*new { id = getSelectedDishID() }*/, new { id = "myform" }))
+{
+<table class="table">
+    <tr>
+        <th>           
+             @Html.Label("Image")
+        </th>
+        <th>
+            @Html.Label("Title")
+        </th>
+        <th>           
+             @Html.Label("Price")
+        </th>
+        <th></th>
+    </tr>
+
+@using (var items = ko.Foreach(m=>m.Items))
+{
+    <tr>
+        <td>          
+              @items.Html.Span(m => m.ProductImage)
+        </td>
+        <td>        
+                @items.Html.Span(m => m.Title)
+        </td>
+        <td>
+            @items.Html.Span(m => m.Price)
+        </td>
+        <td>           
+             @items.Html.RadioButton(m => m.IsSelected) 
+        </td>
+    </tr>
+}
+
+</table>
+    <div>
+        <button type="submit" class="btn-success btn-lg"  > Сохранить </button>
+        <button class="close" data-dismiss="modal" data-target="#Modal"> Отмена </button>
+    </div>
+}
+
+<script type="text/javascript">
+    $('#myform').ajaxForm();
+</script>
+
+@ko.Apply(Model)
