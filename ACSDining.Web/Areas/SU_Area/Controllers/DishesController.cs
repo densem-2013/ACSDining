@@ -10,22 +10,62 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
+using ACSDining.Web.Areas.SU_Area.Models;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
     public class DishesController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDbContext db ;
 
-        // GET api/Dishes
-        public IQueryable<Dish> GetDishes()
+        List<DishModel> Dishes { get; set; }
+
+        public DishesController()
         {
-            return db.Dishes;
+            db = new ApplicationDbContext();
+
+            LoadDishes();
+
+        }
+        private void LoadDishes()
+        {
+            Dishes = db.Dishes.Select(d => new DishModel()
+            {
+                DishID = d.DishID,
+                Title = d.Title,
+                ProductImage = d.ProductImage,
+                Price = d.Price,
+                Category = d.DishType.Category,
+                IsSelected = false
+
+            }).ToList();
+        }
+        // GET api/Dishes
+        public List<DishModel> GetDishes()
+        {
+            return Dishes;
+        }
+
+        [HttpGet]
+        [Route("api/byCategory/{dishid:int}")]
+        [ResponseType(typeof(IEnumerable<DishModel>))]
+        // GET api/Dishes
+        public async Task<IHttpActionResult> GetByCategory(int dishid)
+        {
+            string category = Dishes.Find(d => d.DishID == dishid).Category;
+            if (string.IsNullOrEmpty(category))
+            {
+                return NotFound();
+            }
+
+            List<DishModel> dmodels = Dishes.Where(d => string.Equals(d.Category, category)).ToList();
+
+            return Ok(dmodels);
         }
 
         // GET api/Dishes/5
         [ResponseType(typeof(Dish))]
-        public async Task<IHttpActionResult> GetDish(string id)
+        public async Task<IHttpActionResult> GetDish(int id)
         {
             Dish dish = await db.Dishes.FindAsync(id);
             if (dish == null)
@@ -37,7 +77,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         // PUT api/Dishes/5
-        public async Task<IHttpActionResult> PutDish(string id, Dish dish)
+        public async Task<IHttpActionResult> PutDish(int id, Dish dish)
         {
             if (!ModelState.IsValid)
             {
@@ -102,7 +142,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         // DELETE api/Dishes/5
         [ResponseType(typeof(Dish))]
-        public async Task<IHttpActionResult> DeleteDish(string id)
+        public async Task<IHttpActionResult> DeleteDish(int id)
         {
             Dish dish = await db.Dishes.FindAsync(id);
             if (dish == null)
@@ -125,7 +165,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             base.Dispose(disposing);
         }
 
-        private bool DishExists(string id)
+        private bool DishExists(int id)
         {
             return db.Dishes.Count(e => e.DishID == id) > 0;
         }

@@ -47,13 +47,48 @@
 
         }
 
-        //self.Occupations =ko.observableArray(["Employeed","Self-Employeed","Doctor","Teacher","Other"]);
-        //self.SelectedOccupation = ko.observable();
-      
-        //self.SelectedOccupation.subscribe(function (text) {
-        //    self.Occupation(text);
-        //});
+        self.DishesByCategory = ko.observableArray();
+        self.Category = ko.observable();
 
+        self.SelectedDish = ko.observable();
+
+        function loadDishes(id) {
+            $.ajax({
+                url: "/api/byCategory/" + id,
+                type: "GET"
+            }).done(function (resp) {
+                $.each(resp, function (index, object) {
+                    self.DishesByCategory.push({
+                        DishId: object.dishID,
+                        Title: object.title,
+                        ProductImage: object.productImage,
+                        Price: object.price,
+                        Category: object.category,
+                        IsSelected: object.dishID==id
+                    });
+                    if (object.dishID == id) {
+                        self.SelectedDish(object.dishID);
+                    }
+                });
+            });
+        }
+
+
+        self.showDishes = function (searchdish)
+        {
+            self.Category(searchdish.category);
+            loadDishes(searchdish.dishID);
+            $("#modalbox").modal("show");
+        }
+
+        self.changeSelected = function (clikedItem)
+        {
+            if (self.SelectedDish() !== clikedItem.DishId)
+            {
+                self.SelectedDish(clikedItem.DishId);
+            }
+            return true;
+        }
 
         loadInformation();
 
@@ -74,7 +109,7 @@
                         {
                             ID: object.id,
                             DayOfWeek: object.dayOfWeek,
-                            TotalPrice: object.totalPrice,
+                            TotalPrice: object.totalPrice.toFixed(2),
                             Dishes: object.dishes,
                             Editing: ko.observable(false),
                             Editable: function () {
@@ -106,40 +141,49 @@
         //    $("#modalbox").modal("show");
         //}
 
-        //self.save = function () {
-        //    if (!IsUpdatable) {
+        self.save = function () {
+            
+            var models = self.MFD_models();
+            $.each(models.Dishes, function (key, value) {
+                if (value.DishId == self.SelectedDish()) {
+                    models[key] = value;
+                }
+            });
+            self.MFD_models(models);
+            $("#modalbox").modal("show");
+            //if (!IsUpdatable) {
 
-        //        $.ajax({
-        //            url: "/api/PersonAPI",
-        //            type: "POST",
-        //            data: PersonInfo,
-        //            datatype: "json",
-        //            contenttype: "application/json;utf-8"
-        //        }).done(function (resp) {
-        //            self.PersonId(resp.PersonId);
-        //            $("#modalbox").modal("hide");
-        //            loadInformation();
-        //        }).error(function (err) {
-        //            self.Message("Error! " + err.status);
-        //        });
-        //    } else {
-        //        $.ajax({
-        //            url: "/api/PersonAPI/"+self.PersonId(),
-        //            type: "PUT",
-        //            data: PersonInfo,
-        //            datatype: "json",
-        //            contenttype: "application/json;utf-8"
-        //        }).done(function (resp) {
-        //            $("#modalbox").modal("hide");
-        //            loadInformation();
-        //            IsUpdatable = false;
-        //        }).error(function (err) {
-        //            self.Message("Error! " + err.status);
-        //            IsUpdatable = false;
-        //        });
+            //    $.ajax({
+            //        url: "/api/PersonAPI",
+            //        type: "POST",
+            //        data: PersonInfo,
+            //        datatype: "json",
+            //        contenttype: "application/json;utf-8"
+            //    }).done(function (resp) {
+            //        self.PersonId(resp.PersonId);
+            //        $("#modalbox").modal("hide");
+            //        loadInformation();
+            //    }).error(function (err) {
+            //        self.Message("Error! " + err.status);
+            //    });
+            //} else {
+            //    $.ajax({
+            //        url: "/api/PersonAPI/"+self.PersonId(),
+            //        type: "PUT",
+            //        data: PersonInfo,
+            //        datatype: "json",
+            //        contenttype: "application/json;utf-8"
+            //    }).done(function (resp) {
+            //        $("#modalbox").modal("hide");
+            //        loadInformation();
+            //        IsUpdatable = false;
+            //    }).error(function (err) {
+            //        self.Message("Error! " + err.status);
+            //        IsUpdatable = false;
+            //    });
 
-        //    }
-        //}
+            //}
+        }
 
         //self.delete = function (per) {
         //    $.ajax({
