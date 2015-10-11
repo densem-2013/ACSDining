@@ -35,7 +35,7 @@
                 <td colspan="2" data-bind="foreach:{ data:Dishes, as: 'dish' }">
                     <div style="border-bottom:1px solid">
                         <span data-bind="text:dish.title"></span>
-                        <a href="#" type="button" class=" btn-danger btn-xs" data-bind="visible: model.Editing()" style="float:right" >Изменить</a>
+                        <button  type="button" class=" btn-danger btn-xs" data-bind="visible: model.Editing(), click:$root.showDishes" style="float:right">Изменить</button>
                     </div>
                 </td>
                 <td data-bind="foreach:{ data:Dishes, as: 'dish' }">
@@ -67,79 +67,47 @@
     </table>
 </div>
 
-<div id="modalbox" class="modal">
+<div id="modalbox" class="modal ">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1>Register New Person</h1>
-            </div>
-            <div class="modal-body">
-                <table class="table table-condensed table-striped table-bordered">
-                    <tr>
-                        <td>First Name:</td>
-                        <td>
-                            <input type="text" data-bind="value:FirstName" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Middle Name:</td>
-                        <td>
-                            <input type="text" data-bind="value:MiddleName" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Last Name:</td>
-                        <td>
-                            <input type="text" data-bind="value:LastName" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Address</td>
-                        <td>
-                            <textarea data-bind="value:Address" class="form-control"></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>City:</td>
-                        <td>
-                            <input type="text" data-bind="value:City" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>State:</td>
-                        <td>
-                            <select data-bind="options:States,optionsCaption:'Select State',value:SelectedState" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Phone No:</td>
-                        <td>
-                            <input type="text" data-bind="value:PhoneNo" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Mobile No:</td>
-                        <td>
-                            <input type="text" data-bind="value:MobileNo" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Email Address:</td>
-                        <td>
-                            <input type="email" data-bind="value:EmailAddress" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Occupation:</td>
-                        <td>
-                            <select type="text" data-bind="options:Occupations,optionsCaption:'Select Option',value:SelectedOccupation" class="form-control" />
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal">Close</button>
-                <button class="btn btn-primary" data-bind="click:save">Ok</button>
+        <div class="panel panel-default pre-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Выберите <span data-bind="text:Category"></span> </h1>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-condensed table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th></th>
+                                <th>Название</th>
+                                <th>Стоимость</th>
+                                <th>Выбрать</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach:DishesByCategory">
+                            <tr>
+                                <td>
+                                    <span data-bind="text:$index()+1"></span>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <span data-bind="text:Title"></span>
+                                </td>
+                                <td>
+                                    <span data-bind="text:Price"></span>
+                                </td>
+                                <td>
+                                    <input type="radio" name="dishGroup" data-bind="checked: $root.SelectedDish,checkedValue : DishId, click: $root.changeSelected" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bind="click:$root.save">Ok</button>
+                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
             </div>
         </div>
     </div>
@@ -149,7 +117,7 @@
 @Scripts.Render("~/bundles/knockoutBind")
 <script type="text/javascript">
     (function() {
-        $(".pre-scrollable").css("maxHeight", "570px")
+        $(".pre-scrollable").css("maxHeight", "600px")
         .parents('.banner-caption').css({ "top": "12%" });
     })();
 </script>

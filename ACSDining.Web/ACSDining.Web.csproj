@@ -226,6 +226,7 @@
     <Compile Include="Areas\AdminArea\Models\AdminViewModel.cs" />
     <Compile Include="Areas\EmployeeArea\Controllers\OrderController.cs" />
     <Compile Include="Areas\EmployeeArea\EmployeeAreaAreaRegistration.cs" />
+    <Compile Include="Areas\SU_Area\Controllers\DishesController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
     <Compile Include="Areas\SU_Area\Models\DishModel.cs" />

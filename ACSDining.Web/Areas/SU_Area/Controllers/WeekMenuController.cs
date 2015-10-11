@@ -20,19 +20,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         
         ApplicationDbContext DB { get; set; }
         List<WeekMenuModel> WeekModels { get; set; }
-        List<DishModel> Dishes { get; set; }
-
-        //DishModel Compare(DishModel a, DishModel b)
-        //{
-        //    int id_one = DB.DishTypes.ToList().Where(dt => string.Equals(dt.Category, a.Category)).Select(dtype => dtype.Id).FirstOrDefault();
-        //    int id_two = DB.DishTypes.ToList().Where(dt => string.Equals(dt.Category, b.Category)).Select(dtype => dtype.Id).FirstOrDefault();
-        //    // Return result of CompareTo with lengths of both strings.
-        //    return id_one>id_two?a:b;
-        //}
 
         public WeekMenuController()
         {
-            //Comparison<DishModel> comparison = new Comparison<DishModel>(Compare);
             DB = new ApplicationDbContext();
             WeekModels = DB.MenuForWeek.Select(wmenu => new WeekMenuModel()
             {
@@ -60,16 +50,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 }).ToList()
             }).ToList();
 
-            Dishes = DB.Dishes.AsEnumerable().Select(d => new DishModel()
-            {
-                DishID = d.DishID,
-                Title = d.Title,
-                ProductImage = d.ProductImage,
-                Price = d.Price,
-                Category = d.DishType.Category,
-                IsSelected = false
-
-            }).ToList();
         }
 
         // GET api/WeekMenu
