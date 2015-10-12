@@ -52,11 +52,14 @@
 
         self.SelectedDish = ko.observable();
 
+        self.UpdatableMFD = ko.observable();
+
         function loadDishes(id) {
             $.ajax({
                 url: "/api/byCategory/" + id,
                 type: "GET"
             }).done(function (resp) {
+                self.DishesByCategory([]);
                 $.each(resp, function (index, object) {
                     self.DishesByCategory.push({
                         DishId: object.dishID,
@@ -74,8 +77,9 @@
         }
 
 
-        self.showDishes = function (searchdish)
+        self.showDishes = function (searchdish,index)
         {
+            self.UpdatableMFD(index);
             self.Category(searchdish.category);
             loadDishes(searchdish.dishID);
             $("#modalbox").modal("show");
@@ -141,16 +145,21 @@
         //    $("#modalbox").modal("show");
         //}
 
-        self.save = function () {
-            
+        self.save = function (ind) {
+            var catIndex = $.map(obj.categories, function (n, i) {
+                if (self.Category()==n) 
+                    return i;
+                });
+            var Dishes = self.DishesByCategory();
             var models = self.MFD_models();
-            $.each(models.Dishes, function (key, value) {
+            $.each(Dishes, function (key, value) {
                 if (value.DishId == self.SelectedDish()) {
-                    models[key] = value;
+
+                    self.MFD_models()[ind].Dishes[catIndex] = value;
                 }
             });
-            self.MFD_models(models);
-            $("#modalbox").modal("show");
+            //self.MFD_models(models);
+            $("#modalbox").modal("hide");
             //if (!IsUpdatable) {
 
             //    $.ajax({
@@ -198,11 +207,6 @@
 
     };
 
-    var vm = new viewModel();
-    console.log(vm);
-    // ko.applyBindings(vm);
-
-    // Activates knockout.js
-    ko.applyBindings(vm);
+    ko.applyBindings(new viewModel());
 })();
    
