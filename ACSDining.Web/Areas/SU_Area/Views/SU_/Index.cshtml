@@ -12,7 +12,7 @@
 <hr />
 
 <div class="panel panel-default pre-scrollable">
-    <table class="table table-striped table-bordered table-responsive table-condensed table-hover"> 
+    <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable"> 
         <thead>
             <tr>
                 <th>День недели</th>
@@ -33,13 +33,13 @@
                     </div>
                 </td>
                 <td colspan="2" data-bind="foreach:{ data:Dishes, as: 'dish' }">
-                    <div style="border-bottom:1px solid">
-                        <span data-bind="text:dish.title"></span>
-                        <button  type="button" class=" btn-danger btn-xs" data-bind="visible: model.Editing(), click:$root.showDishes" style="float:right">Изменить</button>
+                    <div style="border-bottom:1px solid" data-bind="with:dish">
+                        <span data-bind="text:title"></span>
+                        <button type="button" class=" btn-danger btn-xs" data-bind="visible: model.Editing(), click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
                     </div>
                 </td>
                 <td data-bind="foreach:{ data:Dishes, as: 'dish' }">
-                    <div>
+                    <div data-bind="with:dish">
                         <span data-bind="text:dish.price.toFixed(2)" style="float: right; border-bottom: 1px solid"></span>
                     </div>
                 </td>
@@ -105,7 +105,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bind="click:$root.save">Ok</button>
+                    <button class="btn btn-primary" data-bind="click: function(){$root.save($root.UpdatableMFD())}">Ok</button>
                     <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
                 </div>
             </div>
