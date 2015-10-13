@@ -52,8 +52,7 @@
 
             Func<string, double> parseDouble = (str) =>
             {
-                double num;
-                Double.TryParse(str, out num);
+                double num=Double.Parse(str);
                 return num;
             };
             try
