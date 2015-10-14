@@ -4,22 +4,44 @@
 
 (function () {
 
-    var DishesInfo=function() {
+    ko.observableArray.fn.pushAll = function (valuesToPush) {
+        var underlyingArray = this();
+        this.valueWillMutate();
+        ko.utils.arrayPushAll(underlyingArray, valuesToPush);
+        this.valueHasMutated();
+        return this;  //optional
+    };
+
+    var DishInfo = function (object) {
 
         self = this;
+
+        self.DishId = ko.observable(object.dishID);
+        self.Title = ko.observable(object.title);
+        self.ProductImage = ko.observable(object.productImage);
+        self.Price = ko.observable(object.price);
+        self.Category = ko.observable(object.category);
+
+        self.update = function (dishupdate) {
+            self.DishId(dishupdate.DishId);
+            self.Title(dishupdate.Title);
+            self.ProductImage(dishupdate.ProductImage);
+            self.Price(dishupdate.Price);
+            self.Category(dishupdate.Category);
+
+        }
     }
-
-    var MenuForDayInfo = function (mfditem) {
+    
+    var MenuForDayInfo = function (mfdobject) {
 
         self = this;
 
-        self.ID = ko.observable(mfditem.id);
-        self.DayOfWeek = ko.observable(mfditem.dayOfWeek);
-        self.TotalPrice = ko.observable(mfditem.totalPrice);
-        self.Dishes - ko.observable(mfditem.dishes);
+        self.ID = ko.observable(mfdobject.id);
+        self.DayOfWeek = ko.observable(mfdobject.dayOfWeek);
+        self.TotalPrice = ko.observable(mfdobject.totalPrice.toFixed(2));
+        self.Dishes = ko.observableArray([]).pushAll(mfdobject.dishes);
 
         self.Editing = ko.observable(false);
-        self.Editable = ko.observable();
 
         self.Editable = function () {
             self.Editing(true);
@@ -31,6 +53,16 @@
 
     }
 
+    var obj = {
+        categories: ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"],
+        target: [4],
+        sortFunc: function (value) {
+            for (var i = 0; i < 4; i++) {
+                if (value.category == this.categories[i]) this.target[i] = value;
+            }
+        }
+    }
+
     var viewModel = function () {
         var self = this;
 
@@ -39,24 +71,13 @@
         self.MenuId = ko.observable();
         self.WeekNumber = ko.observable();
         self.SummaryPrice = ko.observable(0);
-        self.MFD_models = ko.observableArray([new MenuForDayInfo()]);
+        self.MFD_models = ko.observableArray([]);
 
         self.Message = ko.observable("");
 
         
-        var obj = {
-            categories: ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"],
-            target: [4],
-            sortFunc : function (value) {
-                for (var i = 0; i < 4; i++) {
-                    if (value.category == this.categories[i]) this.target[i] = value;
-                }
-            }
-        }
 
-
-
-        self.DishesByCategory = ko.observableArray();
+        self.DishesByCategory = ko.observableArray([]);
         self.Category = ko.observable();
 
         self.SelectedDish = ko.observable();
@@ -69,19 +90,21 @@
                 type: "GET"
             }).done(function (resp) {
                 self.DishesByCategory([]);
+                self.DishesByCategory.pushAll(resp);
                 $.each(resp, function (index, object) {
-                    self.DishesByCategory.push({
-                        DishId: object.dishID,
-                        Title: object.title,
-                        ProductImage: object.productImage,
-                        Price: object.price,
-                        Category: object.category,
-                        IsSelected: object.dishID==id
-                    });
+                    //self.DishesByCategory.push({
+                    //    DishId: object.dishID,
+                    //    Title: object.title,
+                    //    ProductImage: object.productImage,
+                    //    Price: object.price,
+                    //    Category: object.category
+                    //});
                     if (object.dishID == id) {
                         self.SelectedDish(object.dishID);
                     }
                 });
+            }).error(function (err) {
+                self.Message("Error! " + err.status);
             });
         }
 
@@ -96,9 +119,9 @@
 
         self.changeSelected = function (clikedItem)
         {
-            if (self.SelectedDish() !== clikedItem.DishId)
+            if (self.SelectedDish() !== clikedItem.dishID)
             {
-                self.SelectedDish(clikedItem.DishId);
+                self.SelectedDish(clikedItem.dishID);
             }
             return true;
         }
@@ -118,41 +141,12 @@
                 $.each(resp.mfD_models, function (index, object) {
                     object.dishes.map(obj.sortFunc, obj);
                     object.dishes = obj.target;
-                    self.MFD_models.push(
-                        {
-                            ID: object.id,
-                            DayOfWeek: object.dayOfWeek,
-                            TotalPrice: object.totalPrice.toFixed(2),
-                            Dishes: object.dishes,
-                            Editing: ko.observable(false),
-                            Editable: function () {
-                                this.Editing(true);
-                            },
-                            UnEditable: function () {
-                                this.Editing(false);
-                            }
-                        });
+                    self.MFD_models.push(new MenuForDayInfo(object));
                 });
             }).error(function (err) {
                 self.Message("Error! " + err.status);
             });
         }
-
-        //self.getSelected = function (per) {
-        //    self.PersonId(per.PersonId);
-        //    self.FirstName(per.FirstName);
-        //    self.MiddleName(per.MiddleName);
-        //    self.LastName(per.LastName);
-        //    self.Address(per.Address);
-        //    self.City(per.City);
-        //    self.State(per.State);
-        //    self.PhoneNo(per.PhoneNo);
-        //    self.MobileNo(per.MobileNo);
-        //    self.EmailAddress(per.EmailAddress);
-        //    self.Occupation(per.Occupation);
-        //    IsUpdatable = true;
-        //    $("#modalbox").modal("show");
-        //}
 
         self.save = function (ind) {
             var catIndex = $.map(obj.categories, function (n, i) {
@@ -164,58 +158,23 @@
             $.each(Dishes, function (key, value) {
                 if (value.DishId == self.SelectedDish()) {
 
-                    self.MFD_models()[ind].Dishes[catIndex] = value;
+                    models[ind].Dishes[catIndex].update(value);
                 }
             });
-            //self.MFD_models(models);
+            self.MFD_models([]);
+            self.MFD_models.pushAll(models);
+
             $("#modalbox").modal("hide");
-            //if (!IsUpdatable) {
-
-            //    $.ajax({
-            //        url: "/api/PersonAPI",
-            //        type: "POST",
-            //        data: PersonInfo,
-            //        datatype: "json",
-            //        contenttype: "application/json;utf-8"
-            //    }).done(function (resp) {
-            //        self.PersonId(resp.PersonId);
-            //        $("#modalbox").modal("hide");
-            //        loadInformation();
-            //    }).error(function (err) {
-            //        self.Message("Error! " + err.status);
-            //    });
-            //} else {
-            //    $.ajax({
-            //        url: "/api/PersonAPI/"+self.PersonId(),
-            //        type: "PUT",
-            //        data: PersonInfo,
-            //        datatype: "json",
-            //        contenttype: "application/json;utf-8"
-            //    }).done(function (resp) {
-            //        $("#modalbox").modal("hide");
-            //        loadInformation();
-            //        IsUpdatable = false;
-            //    }).error(function (err) {
-            //        self.Message("Error! " + err.status);
-            //        IsUpdatable = false;
-            //    });
-
-            //}
         }
 
-        //self.delete = function (per) {
-        //    $.ajax({
-        //        url: "/api/PersonAPI/" + per.PersonId,
-        //        type: "DELETE",
-        //    }).done(function (resp) {
-        //        loadInformation();
-        //    }).error(function (err) {
-        //        self.Message("Error! " + err.status);
-        //    });
-        //}
 
     };
+    viewModel.MenuForDayModels = ko.dependentObservable(function () {
+        self.Sum.load
+    })
 
-    ko.applyBindings(new viewModel());
+    var vm = new viewModel();
+    console.log(vm);
+    ko.applyBindings(vm);
 })();
    

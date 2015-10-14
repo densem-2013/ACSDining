@@ -25,7 +25,7 @@
         <tbody data-bind="foreach:{ data:MFD_models, as: 'model' }">
             <tr>
                 <td style="vertical-align: middle; text-align:center">
-                    <span data-bind="text: model.DayOfWeek"></span>
+                    <span data-bind="text: DayOfWeek"></span>
                 </td>
                 <td data-bind="foreach:{ data:Dishes, as: 'dish' }">
                     <div style="border-bottom:1px solid">
@@ -33,13 +33,13 @@
                     </div>
                 </td>
                 <td colspan="2" data-bind="foreach:{ data:Dishes, as: 'dish' }">
-                    <div style="border-bottom:1px solid" data-bind="with:dish">
-                        <span data-bind="text:title"></span>
-                        <button type="button" class=" btn-danger btn-xs" data-bind="visible: model.Editing(), click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
+                    <div style="border-bottom:1px solid">
+                        <span data-bind="text:dish.title"></span>
+                        <button type="button" class=" btn-danger btn-xs" data-bind="visible: $parent.Editing(), click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
                     </div>
                 </td>
                 <td data-bind="foreach:{ data:Dishes, as: 'dish' }">
-                    <div data-bind="with:dish">
+                    <div>
                         <span data-bind="text:dish.price.toFixed(2)" style="float: right; border-bottom: 1px solid"></span>
                     </div>
                 </td>
@@ -47,7 +47,7 @@
                     <span data-bind="text:model.TotalPrice"></span>
                 </td>
                 <td style="vertical-align: middle; text-align:center">
-                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: model.Editable" />
+                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable" />
                 </td>
 
             </tr>
@@ -92,13 +92,13 @@
                                 </td>
                                 <td></td>
                                 <td>
-                                    <span data-bind="text:Title"></span>
+                                    <span data-bind="text:title"></span>
                                 </td>
                                 <td>
-                                    <span data-bind="text:Price"></span>
+                                    <span data-bind="text:price"></span>
                                 </td>
                                 <td>
-                                    <input type="radio" name="dishGroup" data-bind="checked: $root.SelectedDish,checkedValue : DishId, click: $root.changeSelected" />
+                                    <input type="radio" name="dishGroup" data-bind="checked: $root.SelectedDish,checkedValue : dishID, click: $root.changeSelected" />
                                 </td>
                             </tr>
                         </tbody>
