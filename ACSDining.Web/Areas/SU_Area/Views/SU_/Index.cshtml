@@ -35,7 +35,7 @@
                 <td colspan="2" data-bind="foreach:{ data:Dishes, as: 'dish' }">
                     <div style="border-bottom:1px solid">
                         <span data-bind="text:dish.title"></span>
-                        <button type="button" class=" btn-danger btn-xs" data-bind="visible: $parent.Editing(), click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
+                        <button type="button" class=" btn-danger btn-xs" data-bind="visible: model.Editing(), click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
                     </div>
                 </td>
                 <td data-bind="foreach:{ data:Dishes, as: 'dish' }">
@@ -47,7 +47,7 @@
                     <span data-bind="text:model.TotalPrice"></span>
                 </td>
                 <td style="vertical-align: middle; text-align:center">
-                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable" />
+                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: function(){$data.Editable()}" />
                 </td>
 
             </tr>
