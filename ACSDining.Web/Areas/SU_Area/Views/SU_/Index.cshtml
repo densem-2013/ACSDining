@@ -22,32 +22,32 @@
                 <th>Изменить</th>
             </tr>
         </thead>
-        <tbody data-bind="foreach:{ data:MFD_models, as: 'model' }">
+        <tbody data-bind="foreach: MFD_models">
             <tr>
                 <td style="vertical-align: middle; text-align:center">
                     <span data-bind="text: DayOfWeek"></span>
                 </td>
-                <td data-bind="foreach:{ data:Dishes, as: 'dish' }">
-                    <div style="border-bottom:1px solid">
-                        <span data-bind="text:dish.category"></span>:
+                <td data-bind="foreach: Dishes">
+                    <div style="border-bottom: 1px solid; text-align: right">
+                        <span data-bind="text: Category"></span>:
                     </div>
                 </td>
-                <td colspan="2" data-bind="foreach:{ data:Dishes, as: 'dish' }">
+                <td colspan="2" data-bind="foreach: Dishes">
                     <div style="border-bottom:1px solid">
-                        <span data-bind="text:dish.title"></span>
-                        <button type="button" class=" btn-danger btn-xs" data-bind="visible: model.Editing(), click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
+                        <span data-bind="text: Title"></span>
+                        <button type="button" class=" btn-danger btn-xs" data-bind="visible: $parent.Editing, click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
                     </div>
                 </td>
-                <td data-bind="foreach:{ data:Dishes, as: 'dish' }">
+                <td data-bind="foreach: Dishes">
                     <div>
-                        <span data-bind="text:dish.price.toFixed(2)" style="float: right; border-bottom: 1px solid"></span>
+                        <span data-bind="text: Price" style="float: right; border-bottom: 1px solid"></span>
                     </div>
                 </td>
                 <td style="text-align: right; vertical-align:middle; height:100%">
-                    <span data-bind="text:model.TotalPrice"></span>
+                    <span data-bind="text: TotalPrice()"></span>
                 </td>
                 <td style="vertical-align: middle; text-align:center">
-                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: function(){$data.Editable()}" />
+                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable " />
                 </td>
 
             </tr>
@@ -57,7 +57,7 @@
                     <span> Итого: </span>
                 </th>
                 <th colspan="2" style="text-align:right">
-                    <span data-bind="text:SummaryPrice"></span>
+                    <span data-bind="text: SummaryPrice()"></span>
                 </th>
                 <td></td>
             </tr>
@@ -92,20 +92,20 @@
                                 </td>
                                 <td></td>
                                 <td>
-                                    <span data-bind="text:title"></span>
+                                    <span data-bind="text:Title"></span>
                                 </td>
                                 <td>
-                                    <span data-bind="text:price"></span>
+                                    <span data-bind="text:Price"></span>
                                 </td>
                                 <td>
-                                    <input type="radio" name="dishGroup" data-bind="checked: $root.SelectedDish,checkedValue : dishID, click: $root.changeSelected" />
+                                    <input type="radio" name="dishGroup" data-bind="checked: $root.SelectedDish,checkedValue : DishId, click: $root.changeSelected" />
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bind="click: function(){$root.save($root.UpdatableMFD())}">Ok</button>
+                    <button class="btn btn-primary" data-bind="click: $root.save">Ok</button>
                     <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
                 </div>
             </div>
