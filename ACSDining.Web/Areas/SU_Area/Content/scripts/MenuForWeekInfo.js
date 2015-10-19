@@ -12,232 +12,238 @@
         return this;  //optional
     };
 
-    var DishInfo = function (object) {
+    //var DishInfo = function (object) {
 
-        self = this;
+    //    self = this;
 
-        self.DishId = ko.observable(object.dishID);
-        self.Title = ko.observable(object.title);
-        self.ProductImage = ko.observable(object.productImage);
-        self.Price = ko.observable(object.price.toFixed(2));
+    //    self.DishId = ko.observable(object.dishID);
+    //    self.Title = ko.observable(object.title);
+    //    self.ProductImage = ko.observable(object.productImage);
+    //    self.Price = ko.observable(object.price.toFixed(2));
 
-        self.Category = ko.observable(object.category);
+    //    self.Category = ko.observable(object.category);
 
-    }
-    
-    DishInfo.prototype.update = function (dishupdate) {
-        this.DishId(dishupdate.DishId());
-        this.Title(dishupdate.Title());
-        this.ProductImage(dishupdate.ProductImage());
-        this.Price(dishupdate.Price());
+    //}
 
-    }
+    //DishInfo.prototype.update = function (dishupdate) {
+    //    this.DishId(dishupdate.DishId());
+    //    this.Title(dishupdate.Title());
+    //    this.ProductImage(dishupdate.ProductImage());
+    //    this.Price(dishupdate.Price());
 
-    var obj = {
-        categories: ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"],
-        target: [4],
-        sortFunc: function (value) {
+    //}
+
+    var objForMap = function(){
+        this.categories= ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
+        this.target = [4];
+        this.sortFunc = function (value) {
             for (var i = 0; i < 4; i++) {
-                if (value.category == this.categories[i]) this.target[i] = new DishInfo(value);
+
+                if (value.category == this.categories[i]) {
+
+                    var dinfo = {
+                        DishId: ko.observable(value.dishID),
+                        Title: ko.observable(value.title),
+                        ProductImage: ko.observable(value.productImage),
+                        Price: ko.observable(value.price.toFixed(2)),
+                        Category: ko.observable(value.category)
+                    };
+                    dinfo.update = function (dishupdate) {
+                        this.DishId(dishupdate.DishId());
+                        this.Title(dishupdate.Title());
+                        this.ProductImage(dishupdate.ProductImage());
+                        this.Price(dishupdate.Price());
+
+                    };
+                    this.target[i] = dinfo;
+                }
             }
         }
     }
 
-    var MenuForDayInfo = function (mfdobject) {
-
-        self = this;
-        self.ID = ko.observable();
-        self.DayOfWeek = ko.observable(mfdobject.dayOfWeek);
-        self.Dishes = ko.observableArray([]);
-        self.Editing = ko.observable(false);
-
-        if (mfdobject.hasOwnProperty('id')) {
-
-            self.ID(mfdobject.id);
-            self.DayOfWeek(mfdobject.dayOfWeek);
-
-            mfdobject.dishes.map(obj.sortFunc, obj);
-
-            self.Dishes(obj.target);
-
-        }
-        else {
-            self.ID(mfdobject.ID);
-            self.DayOfWeek(mfdobject.DayOfWeek);
-            self.Dishes(mfdobject.Dishes);
-
-        }
-
-        self.TotalPrice = function () {
-            var sum = 0;
-            var valsum;
-            var ind = -1;
-            ko.utils.arrayForEach(this.Dishes(), function (dish, index) {
-                if (ind != index) {
-                    valsum = parseFloat(dish.Price());
-                    sum += valsum;
-                    ind++;
-
-                }
-            });
-
-            return sum.toFixed(2);
-
-        }.bind(this);
 
 
-    }
-
-    MenuForDayInfo.prototype.Editable = function () {
-        this.Editing(true);
-    };
-
-    MenuForDayInfo.prototype.UnEditable = function () {
-        this.Editing(false);
-    };
+    var viewModel =  {
+        //var self = this;
 
 
-    var viewModel = function () {
-        var self = this;
+        MenuId : ko.observable(),
+        WeekNumber : ko.observable(),
 
-        var IsUpdatable = false;
+        MFD_models : ko.observableArray([]),
 
-        self.MenuId = ko.observable();
-        self.WeekNumber = ko.observable();
-
-        self.MFD_models = ko.observableArray([]);
-
-        self.Total = ko.observable();
-
-        self.SummaryPrice = function () {
-
-                var sum = 0;
-                var ind = -1;
-                ko.utils.arrayForEach(self.MFD_models(), function (value, index) {
-                    if (ind != index) {
-
-                        sum += parseFloat(value.TotalPrice());
-                        console.log("ind=" + ind + " index=" + ind + " " + value.DayOfWeek() + " - " + sum);
-                        ind++;
-
-                    }
-                });
-                return sum.toFixed(2);
-        }.bind(self);
-
-        self.Message = ko.observable("");
+        Total : ko.observable(),
 
 
-        self.locArray = [];
+       Message : ko.observable(""),
 
-        self.DishesByCategory = ko.observableArray([]);
-        self.Category = ko.observable();
 
-        self.SelectedDish = ko.observable();
+        DishesByCategory : ko.observableArray([]),
+        Category : ko.observable(),
 
-        self.UpdatableMFD = ko.observable();
+        SelectedDish : ko.observable(),
 
-        function loadDishes(id) {
+        UpdatableMFD: ko.observable(),
+
+        SummaryPrice: ko.observable()
+    
+
+};
+    viewModel.loadDishes = function (id) {
             $.ajax({
                 url: "/api/byCategory/" + id,
                 type: "GET"
             }).done(function (resp) {
-                self.DishesByCategory([]);
+                viewModel.DishesByCategory([]);
 
-                ko.utils.arrayForEach(resp, function (key, value) {
+                for (var i = 0; i < resp.length; i++) {
 
-                    self.DishesByCategory.push(new DishInfo(key));
-
-                    if (key.dishID == id) {
-                        self.SelectedDish(key.dishID);
+                    var dinfo = {
+                        DishId: ko.observable(resp[i].dishID),
+                        Title: ko.observable(resp[i].title),
+                        ProductImage: ko.observable(resp[i].productImage),
+                        Price: ko.observable(resp[i].price.toFixed(2)),
+                        Category: ko.observable(resp[i].category)
                     }
-                });
+
+                    dinfo.update = function (dishupdate) {
+                        this.DishId(dishupdate.DishId());
+                        this.Title(dishupdate.Title());
+                        this.ProductImage(dishupdate.ProductImage());
+                        this.Price(dishupdate.Price());
+
+                    };
+                    viewModel.DishesByCategory.push(dinfo);
+
+                    if (resp[i].dishID == id) {
+                        viewModel.SelectedDish(resp[i].dishID);
+                    };
+                };
 
             }).error(function (err) {
-                self.Message("Error! " + err.status);
+                viewModel.Message("Error! " + err.status);
             });
         }
 
 
-        self.showDishes = function (searchdish,index)
-        {
-            self.UpdatableMFD(index);
-            self.Category(searchdish.Category());
-            loadDishes(searchdish.DishId());
+    viewModel.showDishes = function (searchdish, index) {
+            this.UpdatableMFD(index);
+            this.Category(searchdish.Category());
+            this.loadDishes(searchdish.DishId());
             $("#modalbox").modal("show");
         }
 
-        self.changeSelected = function (clikedItem)
-        {
-            if (self.SelectedDish() !== clikedItem.DishId())
-            {
-                self.SelectedDish(clikedItem.DishId());
+    viewModel.changeSelected = function (clikedItem) {
+        if (viewModel.SelectedDish() !== clikedItem.DishId()) {
+            viewModel.SelectedDish(clikedItem.DishId());
             }
             return true;
         }
 
-        loadInformation();
+        //loadInformation();
 
-        function loadInformation() {
-         
+        viewModel.loadInformation = function () {
+
 
             $.ajax({
                 url: "/api/WeekMenu",
-                type:"GET"
-            }).done(function(resp) {
-                self.MenuId(resp.id);
-                self.WeekNumber(resp.weekNumber);
-
-                ko.utils.arrayForEach(resp.mfD_models, function (object,index ) {
+                type: "GET"
+            }).done(function (resp) {
+                viewModel.MenuId(resp.id);
+                viewModel.WeekNumber(resp.weekNumber);
+                ko.utils.arrayForEach(resp.mfD_models, function (object, index) {
+                    var obj = new objForMap();
                     object.dishes.map(obj.sortFunc, obj);
                     object.dishes = obj.target;
 
-                    self.MFD_models.push(new MenuForDayInfo(object));
+                    var MenuForDayInfo =  {
+
+                        ID: ko.observable(object.id),
+                        DayOfWeek: ko.observable(object.dayOfWeek),
+                        Dishes : ko.observableArray(obj.target),
+                        Editing: ko.observable(false),
+                        TotalPrice: ko.observable(),
+
+                        Editable : function () {
+                            this.Editing(true);
+                        },
+
+                        UnEditable : function () {
+                            this.Editing(false);
+                        }
+
+
+                    }
+
+                    MenuForDayInfo.Dishes.subscribe = ko.computed(function () {
+                        var sum = 0;
+                        var valsum;
+                        //var ind = -1;
+                        for (var i = 0; i < MenuForDayInfo.Dishes().length; i++) {
+
+                            valsum = parseFloat(MenuForDayInfo.Dishes()[i].Price());
+                            sum += valsum;
+                        };
+
+
+                        MenuForDayInfo.TotalPrice(sum.toFixed(2));
+
+                    }.bind(this));
+
+                    viewModel.MFD_models.push(MenuForDayInfo);
 
                 });
 
             }).error(function (err) {
-                self.Message("Error! " + err.status);
+                viewModel.Message("Error! " + err.status);
             });
         }
 
-        self.save = function () {
+        viewModel.save = function () {
 
-
+            var obj = new objForMap();
             var catIndex = $.map(obj.categories, function (n, i) {
-                if (self.Category()==n) 
+                if (viewModel.Category() == n)
                     return i;
             });
 
 
-            ko.utils.arrayForEach(self.DishesByCategory(), function (value, index) {
-                if (value.DishId() == self.SelectedDish()) {
-
-                    ko.utils.arrayForEach(self.MFD_models(), function (mfd, ind) {
-                        if (ind == self.UpdatableMFD()) {
-
-                            ko.utils.arrayForEach(mfd.Dishes(), function (dish, numcategory) {
-                                if (numcategory == catIndex) {
-
-                                    dish.update(value);
-                                };
-                            });
-                        };
-                    });
-                };
+            var dish = ko.utils.arrayFirst(viewModel.DishesByCategory(), function(value) {
+                if (value.DishId() == viewModel.SelectedDish()) {
+                    return value;
+                }
             });
+            if (dish != undefined) {
 
-            console.log(self.MFD_models()[self.UpdatableMFD()].Dishes()[catIndex].Title());
+                viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].update( dish);
+            };
 
-            console.log(self.UpdatableMFD());
+            console.log(viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].Title());
+
+            console.log(viewModel.UpdatableMFD());
 
             $("#modalbox").modal("hide");
         }
 
 
+    viewModel.CalcTotal = function() {
+
+        var sum = 0;
+        var ind = -1;
+        for (var ind = 0; ind < viewModel.MFD_models().length; ind++) {
+
+            sum += parseFloat(viewModel.MFD_models()[ind].TotalPrice());
+            console.log("ind=" + ind + " index=" + ind + " " + viewModel.MFD_models()[ind].DayOfWeek() + " - " + sum);
+
+        }
+
+        this.SummaryPrice(sum.toFixed(2));
     };
 
+    viewModel.MFD_models.subscribe = ko.computed(viewModel.CalcTotal, viewModel);
 
-    ko.applyBindings(new viewModel());
+    viewModel.loadInformation();
+
+    ko.applyBindings(viewModel);
+
 })();
-   

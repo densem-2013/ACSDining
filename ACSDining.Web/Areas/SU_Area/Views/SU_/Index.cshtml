@@ -5,9 +5,9 @@
 }
 
 <div class="row">
-    <div class="col-md-7 col-sm-10 col-xs-10">
+    @*<div class="col-md-7 col-sm-10 col-xs-10">
         <input type="button" id="btnaddmenu" class="btn btn-lg btn-success" value="Добавить меню на следующую неделю" />
-    </div>
+    </div>*@
     </div>
 <hr />
 
@@ -29,18 +29,18 @@
                 </td>
                 <td data-bind="foreach: Dishes">
                     <div style="border-bottom: 1px solid; text-align: right">
-                        <span data-bind="text: Category"></span>:
+                        <span data-bind="text: $data.Category"></span>:
                     </div>
                 </td>
                 <td colspan="2" data-bind="foreach: Dishes">
                     <div style="border-bottom:1px solid">
-                        <span data-bind="text: Title"></span>
+                        <span data-bind="text: $data.Title"></span>
                         <button type="button" class=" btn-danger btn-xs" data-bind="visible: $parent.Editing, click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
                     </div>
                 </td>
                 <td data-bind="foreach: Dishes">
                     <div>
-                        <span data-bind="text: Price" style="float: right; border-bottom: 1px solid"></span>
+                        <span data-bind="text: $data.Price" style="float: right; border-bottom: 1px solid"></span>
                     </div>
                 </td>
                 <td style="text-align: right; vertical-align:middle; height:100%">

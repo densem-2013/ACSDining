@@ -61,7 +61,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             WeekMenuModel model = WeekModels.FirstOrDefault(wm => wm.WeekNumber == DB.CurrentWeek());
             if (model == null)
             {
-                return NotFound();
+                model = WeekModels.FirstOrDefault();
+                if (model == null)
+                {
+                    return NotFound();
+                }
             }
 
             return Ok(model);
