@@ -15,6 +15,7 @@ using ACSDining.Web.Areas.SU_Area.Models;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [RoutePrefix("api/WeekMenu")]
     public class WeekMenuController : ApiController
     {
         
@@ -54,11 +55,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         // GET api/WeekMenu
         [HttpGet]
-        [Route("api/WeekMenu")]
+        [Route("{numweek}")]
         [ResponseType(typeof(WeekMenuModel))]
-        public async Task<IHttpActionResult> GetWeekMenu()
+        public async Task<IHttpActionResult> GetWeekMenu(int? numweek)
         {
-            WeekMenuModel model = WeekModels.FirstOrDefault(wm => wm.WeekNumber == DB.CurrentWeek());
+            WeekMenuModel model =
+                WeekModels.FirstOrDefault(wm => wm.WeekNumber == (numweek == null ? DB.CurrentWeek() : numweek));
             if (model == null)
             {
                 model = WeekModels.FirstOrDefault();
@@ -71,6 +73,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return Ok(model);
         }
 
+        [HttpGet]
+        [Route("WeekNumbers")]
+        [ResponseType(typeof(List<int>))]
+        public async Task<IHttpActionResult> GetWeekNumbers()
+        {
+            List<int> numweeks =  WeekModels.Select(wm => wm.WeekNumber).ToList();
+            if (numweeks == null)
+            {
+                 return NotFound();
+            }
+
+            return Ok(numweeks);
+        }
         // GET api/WeekMenu/5
         //[ResponseType(typeof(MenuForWeek))]
         //public async Task<IHttpActionResult> GetMenuForWeek(int id)

@@ -14,6 +14,7 @@ using ACSDining.Web.Areas.SU_Area.Models;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [RoutePrefix("api/Dishes")]
     public class DishesController : ApiController
     {
         private ApplicationDbContext db ;
@@ -47,7 +48,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpGet]
-        [Route("api/byCategory/{dishid:int}")]
+        [Route("byCategory/{dishid:int}")]
         [ResponseType(typeof(IEnumerable<DishModel>))]
         // GET api/Dishes
         public async Task<IHttpActionResult> GetByCategory(int dishid)

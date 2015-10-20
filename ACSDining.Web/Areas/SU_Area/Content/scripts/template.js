@@ -120,4 +120,13 @@
 	    }
 	});
 
+	$(window).on('load', function (event) {
+	   
+	    var toogle = $(window).width() <  $('#mfwPanel').width() * 1.3;
+	    if (toogle) {
+	        $('#sandbox-container >').hide()
+	    } else {
+	        $('#sandbox-container >').show()
+	    }
+	});
 })(this.jQuery);
