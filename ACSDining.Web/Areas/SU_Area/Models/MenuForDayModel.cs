@@ -16,20 +16,5 @@ namespace ACSDining.Web.Areas.SU_Area.Models
         public double TotalPrice { get; set; }
         public List<DishModel> Dishes { get; set; }
         public bool Editing { get; set; }
-        [Computed]
-        public void Editable()
-        {
-            Editing = true;
-        }
-        public void UnEditable()
-        {
-            Editing = false;
-        }
-
-        //[Computed]
-        //public string SelectDishId()
-        //{
-        //    return Dishes.FirstOrDefault(d=>d.IsSelected == true).DishID;
-        //}
     }
 }

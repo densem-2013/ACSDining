@@ -28,18 +28,18 @@
         this.valueWillMutate();
         ko.utils.arrayPushAll(underlyingArray, valuesToPush);
         this.valueHasMutated();
-        return this;  
+        return this;
     };
 
-    var objForMap = function(){
-        this.categories= ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
+    var objForMap = function () {
+        this.categories = ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
         this.target = [];
         this.sortFunc = function (value) {
             for (var i = 0; i < 4; i++) {
 
                 if (value.category == this.categories[i]) {
 
-                    this.target.push(new DishInfo(value)); 
+                    this.target.push(new DishInfo(value));
                 }
             }
         }
@@ -47,27 +47,27 @@
 
 
 
-    var viewModel =  {
+    var viewModel = {
 
 
-        MenuId : ko.observable(),
-        WeekNumber : ko.observable(),
+        MenuId: ko.observable(),
+        WeekNumber: ko.observable(),
 
-        MFD_models : ko.observableArray([]),
-
-
-       Message : ko.observable(""),
+        MFD_models: ko.observableArray([]),
 
 
-        DishesByCategory : ko.observableArray([]),
-        Category : ko.observable(),
+        Message: ko.observable(""),
 
-        SelectedDish : ko.observable(),
+
+        DishesByCategory: ko.observableArray([]),
+        Category: ko.observable(),
+
+        SelectedDish: ko.observable(),
 
         UpdatableMFD: ko.observable(),
 
         SummaryPrice: ko.observable(),
-    
+
         NumbersWeeks: ko.observableArray(),
 
         BeenChanged: ko.observable(false),
@@ -75,21 +75,21 @@
         ChangeSaved: ko.observable(false)
     };
 
-    viewModel.SaveToServer = function() {
-        var source= {
-            MenuId: this.MenuId(),
+    viewModel.SaveToServer = function () {
+        var source = {
+            ID: this.MenuId(),
             WeekNumber: this.WeekNumber(),
-            MFD_models: this.MFD_models(),
-            SummaryPrice: this.SummaryPryce()
+            MenuForDay: this.MFD_models(),
+            SummaryPrice: this.SummaryPrice()
 
         }
 
         $.ajax({
             url: '/api/WeekMenu/' + this.WeekNumber(),
-            type: 'post',
+            type: 'put',
             data: ko.toJSON(source),
             contentType: 'application/json'
-        }).done( function (data) {
+        }).done(function (data) {
 
             this.BeenChanged(false);
             this.ChangeSaved(true);
@@ -117,140 +117,134 @@
     };
 
     viewModel.loadDishes = function (id) {
-            $.ajax({
-                url: "/api/Dishes/byCategory/" + id,
-                type: "GET"
-            }).done(function (resp) {
-                viewModel.DishesByCategory([]);
+        $.ajax({
+            url: "/api/Dishes/byCategory/" + id,
+            type: "GET"
+        }).done(function (resp) {
+            viewModel.DishesByCategory([]);
 
-                for (var i = 0; i < resp.length; i++) {
+            for (var i = 0; i < resp.length; i++) {
 
-                    viewModel.DishesByCategory.push(new DishInfo(resp[i]));
+                viewModel.DishesByCategory.push(new DishInfo(resp[i]));
 
-                    if (resp[i].dishID == id) {
-                        viewModel.SelectedDish(resp[i].dishID);
-                    };
+                if (resp[i].dishID == id) {
+                    viewModel.SelectedDish(resp[i].dishID);
                 };
+            };
 
-            }).error(function (err) {
-                viewModel.Message("Error! " + err.status);
-            });
-        }
+        }).error(function (err) {
+            viewModel.Message("Error! " + err.status);
+        });
+    }
 
 
     viewModel.showDishes = function (searchdish, index) {
-            this.UpdatableMFD(index);
-            this.Category(searchdish.Category());
-            this.loadDishes(searchdish.DishId());
-            $("#modalbox").modal("show");
-        }
+        this.UpdatableMFD(index);
+        this.Category(searchdish.Category());
+        this.loadDishes(searchdish.DishId());
+        $("#modalbox").modal("show");
+    }
 
     viewModel.changeSelected = function (clikedItem) {
         if (viewModel.SelectedDish() == clikedItem.DishId()) {
             viewModel.BeenChanged(true);
             viewModel.SelectedDish(clikedItem.DishId());
-            }
-            return true;
         }
+        return true;
+    }
 
 
-        viewModel.LoadWeekMenu = function (numweek) {
+    viewModel.LoadWeekMenu = function (numweek) {
 
 
-            $.ajax({
-                url: "/api/WeekMenu/" + numweek,
-                type: "GET"
-            }).done(function (resp) {
+        $.ajax({
+            url: "/api/WeekMenu/" + numweek,
+            type: "GET"
+        }).done(function (resp) {
 
-                viewModel.MFD_models([]);
+            viewModel.MFD_models([]);
 
-                viewModel.MenuId(resp.id);
-                viewModel.WeekNumber(resp.weekNumber);
-                ko.utils.arrayForEach(resp.mfD_models, function (object) {
-                    var obj = new objForMap();
-                    object.dishes.map(obj.sortFunc, obj);
-                    object.dishes = obj.target;
+            viewModel.MenuId(resp.id);
+            viewModel.WeekNumber(resp.weekNumber);
+            ko.utils.arrayForEach(resp.mfD_models, function (object) {
+                var obj = new objForMap();
+                object.dishes.map(obj.sortFunc, obj);
+                object.dishes = obj.target;
 
-                    var MenuForDayInfo =  {
+                var MenuForDayInfo = {
 
-                        ID: ko.observable(object.id),
-                        DayOfWeek: ko.observable(object.dayOfWeek),
-                        Dishes : ko.observableArray(obj.target),
-                        Editing: ko.observable(false),
-                        TotalPrice: ko.observable(),
+                    ID: ko.observable(object.id),
+                    DayOfWeek: ko.observable(object.dayOfWeek),
+                    Dishes: ko.observableArray(obj.target),
+                    Editing: ko.observable(false),
+                    TotalPrice: ko.observable(),
 
-                        Editable : function () {
-                            this.Editing(true);
-                        },
+                    Editable: function () {
+                        this.Editing(true);
+                    },
 
-                        UnEditable : function () {
-                            this.Editing(false);
-                        }
-
-
+                    UnEditable: function () {
+                        this.Editing(false);
                     }
 
-                    MenuForDayInfo.Dishes.subscribe = ko.computed(function () {
-                        var sum = 0;
-                        var valsum;
-                        //var ind = -1;
-                        for (var i = 0; i < MenuForDayInfo.Dishes().length; i++) {
-                            var dishes = MenuForDayInfo.Dishes();
-                            valsum = parseFloat(MenuForDayInfo.Dishes()[i].Price());
-                            sum += valsum;
-                        };
 
-
-                        MenuForDayInfo.TotalPrice(sum.toFixed(2));
-
-                    }.bind(this));
-
-                    viewModel.MFD_models.push(MenuForDayInfo);
-
-                });
-
-            }).error(function (err) {
-                viewModel.Message("Error! " + err.status);
-            });
-        }
-
-        viewModel.applyChanges = function () {
-
-            var obj = new objForMap();
-            var catIndex = $.map(obj.categories, function (n, i) {
-                if (viewModel.Category() == n)
-                    return i;
-            });
-
-
-            var dish = ko.utils.arrayFirst(viewModel.DishesByCategory(), function(value) {
-                if (value.DishId() == viewModel.SelectedDish()) {
-                    return value;
                 }
+
+                MenuForDayInfo.Dishes.subscribe = ko.computed(function () {
+                    var sum = 0;
+                    var valsum;
+                    for (var i = 0; i < MenuForDayInfo.Dishes().length; i++) {
+                        var dishes = MenuForDayInfo.Dishes();
+                        valsum = parseFloat(MenuForDayInfo.Dishes()[i].Price());
+                        sum += valsum;
+                    };
+
+
+                    MenuForDayInfo.TotalPrice(sum.toFixed(2));
+
+                }.bind(this));
+
+                viewModel.MFD_models.push(MenuForDayInfo);
+
             });
-            if (dish != undefined ) {
 
-                viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].update(dish);
-                this.CalcTotal();
-            };
+        }).error(function (err) {
+            viewModel.Message("Error! " + err.status);
+        });
+    }
+
+    viewModel.applyChanges = function () {
+
+        var obj = new objForMap();
+        var catIndex = $.map(obj.categories, function (n, i) {
+            if (viewModel.Category() == n)
+                return i;
+        });
 
 
-            //console.log(viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].Title());
+        var dish = ko.utils.arrayFirst(viewModel.DishesByCategory(), function (value) {
+            if (value.DishId() == viewModel.SelectedDish()) {
+                return value;
+            }
+        });
+        if (dish != undefined) {
 
-            //console.log(viewModel.UpdatableMFD());
+            viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].update(dish);
+            this.CalcTotal();
+        };
 
-            $("#modalbox").modal("hide");
-        }
 
 
-    viewModel.CalcTotal = function() {
+        $("#modalbox").modal("hide");
+    }
+
+
+    viewModel.CalcTotal = function () {
 
         var sum = 0;
         var ind = -1;
         for (var ind = 0; ind < viewModel.MFD_models().length; ind++) {
-           // var mdfs = viewModel.MFD_models();
             sum += parseFloat(viewModel.MFD_models()[ind].TotalPrice());
-           // console.log("ind=" + ind + " index=" + ind + " " + viewModel.MFD_models()[ind].DayOfWeek() + " - " + sum.toFixed(2));
 
         }
 

@@ -12,10 +12,12 @@ using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using System.Globalization;
 using ACSDining.Web.Areas.SU_Area.Models;
+using System.Web.Http.Cors;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
     [RoutePrefix("api/WeekMenu")]
+    [EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
     public class WeekMenuController : ApiController
     {
         
@@ -112,7 +114,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //    return Ok(menuforweek);
         //}
         // PUT api/WeekMenu/5
-        public async Task<IHttpActionResult> PutMenuForWeek(int id, MenuForWeek menuforweek)
+        [HttpPut]
+        [Route("{numweek}")]
+        [ResponseType(typeof(MenuForWeek))]
+        public async Task<IHttpActionResult> UpdateMFD(int id, MenuForWeek menuforweek)
         {
             if (!ModelState.IsValid)
             {

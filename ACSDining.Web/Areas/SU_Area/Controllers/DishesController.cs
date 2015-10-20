@@ -36,8 +36,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 Title = d.Title,
                 ProductImage = d.ProductImage,
                 Price = d.Price,
-                Category = d.DishType.Category,
-                IsSelected = false
+                Category = d.DishType.Category
 
             }).ToList();
         }

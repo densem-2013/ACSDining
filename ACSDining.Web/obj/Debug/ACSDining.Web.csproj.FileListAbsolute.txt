@@ -408,3 +408,6 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Owin.Security.Microsof
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb
+E:\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.Cors.dll
+E:\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.Http.Cors.dll
+E:\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.Http.Cors.xml

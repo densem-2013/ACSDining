@@ -23,17 +23,6 @@ namespace ACSDining.Core.Domains
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public double TotalPrice { get; set; }
-        public bool IsEditing { get; set; }
-        //public async Task<double> TotalPrice()
-        //{
-        //        double total = 0;
-        //        List<Dish> Dishes = await (new ApplicationDbContext()).Dishes.ToListAsync();
-        //        foreach (Dish dish in Dishes)
-        //        {
-        //            total += dish.Price;
-        //        }
-        //        return total;
-        //}
 
         [JsonIgnore]
         public virtual ICollection<Dish> Dishes { get; set; }
