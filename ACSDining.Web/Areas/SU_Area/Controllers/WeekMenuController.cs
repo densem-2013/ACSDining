@@ -116,15 +116,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         // PUT api/WeekMenu/5
         [HttpPut]
         [Route("{numweek}")]
-        [ResponseType(typeof(MenuForWeek))]
-        public async Task<IHttpActionResult> UpdateMFD(int id, MenuForWeek menuforweek)
+        [ResponseType(typeof(WeekMenuModel))]
+        public async Task<IHttpActionResult> UpdateMFD([FromUri()]int numweek, [FromBody()]WeekMenuModel menuforweek)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != menuforweek.ID)
+            if (numweek != menuforweek.ID)
             {
                 return BadRequest();
             }
@@ -137,7 +137,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MenuForWeekExists(id))
+                if (!MenuForWeekExists(numweek))
                 {
                     return NotFound();
                 }
@@ -150,35 +150,35 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST api/WeekMenu
-        [ResponseType(typeof(MenuForWeek))]
-        public async Task<IHttpActionResult> PostMenuForWeek(MenuForWeek menuforweek)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //// POST api/WeekMenu
+        //[ResponseType(typeof(MenuForWeek))]
+        //public async Task<IHttpActionResult> PostMenuForWeek(MenuForWeek menuforweek)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            DB.MenuForWeek.Add(menuforweek);
+        //    DB.MenuForWeek.Add(menuforweek);
 
-            try
-            {
-                await DB.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (MenuForWeekExists(menuforweek.ID))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await DB.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateException)
+        //    {
+        //        if (MenuForWeekExists(menuforweek.ID))
+        //        {
+        //            return Conflict();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return CreatedAtRoute("DefaultApi", new { id = menuforweek.ID }, menuforweek);
-        }
+        //    return CreatedAtRoute("DefaultApi", new { id = menuforweek.ID }, menuforweek);
+        //}
 
         // DELETE api/WeekMenu/5
         [ResponseType(typeof(MenuForWeek))]

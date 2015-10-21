@@ -83,11 +83,11 @@
             SummaryPrice: this.SummaryPrice()
 
         }
-
+        var objToServer = ko.toJSON(source);
         $.ajax({
             url: '/api/WeekMenu/' + this.WeekNumber(),
             type: 'put',
-            data: ko.toJSON(source),
+            data: objToServer,
             contentType: 'application/json'
         }).done(function (data) {
 
