@@ -5,6 +5,9 @@ using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Net.Http.Formatting;
+using System.Web.Http;
 
 namespace ACSDining.Web.Areas.SU_Area.Models
 {
@@ -13,7 +16,13 @@ namespace ACSDining.Web.Areas.SU_Area.Models
         public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
         {
             var body = actionContext.Request.Content.ReadAsStringAsync().Result;
-            var pollRequest = JsonConvert.DeserializeObject<WeekMenuModel>(body);
+            //var jsonFormatter = GlobalConfiguration.Configuration.Formatters.JsonFormatter;// OfType<JsonMediaTypeFormatter>().First();
+            //jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            var pollRequest = JsonConvert.DeserializeObject<WeekMenuModel>(body/*, jsonFormatter.SerializerSettings*/);
+            // string strRequest=body.Split('/');
+            //var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            //WeekMenuModel pollRequest = serializer.Deserialize<WeekMenuModel>(body);
             bindingContext.Model = pollRequest;
             return true;
         }

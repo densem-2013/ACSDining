@@ -79,7 +79,7 @@
         var source = {
             ID: this.MenuId(),
             WeekNumber: this.WeekNumber(),
-            MenuForDay: this.MFD_models(),
+            MFD_models: this.MFD_models(),
             SummaryPrice: this.SummaryPrice()
 
         }
