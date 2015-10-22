@@ -13,6 +13,7 @@ using ACSDining.Core.Domains;
 using System.Globalization;
 using ACSDining.Web.Areas.SU_Area.Models;
 using System.Web.Http.Cors;
+using System.Web.Http.ModelBinding;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -117,7 +118,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPut]
         [Route("{numweek}")]
         [ResponseType(typeof(WeekMenuModel))]
-        public async Task<IHttpActionResult> UpdateMFD([FromUri()]int numweek, [FromBody()]WeekMenuModel menuforweek)
+        public async Task<IHttpActionResult> UpdateMFD([FromUri()]int numweek, [ModelBinder(typeof(PoolRequestModelBinder))]WeekMenuModel menuforweek)
         {
             if (!ModelState.IsValid)
             {

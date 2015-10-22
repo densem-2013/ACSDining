@@ -240,6 +240,7 @@
     <Compile Include="Areas\SU_Area\Models\DishModel.cs" />
     <Compile Include="Areas\SU_Area\Models\Dish_Menu_Key.cs" />
     <Compile Include="Areas\SU_Area\Models\MenuForDayModel.cs" />
+    <Compile Include="Areas\SU_Area\Models\PoolRequestModelBinder.cs" />
     <Compile Include="Areas\SU_Area\Models\SelectDishModel.cs" />
     <Compile Include="Areas\SU_Area\Models\WeekMenuModel.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />
