@@ -14,6 +14,7 @@ using System.Globalization;
 using ACSDining.Web.Areas.SU_Area.Models;
 using System.Web.Http.Cors;
 using System.Web.Http.ModelBinding;
+using WebGrease.Css;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -118,36 +119,60 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPut]
         [Route("{numweek}")]
         [ResponseType(typeof(WeekMenuModel))]
-        public async Task<IHttpActionResult> UpdateMFD([FromUri()]int numweek, [ModelBinder(typeof(PoolRequestModelBinder))]WeekMenuModel menuforweek)
+        public async Task<IHttpActionResult> UpdateMFD([FromUri()]int numweek,[FromBody()] /*[ModelBinder(typeof(PoolRequestModelBinder))]*/WeekMenuModel menuforweek)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (numweek != menuforweek.ID)
+            if (numweek != menuforweek.WeekNumber)
             {
                 return BadRequest();
             }
-
-            DB.Entry(menuforweek).State = EntityState.Modified;
-
-            try
+            MenuForWeek mfwModel = await DB.MenuForWeek.FindAsync(menuforweek.ID);
+            mfwModel.MenuForDay.Clear();
+            foreach (MenuForDayModel mfd in menuforweek.MFD_models)
             {
-                await DB.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MenuForWeekExists(numweek))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                List<Dish> dishes = DB.Dishes.AsEnumerable().Join(  mfd.Dishes.AsEnumerable(),
+                                                                    dm => dm.DishID,
+                                                                    md => md.DishID,
+                                                                    (dm, md) => dm).ToList();
 
+                MenuForDay menuFD = DB.MenuForDay.Find( mfd.ID);
+                menuFD.Dishes = dishes;
+                mfwModel.MenuForDay.Add(menuFD);
+                DB.Entry(menuFD).State = EntityState.Added;
+                try
+                {
+                    await DB.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+            //DB.Entry(mfwModel).State = EntityState.Modified;
+
+            //try
+            //{
+            //    await DB.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!MenuForWeekExists(numweek))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(ex.Message);
+            //}
             return StatusCode(HttpStatusCode.NoContent);
         }
 
