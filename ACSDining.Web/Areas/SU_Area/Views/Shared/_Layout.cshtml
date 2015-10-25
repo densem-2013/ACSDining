@@ -26,26 +26,12 @@
         <div class="banner-image"></div>
         <div class="banner-caption">
 
-                @*<div class="container" >
-                    <div class="row">
-                        <div class="col-md-8 col-md-offset-2">
-                            <div class="hero-unit">
-                            </div>
-                        </div>
-                    </div>
-                </div>*@
-
             <div class="container">
                 <div class="row ">
 
-                    <div id="sandbox-container" class="col-md-3 col-sm-12 col-xs-12" >
+                    <div id="sandbox-container" class="col-md-3 col-sm-6 col-xs-6" >
                     </div>
-                    <div class="col-md-9 col-sm-12 col-xs-12">
-                        <input type="button" id="btnaddmenu" class="btn btn-lg btn-success" value="Добавить меню на следующую неделю" style="float:right"/>
-                    </div>
-                    <div class="col-md-9   col-sm-12 col-xs-12 object-non-visible" data-animation-effect="fadeIn">
                         @RenderBody()
-                    </div>
                 </div>
             </div>
         </div>
@@ -105,9 +91,10 @@
                                     <!-- Collect the nav links, forms, and other content for toggling -->
                                     <div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
                                         <ul class="nav navbar-nav navbar-right">
-                                            <li class="active"><a href="#banner">Меню</a></li>
-                                            <li><a href="#about">Заявки</a></li>
-                                            <li><a href="#services">Выход</a></li>
+                                            <li class="active"><a href="@Url.RouteUrl(new { action = "WeekMenu", controller = "SU_", area = "SU_Area" })">Меню</a></li>
+                                            <li><a href="@Url.RouteUrl(new { action = "Orders", controller = "SU_", area = "SU_Area" })">Заявки</a></li>
+                                            <li><a href="@Url.RouteUrl(new { action = "Dishes", controller = "SU_", area = "SU_Area" })">Блюда</a></li>
+                                            <li><a href="@Url.RouteUrl(new { action = "LogOff", controller = "Account", area = "" })">Выход</a></li>
                                         </ul>
                                         
                                         </div>

@@ -17,7 +17,7 @@ namespace ACSDining.Web.Areas.SU_Area
             context.MapRoute(
                 "SU_Area_default",
                 "SU_Area/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "WeekMenu", id = UrlParameter.Optional }
             );
         }
     }

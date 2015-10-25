@@ -17,7 +17,7 @@ namespace ACSDining.Web.Areas.AdminArea
             context.MapRoute(
                 "AdminArea_default",
                 "AdminArea/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "WeekMenu", id = UrlParameter.Optional }
             );
         }
     }

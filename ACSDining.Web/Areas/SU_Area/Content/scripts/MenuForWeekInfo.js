@@ -51,6 +51,7 @@
 
 
         MenuId: ko.observable(),
+        CurrentWeekNumber: ko.observable(),
         WeekNumber: ko.observable(),
 
         MFD_models: ko.observableArray([]),
@@ -75,14 +76,53 @@
         ChangeSaved: ko.observable(false)
     };
 
+    viewModel.pageSize = ko.observable(7);
+
+    viewModel.pageIndex = ko.observable(0);
+
+    viewModel.pagedList = ko.dependentObservable(function () {
+        var size = viewModel.pageSize();
+        var start = viewModel.pageIndex() * size;
+        return viewModel.DishesByCategory.slice(start, start + size);
+    });
+
+    viewModel.maxPageIndex = ko.dependentObservable(function () {
+        return Math.ceil(viewModel.DishesByCategory().length / viewModel.pageSize()) - 1;
+    });
+
+    viewModel.previousPage = function () {
+        if (viewModel.pageIndex() > 0) {
+            viewModel.pageIndex(viewModel.pageIndex() - 1);
+        }
+    };
+
+    viewModel.nextPage = function () {
+        if (viewModel.pageIndex() < viewModel.maxPageIndex()) {
+            viewModel.pageIndex(viewModel.pageIndex() + 1);
+        }
+    };
+
+    viewModel.allPages = ko.dependentObservable(function () {
+        var pages = [];
+        for (i = 0; i <= viewModel.maxPageIndex() ; i++) {
+            pages.push({ pageNumber: (i + 1) });
+        }
+        return pages;
+    });
+
+    viewModel.moveToPage = function (index) {
+        viewModel.pageIndex(index);
+    };
+
     viewModel.SaveToServer = function () {
         var source = {
-            ID: this.MenuId(),
-            WeekNumber: this.WeekNumber(),
+            ID: viewModel.MenuId(),
+            WeekNumber: viewModel.WeekNumber(),
             MFD_models: this.MFD_models(),
             SummaryPrice: this.SummaryPrice()
 
         }
+
         var objToServer = ko.toJSON(source);
         $.ajax({
             url: '/api/WeekMenu/' + this.WeekNumber(),
@@ -91,9 +131,11 @@
             contentType: 'application/json'
         }).done(function (data) {
 
-            this.BeenChanged(false);
-            this.ChangeSaved(true);
-
+            viewModel.BeenChanged(false);
+            viewModel.ChangeSaved(true);
+            ko.utils.arrayForEach(viewModel.MFD_models(), function (item) {
+                item.UnEditable();
+            });
         }).error(function (err) {
             viewModel.Message("Error! " + err.status);
         });
@@ -142,6 +184,8 @@
         this.UpdatableMFD(index);
         this.Category(searchdish.Category());
         this.loadDishes(searchdish.DishId());
+
+
         $("#modalbox").modal("show");
     }
 
@@ -154,11 +198,12 @@
     }
 
 
-    viewModel.LoadWeekMenu = function (numweek) {
+    viewModel.LoadWeekMenu = function (numweek, year) {
 
-
+        numweek = numweek == undefined ? '' : numweek;
+        year = year == undefined ? '' : "/" + year;
         $.ajax({
-            url: "/api/WeekMenu/" + numweek,
+            url: "/api/WeekMenu/" + numweek  + year,
             type: "GET"
         }).done(function (resp) {
 
@@ -212,6 +257,19 @@
             viewModel.Message("Error! " + err.status);
         });
     }
+    viewModel.GetCurrentWeekNumber = function () {
+        
+        $.ajax({
+            url: "/api/WeekMenu/CurrentWeek",
+            type: "GET"
+        }).done(function (resp) {
+            viewModel.CurrentWeekNumber(resp);
+        });
+    }
+    
+    viewModel.IsCurrentWeek = ko.computed(function () {
+        return viewModel.CurrentWeekNumber() == viewModel.WeekNumber();
+    }.bind(viewModel));
 
     viewModel.applyChanges = function () {
 
@@ -255,6 +313,7 @@
 
     viewModel.LoadWeekMenu();
     viewModel.loadWeekNumbers();
+    viewModel.GetCurrentWeekNumber();
 
     ko.applyBindings(viewModel);
 

@@ -15,11 +15,12 @@ using ACSDining.Web.Areas.SU_Area.Models;
 using System.Web.Http.Cors;
 using System.Web.Http.ModelBinding;
 using WebGrease.Css;
+using System.Web.Http.Results;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
     [RoutePrefix("api/WeekMenu")]
-    [EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
+    //[EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
     public class WeekMenuController : ApiController
     {
         
@@ -34,6 +35,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 ID = wmenu.ID,
                 WeekNumber = wmenu.WeekNumber,
                 SummaryPrice = wmenu.SummaryPrice,
+                YearNumber = wmenu.Year.YearNumber,
                 MFD_models = wmenu.MenuForDay.Select(m => new MenuForDayModel()
                 {
                     ID = m.ID,
@@ -49,22 +51,23 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                                     Title = dm.Title,
                                     ProductImage = dm.ProductImage,
                                     Price = dm.Price,
-                                    Category = dm.DishType.Category,
-                                    IsSelected = true
+                                    Category = dm.DishType.Category
                                 }).ToList()
                 }).ToList()
             }).ToList();
-
         }
 
         // GET api/WeekMenu
         [HttpGet]
+        [Route("")]
         [Route("{numweek}")]
+        [Route("{numweek}/{year}")]
         [ResponseType(typeof(WeekMenuModel))]
-        public async Task<IHttpActionResult> GetWeekMenu(int? numweek)
+        public async Task<IHttpActionResult> GetWeekMenu([FromUri]int? numweek = null, [FromUri]int? year = null)
         {
-            WeekMenuModel model =
-                WeekModels.FirstOrDefault(wm => wm.WeekNumber == (numweek == null ? DB.CurrentWeek() : numweek));
+            numweek = numweek ?? DB.CurrentWeek();
+            year = year ?? DateTime.Now.Year;
+            WeekMenuModel model = WeekModels.FirstOrDefault(wm => wm.WeekNumber == numweek && wm.YearNumber == year);
             if (model == null)
             {
                 model = WeekModels.FirstOrDefault();
@@ -77,12 +80,21 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return Ok(model);
         }
 
+
+        [HttpGet]
+        [Route("CurrentWeek")]
+        [ResponseType(typeof(Int32))]
+        public async Task<IHttpActionResult> CurrentWeekNumber()
+        {
+            return Ok(DB.CurrentWeek());
+        }
+
         [HttpGet]
         [Route("WeekNumbers")]
         [ResponseType(typeof(List<int>))]
         public async Task<IHttpActionResult> GetWeekNumbers()
         {
-            List<int> numweeks =  WeekModels.Select(wm => wm.WeekNumber).ToList();
+            List<int> numweeks =  WeekModels.Select(wm => wm.WeekNumber).Reverse().ToList();
             if (numweeks == null)
             {
                  return NotFound();
@@ -90,36 +102,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             return Ok(numweeks);
         }
-        // GET api/WeekMenu/5
-        //[ResponseType(typeof(MenuForWeek))]
-        //public async Task<IHttpActionResult> GetMenuForWeek(int id)
-        //{
-        //    MenuForWeek menuforweek = await DB.MenuForWeek.FindAsync(id);
-        //    if (menuforweek == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    return Ok(menuforweek);
-        //}
-
-        //// GET api/WeekMenu/5
-        //[ResponseType(typeof(MenuForWeek))]
-        //public async Task<IHttpActionResult> GetMenuForWeekNumber(int weeknumber)
-        //{
-        //    MenuForWeek menuforweek = await DB.MenuForWeek.Where(m => m.WeekNumber == weeknumber).FirstOrDefaultAsync();
-        //    if (menuforweek == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(menuforweek);
-        //}
-        // PUT api/WeekMenu/5
         [HttpPut]
         [Route("{numweek}")]
-        [ResponseType(typeof(WeekMenuModel))]
-        public async Task<IHttpActionResult> UpdateMFD([FromUri()]int numweek,[FromBody()] /*[ModelBinder(typeof(PoolRequestModelBinder))]*/WeekMenuModel menuforweek)
+        public async Task<IHttpActionResult> UpdateMenuForWeek([FromUri()]int numweek, [FromBody] WeekMenuModel menuforweek)
         {
             if (!ModelState.IsValid)
             {
@@ -130,8 +116,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest();
             }
-            MenuForWeek mfwModel = await DB.MenuForWeek.FindAsync(menuforweek.ID);
-            mfwModel.MenuForDay.Clear();
+            
             foreach (MenuForDayModel mfd in menuforweek.MFD_models)
             {
                 List<Dish> dishes = DB.Dishes.AsEnumerable().Join(  mfd.Dishes.AsEnumerable(),
@@ -139,72 +124,39 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                                                                     md => md.DishID,
                                                                     (dm, md) => dm).ToList();
 
-                MenuForDay menuFD = DB.MenuForDay.Find( mfd.ID);
+                MenuForDay menuFD = await DB.MenuForDay.Include("Dishes").SingleOrDefaultAsync( m=>m.ID==mfd.ID);
                 menuFD.Dishes = dishes;
-                mfwModel.MenuForDay.Add(menuFD);
-                DB.Entry(menuFD).State = EntityState.Added;
-                try
+                menuFD.TotalPrice = mfd.TotalPrice;
+                DB.Entry(menuFD).State = EntityState.Modified;
+
+               
+            }
+            MenuForWeek mfwModel = await DB.MenuForWeek.FindAsync(menuforweek.ID);
+
+            mfwModel.SummaryPrice = menuforweek.SummaryPrice;
+            DB.Entry(mfwModel).State = EntityState.Modified;
+            try
+            {
+                await DB.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MenuForWeekExists(numweek))
                 {
-                    await DB.SaveChangesAsync();
+                    return NotFound();
                 }
-                catch (Exception ex)
+                else
                 {
-                    return BadRequest(ex.Message);
+                    throw;
                 }
             }
-            //DB.Entry(mfwModel).State = EntityState.Modified;
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-            //try
-            //{
-            //    await DB.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!MenuForWeekExists(numweek))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    return BadRequest(ex.Message);
-            //}
-            return StatusCode(HttpStatusCode.NoContent);
+            return StatusCode(HttpStatusCode.OK);
         }
-
-        //// POST api/WeekMenu
-        //[ResponseType(typeof(MenuForWeek))]
-        //public async Task<IHttpActionResult> PostMenuForWeek(MenuForWeek menuforweek)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    DB.MenuForWeek.Add(menuforweek);
-
-        //    try
-        //    {
-        //        await DB.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateException)
-        //    {
-        //        if (MenuForWeekExists(menuforweek.ID))
-        //        {
-        //            return Conflict();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return CreatedAtRoute("DefaultApi", new { id = menuforweek.ID }, menuforweek);
-        //}
 
         // DELETE api/WeekMenu/5
         [ResponseType(typeof(MenuForWeek))]

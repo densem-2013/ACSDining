@@ -28,7 +28,6 @@ namespace ACSDining.Core.Domains
         static ApplicationDbContext()
         {
             Database.SetInitializer<ApplicationDbContext>(new ApplicationDbInitializer());
-            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());
         }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -54,6 +53,7 @@ namespace ACSDining.Core.Domains
         public virtual DbSet<DishQuantity> DishQuantities { get; set; }
         public virtual DbSet<DishDetail> DishDetails { get; set; }
         public virtual DbSet<DayOfWeek> Days { get; set; }
+        public virtual DbSet<Year> Years { get; set; }
 
         public Func<int> CurrentWeek = () =>
             {
@@ -66,5 +66,6 @@ namespace ACSDining.Core.Domains
                 DateTime LastDay = new System.DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
                 return myCal.GetWeekOfYear(LastDay, myCWR, myFirstDOW);
             };
+
     }
 }

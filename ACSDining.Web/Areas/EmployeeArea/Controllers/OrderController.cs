@@ -84,7 +84,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             {
                 DB.OrderMenu.Add(ordermenu);
                 await DB.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
 
             ViewBag.CurrentWeek.ID = new SelectList(DB.MenuForWeek, "ID", "ID", ordermenu.CurrentWeek.ID);
@@ -122,7 +122,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             {
                 DB.Entry(ordermenu).State = EntityState.Modified;
                 await DB.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
             ViewBag.CurrentWeek.ID = new SelectList(DB.MenuForWeek, "ID", "ID", ordermenu.CurrentWeek.ID);
             ViewBag.User.Id = new SelectList(DB.Users, "ClientId", "FirstName", ordermenu.User.Id);
@@ -153,7 +153,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             OrderMenu ordermenu = await DB.OrderMenu.FindAsync(id);
             DB.OrderMenu.Remove(ordermenu);
             await DB.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("WeekMenu");
         }
 
         protected override void Dispose(bool disposing)

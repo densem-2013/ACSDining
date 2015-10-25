@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using ACSDining.Web.Areas.SU_Area.Models;
+using System.Web;
 using System.Web.Mvc;
 
 namespace ACSDining.Web
@@ -8,6 +9,7 @@ namespace ACSDining.Web
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+           // filters.Add(new NotImplementedFilterAttribute());
         }
     }
 }

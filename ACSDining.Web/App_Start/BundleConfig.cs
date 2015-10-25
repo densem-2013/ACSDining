@@ -14,7 +14,8 @@ namespace ACSDining.Web
 
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
-                        "~/Scripts/knockout-3.2.0.js"
+                        "~/Scripts/knockout-3.2.0.js"///,
+                        //"~/Scripts/knockout.simpleGrid.3.0.js"
                         ));
             
             bundles.Add(new ScriptBundle("~/bundles/knockoutBind").Include(
@@ -29,7 +30,7 @@ namespace ACSDining.Web
                         ));
 
             bundles.Add(new ScriptBundle("~/SU_Panel/bundles/jquery").Include(
-                        "~/Content/worthy/plugins/jquery.min.js",
+                        "~/Scripts/jquery-2.1.4.min.js",
                         "~/Content/worthy/bootstrap/js/bootstrap.min.js",
                         "~/Content/worthy/plugins/modernizr.js",
                         "~/Content/worthy/plugins/isotope/isotope.pkgd.min.js",
@@ -37,7 +38,9 @@ namespace ACSDining.Web
                         "~/Content/worthy/plugins/jquery.appear.js",
                         "~/Areas/SU_Area/Content/scripts/template.js",
                         "~/Content/worthy/js/custom.js",
-                        "~/Content/worthy/bootstrap/js/bootstrap-datepicker.js"
+                        "~/Content/worthy/bootstrap/js/bootstrap-datepicker.js"//,
+                        //"~/Content/worthy/js/dataTables/jquery.dataTables.js",
+                        //"~/Content/worthy/js/dataTables/dataTables.bootstrap.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/EmployeePanel/bundles/jquery").Include(
@@ -127,11 +130,13 @@ namespace ACSDining.Web
 
             bundles.Add(new StyleBundle("~/SU_Panel/worthy/css").Include(
                         "~/Content/worthy/bootstrap/css/bootstrap.css",
+                        //"~/Content/worthy/bootstrap/css/jquery.dataTables.min.css",
                         "~/Content/worthy/fonts/font-awesome/css/font-awesome.css",
                         "~/Content/worthy/css/animations.css",
                         "~/Content/worthy/css/style.css",
                         "~/Content/worthy/css/custom.css",
-                        "~/Content/worthy/bootstrap/css/bootstrap-datepicker3.css"
+                        "~/Content/worthy/bootstrap/css/bootstrap-datepicker3.css//",
+                        "~/Content/worthy/js/dataTables/dataTables.bootstrap.css"
                        ));
 
             bundles.Add(new StyleBundle("~/EmployeePanel/css").Include(

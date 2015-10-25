@@ -3506,7 +3506,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
                     // Does the evaluation of the parameter value unwrap any observables?
                     if (!paramValueComputed.isActive()) {
                         // No it doesn't, so there's no need for any computed wrapper. Just pass through the supplied value directly.
-                        // Example: "someVal: firstName, age: 123" (whether or not firstName is an observable/computed)
+                        // Example: "someVal: FirstName, age: 123" (whether or not FirstName is an observable/computed)
                         return paramValue;
                     } else {
                         // Yes it does. Supply a computed property that unwraps both the outer (binding expression)

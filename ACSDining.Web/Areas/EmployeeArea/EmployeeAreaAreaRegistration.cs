@@ -17,7 +17,7 @@ namespace ACSDining.Web.Areas.EmployeeArea
             context.MapRoute(
                 "EmployeeArea_default",
                 "EmployeeArea/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "WeekMenu", id = UrlParameter.Optional }
             );
         }
     }

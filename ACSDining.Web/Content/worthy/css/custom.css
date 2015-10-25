@@ -7,3 +7,32 @@ Created:November 2014
 License: Creative Commons Attribution 3.0 License (https://creativecommons.org/licenses/by/3.0/)
 File Description: Place here your custom CSS styles
 */
+
+a.paginate_button.active {
+    background-color: #b4e12f;
+    color: #0c1d4d;
+}
+span.changesaved {
+    background-color: #dc8648;
+    color: #183ca0;
+}
+#curweek, #btnaddmenu {
+    background-color: #2bcb19;
+    color: #ffffff;
+    padding:5px;
+    margin:5px;
+}
+#curweek.disabled {
+    background-color: #d96666;
+    color: #ffffff;
+}
+#wnDysplay {
+    color: #266ee1;
+    font-size:18px;
+    /*padding: 10px 5px;*/
+    border:3px solid #32ebd5;
+    border-radius: 5px;
+}
+table {
+
+}

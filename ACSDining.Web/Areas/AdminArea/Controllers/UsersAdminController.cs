@@ -125,7 +125,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
                     return View();
 
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
             ViewBag.RoleId = new SelectList(RoleManager.Roles, "Name", "Name");
             return View();
@@ -202,7 +202,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
             ModelState.AddModelError("", "Something failed.");
             return View();
@@ -248,7 +248,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
             return View();
         }

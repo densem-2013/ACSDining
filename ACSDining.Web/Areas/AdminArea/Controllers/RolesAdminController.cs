@@ -112,7 +112,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
                     ModelState.AddModelError("", roleresult.Errors.First());
                     return View();
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
             return View();
         }
@@ -150,7 +150,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
                 // Update the new Description property:
                 role.Description = roleModel.Description;
                 await RoleManager.UpdateAsync(role);
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
             return View();
         }
@@ -202,7 +202,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("WeekMenu");
             }
             return View();
         }

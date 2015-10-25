@@ -12,7 +12,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class SU_Controller : Controller
     {
         // GET: /SU_Area/SU_/
-        public ActionResult Index()
+        public ActionResult WeekMenu()
         {
             ViewBag.Title = "Welcome " + Session["Lname"] + " " + Session["Fname"];
             return View();

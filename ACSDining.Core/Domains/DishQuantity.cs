@@ -21,11 +21,15 @@ namespace ACSDining.Core.Domains
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
-        public string Quantity { get; set; }
+        public double Quantity { get; set; }
 
         [JsonIgnore]
-        public virtual Dish Dish { get; set; }
+        public virtual ICollection<Dish> Dishes { get; set; }
         [JsonIgnore]
-        public virtual MenuForDay MenuForDay { get; set; }
+        public virtual ICollection<MenuForDay> MenuForDay { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<MenuForWeek> WeekMenu { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<OrderMenu> Orders { get; set; }
     }
 }

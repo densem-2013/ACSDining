@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Data.Entity;
+using System.Data.Entity.Core;
 using System.Data.Entity.Migrations;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using ACSDining.Core.Domains;
+using System.Xml.Linq;
 
 namespace ACSDining.Core.Identity
 {
@@ -113,6 +116,25 @@ namespace ACSDining.Core.Identity
 
         public static void InitializeIdentityForEF(ApplicationDbContext context)
         {
+            context.DishQuantities.AddOrUpdate(dq => dq.Quantity, new DishQuantity[]
+            {
+                new DishQuantity { Quantity = 0.0 },
+                new DishQuantity { Quantity = 0.5 },
+                new DishQuantity { Quantity = 1.0 },
+                new DishQuantity { Quantity = 1.5 },
+                new DishQuantity { Quantity = 2.0 },
+                new DishQuantity { Quantity = 2.5 },
+                new DishQuantity { Quantity = 3.0 },
+                new DishQuantity { Quantity = 3.5 },
+                new DishQuantity { Quantity = 4.0 },
+                new DishQuantity { Quantity = 4.5 },
+                new DishQuantity { Quantity = 5.0 }
+            });
+
+            context.Years.AddOrUpdate(y => y.YearNumber, new Year[]
+            {
+                new Year { YearNumber = DateTime.Now.Year }
+            });
             context.DishTypes.AddOrUpdate(dt => dt.Category, new DishType[]
                 {
                   new DishType {  Category = "Первое блюдо" },
@@ -217,6 +239,50 @@ namespace ACSDining.Core.Identity
             if (!rolesForDinEmployee.Contains("Employee"))
             {
                 var result = userManager.AddToRole(dinEmployee.Id, "DiningEmployee");
+            }
+
+            string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\Employeers.xml";
+            var xml = XDocument.Load(path);
+            var collection = xml.Root.Descendants("Employeer");
+            try
+            {
+                User[] users = (from el in collection.ToList()
+                                select new User()
+                                {
+                                    FirstName = el.Element("FirstName").Value,
+                                    LastName = el.Element("LastName").Value,
+                                    IsDiningRoomClient = true,
+                                    RegistrationDate = DateTime.Now
+                                }).ToArray();
+                for (int i = 0; i < users.Length; i++)
+                {
+                    //Create Employee if it does not exist
+                    //var userEmpl = userManager.Users.AsEnumerable().FirstOrDefault(u => u.FirstName == users[i].FirstName && u.LastName == users[i].LastName);
+                    //if (userEmpl == null)
+                    //{
+                    //    userEmpl = new User() { Id=Guid.NewGuid().ToString(),  Email = "densem-2013@yandex.ua",UserName = users[i].LastName + " " + users[i].FirstName, FirstName = users[i].FirstName, LastName = users[i].LastName, IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
+                    //    var result = userManager.Create(userEmpl, "777123");
+                    //    result = userManager.SetLockoutEnabled(userEmpl.Id, false);
+                    //}
+
+                    //// Add userEmployee to Role Employee if not already added
+                    //var rolesForEmpl = userManager.GetRoles(userEmpl.Id);
+                    //if (!rolesForEmpl.Contains("Employee"))
+                    //{
+                    //    var result = userManager.AddToRole(userEmpl.Id, "Employee");
+                    //}
+                    users[i].Id = Guid.NewGuid().ToString();
+                    users[i].UserName = users[i].LastName + " " + users[i].FirstName;
+                    //userManager.AddToRole(users[i].Id, "Employee");
+                    //User userEmpl = new User() { Id=Guid.NewGuid().ToString(),  Email = "densem-2013@yandex.ua",UserName = users[i].LastName + " " + users[i].FirstName, FirstName = users[i].FirstName, LastName = users[i].LastName, IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
+                    context.Users.Add(users[i]);
+                }
+                context.SaveChanges();
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }
