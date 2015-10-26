@@ -175,5 +175,5 @@ E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.dll
 E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.pdb
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\EntityFramework.dll
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\EntityFramework.xml
-E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Owin.dll
+E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources

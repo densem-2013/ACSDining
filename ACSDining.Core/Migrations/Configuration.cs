@@ -36,7 +36,7 @@
 
             GetDishesFromXML(path, context);
             //GetUsersFromXML(context);
-            //CreateOrders(context);
+            CreateOrders(context);
 
         }
         private void GetDishesFromXML(string path, ApplicationDbContext context)
@@ -136,7 +136,7 @@
                 });
             }
         }
-        private   void GetUsersFromXML(ApplicationDbContext context)
+        private void GetUsersFromXML(ApplicationDbContext context)
         {
             var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
@@ -154,7 +154,7 @@
                                     IsDiningRoomClient = true,
                                     RegistrationDate = DateTime.Now
                                 }).ToArray();
-                for (int i = 0; i < users.Length;i++ )
+                for (int i = 0; i < users.Length; i++)
                 {
                     //Create Employee if it does not exist
                     var userEmployee = userManager.Users.FirstOrDefault(u => u.FirstName == users[i].FirstName && u.LastName == users[i].LastName);
@@ -180,9 +180,71 @@
                 throw;
             }
         }
-        private  void CreateOrders(ApplicationDbContext context)
+        private void CreateOrders(ApplicationDbContext context)
         {
+            List<User> users = context.Users.ToList();
+            List<MenuForWeek> weekmenus = context.MenuForWeek.ToList();
 
+            string[] categories = { "Первое блюдо", "Второе блюдо", "Салат", "Напиток" };
+            double[][] coursesnums = new double[][] { 
+            new double[]{ 0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.5 }, 
+            new double[]{ 0, 0, 1.0, 1.0, 1.0, 1.0, 2.0 }, 
+            new double[]{ 0, 1.0 }, 
+            new double[]{ 0, 1.0 } 
+            };
+            Dictionary<string, int> numsForCourses = new Dictionary<string, int>();
+
+            for (int i = 0; i < 4; i++)
+            {
+                numsForCourses.Add(categories[i], coursesnums[i].Length);
+            };
+            try
+            {
+
+                foreach (User user in users)
+                {
+                    foreach (MenuForWeek mfw in weekmenus)
+                    {
+                        List<DishQuantity> quantyties = new List<DishQuantity>();
+
+                        foreach (MenuForDay daymenu in mfw.MenuForDay)
+                        {
+                            foreach (Dish dish in daymenu.Dishes)
+                            {
+                                int catindex = 0;
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    if (string.Equals(categories[i], dish.DishType.Category))
+                                    {
+                                        catindex = i;
+                                    };
+                                };
+
+                                quantyties.Add(new DishQuantity
+                                {
+                                    Quantity = coursesnums[catindex][rand.Next(numsForCourses[dish.DishType.Category])],
+                                    Dish = dish,
+                                    MenuForDay = daymenu,
+                                    WeekMenu = mfw
+                                });
+                            }
+                        }
+                        OrderMenu order = new OrderMenu
+                        {
+                            User = user,
+                            MenuForWeek = mfw,
+                            DishQuantities = quantyties
+                        };
+                        context.OrderMenu.Add(order);
+                    }
+                }
+                context.SaveChanges();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

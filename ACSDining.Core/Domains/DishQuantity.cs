@@ -24,12 +24,12 @@ namespace ACSDining.Core.Domains
         public double Quantity { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Dish> Dishes { get; set; }
+        public virtual Dish Dish { get; set; }
         [JsonIgnore]
-        public virtual ICollection<MenuForDay> MenuForDay { get; set; }
+        public virtual MenuForDay MenuForDay { get; set; }
         [JsonIgnore]
-        public virtual ICollection<MenuForWeek> WeekMenu { get; set; }
+        public virtual MenuForWeek WeekMenu { get; set; }
         [JsonIgnore]
-        public virtual ICollection<OrderMenu> Orders { get; set; }
+        public virtual OrderMenu Order { get; set; }
     }
 }

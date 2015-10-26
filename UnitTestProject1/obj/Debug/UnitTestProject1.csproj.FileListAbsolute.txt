@@ -166,3 +166,5 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.xml
 E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.dll
 E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.pdb
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Owin.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.xml

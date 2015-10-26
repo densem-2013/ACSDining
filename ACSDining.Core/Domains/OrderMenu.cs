@@ -21,18 +21,13 @@ namespace ACSDining.Core.Domains
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public bool CurrentWeekIsPaid { get; set; }
-        [Required]
-        public int WeekNumber { get; set; }
+        public double Balance { get; set; }
 
         [JsonIgnore]
         public virtual User User { get; set; }
         [JsonIgnore]
-        public virtual MenuForWeek CurrentWeek { get; set; }
-        [JsonIgnore]
-        public virtual MenuForWeek NextWeek { get; set; }
-        [JsonIgnore]
         public virtual ICollection<DishQuantity> DishQuantities { get; set; }
         [JsonIgnore]
-        public virtual ICollection<MenuForWeek> MenusForWeeks { get; set; }
+        public virtual MenuForWeek MenuForWeek { get; set; }
     }
 }
