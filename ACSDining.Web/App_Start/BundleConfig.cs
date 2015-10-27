@@ -16,10 +16,15 @@ namespace ACSDining.Web
                         "~/Scripts/knockout-3.2.0.js"///,
                         //"~/Scripts/knockout.simpleGrid.3.0.js"
                         ));
-            
-            bundles.Add(new ScriptBundle("~/bundles/knockoutBind").Include(
+
+            bundles.Add(new ScriptBundle("~/bundles/MenuForWeek").Include(
                         "~/Areas/SU_Area/Content/scripts/MenuForWeekInfo.js"
                         ));
+
+            bundles.Add(new ScriptBundle("~/bundles/WeekOrders").Include(
+                        "~/Areas/SU_Area/Content/scripts/OrdersInfo.js"
+                        ));
+
             bundles.Add(new ScriptBundle("~/EmployeePanel/bundles/jquery").Include(
                         "~/Areas/EmployeeArea/Content/assets/js/jquery.js",
                         "~/Areas/EmployeeArea/Content/assets/js/bootstrap.min.js",

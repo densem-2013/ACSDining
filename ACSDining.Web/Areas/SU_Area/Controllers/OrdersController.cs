@@ -1,6 +1,7 @@
 ﻿using ACSDining.Core.Domains;
 using System;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -25,15 +26,21 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             OrderMenu orderMenu = await _db.OrderMenu.Include("DishQuantities").Include("User").FirstOrDefaultAsync(om=>om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year);
             OrdersDTO model = new OrdersDTO
             {
-                //Id=orderMenu.Id,
-                //UserOrders = new 
+                Id=orderMenu.Id,
+                UserOrders = _db.Users.Include("OrderMenus").AsEnumerable().Select(u=>u.OrderMenus.FirstOrDefault(ord=>ord.MenuForWeek.WeekNumber==numweek)).Select(order=>new UserOrdesDTO()
+                {
+                    UserId = order.User.Id,
+                    UserName = order.User.UserName,
+                    Dishquantities = orderMenu.DishQuantities.Select(q=>q.Quantity).ToArray(),
+                    WeekIsPaid = false
+                }).ToList()
             };
             if (model == null)
             { 
                 return NotFound();
             }
 
-            return Ok(orderMenu);
+            return Ok(model);
         }
     }
 }
