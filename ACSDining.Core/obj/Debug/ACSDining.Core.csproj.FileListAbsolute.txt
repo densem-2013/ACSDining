@@ -96,9 +96,7 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.AspNet.Identity
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.AspNet.Identity.EntityFramework.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.AspNet.Identity.Owin.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.dll
-C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.Security.Cookies.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.Security.dll
-C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.Security.OAuth.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Newtonsoft.Json.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Owin.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\EntityFramework.xml
@@ -108,15 +106,11 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.AspNet.Identity
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.AspNet.Identity.Owin.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.Security.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.Security.Cookies.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Newtonsoft.Json.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Properties.Resources.resources
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csproj.GenerateResource.Cache
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.pdb
-C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Core.dll.config
 C:\Soft\GitProjects\ACSDining\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Core.dll
 C:\Soft\GitProjects\ACSDining\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Core.pdb
@@ -177,3 +171,5 @@ E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\EntityFramework.dll
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\EntityFramework.xml
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Owin.dll
 E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache

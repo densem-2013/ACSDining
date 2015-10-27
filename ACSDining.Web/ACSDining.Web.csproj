@@ -257,13 +257,14 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Areas\SU_Area\Controllers\DishesController.cs" />
+    <Compile Include="Areas\SU_Area\Controllers\OrdersController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
     <Compile Include="Areas\SU_Area\Models\DishModel.cs" />
-    <Compile Include="Areas\SU_Area\Models\Dish_Menu_Key.cs" />
     <Compile Include="Areas\SU_Area\Models\MenuForDayModel.cs" />
+    <Compile Include="Areas\SU_Area\Models\OrdersDTO.cs" />
     <Compile Include="Areas\SU_Area\Models\PoolRequestModelBinder.cs" />
-    <Compile Include="Areas\SU_Area\Models\SelectDishModel.cs" />
+    <Compile Include="Areas\SU_Area\Models\UserOrdesDTO.cs" />
     <Compile Include="Areas\SU_Area\Models\WeekMenuModel.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -307,6 +308,7 @@
     <Content Include="Areas\SU_Area\Content\scripts\Datatable.js" />
     <Content Include="Areas\SU_Area\Content\scripts\jquery.dataTables.js" />
     <Content Include="Areas\SU_Area\Content\scripts\MenuForWeekInfo.js" />
+    <Content Include="Areas\SU_Area\Content\scripts\OrdersInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\template.js" />
     <Content Include="Content\app\custom.js" />
     <Content Include="Content\app\jquery-1.10.2.js" />
@@ -519,9 +521,6 @@
     <Content Include="Content\tamplate\img\Thumbs.db" />
     <Content Include="Content\tamplate\js\.DS_Store" />
     <Content Include="Content\tamplate\js\min\.DS_Store" />
-    <Content Include="Areas\SU_Area\Views\SU_\_PartialDishes.cshtml" />
-    <Content Include="Areas\SU_Area\Views\SU_\PartialDayMenu.cshtml" />
-    <Content Include="Areas\SU_Area\Views\SU_\SelectDish.cshtml" />
     <Content Include="Content\worthy\bootstrap\css\bootstrap-theme.css.map" />
     <Content Include="Content\worthy\bootstrap\css\bootstrap.css.map" />
     <Content Include="Content\worthy\bootstrap\fonts\glyphicons-halflings-regular.eot" />
@@ -587,6 +586,8 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\SU_Area\Views\SU_\Orders.cshtml" />
+    <Content Include="Areas\SU_Area\Views\SU_\Dishes.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

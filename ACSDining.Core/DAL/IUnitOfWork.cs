@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ACSDining.Core.DAL
+﻿namespace ACSDining.Core.DAL
 {
     public interface IUnitOfWork
     {

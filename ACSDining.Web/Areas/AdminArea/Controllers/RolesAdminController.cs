@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Collections.Generic;
-using ACSDining.Web.Models;
 using ACSDining.Areas.AdminArea.Models;
 using ACSDining.Core.Identity;
 using ACSDining.Core.Domains;

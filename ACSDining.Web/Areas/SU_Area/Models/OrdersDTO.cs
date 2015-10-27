@@ -5,9 +5,9 @@ using System.Web;
 
 namespace ACSDining.Web.Areas.SU_Area.Models
 {
-    public class Dish_Menu_Key
+    public class OrdersDTO
     {
-        public int DishId { get; set; }
-        public string MenuId { get; set; }
+        public int Id { get; set; }
+        public List<UserOrdesDTO> UserOrders { get; set; } 
     }
 }

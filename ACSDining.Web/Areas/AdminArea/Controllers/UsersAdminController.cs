@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNet.Identity.Owin;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -10,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using ACSDining.Web.Models.ViewModels;
-using ACSDining.Web.Models;
 using ACSDining.Areas.AdminArea.Models;
 using ACSDining.Core.Identity;
 using ACSDining.Core.Domains;

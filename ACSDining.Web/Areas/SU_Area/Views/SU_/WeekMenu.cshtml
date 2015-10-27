@@ -1,6 +1,4 @@
-﻿@model ACSDining.Web.Areas.SU_Area.Models.WeekMenuModel
-
-@{
+﻿@{
     ViewBag.Title = "Index";
 }
 
@@ -9,7 +7,7 @@
     <div class="panel panel-default" id="mfwPanel">
         <table>
             <tbody>
-                <tr style="background: rgba(86, 86, 89, 0.48)">
+                <tr style="background: #565659;">
                     <td class="col-sm-3">
                         <div>
                             <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ $root.LoadWeekMenu($root.CurrentWeekNumber())},css:{disabled: $root.IsCurrentWeek()}" />
@@ -63,7 +61,7 @@
                         <span data-bind="text: TotalPrice()"></span>
                     </td>
                     <td style="vertical-align: middle; text-align:center">
-                        <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable " />
+                        <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable "></button>
                     </td>
 
                 </tr>
@@ -162,7 +160,6 @@
         </div>
     </div>
 </div>
-    @*<script src="~/Scripts/knockout.mapping-latest.js" type="text/javascript"></script>*@
 
     @Scripts.Render("~/bundles/knockoutBind")
     <script type="text/javascript">
@@ -173,10 +170,6 @@
             $("#pageTable").height("350px");
             $("#modalbox").offset({ top: 100 });
 
-            //$(".paginate_button").click(function (event) {
-            //    var vm = ko.dataFor(event.target);
-            //    $(event.target).addClass("active");
-            //});
         })();
     </script>
 

@@ -1,14 +1,8 @@
-﻿using ACSDining.Core.Domains;
-using ACSDining.Web.Areas.SU_Area.Models;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Web.Mvc;
-using System.Linq;
-using System.Globalization;
+﻿using System.Web.Mvc;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [Authorize(Roles = "SuperUser,Administrator")]
     public class SU_Controller : Controller
     {
         // GET: /SU_Area/SU_/
@@ -18,5 +12,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return View();
         }
 
+        public ActionResult Orders()
+        {
+            ViewBag.Title = "Welcome " + Session["Lname"] + " " + Session["Fname"];
+            return View();
+        }
+        public ActionResult Dishes()
+        {
+            ViewBag.Title = "Welcome " + Session["Lname"] + " " + Session["Fname"];
+            return View();
+        }
     }
 }
