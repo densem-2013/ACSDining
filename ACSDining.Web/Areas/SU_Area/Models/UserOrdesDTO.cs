@@ -10,10 +10,8 @@ namespace ACSDining.Web.Areas.SU_Area.Models
     {
         public string UserId { get; set; }
         public string UserName { get; set; }
-        [JsonIgnore]
-        public int WeekNumber { get; set; }
-        public double[] dishquantities { get; set; }
-        public bool weekIsPaid { get; set; }
+        public double[] Dishquantities { get; set; }
+        public bool WeekIsPaid { get; set; }
 
     }
 }

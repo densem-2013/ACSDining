@@ -186,7 +186,7 @@ namespace ACSDining.Core.Identity
             var userAdmin = userManager.FindByName("admin");
             if (userAdmin == null)
             {
-                userAdmin = new User() { UserName = "admin", Email = "densem-2013@yandex.ua", FirstName = "Admin", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
+                userAdmin = new User() { UserName = "admin", Email = "test@test.com", FirstName = "Admin", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
                 var result = userManager.Create(userAdmin, "777123");
                 result = userManager.SetLockoutEnabled(userAdmin.Id, false);
             }
@@ -259,7 +259,7 @@ namespace ACSDining.Core.Identity
         }
         private static Dish[] GetDishesFromXML( ApplicationDbContext context)
         {
-            string userspath = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
+            string userspath = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\DishDetails.xml";
             var xml = XDocument.Load(userspath);
             var collection = xml.Root.Descendants("dish");
 
@@ -357,8 +357,7 @@ namespace ACSDining.Core.Identity
         private static void GetUsersFromXML(ApplicationDbContext context)
         {
 
-            string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") +
-                          @"ACSDining.Core\DBinitial\Employeers.xml";
+            string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\Employeers.xml";
             var xml = XDocument.Load(path);
             var collection = xml.Root.Descendants("Employeer");
             try

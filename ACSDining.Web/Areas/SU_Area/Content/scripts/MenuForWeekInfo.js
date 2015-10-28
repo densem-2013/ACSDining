@@ -46,10 +46,7 @@
     }
 
 
-
     var viewModel = {
-
-
         MenuId: ko.observable(),
         CurrentWeekNumber: ko.observable(),
         WeekNumber: ko.observable(),
@@ -73,7 +70,9 @@
 
         BeenChanged: ko.observable(false),
 
-        ChangeSaved: ko.observable(false)
+        ChangeSaved: ko.observable(false),
+
+        Message: ko.observable()
     };
 
     viewModel.pageSize = ko.observable(7);
