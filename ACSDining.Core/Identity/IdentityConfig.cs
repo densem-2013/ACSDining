@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using ACSDining.Core.Domains;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using ACSDining.Core.Domains;
-using System.Xml.Linq;
-using System.Collections.Generic;
+using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Core.Identity
 {
@@ -42,7 +43,7 @@ namespace ACSDining.Core.Identity
                 RequireNonLetterOrDigit = true,
                 RequireDigit = true,
                 RequireLowercase = true,
-                RequireUppercase = true,
+                RequireUppercase = true
             };
             // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = true;
@@ -108,172 +109,231 @@ namespace ACSDining.Core.Identity
     // This example shows you how to create a new database if the Model changes
     public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
+        static string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
         static Random rand = new Random();
         protected override void Seed(ApplicationDbContext context)
         {
             InitializeIdentityForEF(context);
+            var dishes = GetDishesFromXML(context,path);
+            CreateMenuForWeek(context, dishes);
             base.Seed(context);
         }
 
-        public static void InitializeIdentityForEF(ApplicationDbContext context)
+        public static  void InitializeIdentityForEF(ApplicationDbContext context)
         {
             //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            context.DishQuantities.AddOrUpdate(dq => dq.Quantity, new DishQuantity[]
-            {
-                new DishQuantity { Quantity = 0.0 },
-                new DishQuantity { Quantity = 0.5 },
+            context.DishQuantities.AddOrUpdate(dq => dq.Quantity, 
+                new DishQuantity{ Quantity = 0.0}, 
+                new DishQuantity { Quantity = 0.5 }, 
                 new DishQuantity { Quantity = 1.0 },
-                new DishQuantity { Quantity = 1.5 },
-                new DishQuantity { Quantity = 2.0 },
+                new DishQuantity { Quantity = 1.5 }, 
+                new DishQuantity { Quantity = 2.0 }, 
                 new DishQuantity { Quantity = 2.5 },
-                new DishQuantity { Quantity = 3.0 },
-                new DishQuantity { Quantity = 3.5 },
-                new DishQuantity { Quantity = 4.0 },
+                new DishQuantity { Quantity = 3.0 }, 
+                new DishQuantity { Quantity = 3.5 }, 
+                new DishQuantity { Quantity = 4.0 }, 
                 new DishQuantity { Quantity = 4.5 },
                 new DishQuantity { Quantity = 5.0 }
-            });
-
-            context.Years.AddOrUpdate(y => y.YearNumber, new Year[]
+            );
+            //var saveres = context.SaveChangesAsync();
+            //saveres.Wait();
+            context.Years.AddOrUpdate(y => y.YearNumber, new Year
             {
-                new Year { YearNumber = DateTime.Now.Year }
+                YearNumber = DateTime.Now.Year
             });
-            context.DishTypes.AddOrUpdate(dt => dt.Category, new DishType[]
-                {
-                  new DishType {  Category = "Первое блюдо" },
-                  new DishType {  Category = "Второе блюдо" },
-                  new DishType {  Category = "Салат" },
-                  new DishType {  Category = "Десерт" },
-                  new DishType {  Category = "Напиток" }
-                });
-            context.Days.AddOrUpdate(d => d.Name, new ACSDining.Core.Domains.DayOfWeek[]
-                {
-                    new ACSDining.Core.Domains.DayOfWeek{  Name="Понедельник"},
-                    new ACSDining.Core.Domains.DayOfWeek{  Name="Вторник"},
-                    new ACSDining.Core.Domains.DayOfWeek{  Name="Среда"},
-                    new ACSDining.Core.Domains.DayOfWeek{  Name="Четверг"},
-                    new ACSDining.Core.Domains.DayOfWeek{  Name="Пятница"}
-                });
+            //saveres = context.SaveChangesAsync();
+            //saveres.Wait();
+            context.DishTypes.AddOrUpdate(dt => dt.Category, 
+                new DishType { Category = "Первое блюдо" }, 
+                new DishType { Category = "Второе блюдо" }, 
+                new DishType { Category = "Салат" }, 
+                new DishType { Category = "Десерт" }, 
+                new DishType { Category = "Напиток" }
+                );
+            //saveres = context.SaveChangesAsync();
+            //saveres.Wait();
+            context.Days.AddOrUpdate(d => d.Name, 
+                new DayOfWeek{  Name="Понедельник"}, 
+                new DayOfWeek{  Name="Вторник"}, 
+                new DayOfWeek{  Name="Среда"}, 
+                new DayOfWeek{  Name="Четверг"}, 
+                new DayOfWeek{  Name="Пятница"}
+                );
+
+            //context.SaveChanges();
+            //saveres.Wait();
 
             ApplicationUserManager userManager = new ApplicationUserManager(new UserStore<User>(context));
             RoleManager<IdentityRole> roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            var anyres = context.Roles.Any(r => r.Name == "Admin");
+            //anyres.Wait();
+            if (!anyres)
+            {
+                //var store = new RoleStore<IdentityRole>(context);
+                //var manager = new RoleManager<IdentityRole>(store);
+                var role = new IdentityRole { Name = "Admin" };
 
+                var result = roleManager.Create(role);
+                //result.Wait();
+            }
+            context.SaveChanges();
+            anyres = context.Users.Any(u => u.UserName == "admin");
+            //anyres.Wait();
+            if (!anyres)
+            {
+                //var store = new UserStore<User>(context);
+                //var manager = new UserManager<User>(store);
+                var user = new User { UserName = "admin" };
+
+                var result = userManager.Create(user, "777123");
+                //result.Wait();
+                result = userManager.AddToRole(user.Id, "Admin");
+                //result.Wait();
+            }
+            context.SaveChanges();
             //Create Role Admin if it does not exist
-            var roleAdm = roleManager.FindByName("Administrator");
-            if (roleAdm == null)
-            {
-                roleManager.Create(new UserRole("Administrator", "All Rights in Application"));
-            }
+            //var roleAdm = roleManager.FindByName("Administrator");
+            //if (roleAdm == null)
+            //{
+            //    roleManager.Create(new UserRole("Administrator", "All Rights in Application"));
+            //}
 
-            var roleSU = roleManager.FindByName("SuperUser");
-            if (roleSU == null)
+            anyres = context.Roles.Any(r => r.Name == "SuperUser");
+            //anyres.Wait();
+            if (!anyres)
             {
-                roleManager.Create(new UserRole("SuperUser", "Can Edit d_mfd_list Employee and DiningEmployee"));
-            }
+                //var store = new RoleStore<IdentityRole>(context);
+                //var manager = new RoleManager<IdentityRole>(store);
+                var role = new IdentityRole { Name = "SuperUser" };
 
-            var roleDE = roleManager.FindByName("DiningEmployee");
-            if (roleDE == null)
-            {
-                roleManager.Create(new UserRole("DiningEmployee", "Сan edit the d_mfd_list of dishes in the dining room"));
+                var result = roleManager.Create(role);
+                //result.Wait();
             }
+            context.SaveChanges();
+            anyres = context.Users.Any(u => u.UserName == "su");
+            //anyres.Wait();
+            if (!anyres)
+            {
+                //var store = new UserStore<User>(context);
+                //var manager = new UserManager<User>(store);
+                var user = new User { UserName = "su" };
 
-            var roleEMP = roleManager.FindByName("Employee");
-            if (roleEMP == null)
-            {
-                roleManager.Create(new UserRole("Employee", "Сan order food in the dining room"));
+                var result = userManager.Create(user, "777123");
+               // result.Wait();
+                result = userManager.AddToRole(user.Id, "SuperUser");
+                //result.Wait();
             }
+            context.SaveChanges();
+            //var roleSu = roleManager.FindByName("SuperUser");
+            //if (roleSu == null)
+            //{
+            //    roleManager.Create(new UserRole("SuperUser", "Can Edit d_mfd_list Employee and DiningEmployee"));
+            //}
 
-            var userAdmin = userManager.FindByName("admin");
-            if (userAdmin == null)
-            {
-                userAdmin = new User() { UserName = "admin", Email = "test@test.com", FirstName = "Admin", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
-                var result = userManager.Create(userAdmin, "777123");
-                result = userManager.SetLockoutEnabled(userAdmin.Id, false);
-            }
-            // Add user admin to Role Admin if not already added
-            var rolesForUser = userManager.GetRoles(userAdmin.Id);
-            if (!rolesForUser.Contains("Administrator"))
-            {
-                var result = userManager.AddToRole(userAdmin.Id, "Administrator");
-            }
+            //var roleDe = roleManager.FindByName("DiningEmployee");
+            //if (roleDe == null)
+            //{
+            //    roleManager.Create(new UserRole("DiningEmployee", "Сan edit the d_mfd_list of dishes in the dining room"));
+            //}
 
-            //Create SU if it does not exist
-            var userSU = userManager.FindByName("su");
-            if (userSU == null)
-            {
-                userSU = new User() { UserName = "su", Email = "densem-2013@yandex.ua", FirstName = "Super", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
-                var result = userManager.Create(userSU, "777123");
-                result = userManager.SetLockoutEnabled(userSU.Id, false);
-            }
-            // Add userSU to Role SuperUser if not already added
-            var rolesForUserSU = userManager.GetRoles(userSU.Id);
-            if (!rolesForUserSU.Contains("SuperUser"))
-            {
-                var result = userManager.AddToRole(userSU.Id, "SuperUser");
-            }
+            //var roleEmp = roleManager.FindByName("Employee");
+            //if (roleEmp == null)
+            //{
+            //    roleManager.Create(new UserRole("Employee", "Сan order food in the dining room"));
+            //}
 
-            //Create Employee if it does not exist
-            var userEmployee = userManager.FindByName("employee");
-            if (userEmployee == null)
-            {
-                userEmployee = new User() { UserName = "employee", Email = "densem-2013@yandex.ua", FirstName = "Employee", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
-                var result = userManager.Create(userEmployee, "777123");
-                result = userManager.SetLockoutEnabled(userEmployee.Id, false);
-            }
+            //var userAdmin = userManager.FindByName("admin");
+            //if (userAdmin == null)
+            //{
+            //    userAdmin = new User { UserName = "admin", Email = "test@test.com", FirstName = "Admin", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
+            //    userManager.Create(userAdmin, "777123");
+            //    userManager.SetLockoutEnabled(userAdmin.Id, false);
+            //}
+            //// Add user admin to Role Admin if not already added
+            //var rolesForUser = userManager.GetRoles(userAdmin.Id);
+            //if (!rolesForUser.Contains("Administrator"))
+            //{
+            //    userManager.AddToRole(userAdmin.Id, "Administrator");
+            //}
 
-            // Add userEmployee to Role Employee if not already added
-            var rolesForUserEmployee = userManager.GetRoles(userEmployee.Id);
-            if (!rolesForUserEmployee.Contains("Employee"))
-            {
-                var result = userManager.AddToRole(userEmployee.Id, "Employee");
-            }
+            ////Create SU if it does not exist
+            //var userSU = userManager.FindByName("su");
+            //if (userSU == null)
+            //{
+            //    userSU = new User { UserName = "su", Email = "densem-2013@yandex.ua", FirstName = "Super", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
+            //    userManager.Create(userSU, "777123");
+            //    userManager.SetLockoutEnabled(userSU.Id, false);
+            //}
+            //// Add userSU to Role SuperUser if not already added
+            //var rolesForUserSU = userManager.GetRoles(userSU.Id);
+            //if (!rolesForUserSU.Contains("SuperUser"))
+            //{
+            //    userManager.AddToRole(userSU.Id, "SuperUser");
+            //}
 
-            //Create Employee if it does not exist
-            var dinEmployee = userManager.FindByName("diningEmployee");
-            if (dinEmployee == null)
-            {
-                dinEmployee = new User() { UserName = "diningEmployee", Email = "densem-2013@yandex.ua", FirstName = "DiningEmployee", LastName = "User", IsDiningRoomClient = false, RegistrationDate = DateTime.UtcNow };
-                var result = userManager.Create(dinEmployee, "777123");
-                result = userManager.SetLockoutEnabled(dinEmployee.Id, false);
-            }
+            ////Create Employee if it does not exist
+            //var userEmployee = userManager.FindByName("employee");
+            //if (userEmployee == null)
+            //{
+            //    userEmployee = new User { UserName = "employee", Email = "densem-2013@yandex.ua", FirstName = "Employee", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
+            //    userManager.Create(userEmployee, "777123");
+            //    userManager.SetLockoutEnabled(userEmployee.Id, false);
+            //}
 
-            // Add userEmployee to Role Employee if not already added
-            var rolesForDinEmployee = userManager.GetRoles(userEmployee.Id);
-            if (!rolesForDinEmployee.Contains("Employee"))
-            {
-                var result = userManager.AddToRole(dinEmployee.Id, "DiningEmployee");
-            }
+            //// Add userEmployee to Role Employee if not already added
+            //var rolesForUserEmployee = userManager.GetRoles(userEmployee.Id);
+            //if (!rolesForUserEmployee.Contains("Employee"))
+            //{
+            //    userManager.AddToRole(userEmployee.Id, "Employee");
+            //}
 
-            try
-            {
-                Dish[] dishes= GetDishesFromXML( context);
-                CreateMenuForWeek(context, dishes);
-                GetUsersFromXML(context);
-                CreateOrders(context);
-            }
-            catch (Exception)
-            {
+            ////Create Employee if it does not exist
+            //var dinEmployee = userManager.FindByName("diningEmployee");
+            //if (dinEmployee == null)
+            //{
+            //    dinEmployee = new User { UserName = "diningEmployee", Email = "densem-2013@yandex.ua", FirstName = "DiningEmployee", LastName = "User", IsDiningRoomClient = false, RegistrationDate = DateTime.UtcNow };
+            //    userManager.Create(dinEmployee, "777123");
+            //    userManager.SetLockoutEnabled(dinEmployee.Id, false);
+            //}
 
-                throw;
-            }
+            //// Add userEmployee to Role Employee if not already added
+            //var rolesForDinEmployee = userManager.GetRoles(userEmployee.Id);
+            //if (!rolesForDinEmployee.Contains("Employee"))
+            //{
+            //    userManager.AddToRole(dinEmployee.Id, "DiningEmployee");
+            //}
+
+            //try
+            //{
+            //    //Dish[] dishes= GetDishesFromXML( context);
+            //    //CreateMenuForWeek(context, dishes);
+            //   // GetUsersFromXML(context);
+            //   // CreateOrders(context);
+            //}
+            //catch (Exception)
+            //{
+
+            //    throw;
+            //}
         }
-        private static Dish[] GetDishesFromXML( ApplicationDbContext context)
+        public static Dish[] GetDishesFromXML( ApplicationDbContext context, string userspath)
         {
-            string userspath = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\DishDetails.xml";
+            
             var xml = XDocument.Load(userspath);
             var collection = xml.Root.Descendants("dish");
 
             List<DishType> dtList = context.DishTypes.ToList();
 
             Func<string, DishType> getDishType =
-                (el1) =>
+                el1 =>
                 {
                     DishType dtype = dtList.FirstOrDefault(dt => string.Equals(el1, dt.Category));
 
                     return dtype;
                 };
 
-            Func<string, double> parseDouble = (str) =>
+            Func<string, double> parseDouble = str =>
             {
                 double num = Double.Parse(str);
                 return num;
@@ -282,14 +342,14 @@ namespace ACSDining.Core.Identity
             {
 
                 Dish[] dishes = (from el in collection.AsEnumerable()
-                                 select new Dish()
+                                 select new Dish
                                  {
                                      DishType = getDishType(el.Attribute("dishtype").Value),
                                      Title = el.Attribute("title").Value,
                                      Description = el.Element("description").Value,
                                      ProductImage = el.Attribute("image").Value,
                                      Price = parseDouble(el.Element("cost").Value),
-                                     DishDetail = new DishDetail()
+                                     DishDetail = new DishDetail
                                      {
                                          Title = el.Attribute("title").Value,
                                          Foods = el.Element("foods").Value,
@@ -300,13 +360,13 @@ namespace ACSDining.Core.Identity
                 context.Dishes.AddOrUpdate(c => c.Title, dishes);
                 return dishes;
             }
-            catch (System.NullReferenceException ex)
+            catch (NullReferenceException ex)
             {
                 throw;
             }
 
         }
-        private static void CreateMenuForWeek(ApplicationDbContext context, Dish[] dishArray)
+        public static void CreateMenuForWeek(ApplicationDbContext context, Dish[] dishArray)
         {
             string[] categories = { "Первое блюдо", "Второе блюдо", "Салат", "Напиток" };
 
@@ -335,7 +395,7 @@ namespace ACSDining.Core.Identity
                 for (int i = 1; i <= 5; i++)
                 {
                     List<Dish> dishes = getDishes();
-                    MenuForDay dayMenu = new MenuForDay()
+                    MenuForDay dayMenu = new MenuForDay
                     {
                         Dishes = dishes,
                         DayOfWeek = context.Days.FirstOrDefault(day => day.ID == i),
@@ -344,7 +404,7 @@ namespace ACSDining.Core.Identity
 
                     mfdays.Add(dayMenu);
                 }
-                context.MenuForWeek.AddOrUpdate(m => m.WeekNumber, new MenuForWeek()
+                context.MenuForWeek.AddOrUpdate(m => m.WeekNumber, new MenuForWeek
                 {
                     Year = year,
                     MenuForDay = mfdays,
@@ -354,7 +414,7 @@ namespace ACSDining.Core.Identity
             }
         }
 
-        private static void GetUsersFromXML(ApplicationDbContext context)
+        public static void GetUsersFromXML(ApplicationDbContext context)
         {
 
             string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\Employeers.xml";
@@ -363,7 +423,7 @@ namespace ACSDining.Core.Identity
             try
             {
                 User[] users = (from el in collection.AsEnumerable()
-                    select new User()
+                    select new User
                     {
                         FirstName = el.Element("FirstName").Value,
                         LastName = el.Element("LastName").Value,
@@ -380,7 +440,7 @@ namespace ACSDining.Core.Identity
 
                     if (userEmployee == null)
                     {
-                        userEmployee = new User()
+                        userEmployee = new User
                         {
                             UserName = users[i].UserName,
                             Email = "test@test.com",
@@ -413,11 +473,11 @@ namespace ACSDining.Core.Identity
             List<MenuForWeek> weekmenus = context.MenuForWeek.ToList();
             int rnd = 0;
             string[] categories = { "Первое блюдо", "Второе блюдо", "Салат", "Напиток" };
-            double[][] coursesnums = new double[][] { 
-            new double[]{ 0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.5 }, 
-            new double[]{ 0, 0, 1.0, 1.0, 1.0, 1.0, 2.0 }, 
-            new double[]{ 0, 1.0 }, 
-            new double[]{ 0, 1.0 } 
+            double[][] coursesnums = { 
+            new[]{ 0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.5 }, 
+            new[]{ 0, 0, 1.0, 1.0, 1.0, 1.0, 2.0 }, 
+            new[]{ 0, 1.0 }, 
+            new[]{ 0, 1.0 } 
             };
             Dictionary<string, int> numsForCourses = new Dictionary<string, int>();
 
@@ -425,72 +485,69 @@ namespace ACSDining.Core.Identity
             {
                 numsForCourses.Add(categories[i], coursesnums[i].Length);
             };
-            try
+            foreach (User user in users)
             {
-
-                foreach (User user in users)
+                foreach (MenuForWeek mfw in weekmenus)
                 {
-                    foreach (MenuForWeek mfw in weekmenus)
+                    List<DishQuantity> quantyties = new List<DishQuantity>();
+                    OrderMenu order = new OrderMenu
                     {
-                        List<DishQuantity> quantyties = new List<DishQuantity>();
-                        OrderMenu order = new OrderMenu
+                        User = user,
+                        MenuForWeek = mfw
+                    };
+
+                    context.OrderMenu.Add(order);
+                    context.SaveChanges();
+                    foreach (MenuForDay daymenu in mfw.MenuForDay)
+                    {
+                        foreach (Dish dish in daymenu.Dishes)
                         {
-                            User = user,
-                            MenuForWeek = mfw
-                        };
-                        foreach (MenuForDay daymenu in mfw.MenuForDay)
-                        {
-                            foreach (Dish dish in daymenu.Dishes)
-                            {
-                                int catindex = 0;
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    if (string.Equals(categories[i], dish.DishType.Category))
-                                    {
-                                        catindex = i;
-                                    };
-                                };
-                                rnd = rand.Next(numsForCourses[dish.DishType.Category]);
-                                DishQuantity dqua =
-                                    context.DishQuantities.Include("Dishes").Include("MenuForDays").Include("WeekMenus").Include("Orders")
+                            int catindex = 0;
+                            for (int i = 0; i < 4; i++)
+                                if (string.Equals(categories[i], dish.DishType.Category))
+                                    catindex = i;
+                            rnd = rand.Next(numsForCourses[dish.DishType.Category]);
+                            DishQuantity dqua =
+                                context.DishQuantities.Include("Dish").Include("MenuForDay").Include("MenuForWeek").Include("OrderMenu")
                                     .AsEnumerable()
                                     .FirstOrDefault(
                                         dq =>
                                             dq.Quantity.Equals(
                                                 coursesnums[catindex][rnd]));
 
-                                if (!dqua.Dishes.Contains(dish))
-                                {
-                                    dqua.Dishes.Add(dish);
-                                };
+                            if (dqua != null)
+                            {
+                                dqua.Dish = context.Dishes.SingleOrDefault(d => d.DishID == dish.DishID);
+                                dqua.MenuForDay = context.MenuForDay.SingleOrDefault(mfd => mfd.ID == daymenu.ID);
+                                dqua.MenuForWeek = context.MenuForWeek.SingleOrDefault(weekmenu => weekmenu.ID == mfw.ID);
+                                dqua.OrderMenu = order;
+                                //if (!dqua.Dishes.Contains(dish))
+                                //{
+                                //    dqua.Dishes.Add(dish);
+                                //};
 
-                                if (!dqua.MenuForDays.Contains(daymenu))
-                                {
-                                    dqua.MenuForDays.Add(daymenu);
-                                };
+                                //if (!dqua.MenuForDays.Contains(daymenu))
+                                //{
+                                //    dqua.MenuForDays.Add(daymenu);
+                                //};
 
-                                if (!dqua.WeekMenus.Contains(mfw))
-                                {
-                                    dqua.WeekMenus.Add(mfw);
-                                };
+                                //if (!dqua.WeekMenus.Contains(mfw))
+                                //{
+                                //    dqua.WeekMenus.Add(mfw);
+                                //};
 
-                                if (!dqua.Orders.Contains(order))
-                                {
-                                    dqua.Orders.Add(order);
-                                };
+                                //if (!dqua.Orders.Contains(order))
+                                //{
+                                //    dqua.Orders.Add(order);
+                                //};
                                 quantyties.Add(dqua);
                             }
                         }
-                        order.DishQuantities = quantyties;
-                        context.OrderMenu.Add(order);
                     }
+                    //order.DishQuantities = quantyties;
+                    context.DishQuantities.AddRange(quantyties);
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
-            }
-            catch (Exception)
-            {
-
-                throw;
             }
         }
     }

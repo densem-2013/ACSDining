@@ -15,11 +15,15 @@ namespace ACSDining.Core.Domains
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Security.Claims;
     using System.Threading.Tasks;
 
     public partial class User : IdentityUser
     {
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public virtual string Id { get; set; }
         [Required]
         public virtual string FirstName { get; set; }
         [Required]

@@ -17,19 +17,24 @@ namespace ACSDining.Core.Domains
 
     public partial class DishQuantity
     {
-        [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         [Required]
         public double Quantity { get; set; }
+        [Key,Column(Order = 0)]
+        public int DishID { get; set; }
+        [Key, Column(Order = 1)]
+        public int MenuForDayID { get; set; }
+        [Key, Column(Order = 2)]
+        public int MenuForWeekID { get; set; }
+        [Key, Column(Order = 3)]
+        public int OrderMenuID { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Dish> Dishes { get; set; }
+        public virtual Dish Dish { get; set; }
         [JsonIgnore]
-        public virtual ICollection<MenuForDay> MenuForDays { get; set; }
+        public virtual MenuForDay MenuForDay { get; set; }
         [JsonIgnore]
-        public virtual ICollection<MenuForWeek> WeekMenus { get; set; }
+        public virtual MenuForWeek MenuForWeek { get; set; }
         [JsonIgnore]
-        public virtual ICollection<OrderMenu> Orders { get; set; }
+        public virtual OrderMenu OrderMenu { get; set; }
     }
 }

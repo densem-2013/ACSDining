@@ -13,7 +13,7 @@ namespace ACSDining.Core.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201510270958070_Initial"; }
+            get { return "201510291313462_Initial"; }
         }
         
         string IMigrationMetadata.Source
