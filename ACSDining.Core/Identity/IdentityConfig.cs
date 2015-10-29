@@ -116,6 +116,9 @@ namespace ACSDining.Core.Identity
             InitializeIdentityForEF(context);
             var dishes = GetDishesFromXML(context,path);
             CreateMenuForWeek(context, dishes);
+            path = path.Replace(@"DishDetails", "Employeers");
+            GetUsersFromXML(context,path);
+            CreateOrders(context);
             base.Seed(context);
         }
 
@@ -164,158 +167,116 @@ namespace ACSDining.Core.Identity
             //context.SaveChanges();
             //saveres.Wait();
 
-            ApplicationUserManager userManager = new ApplicationUserManager(new UserStore<User>(context));
-            RoleManager<IdentityRole> roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-            var anyres = context.Roles.Any(r => r.Name == "Admin");
-            //anyres.Wait();
-            if (!anyres)
+            var userManager = new ApplicationUserManager(new UserStore<User>(context));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            if (!roleManager.RoleExists("Administrator"))
             {
-                //var store = new RoleStore<IdentityRole>(context);
-                //var manager = new RoleManager<IdentityRole>(store);
-                var role = new IdentityRole { Name = "Admin" };
-
-                var result = roleManager.Create(role);
-                //result.Wait();
+                roleManager.Create(new UserRole
+                {
+                    Name = "Administrator",
+                    Description = "All Rights in Application"
+                });
             }
-            context.SaveChanges();
-            anyres = context.Users.Any(u => u.UserName == "admin");
-            //anyres.Wait();
-            if (!anyres)
+            
+            if (!roleManager.RoleExists("SuperUser"))
             {
-                //var store = new UserStore<User>(context);
-                //var manager = new UserManager<User>(store);
-                var user = new User { UserName = "admin" };
-
-                var result = userManager.Create(user, "777123");
-                //result.Wait();
-                result = userManager.AddToRole(user.Id, "Admin");
-                //result.Wait();
+                roleManager.Create(new UserRole
+                {
+                    Name = "SuperUser",
+                    Description = "Can Update List Employee and DiningEmployee"
+                });
             }
-            context.SaveChanges();
-            //Create Role Admin if it does not exist
-            //var roleAdm = roleManager.FindByName("Administrator");
-            //if (roleAdm == null)
-            //{
-            //    roleManager.Create(new UserRole("Administrator", "All Rights in Application"));
-            //}
-
-            anyres = context.Roles.Any(r => r.Name == "SuperUser");
-            //anyres.Wait();
-            if (!anyres)
+            User useradmin = userManager.FindByName("admin");
+            if (useradmin == null)
             {
-                //var store = new RoleStore<IdentityRole>(context);
-                //var manager = new RoleManager<IdentityRole>(store);
-                var role = new IdentityRole { Name = "SuperUser" };
-
-                var result = roleManager.Create(role);
-                //result.Wait();
+                useradmin = new User
+                {
+                    UserName = "admin",
+                    Email = "test@test.com",
+                    FirstName = "Admin",
+                    LastName = "User",
+                    IsDiningRoomClient = true,
+                    RegistrationDate = DateTime.UtcNow
+                };
+                var adminresult = userManager.Create(useradmin, "777123");
+                if (adminresult.Succeeded)
+                {
+                    userManager.AddToRole(useradmin.Id, "Administrator");
+                }
             }
-            context.SaveChanges();
-            anyres = context.Users.Any(u => u.UserName == "su");
-            //anyres.Wait();
-            if (!anyres)
+            User usersu = userManager.FindByName("su");
+            if (usersu == null)
             {
-                //var store = new UserStore<User>(context);
-                //var manager = new UserManager<User>(store);
-                var user = new User { UserName = "su" };
-
-                var result = userManager.Create(user, "777123");
-               // result.Wait();
-                result = userManager.AddToRole(user.Id, "SuperUser");
-                //result.Wait();
+                usersu = new User
+                {
+                    UserName = "su",
+                    Email = "test@test.com",
+                    FirstName = "Super",
+                    LastName = "User",
+                    IsDiningRoomClient = true,
+                    RegistrationDate = DateTime.UtcNow
+                };
+                var suresult=userManager.Create(usersu, "777123");
+                if (suresult.Succeeded)
+                {
+                    userManager.AddToRole(usersu.Id, "SuperUser");
+                }
             }
-            context.SaveChanges();
-            //var roleSu = roleManager.FindByName("SuperUser");
-            //if (roleSu == null)
-            //{
-            //    roleManager.Create(new UserRole("SuperUser", "Can Edit d_mfd_list Employee and DiningEmployee"));
-            //}
 
-            //var roleDe = roleManager.FindByName("DiningEmployee");
-            //if (roleDe == null)
-            //{
-            //    roleManager.Create(new UserRole("DiningEmployee", "Сan edit the d_mfd_list of dishes in the dining room"));
-            //}
+            if (!roleManager.RoleExists("DiningEmployee"))
+            {
+                roleManager.Create(new UserRole
+                {
+                    Name = "DiningEmployee",
+                    Description = "Сan edit the list of dishes in the dining room"
+                });
+            }
+            User userdinEmpl = userManager.FindByName("diningemployee");
+            if (userdinEmpl == null)
+            {
+                userdinEmpl = new User
+                {
+                    UserName = "diningemployee",
+                    Email = "test@test.com",
+                    FirstName = "DiningEmployee",
+                    LastName = "User",
+                    IsDiningRoomClient = true,
+                    RegistrationDate = DateTime.UtcNow
+                };
+                var result = userManager.Create(userdinEmpl, "777123");
+                if (result.Succeeded)
+                {
+                    userManager.AddToRole(userdinEmpl.Id, "DiningEmployee");
+                }
+            }
 
-            //var roleEmp = roleManager.FindByName("Employee");
-            //if (roleEmp == null)
-            //{
-            //    roleManager.Create(new UserRole("Employee", "Сan order food in the dining room"));
-            //}
+            if (!roleManager.RoleExists("Employee"))
+            {
+                roleManager.Create(new UserRole
+                {
+                    Name = "Employee",
+                    Description = "Сan order food in the dining room"
+                });
+            }
+            User userEmpl = userManager.FindByName("employee");
+            if (userEmpl == null)
+            {
+                userEmpl = new User
+                {
+                    UserName = "employee",
+                    Email = "test@test.com",
+                    FirstName = "Employee",
+                    LastName = "User",
+                    IsDiningRoomClient = true,
+                    RegistrationDate = DateTime.UtcNow
+                };
+                var result = userManager.Create(userEmpl, "777123");
+                if (result.Succeeded)
+                {
+                    userManager.AddToRole(userEmpl.Id, "Employee");
+                }
+            }
 
-            //var userAdmin = userManager.FindByName("admin");
-            //if (userAdmin == null)
-            //{
-            //    userAdmin = new User { UserName = "admin", Email = "test@test.com", FirstName = "Admin", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
-            //    userManager.Create(userAdmin, "777123");
-            //    userManager.SetLockoutEnabled(userAdmin.Id, false);
-            //}
-            //// Add user admin to Role Admin if not already added
-            //var rolesForUser = userManager.GetRoles(userAdmin.Id);
-            //if (!rolesForUser.Contains("Administrator"))
-            //{
-            //    userManager.AddToRole(userAdmin.Id, "Administrator");
-            //}
-
-            ////Create SU if it does not exist
-            //var userSU = userManager.FindByName("su");
-            //if (userSU == null)
-            //{
-            //    userSU = new User { UserName = "su", Email = "densem-2013@yandex.ua", FirstName = "Super", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
-            //    userManager.Create(userSU, "777123");
-            //    userManager.SetLockoutEnabled(userSU.Id, false);
-            //}
-            //// Add userSU to Role SuperUser if not already added
-            //var rolesForUserSU = userManager.GetRoles(userSU.Id);
-            //if (!rolesForUserSU.Contains("SuperUser"))
-            //{
-            //    userManager.AddToRole(userSU.Id, "SuperUser");
-            //}
-
-            ////Create Employee if it does not exist
-            //var userEmployee = userManager.FindByName("employee");
-            //if (userEmployee == null)
-            //{
-            //    userEmployee = new User { UserName = "employee", Email = "densem-2013@yandex.ua", FirstName = "Employee", LastName = "User", IsDiningRoomClient = true, RegistrationDate = DateTime.UtcNow };
-            //    userManager.Create(userEmployee, "777123");
-            //    userManager.SetLockoutEnabled(userEmployee.Id, false);
-            //}
-
-            //// Add userEmployee to Role Employee if not already added
-            //var rolesForUserEmployee = userManager.GetRoles(userEmployee.Id);
-            //if (!rolesForUserEmployee.Contains("Employee"))
-            //{
-            //    userManager.AddToRole(userEmployee.Id, "Employee");
-            //}
-
-            ////Create Employee if it does not exist
-            //var dinEmployee = userManager.FindByName("diningEmployee");
-            //if (dinEmployee == null)
-            //{
-            //    dinEmployee = new User { UserName = "diningEmployee", Email = "densem-2013@yandex.ua", FirstName = "DiningEmployee", LastName = "User", IsDiningRoomClient = false, RegistrationDate = DateTime.UtcNow };
-            //    userManager.Create(dinEmployee, "777123");
-            //    userManager.SetLockoutEnabled(dinEmployee.Id, false);
-            //}
-
-            //// Add userEmployee to Role Employee if not already added
-            //var rolesForDinEmployee = userManager.GetRoles(userEmployee.Id);
-            //if (!rolesForDinEmployee.Contains("Employee"))
-            //{
-            //    userManager.AddToRole(dinEmployee.Id, "DiningEmployee");
-            //}
-
-            //try
-            //{
-            //    //Dish[] dishes= GetDishesFromXML( context);
-            //    //CreateMenuForWeek(context, dishes);
-            //   // GetUsersFromXML(context);
-            //   // CreateOrders(context);
-            //}
-            //catch (Exception)
-            //{
-
-            //    throw;
-            //}
         }
         public static Dish[] GetDishesFromXML( ApplicationDbContext context, string userspath)
         {
@@ -414,11 +375,11 @@ namespace ACSDining.Core.Identity
             }
         }
 
-        public static void GetUsersFromXML(ApplicationDbContext context)
+        public static void GetUsersFromXML(ApplicationDbContext context, string userpath)
         {
 
-            string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\Employeers.xml";
-            var xml = XDocument.Load(path);
+            //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\Employeers.xml";
+            var xml = XDocument.Load(userpath);
             var collection = xml.Root.Descendants("Employeer");
             try
             {
@@ -467,7 +428,7 @@ namespace ACSDining.Core.Identity
             }
         }
 
-        private static void CreateOrders(ApplicationDbContext context)
+        public static void CreateOrders(ApplicationDbContext context)
         {
             List<User> users = context.Users.ToList();
             List<MenuForWeek> weekmenus = context.MenuForWeek.ToList();
@@ -517,35 +478,16 @@ namespace ACSDining.Core.Identity
 
                             if (dqua != null)
                             {
-                                dqua.Dish = context.Dishes.SingleOrDefault(d => d.DishID == dish.DishID);
-                                dqua.MenuForDay = context.MenuForDay.SingleOrDefault(mfd => mfd.ID == daymenu.ID);
-                                dqua.MenuForWeek = context.MenuForWeek.SingleOrDefault(weekmenu => weekmenu.ID == mfw.ID);
+                                dqua.Dish = dish;//context.Dishes.SingleOrDefault(d => d.DishID == dish.DishID);
+                                dqua.MenuForDay = daymenu;//context.MenuForDay.SingleOrDefault(mfd => mfd.ID == daymenu.ID);
+                                dqua.MenuForWeek = mfw;//context.MenuForWeek.SingleOrDefault(weekmenu => weekmenu.ID == mfw.ID);
                                 dqua.OrderMenu = order;
-                                //if (!dqua.Dishes.Contains(dish))
-                                //{
-                                //    dqua.Dishes.Add(dish);
-                                //};
-
-                                //if (!dqua.MenuForDays.Contains(daymenu))
-                                //{
-                                //    dqua.MenuForDays.Add(daymenu);
-                                //};
-
-                                //if (!dqua.WeekMenus.Contains(mfw))
-                                //{
-                                //    dqua.WeekMenus.Add(mfw);
-                                //};
-
-                                //if (!dqua.Orders.Contains(order))
-                                //{
-                                //    dqua.Orders.Add(order);
-                                //};
                                 quantyties.Add(dqua);
                             }
                         }
                     }
                     //order.DishQuantities = quantyties;
-                    context.DishQuantities.AddRange(quantyties);
+                    quantyties.ForEach(qu=>context.DishQuantities.Add(qu));
                     context.SaveChanges();
                 }
             }

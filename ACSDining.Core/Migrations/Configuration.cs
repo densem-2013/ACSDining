@@ -1,14 +1,8 @@
 ﻿namespace ACSDining.Core.Migrations
 {
-    using ACSDining.Core.Domains;
     using ACSDining.Core.Identity;
-    using Microsoft.AspNet.Identity;
-    using Microsoft.AspNet.Identity.EntityFramework;
     using System;
-    using System.Collections.Generic;
     using System.Data.Entity.Migrations;
-    using System.Linq;
-    using System.Xml.Linq;
 
     internal sealed class Configuration : DbMigrationsConfiguration<ACSDining.Core.Domains.ApplicationDbContext>
     {
@@ -30,6 +24,9 @@
             ApplicationDbInitializer.InitializeIdentityForEF(context);
             var dishes = ApplicationDbInitializer.GetDishesFromXML(context,path);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
+            path = path.Replace(@"DishDetails", "Employeers");
+            ApplicationDbInitializer.GetUsersFromXML(context, path);
+            ApplicationDbInitializer.CreateOrders(context);
 
         }
 

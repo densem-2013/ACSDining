@@ -164,3 +164,7 @@ E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.pdb
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Owin.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.xml
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.OAuth.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.Cookies.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.OAuth.xml
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.Cookies.xml

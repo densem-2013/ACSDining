@@ -21,9 +21,9 @@ namespace ACSDining.Core.Domains
 
     public partial class User : IdentityUser
     {
-        [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public virtual string Id { get; set; }
+    //    [Required]
+    //    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    //    public virtual string Id { get; set; }
         [Required]
         public virtual string FirstName { get; set; }
         [Required]

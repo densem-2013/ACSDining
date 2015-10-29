@@ -176,3 +176,7 @@ E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastruc
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Owin.dll
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Owin.dll
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Owin.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Owin.Security.OAuth.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Owin.Security.Cookies.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Owin.Security.OAuth.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Owin.Security.Cookies.xml
