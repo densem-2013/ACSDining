@@ -95,7 +95,7 @@ namespace ACSDining.Web.Controllers
                     }
                     if (UserManager.IsInRole(user.Id, "Employee"))
                     {
-                        return RedirectToAction("Index", "Order", new { Area = "EmployeeArea" });
+                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
                     }
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
@@ -108,61 +108,6 @@ namespace ACSDining.Web.Controllers
                     return View(model);
             }
         }
-        // GET: /Account/Login
-        [AllowAnonymous]
-        public ActionResult AjaxLogin(string returnUrl)
-        {
-            ViewBag.ReturnUrl = returnUrl;
-            return View("Login");
-        }
-
-        //
-        // POST: /Account/Login
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AjaxLogin(LoginViewModel model, string returnUrl)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // Сбои при входе не приводят к блокированию учетной записи
-            // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    var user = UserManager.Users.Where(u => u.UserName.Equals(model.LogIn)).FirstOrDefault();
-                    user.LastLoginTime = DateTime.UtcNow;
-                    Session["Fname"] = user.FirstName;
-                    Session["Lname"] = user.LastName;
-                    Session["LastLoginDate"] = user.LastLoginTime;
-                    if (UserManager.IsInRole(user.Id, "Administrator"))
-                    {
-                        return RedirectToAction("WeekMenu", "Admin", new { Area = "AdminArea" });
-                    }
-                    if (UserManager.IsInRole(user.Id, "SuperUser"))
-                    {
-                        return RedirectToAction("WeekMenu", "SU_", new { Area = "SU_Area" });
-                    }
-                    if (UserManager.IsInRole(user.Id, "Employee"))
-                    {
-                        return RedirectToAction("WeekMenu", "Order", new { Area = "EmployeeArea" });
-                    }
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Неудачная попытка входа.");
-                    return View("Login",model);
-            }
-        }
-
         //
         // GET: /Account/VerifyCode
         [AllowAnonymous]

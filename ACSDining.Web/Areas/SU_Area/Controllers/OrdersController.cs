@@ -7,18 +7,43 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Web.Areas.SU_Area.Models;
 using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [RoutePrefix("api/Orders")]
+    [System.Web.Http.RoutePrefix("api/Orders")]
     public class OrdersController : ApiController
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
-        [HttpGet]
-        [Route("")]
-        [Route("{numweek}")]
-        [Route("{numweek}/{year}")]
+        private double[] GetUserWeekOrderDishes(int orderid)
+        {
+            double[] dquantities = new double[20];
+            OrderMenu order = _db.OrderMenu.Find(orderid);
+            int menuforweekid = order.MenuForWeek.ID;
+            List<DishQuantity> quaList =
+                _db.DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
+                    .ToList();
+
+            string[] categories = _db.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
+            for (int i = 1; i <= 5; i++)
+            {
+                for (int j = 1; j <= categories.Length; j++)
+                {
+                    var firstOrDefault = quaList.FirstOrDefault(
+                        q => q.DayOfWeekID == i && q.DishTypeID == j
+                        ); 
+                    if (firstOrDefault != null)
+                        dquantities[(i - 1)*4 + j - 1] = firstOrDefault.Quantity;
+                }
+            }
+            return dquantities;
+        }
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("")]
+        [System.Web.Http.Route("{numweek}")]
+        [System.Web.Http.Route("{numweek}/{year}")]
         [ResponseType(typeof (OrdersDTO))]
         public async Task<IHttpActionResult> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
@@ -26,35 +51,48 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             year = year ?? DateTime.Now.Year;
             List<OrderMenu> orderMenus =
                 await
-                    _db.OrderMenu.Include("DishQuantities")
-                        .Include("User")
-                        .Where(
+                    _db.OrderMenu.Where(
                             om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year).ToListAsync();
-            OrdersDTO model = new OrdersDTO();
-            //{
-            //    Id = orderMenus.Id,
-            //    UserOrders =
-            //        _db.Users.Include("OrderMenus")
-            //            .AsEnumerable()
-            //            .Select(u => u.OrderMenus.FirstOrDefault(ord => ord.MenuForWeek.WeekNumber == numweek))
-            //            .Select(order => new UserOrdesDTO()
-            //            {
-            //                UserId = order.User.Id,
-            //                UserName = order.User.UserName,
-            //                Dishquantities =
-            //                    _db.DishQuantities.AsEnumerable().Where(
-            //                        dq => dq.OrderMenu.Id == order.Id && dq.MenuForWeek.ID == order.MenuForWeek.ID)
-            //                        .Select(q => q.Quantity)
-            //                        .ToArray(),
-            //                WeekIsPaid = false
-            //            }).ToList()
-            //};
+            OrdersDTO model = new OrdersDTO()
+            {
+                WeekNumber = (int)numweek,
+                UserOrders = orderMenus
+                        .Select(order => new UserOrdesDTO()
+                        {
+                            UserId = order.User.Id,
+                            UserName = order.User.UserName,
+                            Dishquantities =GetUserWeekOrderDishes(order.Id),
+                            WeekIsPaid = false,
+                            SummaryPrice = order.SummaryPrice
+                        }).OrderBy(uo => uo.UserName).ToList()
+            };
             if (model == null)
             {
                 return NotFound();
             }
 
             return Ok(model);
+        }
+
+        [System.Web.Http.HttpPut]
+        [System.Web.Http.Route("summary/{numweek}")]
+        [ResponseType(typeof(UserOrdesDTO))]
+        public async Task<double> GetSummaryPrice([FromUri]int numweek, [FromBody]UserOrdesDTO usorder)
+        {
+            MenuForWeek weekNeeded = await _db.MenuForWeek.FirstOrDefaultAsync(wm => wm.WeekNumber == numweek);
+            double Summary = 0;
+            if (weekNeeded != null)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        Summary += weekNeeded.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price*
+                                   usorder.Dishquantities[4*i + j];
+                    }
+                }
+            }
+            return await Task.FromResult(Summary);
         }
     }
 }

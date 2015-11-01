@@ -22,6 +22,8 @@ namespace ACSDining.Core.Domains
         public int Id { get; set; }
         [Required]
         public string Category { get; set; }
+        //[JsonIgnore]
+        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
 
     }
 }

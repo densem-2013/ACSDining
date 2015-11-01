@@ -70,9 +70,7 @@
 
         BeenChanged: ko.observable(false),
 
-        ChangeSaved: ko.observable(false),
-
-        Message: ko.observable()
+        ChangeSaved: ko.observable(false)
     };
 
     viewModel.pageSize = ko.observable(7);
@@ -238,7 +236,7 @@
                     var sum = 0;
                     var valsum;
                     for (var i = 0; i < MenuForDayInfo.Dishes().length; i++) {
-                        var dishes = MenuForDayInfo.Dishes();
+
                         valsum = parseFloat(MenuForDayInfo.Dishes()[i].Price());
                         sum += valsum;
                     };

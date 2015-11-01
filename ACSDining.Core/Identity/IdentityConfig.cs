@@ -109,63 +109,61 @@ namespace ACSDining.Core.Identity
     // This example shows you how to create a new database if the Model changes
     public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
-        static string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
-        static Random rand = new Random();
+        private static string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") +
+                                      @"ACSDining.Core\DBinitial\DishDetails.xml";
+
+        private static Random rand = new Random();
+
         protected override void Seed(ApplicationDbContext context)
         {
             InitializeIdentityForEF(context);
-            var dishes = GetDishesFromXML(context,path);
+            var dishes = GetDishesFromXML(context, _path);
             CreateMenuForWeek(context, dishes);
-            path = path.Replace(@"DishDetails", "Employeers");
-            GetUsersFromXML(context,path);
+            _path = _path.Replace(@"DishDetails", "Employeers");
+            GetUsersFromXml(context, _path);
             CreateOrders(context);
             base.Seed(context);
         }
 
-        public static  void InitializeIdentityForEF(ApplicationDbContext context)
+        public static void InitializeIdentityForEF(ApplicationDbContext context)
         {
             //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            context.DishQuantities.AddOrUpdate(dq => dq.Quantity, 
-                new DishQuantity{ Quantity = 0.0}, 
-                new DishQuantity { Quantity = 0.5 }, 
-                new DishQuantity { Quantity = 1.0 },
-                new DishQuantity { Quantity = 1.5 }, 
-                new DishQuantity { Quantity = 2.0 }, 
-                new DishQuantity { Quantity = 2.5 },
-                new DishQuantity { Quantity = 3.0 }, 
-                new DishQuantity { Quantity = 3.5 }, 
-                new DishQuantity { Quantity = 4.0 }, 
-                new DishQuantity { Quantity = 4.5 },
-                new DishQuantity { Quantity = 5.0 }
-            );
+            //context.DishQuantities.AddOrUpdate(dq => dq.Quantity, 
+            //    new DishQuantity{ Quantity = 0.0}, 
+            //    new DishQuantity { Quantity = 0.5 }, 
+            //    new DishQuantity { Quantity = 1.0 },
+            //    new DishQuantity { Quantity = 1.5 }, 
+            //    new DishQuantity { Quantity = 2.0 }, 
+            //    new DishQuantity { Quantity = 2.5 },
+            //    new DishQuantity { Quantity = 3.0 }, 
+            //    new DishQuantity { Quantity = 3.5 }, 
+            //    new DishQuantity { Quantity = 4.0 }, 
+            //    new DishQuantity { Quantity = 4.5 },
+            //    new DishQuantity { Quantity = 5.0 }
+            //);
             //var saveres = context.SaveChangesAsync();
             //saveres.Wait();
             context.Years.AddOrUpdate(y => y.YearNumber, new Year
             {
                 YearNumber = DateTime.Now.Year
             });
-            //saveres = context.SaveChangesAsync();
-            //saveres.Wait();
-            context.DishTypes.AddOrUpdate(dt => dt.Category, 
-                new DishType { Category = "Первое блюдо" }, 
-                new DishType { Category = "Второе блюдо" }, 
-                new DishType { Category = "Салат" }, 
-                new DishType { Category = "Десерт" }, 
-                new DishType { Category = "Напиток" }
-                );
-            //saveres = context.SaveChangesAsync();
-            //saveres.Wait();
-            context.Days.AddOrUpdate(d => d.Name, 
-                new DayOfWeek{  Name="Понедельник"}, 
-                new DayOfWeek{  Name="Вторник"}, 
-                new DayOfWeek{  Name="Среда"}, 
-                new DayOfWeek{  Name="Четверг"}, 
-                new DayOfWeek{  Name="Пятница"}
+
+            context.DishTypes.AddOrUpdate(dt => dt.Category,
+                new DishType {Category = "Первое блюдо"},
+                new DishType {Category = "Второе блюдо"},
+                new DishType {Category = "Салат"},
+                new DishType {Category = "Напиток"}
                 );
 
-            //context.SaveChanges();
-            //saveres.Wait();
+            context.Days.AddOrUpdate(d => d.Name,
+                new DayOfWeek {Name = "Понедельник"},
+                new DayOfWeek {Name = "Вторник"},
+                new DayOfWeek {Name = "Среда"},
+                new DayOfWeek {Name = "Четверг"},
+                new DayOfWeek {Name = "Пятница"}
+                );
+
 
             var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
@@ -177,7 +175,7 @@ namespace ACSDining.Core.Identity
                     Description = "All Rights in Application"
                 });
             }
-            
+
             if (!roleManager.RoleExists("SuperUser"))
             {
                 roleManager.Create(new UserRole
@@ -216,7 +214,7 @@ namespace ACSDining.Core.Identity
                     IsDiningRoomClient = true,
                     RegistrationDate = DateTime.UtcNow
                 };
-                var suresult=userManager.Create(usersu, "777123");
+                var suresult = userManager.Create(usersu, "777123");
                 if (suresult.Succeeded)
                 {
                     userManager.AddToRole(usersu.Id, "SuperUser");
@@ -278,9 +276,10 @@ namespace ACSDining.Core.Identity
             }
 
         }
-        public static Dish[] GetDishesFromXML( ApplicationDbContext context, string userspath)
+
+        public static Dish[] GetDishesFromXML(ApplicationDbContext context, string userspath)
         {
-            
+
             var xml = XDocument.Load(userspath);
             var collection = xml.Root.Descendants("dish");
 
@@ -303,20 +302,20 @@ namespace ACSDining.Core.Identity
             {
 
                 Dish[] dishes = (from el in collection.AsEnumerable()
-                                 select new Dish
-                                 {
-                                     DishType = getDishType(el.Attribute("dishtype").Value),
-                                     Title = el.Attribute("title").Value,
-                                     Description = el.Element("description").Value,
-                                     ProductImage = el.Attribute("image").Value,
-                                     Price = parseDouble(el.Element("cost").Value),
-                                     DishDetail = new DishDetail
-                                     {
-                                         Title = el.Attribute("title").Value,
-                                         Foods = el.Element("foods").Value,
-                                         Recept = el.Element("recept").Value
-                                     }
-                                 }).ToArray();
+                    select new Dish
+                    {
+                        DishType = getDishType(el.Attribute("dishtype").Value),
+                        Title = el.Attribute("title").Value,
+                        Description = el.Element("description").Value,
+                        ProductImage = el.Attribute("image").Value,
+                        Price = parseDouble(el.Element("cost").Value),
+                        DishDetail = new DishDetail
+                        {
+                            Title = el.Attribute("title").Value,
+                            Foods = el.Element("foods").Value,
+                            Recept = el.Element("recept").Value
+                        }
+                    }).ToArray();
 
                 context.Dishes.AddOrUpdate(c => c.Title, dishes);
                 return dishes;
@@ -327,9 +326,10 @@ namespace ACSDining.Core.Identity
             }
 
         }
+
         public static void CreateMenuForWeek(ApplicationDbContext context, Dish[] dishArray)
         {
-            string[] categories = { "Первое блюдо", "Второе блюдо", "Салат", "Напиток" };
+            string[] categories = context.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
 
             Func<string, IEnumerable<Dish>, int> countDish = (str, list) =>
             {
@@ -342,7 +342,9 @@ namespace ACSDining.Core.Identity
                 List<Dish> ds = new List<Dish>();
                 foreach (KeyValuePair<string, int> pair in catCount)
                 {
-                    ds.Add(dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(rand.Next(pair.Value)));
+                    ds.Add(
+                        dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key))
+                            .ElementAt(rand.Next(pair.Value)));
                 }
                 return ds;
             };
@@ -375,50 +377,29 @@ namespace ACSDining.Core.Identity
             }
         }
 
-        public static void GetUsersFromXML(ApplicationDbContext context, string userpath)
+        public static void GetUsersFromXml(ApplicationDbContext context, string userpath)
         {
-
-            //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") + @"DBinitial\Employeers.xml";
             var xml = XDocument.Load(userpath);
             var collection = xml.Root.Descendants("Employeer");
             try
             {
-                User[] users = (from el in collection.AsEnumerable()
-                    select new User
-                    {
-                        FirstName = el.Element("FirstName").Value,
-                        LastName = el.Element("LastName").Value,
-                        IsDiningRoomClient = true,
-                        RegistrationDate = DateTime.Now
-                    }).ToArray();
-
                 var hasher = new PasswordHasher();
-                for (int i = 0; i < users.Length; i++)
+                IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
+                User[] users = collection.AsEnumerable().Select(el => new User
                 {
-                    users[i].UserName = users[i].LastName + " " + users[i].FirstName;
-                    //Create Employee if it does not exist
-                    var userEmployee = context.Users.AsEnumerable().FirstOrDefault(u => string.Equals(u.UserName, users[i].UserName));
-
-                    if (userEmployee == null)
-                    {
-                        userEmployee = new User
-                        {
-                            UserName = users[i].UserName,
-                            Email = "test@test.com",
-                            FirstName = users[i].FirstName,
-                            PasswordHash = hasher.HashPassword("777123"),
-                            EmailConfirmed = true,
-                            SecurityStamp = Guid.NewGuid().ToString(),
-                            LastName = users[i].LastName,
-                            IsDiningRoomClient = true,
-                            RegistrationDate = DateTime.UtcNow
-                        };
-                        IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
-                        userEmployee.Roles.Add(new IdentityUserRole {RoleId = role.Id, UserId = userEmployee.Id});
-                        context.Users.Add(userEmployee);
-                    }
-
-
+                    FirstName = el.Element("FirstName").Value,
+                    LastName = el.Element("LastName").Value,
+                    UserName = string.Format("{0} {1}", el.Element("LastName").Value, el.Element("FirstName").Value),
+                    PasswordHash = hasher.HashPassword("777123"),
+                    EmailConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    IsDiningRoomClient = true,
+                    RegistrationDate = DateTime.Now
+                }).ToArray();
+                foreach (User user in users)
+                {
+                    if (role != null) user.Roles.Add(new IdentityUserRole {RoleId = role.Id, UserId = user.Id});
+                    context.Users.Add(user);
                 }
                 context.SaveChanges();
             }
@@ -432,62 +413,67 @@ namespace ACSDining.Core.Identity
         {
             List<User> users = context.Users.ToList();
             List<MenuForWeek> weekmenus = context.MenuForWeek.ToList();
-            int rnd = 0;
-            string[] categories = { "Первое блюдо", "Второе блюдо", "Салат", "Напиток" };
-            double[][] coursesnums = { 
-            new[]{ 0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.5 }, 
-            new[]{ 0, 0, 1.0, 1.0, 1.0, 1.0, 2.0 }, 
-            new[]{ 0, 1.0 }, 
-            new[]{ 0, 1.0 } 
+            int rnd;
+
+            double[][] coursesnums =
+            {
+                new[] {0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.5},
+                new[] {0, 0, 1.0, 1.0, 1.0, 1.0, 2.0},
+                new[] {0, 1.0},
+                new[] {0, 1.0}
             };
-            Dictionary<string, int> numsForCourses = new Dictionary<string, int>();
+            int[] numsForCourses = new int[4];
 
             for (int i = 0; i < 4; i++)
             {
-                numsForCourses.Add(categories[i], coursesnums[i].Length);
-            };
+                numsForCourses[i] = coursesnums[i].Length;
+            }
             foreach (User user in users)
             {
                 foreach (MenuForWeek mfw in weekmenus)
                 {
-                    List<DishQuantity> quantyties = new List<DishQuantity>();
+
                     OrderMenu order = new OrderMenu
                     {
                         User = user,
-                        MenuForWeek = mfw
+                        MenuForWeek = mfw,
+                        SummaryPrice = 0.0
                     };
-
                     context.OrderMenu.Add(order);
-                    context.SaveChanges();
+                    List<DishQuantity> dquaList = new List<DishQuantity>();
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
                     {
                         foreach (Dish dish in daymenu.Dishes)
                         {
-                            int catindex = 0;
-                            for (int i = 0; i < 4; i++)
-                                if (string.Equals(categories[i], dish.DishType.Category))
-                                    catindex = i;
-                            rnd = rand.Next(numsForCourses[dish.DishType.Category]);
-                            DishQuantity dqua =
-                                context.DishQuantities.Include("Dish").Include("MenuForDay").Include("MenuForWeek").Include("OrderMenu")
-                                    .AsEnumerable()
-                                    .FirstOrDefault(
-                                        dq =>
-                                            dq.Quantity.Equals(
-                                                coursesnums[catindex][rnd]));
-
-                            if (dqua != null)
+                            DishType first = null;
+                            foreach (var dy in context.DishTypes.AsEnumerable())
                             {
-                                dqua.Dish = dish;//context.Dishes.SingleOrDefault(d => d.DishID == dish.DishID);
-                                dqua.MenuForDay = daymenu;//context.MenuForDay.SingleOrDefault(mfd => mfd.ID == daymenu.ID);
-                                dqua.MenuForWeek = mfw;//context.MenuForWeek.SingleOrDefault(weekmenu => weekmenu.ID == mfw.ID);
-                                dqua.OrderMenu = order;
-                                quantyties.Add(dqua);
+                                if (string.Equals(dy.Category, dish.DishType.Category))
+                                {
+                                    first = dy;
+                                    break;
+                                }
                             }
+                            if (first != null)
+                            {
+                                int catindex = first.Id - 1;
+
+                                rnd = rand.Next(numsForCourses[catindex]);
+                                DishQuantity dqu = new DishQuantity
+                                {
+                                    Quantity = coursesnums[catindex][rnd],
+                                    DishType = dish.DishType,
+                                    DayOfWeek = daymenu.DayOfWeek,
+                                    MenuForWeek = mfw,
+                                    OrderMenu = order
+                                };
+                                order.SummaryPrice += dqu.Quantity*dish.Price;
+                                dquaList.Add(dqu);
+                            }
+
                         }
                     }
-                    //order.DishQuantities = quantyties;
-                    quantyties.ForEach(qu=>context.DishQuantities.Add(qu));
+                    context.DishQuantities.AddRange(dquaList);
                     context.SaveChanges();
                 }
             }

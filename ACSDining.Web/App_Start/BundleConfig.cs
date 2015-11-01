@@ -13,12 +13,16 @@ namespace ACSDining.Web
 
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
-                        "~/Scripts/knockout-3.2.0.js"///,
+                        "~/Scripts/knockout-3.2.0.js",
+                        "~/Content/worthy/js/custom.js"///,
                         //"~/Scripts/knockout.simpleGrid.3.0.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/MenuForWeek").Include(
                         "~/Areas/SU_Area/Content/scripts/MenuForWeekInfo.js"
+                        ));
+            bundles.Add(new ScriptBundle("~/bundles/EmployeeInfo").Include(
+                        "~/Areas/EmployeeArea/Content/scripts/EmployeeOrderInfo.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/WeekOrders").Include(
@@ -26,11 +30,13 @@ namespace ACSDining.Web
                         ));
 
             bundles.Add(new ScriptBundle("~/EmployeePanel/bundles/jquery").Include(
-                        "~/Areas/EmployeeArea/Content/assets/js/jquery.js",
-                        "~/Areas/EmployeeArea/Content/assets/js/bootstrap.min.js",
-                        "~/Areas/EmployeeArea/Content/assets/js/jquery.easing-1.3.min.js",
-                        "~/Areas/EmployeeArea/Content/assets/js/jquery.scrollTo-1.4.3.1-min.js",
-                        "~/Areas/EmployeeArea/Content/assets/js/shop.js"
+                        "~/Scripts/jquery-2.1.4.min.js",
+                        "~/Content/worthy/bootstrap/js/bootstrap.min.js",
+                        "~/Content/worthy/plugins/modernizr.js",
+                        "~/Content/worthy/plugins/isotope/isotope.pkgd.min.js",
+                        "~/Content/worthy/plugins/jquery.backstretch.min.js",
+                        "~/Content/worthy/plugins/jquery.appear.js",
+                        "~/Areas/SU_Area/Content/scripts/template.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/SU_Panel/bundles/jquery").Include(
@@ -41,7 +47,6 @@ namespace ACSDining.Web
                         "~/Content/worthy/plugins/jquery.backstretch.min.js",
                         "~/Content/worthy/plugins/jquery.appear.js",
                         "~/Areas/SU_Area/Content/scripts/template.js",
-                        "~/Content/worthy/js/custom.js",
                         "~/Content/worthy/bootstrap/js/bootstrap-datepicker.js"//,
                         //"~/Content/worthy/js/dataTables/jquery.dataTables.js",
                         //"~/Content/worthy/js/dataTables/dataTables.bootstrap.js"
@@ -134,7 +139,6 @@ namespace ACSDining.Web
 
             bundles.Add(new StyleBundle("~/SU_Panel/worthy/css").Include(
                         "~/Content/worthy/bootstrap/css/bootstrap.css",
-                        //"~/Content/worthy/bootstrap/css/jquery.dataTables.min.css",
                         "~/Content/worthy/fonts/font-awesome/css/font-awesome.css",
                         "~/Content/worthy/css/animations.css",
                         "~/Content/worthy/css/style.css",

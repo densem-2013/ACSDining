@@ -23,31 +23,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public WeekMenuController()
         {
             DB = new ApplicationDbContext();
-            WeekModels = DB.MenuForWeek.Select(wmenu => new WeekMenuModel()
-            {
-                ID = wmenu.ID,
-                WeekNumber = wmenu.WeekNumber,
-                SummaryPrice = wmenu.SummaryPrice,
-                YearNumber = wmenu.Year.YearNumber,
-                MFD_models = wmenu.MenuForDay.Select(m => new MenuForDayModel()
-                {
-                    ID = m.ID,
-                    DayOfWeek = m.DayOfWeek.Name,
-                    TotalPrice = m.TotalPrice,
-                    Dishes = DB.Dishes.AsEnumerable().Join(
-                            m.Dishes.AsEnumerable(),
-                            dm => dm.DishID,
-                            md => md.DishID,
-                            (dm, md) => new DishModel()
-                                {
-                                    DishID = dm.DishID,
-                                    Title = dm.Title,
-                                    ProductImage = dm.ProductImage,
-                                    Price = dm.Price,
-                                    Category = dm.DishType.Category
-                                }).ToList()
-                }).ToList()
-            }).ToList();
+            WeekModels = DB.MenuForWeek.AsEnumerable().Select(wmenu => new WeekMenuModel(wmenu)).ToList();
         }
 
         // GET api/WeekMenu
@@ -77,9 +53,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpGet]
         [Route("CurrentWeek")]
         [ResponseType(typeof(Int32))]
-        public async Task<IHttpActionResult> CurrentWeekNumber()
+        public  async Task<Int32> CurrentWeekNumber()
         {
-            return Ok(DB.CurrentWeek());
+            return await Task.FromResult(DB.CurrentWeek());
         }
 
         [HttpGet]

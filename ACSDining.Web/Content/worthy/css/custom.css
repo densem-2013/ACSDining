@@ -28,40 +28,57 @@ span.changesaved {
 }
 #wnDysplay {
     color: #266ee1;
-    font-size:18px;
+    font-size: 18px;
     /*padding: 10px 5px;*/
-    border:3px solid #32ebd5;
+    border: 3px solid #32ebd5;
     border-radius: 5px;
-}.table-header-rotated {
-  border-collapse: collapse;
 }
-.csstransforms .table-header-rotated td {
-  width: 30px;
+  th.rotate {
+    white-space: nowrap;
+    -webkit-transform-origin: 65px 60px;
+    -moz-transform-origin: 65px 60px;
+    -o-transform-origin: 65px 60px;
+    -ms-transform-origin: 65px 60px;
+    transform-origin: 65px 60px;
+    
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	-o-transform: rotate(270deg);
+	transform: rotate(270deg);
+	/*display:inline-block;*/
+	/*height:30px;*/
+	/*float:left;*/
+	/*width:30px;*/
 }
-.no-csstransforms .table-header-rotated th {
-  padding: 5px 10px;
-}
-.table-header-rotated td {
-  text-align: center;
-  padding: 10px 5px;
-  border: 1px solid #ccc;
-}
-.csstransforms .table-header-rotated th.rotate {
-  height: 140px;
-  white-space: nowrap;
-}
-.csstransforms .table-header-rotated th.rotate > div {
-  -webkit-transform: translate(25px, 51px) rotate(270deg);
-      -ms-transform: translate(25px, 51px) rotate(270deg);
-          transform: translate(25px, 51px) rotate(270deg);
-  width: 30px;
-}
-.csstransforms .table-header-rotated th.rotate > div > span {
-  border-bottom: 1px solid #ccc;
-  padding: 5px 10px;
-}
-.table-header-rotated th.row-header {
-  padding: 0 10px;
-  border-bottom: 1px solid #ccc;
+span.intact {
+	display:inline-block;
+	width:30px;
+	height:150px;
 }
 
+th.rotate span {
+	/* rotated text in IE renders very bad (unless you use clear type), so that even by making it normal, looks less bold but still bold */
+    font-weight: normal; /* \9 is an hack for IE8 and below */
+    /*letter-spacing: 3px;*/ /* because is so bold, need to give letters some space to breath */
+
+    filter: progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=1, M21=-1, M22=0, SizingMethod = "auto expand");
+    width: 150px;
+    height: 120px;
+    margin-right: -130px;
+}
+
+td.menuItems {
+	width: 240px;
+}
+td.no-indent {
+	font-weight: bold;
+}
+td.indent {
+	padding-left:12px;
+}
+td.rights {
+	width:20px;
+    text-align: left;
+    white-space: nowrap;
+}

@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <title>@ViewBag.Title - My ASP.NET MVC Application</title>
     <meta name="viewport" content="width=device-width" />
-    @Styles.Render("~/Content/worthy")
-    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/SU_Panel/worthy/css")
+        @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/EmployeePanel/bundles/jquery")
     @RenderSection("scripts", required: false)
 </head>
@@ -20,7 +21,7 @@
         <div class="banner-caption">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-8 col-md-offset-2 object-non-visible" data-animation-effect="fadeIn">
+                    <div class="col-md-12 col-md-offset-2 object-non-visible" data-animation-effect="fadeIn">
                         @RenderBody()
                     </div>
                 </div>
@@ -78,18 +79,13 @@
                                             <span class="icon-bar"></span>
                                         </button>
                                     </div>
-
                                     <!-- Collect the nav links, forms, and other content for toggling -->
-                                    @*<div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
-                                            <ul class="nav navbar-nav navbar-right">
-                                                <li class="active"><a href="#banner">Home</a></li>
-                                                <li><a href="#about">About</a></li>
-                                                <li><a href="#services">Services</a></li>
-                                                <li><a href="#portfolio">Portfolio</a></li>
-                                                <li><a href="#clients">Clients</a></li>
-                                                <li><a href="#contact">Contact</a></li>
-                                            </ul>
-                                        </div>*@
+                                    <div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
+                                        <ul class="nav navbar-nav navbar-right">
+                                            <li><a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})">Выход</a></li>
+                                        </ul>
+
+                                    </div>
 
                                 </div>
                             </nav>

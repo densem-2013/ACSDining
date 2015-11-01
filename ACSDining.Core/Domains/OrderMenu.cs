@@ -22,11 +22,10 @@ namespace ACSDining.Core.Domains
         public int Id { get; set; }
         public bool CurrentWeekIsPaid { get; set; }
         public double Balance { get; set; }
+        public double SummaryPrice { get; set; }
 
         [JsonIgnore]
         public virtual User User { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<DishQuantity> DishQuantities { get; set; }
         [JsonIgnore]
         public virtual MenuForWeek MenuForWeek { get; set; }
     }

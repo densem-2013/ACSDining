@@ -1,5 +1,6 @@
 namespace ACSDining.Core.Migrations
 {
+    using System;
     using System.Data.Entity.Migrations;
     
     public partial class Initial : DbMigration
@@ -45,24 +46,13 @@ namespace ACSDining.Core.Migrations
                 .Index(t => t.DishType_Id);
             
             CreateTable(
-                "dbo.DishQuantity",
+                "dbo.DishType",
                 c => new
                     {
-                        DishID = c.Int(nullable: false),
-                        MenuForDayID = c.Int(nullable: false),
-                        MenuForWeekID = c.Int(nullable: false),
-                        OrderMenuID = c.Int(nullable: false),
-                        Quantity = c.Double(nullable: false),
+                        Id = c.Int(nullable: false, identity: true),
+                        Category = c.String(nullable: false),
                     })
-                .PrimaryKey(t => new { t.DishID, t.MenuForDayID, t.MenuForWeekID, t.OrderMenuID })
-                .ForeignKey("dbo.Dish", t => t.DishID, cascadeDelete: true)
-                .ForeignKey("dbo.MenuForDay", t => t.MenuForDayID, cascadeDelete: true)
-                .ForeignKey("dbo.MenuForWeek", t => t.MenuForWeekID, cascadeDelete: true)
-                .ForeignKey("dbo.OrderMenu", t => t.OrderMenuID, cascadeDelete: true)
-                .Index(t => t.DishID)
-                .Index(t => t.MenuForDayID)
-                .Index(t => t.MenuForWeekID)
-                .Index(t => t.OrderMenuID);
+                .PrimaryKey(t => t.Id);
             
             CreateTable(
                 "dbo.MenuForDay",
@@ -78,6 +68,27 @@ namespace ACSDining.Core.Migrations
                 .ForeignKey("dbo.MenuForWeek", t => t.MenuForWeek_ID)
                 .Index(t => t.DayOfWeek_ID)
                 .Index(t => t.MenuForWeek_ID);
+            
+            CreateTable(
+                "dbo.DishQuantity",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Quantity = c.Double(nullable: false),
+                        DishTypeID = c.Int(nullable: false),
+                        DayOfWeekID = c.Int(nullable: false),
+                        MenuForWeekID = c.Int(nullable: false),
+                        OrderMenuID = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.DayOfWeek", t => t.DayOfWeekID, cascadeDelete: true)
+                .ForeignKey("dbo.DishType", t => t.DishTypeID, cascadeDelete: true)
+                .ForeignKey("dbo.MenuForWeek", t => t.MenuForWeekID, cascadeDelete: true)
+                .ForeignKey("dbo.OrderMenu", t => t.OrderMenuID, cascadeDelete: true)
+                .Index(t => t.DishTypeID)
+                .Index(t => t.DayOfWeekID)
+                .Index(t => t.MenuForWeekID)
+                .Index(t => t.OrderMenuID);
             
             CreateTable(
                 "dbo.MenuForWeek",
@@ -99,6 +110,7 @@ namespace ACSDining.Core.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         CurrentWeekIsPaid = c.Boolean(nullable: false),
                         Balance = c.Double(nullable: false),
+                        SummaryPrice = c.Double(nullable: false),
                         MenuForWeek_ID = c.Int(),
                         User_Id = c.String(maxLength: 128),
                     })
@@ -181,15 +193,6 @@ namespace ACSDining.Core.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.DishType",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Category = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
                 "dbo.AspNetRoles",
                 c => new
                     {
@@ -219,21 +222,21 @@ namespace ACSDining.Core.Migrations
         public override void Down()
         {
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
-            DropForeignKey("dbo.Dish", "DishType_Id", "dbo.DishType");
+            DropForeignKey("dbo.DishQuantity", "OrderMenuID", "dbo.OrderMenu");
+            DropForeignKey("dbo.DishQuantity", "MenuForWeekID", "dbo.MenuForWeek");
             DropForeignKey("dbo.MenuForWeek", "Year_Id", "dbo.Year");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.OrderMenu", "User_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.OrderMenu", "MenuForWeek_ID", "dbo.MenuForWeek");
-            DropForeignKey("dbo.DishQuantity", "OrderMenuID", "dbo.OrderMenu");
             DropForeignKey("dbo.MenuForDay", "MenuForWeek_ID", "dbo.MenuForWeek");
-            DropForeignKey("dbo.DishQuantity", "MenuForWeekID", "dbo.MenuForWeek");
-            DropForeignKey("dbo.DishQuantity", "MenuForDayID", "dbo.MenuForDay");
+            DropForeignKey("dbo.DishQuantity", "DishTypeID", "dbo.DishType");
+            DropForeignKey("dbo.DishQuantity", "DayOfWeekID", "dbo.DayOfWeek");
             DropForeignKey("dbo.MFD_Dishes", "DishID", "dbo.Dish");
             DropForeignKey("dbo.MFD_Dishes", "MenuID", "dbo.MenuForDay");
             DropForeignKey("dbo.MenuForDay", "DayOfWeek_ID", "dbo.DayOfWeek");
-            DropForeignKey("dbo.DishQuantity", "DishID", "dbo.Dish");
+            DropForeignKey("dbo.Dish", "DishType_Id", "dbo.DishType");
             DropForeignKey("dbo.Dish", "DishDetail_ID", "dbo.DishDetail");
             DropIndex("dbo.MFD_Dishes", new[] { "DishID" });
             DropIndex("dbo.MFD_Dishes", new[] { "MenuID" });
@@ -246,17 +249,16 @@ namespace ACSDining.Core.Migrations
             DropIndex("dbo.OrderMenu", new[] { "User_Id" });
             DropIndex("dbo.OrderMenu", new[] { "MenuForWeek_ID" });
             DropIndex("dbo.MenuForWeek", new[] { "Year_Id" });
-            DropIndex("dbo.MenuForDay", new[] { "MenuForWeek_ID" });
-            DropIndex("dbo.MenuForDay", new[] { "DayOfWeek_ID" });
             DropIndex("dbo.DishQuantity", new[] { "OrderMenuID" });
             DropIndex("dbo.DishQuantity", new[] { "MenuForWeekID" });
-            DropIndex("dbo.DishQuantity", new[] { "MenuForDayID" });
-            DropIndex("dbo.DishQuantity", new[] { "DishID" });
+            DropIndex("dbo.DishQuantity", new[] { "DayOfWeekID" });
+            DropIndex("dbo.DishQuantity", new[] { "DishTypeID" });
+            DropIndex("dbo.MenuForDay", new[] { "MenuForWeek_ID" });
+            DropIndex("dbo.MenuForDay", new[] { "DayOfWeek_ID" });
             DropIndex("dbo.Dish", new[] { "DishType_Id" });
             DropIndex("dbo.Dish", new[] { "DishDetail_ID" });
             DropTable("dbo.MFD_Dishes");
             DropTable("dbo.AspNetRoles");
-            DropTable("dbo.DishType");
             DropTable("dbo.Year");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
@@ -264,8 +266,9 @@ namespace ACSDining.Core.Migrations
             DropTable("dbo.AspNetUsers");
             DropTable("dbo.OrderMenu");
             DropTable("dbo.MenuForWeek");
-            DropTable("dbo.MenuForDay");
             DropTable("dbo.DishQuantity");
+            DropTable("dbo.MenuForDay");
+            DropTable("dbo.DishType");
             DropTable("dbo.Dish");
             DropTable("dbo.DishDetail");
             DropTable("dbo.DayOfWeek");

@@ -33,7 +33,7 @@ namespace ACSDining.Core.Domains
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Entity<MenuForDay>()
-            .HasMany(mfd => mfd.Dishes).WithMany(m => m.MenusFD)
+            .HasMany(mfd => mfd.Dishes).WithMany(m => m.MenusForDay)
             .Map(t => t.MapLeftKey("MenuID")
             .MapRightKey("DishID")
             .ToTable("MFD_Dishes"));

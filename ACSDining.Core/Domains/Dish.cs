@@ -29,9 +29,9 @@ namespace ACSDining.Core.Domains
         public virtual DishType DishType { get; set; }
         [JsonIgnore]
         public virtual DishDetail DishDetail { get; set; }
+        //[JsonIgnore]
+        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
         [JsonIgnore]
-        public virtual ICollection<DishQuantity> DishQuantities { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<MenuForDay> MenusFD { get; set; }
+        public virtual ICollection<MenuForDay> MenusForDay { get; set; }
     }
 }

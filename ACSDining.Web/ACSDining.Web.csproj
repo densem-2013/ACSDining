@@ -230,7 +230,8 @@
     <Compile Include="Areas\AdminArea\Controllers\RolesAdminController.cs" />
     <Compile Include="Areas\AdminArea\Controllers\UsersAdminController.cs" />
     <Compile Include="Areas\AdminArea\Models\AdminViewModel.cs" />
-    <Compile Include="Areas\EmployeeArea\Controllers\OrderController.cs" />
+    <Compile Include="Areas\EmployeeArea\Controllers\EmployeeController.cs" />
+    <Compile Include="Areas\EmployeeArea\Controllers\EmployeeOrderApiController.cs" />
     <Compile Include="Areas\EmployeeArea\EmployeeAreaAreaRegistration.cs" />
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
     <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.cs" />
@@ -309,7 +310,7 @@
     <Content Include="Areas\AdminArea\Content\assets\js\morris\raphael-2.1.0.min.js" />
     <Content Include="Areas\EmployeeArea\Content\scripts\template.js" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
-    <Content Include="Areas\SU_Area\Content\scripts\Datatable.js" />
+    <Content Include="Areas\EmployeeArea\Content\scripts\EmployeeOrderInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\jquery.dataTables.js" />
     <Content Include="Areas\SU_Area\Content\scripts\MenuForWeekInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\OrdersInfo.js" />
@@ -501,11 +502,7 @@
     <Content Include="Areas\AdminArea\Views\UsersAdmin\Index.cshtml" />
     <Content Include="Areas\AdminArea\Views\web.config" />
     <Content Include="Areas\AdminArea\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\EmployeeArea\Views\Order\Create.cshtml" />
-    <Content Include="Areas\EmployeeArea\Views\Order\Delete.cshtml" />
-    <Content Include="Areas\EmployeeArea\Views\Order\Details.cshtml" />
-    <Content Include="Areas\EmployeeArea\Views\Order\Edit.cshtml" />
-    <Content Include="Areas\EmployeeArea\Views\Order\Index.cshtml" />
+    <Content Include="Areas\EmployeeArea\Views\Employee\Index.cshtml" />
     <Content Include="Areas\EmployeeArea\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\EmployeeArea\Views\web.config" />
     <Content Include="Areas\EmployeeArea\Views\_ViewStart.cshtml" />
