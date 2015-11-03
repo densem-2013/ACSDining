@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Linq;
+
 namespace ACSDining.Core.Domains
 {
     using ACSDining.Core.Migrations;
@@ -17,6 +19,7 @@ namespace ACSDining.Core.Domains
     using System.Data.Entity.Infrastructure;
     using System.Data.Entity.ModelConfiguration.Conventions;
     using System.Globalization;
+    using System.Collections.Generic;
     
     public partial class ApplicationDbContext  : IdentityDbContext<User>
     {
@@ -67,5 +70,28 @@ namespace ACSDining.Core.Domains
                 return myCal.GetWeekOfYear(LastDay, myCWR, myFirstDOW);
             };
 
+        public double[] GetUserWeekOrderDishes(int orderid)
+        {
+            double[] dquantities = new double[20];
+            OrderMenu order = OrderMenu.Find(orderid);
+            int menuforweekid = order.MenuForWeek.ID;
+            List<DishQuantity> quaList =
+                DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
+                    .ToList();
+
+            string[] categories = DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
+            for (int i = 1; i <= 5; i++)
+            {
+                for (int j = 1; j <= categories.Length; j++)
+                {
+                    var firstOrDefault = quaList.FirstOrDefault(
+                        q => q.DayOfWeekID == i && q.DishTypeID == j
+                        );
+                    if (firstOrDefault != null)
+                        dquantities[(i - 1) * 4 + j - 1] = firstOrDefault.Quantity;
+                }
+            }
+            return dquantities;
+        }
     }
 }

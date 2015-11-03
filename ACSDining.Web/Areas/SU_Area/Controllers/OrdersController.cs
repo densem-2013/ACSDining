@@ -16,30 +16,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
-        private double[] GetUserWeekOrderDishes(int orderid)
-        {
-            double[] dquantities = new double[20];
-            OrderMenu order = _db.OrderMenu.Find(orderid);
-            int menuforweekid = order.MenuForWeek.ID;
-            List<DishQuantity> quaList =
-                _db.DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
-                    .ToList();
-
-            string[] categories = _db.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            for (int i = 1; i <= 5; i++)
-            {
-                for (int j = 1; j <= categories.Length; j++)
-                {
-                    var firstOrDefault = quaList.FirstOrDefault(
-                        q => q.DayOfWeekID == i && q.DishTypeID == j
-                        ); 
-                    if (firstOrDefault != null)
-                        dquantities[(i - 1)*4 + j - 1] = firstOrDefault.Quantity;
-                }
-            }
-            return dquantities;
-        }
-
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route("")]
         [System.Web.Http.Route("{numweek}")]
@@ -61,7 +37,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         {
                             UserId = order.User.Id,
                             UserName = order.User.UserName,
-                            Dishquantities =GetUserWeekOrderDishes(order.Id),
+                            Dishquantities = _db.GetUserWeekOrderDishes(order.Id),
                             WeekIsPaid = false,
                             SummaryPrice = order.SummaryPrice
                         }).OrderBy(uo => uo.UserName).ToList()

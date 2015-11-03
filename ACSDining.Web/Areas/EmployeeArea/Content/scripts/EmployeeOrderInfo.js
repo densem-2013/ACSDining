@@ -3,25 +3,6 @@
     /// <reference path="../jquery-2.1.3.min.js" />
     /// <reference path="../knockout-3.2.0.js" />
 
-        var DishInfo = function (dinfo) {
-
-            self = this;
-
-            self.DishId = ko.observable(dinfo.dishID);
-            self.Title = ko.observable(dinfo.title);
-            self.ProductImage = ko.observable(dinfo.productImage);
-            self.Price = ko.observable(dinfo.price.toFixed(2));
-            self.Category = ko.observable(dinfo.category);
-
-            self.update = function (dishupdate) {
-                this.DishId(dishupdate.DishId());
-                this.Title(dishupdate.Title());
-                this.ProductImage(dishupdate.ProductImage());
-                this.Price(dishupdate.Price());
-
-            };
-        }
-
         ko.observableArray.fn.pushAll = function (valuesToPush) {
             var underlyingArray = this();
             this.valueWillMutate();
@@ -52,63 +33,52 @@
 
             MFD_models: ko.observableArray([]),
 
-
             Message: ko.observable(""),
 
-
-            DishesByCategory: ko.observableArray([]),
-            Category: ko.observable(),
-
-            SelectedDish: ko.observable(),
-
-            UpdatableMFD: ko.observable(),
-
-            SummaryPrice: ko.observable(),
 
             NumbersWeeks: ko.observableArray(),
 
             BeenChanged: ko.observable(false),
 
-            ChangeSaved: ko.observable(false)
+            ChangeSaved: ko.observable(false),
+
+            FirstCourseValues: [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
+            QuantValues: [0, 1, 2, 3, 4, 5], 
+
+            OrderId : ko.observable(),
+            UserId : ko.observable(),
+            UserName : ko.observable(),
+            SummaryPrice : ko.observable(0),
+            WeekIsPaid : ko.observable()
+
+        
         };
 
-        viewModel.pageSize = ko.observable(7);
+        var DishInfo = function (dinfo) {
 
-        viewModel.pageIndex = ko.observable(0);
+            self = this;
 
-        viewModel.pagedList = ko.dependentObservable(function () {
-            var size = viewModel.pageSize();
-            var start = viewModel.pageIndex() * size;
-            return viewModel.DishesByCategory.slice(start, start + size);
-        });
+            self.DishId = ko.observable(dinfo.dishID);
+            self.Title = ko.observable(dinfo.title);
+            self.ProductImage = ko.observable(dinfo.productImage);
+            self.Price = ko.observable(dinfo.price.toFixed(2));
+            self.Category = ko.observable(dinfo.category);
 
-        viewModel.maxPageIndex = ko.dependentObservable(function () {
-            return Math.ceil(viewModel.DishesByCategory().length / viewModel.pageSize()) - 1;
-        });
+            self.isEditMode = ko.observable(false);
+            self.Quantity = ko.observable(0);
 
-        viewModel.previousPage = function () {
-            if (viewModel.pageIndex() > 0) {
-                viewModel.pageIndex(viewModel.pageIndex() - 1);
-            }
-        };
+            self.clicked = function (item) {
+                $(item).focus();
+            };
+            self.doubleClick = function () {
+                this.isEditMode(true);
+            };
+            self.onFocusOut = function () {
+                this.isEditMode(false);
+                viewModel.CalcSummary();
+            };
 
-        viewModel.nextPage = function () {
-            if (viewModel.pageIndex() < viewModel.maxPageIndex()) {
-                viewModel.pageIndex(viewModel.pageIndex() + 1);
-            }
-        };
-
-        viewModel.allPages = ko.dependentObservable(function () {
-            var pages = [];
-            for (i = 0; i <= viewModel.maxPageIndex() ; i++) {
-                pages.push({ pageNumber: (i + 1) });
-            }
-            return pages;
-        });
-
-        viewModel.moveToPage = function (index) {
-            viewModel.pageIndex(index);
-        };
+        }
 
         viewModel.SaveToServer = function () {
             var source = {
@@ -125,7 +95,7 @@
                 type: 'put',
                 data: objToServer,
                 contentType: 'application/json'
-            }).done(function (data) {
+            }).done(function () {
 
                 viewModel.BeenChanged(false);
                 viewModel.ChangeSaved(true);
@@ -154,45 +124,30 @@
             });
         };
 
-        viewModel.loadDishes = function (id) {
+
+
+        viewModel.LoadOrder = function (id,numweek, year) {
+
+            numweek = numweek == undefined ? '' : "/" + numweek;
+            year = year == undefined ? '' : "/" + year;
             $.ajax({
-                url: "/api/Dishes/byCategory/" + id,
+                url: "/api/Employee/" + id + numweek + year,
                 type: "GET"
             }).done(function (resp) {
-                viewModel.DishesByCategory([]);
 
-                for (var i = 0; i < resp.length; i++) {
+                OrdersViewModel.UserOrders([]);
+                OrdersViewModel.WeekNumber(resp.weekNumber);
 
-                    viewModel.DishesByCategory.push(new DishInfo(resp[i]));
+                ko.utils.arrayForEach(resp.userOrders, function (object) {
 
-                    if (resp[i].dishID == id) {
-                        viewModel.SelectedDish(resp[i].dishID);
-                    };
-                };
+                    OrdersViewModel.UserOrders.push(new UserWeekOrder(object));
+
+                });
 
             }).error(function (err) {
-                viewModel.Message("Error! " + err.status);
+                OrdersViewModel.Message("Error! " + err.status);
             });
         }
-
-
-        viewModel.showDishes = function (searchdish, index) {
-            this.UpdatableMFD(index);
-            this.Category(searchdish.Category());
-            this.loadDishes(searchdish.DishId());
-
-
-            $("#modalbox").modal("show");
-        }
-
-        viewModel.changeSelected = function (clikedItem) {
-            if (viewModel.SelectedDish() == clikedItem.DishId()) {
-                viewModel.BeenChanged(true);
-                viewModel.SelectedDish(clikedItem.DishId());
-            }
-            return true;
-        }
-
 
         viewModel.LoadWeekMenu = function (numweek, year) {
 
@@ -203,14 +158,14 @@
                 type: "GET"
             }).done(function (resp) {
 
-                viewModel.MFD_models([]);
+                viewModel.MFD_models();
 
                 viewModel.MenuId(resp.id);
                 viewModel.WeekNumber(resp.weekNumber);
-                ko.utils.arrayForEach(resp.mfD_models, function (object) {
+
+                ko.utils.arrayMap(resp.mfD_models, function (object) {
                     var obj = new objForMap();
                     object.dishes.map(obj.sortFunc, obj);
-                    object.dishes = obj.target;
 
                     var MenuForDayInfo = {
 
@@ -231,23 +186,20 @@
 
                     }
 
-                    MenuForDayInfo.Dishes.subscribe = ko.computed(function () {
+                    MenuForDayInfo.CalcTotal = function () {
                         var sum = 0;
                         var valsum;
                         for (var i = 0; i < MenuForDayInfo.Dishes().length; i++) {
 
                             valsum = parseFloat(MenuForDayInfo.Dishes()[i].Price());
-                            sum += valsum;
+                            sum += valsum * MenuForDayInfo.Dishes()[i].Quantity();
                         };
-
-
                         MenuForDayInfo.TotalPrice(sum.toFixed(2));
 
-                    }.bind(this));
-
+                    }.bind(MenuForDayInfo);
                     viewModel.MFD_models.push(MenuForDayInfo);
-
                 });
+
 
             }).error(function (err) {
                 viewModel.Message("Error! " + err.status);
@@ -284,7 +236,7 @@
             if (dish != undefined) {
 
                 viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].update(dish);
-                this.CalcTotal();
+                this.CalcSummary();
             };
 
 
@@ -293,19 +245,19 @@
         }
 
 
-        viewModel.CalcTotal = function () {
+        viewModel.CalcSummary = function () {
 
-            var sum = 0;
-            var ind = -1;
+            var sum = 0, buf; 
             for (var ind = 0; ind < viewModel.MFD_models().length; ind++) {
-                sum += parseFloat(viewModel.MFD_models()[ind].TotalPrice());
+                viewModel.MFD_models()[ind].CalcTotal();
+                buf = viewModel.MFD_models()[ind].TotalPrice();
+                sum += parseFloat(buf);
 
             }
 
             this.SummaryPrice(sum.toFixed(2));
-        };
+        }.bind(viewModel);
 
-        viewModel.MFD_models.subscribe = ko.computed(viewModel.CalcTotal, viewModel);
 
         viewModel.LoadWeekMenu();
         viewModel.loadWeekNumbers();
@@ -313,4 +265,23 @@
 
         ko.applyBindings(viewModel);
 
+        ko.bindingHandlers.singleClick = {
+            init: function (element, valueAccessor) {
+                var handler = valueAccessor(),
+                    delay = 400,
+                    clickTimeout = false;
+
+                $(element).click(function () {
+                    if (clickTimeout !== false) {
+                        clearTimeout(clickTimeout);
+                        clickTimeout = false;
+                    } else {
+                        clickTimeout = setTimeout(function () {
+                            clickTimeout = false;
+                            handler();
+                        }, delay);
+                    }
+                });
+            }
+        };
 }())

@@ -31,8 +31,8 @@
                 <tr>
                     <th class="col-sm-1">День недели</th>
                     <th class="col-sm-2">Категория блюда</th>
-                    <th class="col-sm-6">Название</th>
-                    <th class="col-sm-2">Изменить</th>
+                    <th class="col-sm-7">Название</th>
+                    <th class="col-sm-1">Заказать</th>
                     <th class="col-sm-2" colspan="2">Стоимость</th>
                 </tr>
             </thead>
@@ -51,11 +51,24 @@
                 <td data-bind="foreach: Dishes">
                     <div style="border-bottom: 1px solid;">
                         <span data-bind="text: $data.Title"></span>
-                        <button type="button" class=" btn-danger btn-xs col-sm-2" data-bind="visible: $parent.Editing, click: function(){$root.showDishes($data,$parentContext.$index())}" style="float: right">Изменить</button>
                     </div>
                 </td>
-                <td style="vertical-align: middle; text-align: center">
-                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable "></button>
+                <td style="vertical-align: middle; text-align: center;">
+                    <!--ko foreach: Dishes-->
+                    <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
+                        <!--ko ifnot: isEditMode() -->
+                        <span data-bind="text: Quantity"></span>
+                        <!--/ko-->
+                        <!-- ko if: isEditMode -->
+                        <!-- ko if: (Category() == "Первое блюдо") -->
+                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
+                        <!--/ko-->
+                        <!-- ko ifnot: (Category() == "Первое блюдо") -->
+                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
+                        <!--/ko-->
+                        <!--/ko-->
+                    </div>
+                    <!--/ko-->
                 </td>
                 <td data-bind="foreach: Dishes" style="text-align: right">
                     <div>
@@ -67,7 +80,7 @@
                 </td>
 
             </tr>
-                <!--/ko-->
+            <!--/ko--> 
             </tbody>
             <tfoot>
                 <tr>
@@ -75,11 +88,11 @@
                     <td style="border-bottom: 1px solid; align-content: stretch; border-left: 0" colspan="2">
                         <input type="button" class="btn btn-success btn-lg" value="Сохранить изменения" data-bind="click: SaveToServer , visible: BeenChanged" />
                         <span style="float: right;"> Итого: </span>
-                    </td>
+                    </td> 
+                    <td style="border-bottom: 1px solid;"></td>
                     <td style="border-bottom: 1px solid; text-align: right">
                         <span data-bind=" text : SummaryPrice()"></span>
                     </td>
-                    <td style="border-bottom: 1px solid;"></td>
                 </tr>
                 <tr>
                     <td colspan="7">
