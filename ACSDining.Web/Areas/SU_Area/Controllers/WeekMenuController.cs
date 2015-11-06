@@ -23,7 +23,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public WeekMenuController()
         {
             DB = new ApplicationDbContext();
-            WeekModels = DB.MenuForWeek.AsEnumerable().Select(wmenu => new WeekMenuModel(wmenu)).ToList();
+            WeekModels = DB.MenuForWeeks.AsEnumerable().Select(wmenu => new WeekMenuModel(wmenu)).ToList();
         }
 
         // GET api/WeekMenu
@@ -93,14 +93,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                                                                     md => md.DishID,
                                                                     (dm, md) => dm).ToList();
 
-                MenuForDay menuFD = await DB.MenuForDay.Include("Dishes").SingleOrDefaultAsync( m=>m.ID==mfd.ID);
+                MenuForDay menuFD = await DB.MenuForDays.Include("Dishes").SingleOrDefaultAsync( m=>m.ID==mfd.ID);
                 menuFD.Dishes = dishes;
                 menuFD.TotalPrice = mfd.TotalPrice;
                 DB.Entry(menuFD).State = EntityState.Modified;
 
                
             }
-            MenuForWeek mfwModel = await DB.MenuForWeek.FindAsync(menuforweek.ID);
+            MenuForWeek mfwModel = await DB.MenuForWeeks.FindAsync(menuforweek.ID);
 
             mfwModel.SummaryPrice = menuforweek.SummaryPrice;
             DB.Entry(mfwModel).State = EntityState.Modified;
@@ -131,13 +131,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(MenuForWeek))]
         public async Task<IHttpActionResult> DeleteMenuForWeek(int id)
         {
-            MenuForWeek menuforweek = await DB.MenuForWeek.FindAsync(id);
+            MenuForWeek menuforweek = await DB.MenuForWeeks.FindAsync(id);
             if (menuforweek == null)
             {
                 return NotFound();
             }
 
-            DB.MenuForWeek.Remove(menuforweek);
+            DB.MenuForWeeks.Remove(menuforweek);
             await DB.SaveChangesAsync();
 
             return Ok(menuforweek);
@@ -154,7 +154,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         private bool MenuForWeekExists(int id)
         {
-            return DB.MenuForWeek.Count(e => e.ID == id) > 0;
+            return DB.MenuForWeeks.Count(e => e.ID == id) > 0;
         }
     }
 }

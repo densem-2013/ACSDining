@@ -95,13 +95,14 @@
     <Compile Include="Domains\MenuForWeek.cs" />
     <Compile Include="Domains\OrderMenu.cs" />
     <Compile Include="Domains\DishQuantity.cs" />
+    <Compile Include="Domains\PlannedOrderMenu.cs" />
     <Compile Include="Domains\User.cs" />
     <Compile Include="Domains\UserRole.cs" />
     <Compile Include="Domains\Year.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201511011002402_Initial.cs" />
-    <Compile Include="Migrations\201511011002402_Initial.Designer.cs">
-      <DependentUpon>201511011002402_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201511052039090_Initial.cs" />
+    <Compile Include="Migrations\201511052039090_Initial.Designer.cs">
+      <DependentUpon>201511052039090_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,8 +117,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201511011002402_Initial.resx">
-      <DependentUpon>201511011002402_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201511052039090_Initial.resx">
+      <DependentUpon>201511052039090_Initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>

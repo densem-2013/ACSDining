@@ -19,7 +19,7 @@
         self.Quantity = ko.observable(value);
 
         self.clicked = function(item) {
-            $(item).focus();
+            $(item).focusin();
         };
         self.doubleClick = function() {
             this.isEditMode(true);

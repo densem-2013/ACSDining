@@ -31,18 +31,22 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             numweek = numweek ?? _context.CurrentWeek();
             year = year ?? DateTime.Now.Year;
             MenuForWeek mfw =
-                _context.MenuForWeek.AsEnumerable()
+                _context.MenuForWeeks.AsEnumerable()
                     .FirstOrDefault(wm => wm.WeekNumber == numweek && wm.Year.YearNumber == year);
             if (mfw == null) return Content(HttpStatusCode.BadRequest, "not created");
 
+            WeekMenuModel weekmodel=new WeekMenuModel(mfw);
 
-            OrderMenu ordmenu =  _context.OrderMenu.FirstOrDefault( ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == mfw.ID);
+            OrderMenu ordmenu = _context.OrderMenus.FirstOrDefault(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == mfw.ID);
             EmployeeOrderDTO model = new EmployeeOrderDTO
             {
                 UserId = userid,
-                MenuId = mfw.ID,
+                MenuId = weekmodel.ID,
                 SummaryPrice = ordmenu.SummaryPrice,
-                WeekIsPaid = ordmenu.CurrentWeekIsPaid
+                WeekIsPaid = ordmenu.CurrentWeekIsPaid,
+                MFD_models = weekmodel.MFD_models,
+                Year = (int) year,
+                WeekNumber = (int) numweek
             };
             if (ordmenu != null)
             {
@@ -66,7 +70,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         [ResponseType(typeof(List<int>))]
         public async Task<IHttpActionResult> GetWeekNumbers()
         {
-            List<int> numweeks =  _context.MenuForWeek.AsEnumerable().Select(wm => wm.WeekNumber).Reverse().ToList();
+            List<int> numweeks =  _context.MenuForWeeks.AsEnumerable().Select(wm => wm.WeekNumber).Reverse().ToList();
             if (numweeks == null)
             {
                  return NotFound();

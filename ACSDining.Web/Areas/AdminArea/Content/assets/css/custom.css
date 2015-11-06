@@ -15,7 +15,9 @@
 body {
     font-family: 'Open Sans', sans-serif;
 }
-
+div.dataTables_paginate.paging_simple_numbers {
+    padding: 20px;
+}
  #wrapper {
     width: 100%;
     background:#202020;

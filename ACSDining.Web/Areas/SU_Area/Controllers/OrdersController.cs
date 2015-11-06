@@ -27,7 +27,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             year = year ?? DateTime.Now.Year;
             List<OrderMenu> orderMenus =
                 await
-                    _db.OrderMenu.Where(
+                    _db.OrderMenus.Where(
                             om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year).ToListAsync();
             OrdersDTO model = new OrdersDTO()
             {
@@ -55,7 +55,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(UserOrdesDTO))]
         public async Task<double> GetSummaryPrice([FromUri]int numweek, [FromBody]UserOrdesDTO usorder)
         {
-            MenuForWeek weekNeeded = await _db.MenuForWeek.FirstOrDefaultAsync(wm => wm.WeekNumber == numweek);
+            MenuForWeek weekNeeded = await _db.MenuForWeeks.FirstOrDefaultAsync(wm => wm.WeekNumber == numweek);
             double Summary = 0;
             if (weekNeeded != null)
             {

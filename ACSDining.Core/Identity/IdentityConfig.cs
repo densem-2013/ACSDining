@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -80,7 +81,8 @@ namespace ACSDining.Core.Identity
         {
         }
 
-        public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
+        public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options,
+            IOwinContext context)
         {
             return new ApplicationRoleManager(new RoleStore<UserRole>(context.Get<ApplicationDbContext>()));
         }
@@ -129,21 +131,20 @@ namespace ACSDining.Core.Identity
         {
             //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            //context.DishQuantities.AddOrUpdate(dq => dq.Quantity, 
-            //    new DishQuantity{ Quantity = 0.0}, 
-            //    new DishQuantity { Quantity = 0.5 }, 
-            //    new DishQuantity { Quantity = 1.0 },
-            //    new DishQuantity { Quantity = 1.5 }, 
-            //    new DishQuantity { Quantity = 2.0 }, 
-            //    new DishQuantity { Quantity = 2.5 },
-            //    new DishQuantity { Quantity = 3.0 }, 
-            //    new DishQuantity { Quantity = 3.5 }, 
-            //    new DishQuantity { Quantity = 4.0 }, 
-            //    new DishQuantity { Quantity = 4.5 },
-            //    new DishQuantity { Quantity = 5.0 }
-            //);
-            //var saveres = context.SaveChangesAsync();
-            //saveres.Wait();
+            //context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
+            //    new DishQuantity {Quantity = 0.0},
+            //    new DishQuantity {Quantity = 0.5},
+            //    new DishQuantity {Quantity = 1.0},
+            //    new DishQuantity {Quantity = 1.5},
+            //    new DishQuantity {Quantity = 2.0},
+            //    new DishQuantity {Quantity = 2.5},
+            //    new DishQuantity {Quantity = 3.0},
+            //    new DishQuantity {Quantity = 3.5},
+            //    new DishQuantity {Quantity = 4.0},
+            //    new DishQuantity {Quantity = 4.5},
+            //    new DishQuantity {Quantity = 5.0}
+            //    );
+
             context.Years.AddOrUpdate(y => y.YearNumber, new Year
             {
                 YearNumber = DateTime.Now.Year
@@ -194,6 +195,7 @@ namespace ACSDining.Core.Identity
                     FirstName = "Admin",
                     LastName = "User",
                     IsDiningRoomClient = true,
+                    LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
                 var adminresult = userManager.Create(useradmin, "777123");
@@ -212,6 +214,7 @@ namespace ACSDining.Core.Identity
                     FirstName = "Super",
                     LastName = "User",
                     IsDiningRoomClient = true,
+                    LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
                 var suresult = userManager.Create(usersu, "777123");
@@ -239,6 +242,7 @@ namespace ACSDining.Core.Identity
                     FirstName = "DiningEmployee",
                     LastName = "User",
                     IsDiningRoomClient = true,
+                    LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
                 var result = userManager.Create(userdinEmpl, "777123");
@@ -266,6 +270,7 @@ namespace ACSDining.Core.Identity
                     FirstName = "Employee",
                     LastName = "User",
                     IsDiningRoomClient = true,
+                    LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
                 var result = userManager.Create(userEmpl, "777123");
@@ -367,7 +372,7 @@ namespace ACSDining.Core.Identity
 
                     mfdays.Add(dayMenu);
                 }
-                context.MenuForWeek.AddOrUpdate(m => m.WeekNumber, new MenuForWeek
+                context.MenuForWeeks.AddOrUpdate(m => m.WeekNumber, new MenuForWeek
                 {
                     Year = year,
                     MenuForDay = mfdays,
@@ -391,10 +396,12 @@ namespace ACSDining.Core.Identity
                     LastName = el.Element("LastName").Value,
                     UserName = string.Format("{0} {1}", el.Element("LastName").Value, el.Element("FirstName").Value),
                     PasswordHash = hasher.HashPassword("777123"),
+                    Email = "test@test.com",
                     EmailConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString(),
                     IsDiningRoomClient = true,
-                    RegistrationDate = DateTime.Now
+                    RegistrationDate = DateTime.UtcNow,
+                    LastLoginTime = DateTime.UtcNow
                 }).ToArray();
                 foreach (User user in users)
                 {
@@ -411,8 +418,10 @@ namespace ACSDining.Core.Identity
 
         public static void CreateOrders(ApplicationDbContext context)
         {
+            List<DayOfWeek> days = context.Days.ToList();
+
             List<User> users = context.Users.ToList();
-            List<MenuForWeek> weekmenus = context.MenuForWeek.ToList();
+            List<MenuForWeek> weekmenus = context.MenuForWeeks.ToList();
             int rnd;
 
             double[][] coursesnums =
@@ -433,13 +442,23 @@ namespace ACSDining.Core.Identity
                 foreach (MenuForWeek mfw in weekmenus)
                 {
 
+                    PlannedOrderMenu planorder = new PlannedOrderMenu
+                    {
+                        User = user,
+                        MenuForWeek = mfw
+                    };
+
+                    context.PlannedOrderMenus.Add(planorder);
+
                     OrderMenu order = new OrderMenu
                     {
                         User = user,
                         MenuForWeek = mfw,
-                        SummaryPrice = 0.0
+                        SummaryPrice = 0.0,
+                        PlannedOrderMenu = planorder
                     };
-                    context.OrderMenu.Add(order);
+                    context.OrderMenus.Add(order);
+
                     List<DishQuantity> dquaList = new List<DishQuantity>();
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
                     {
@@ -464,6 +483,7 @@ namespace ACSDining.Core.Identity
                                     Quantity = coursesnums[catindex][rnd],
                                     DishType = dish.DishType,
                                     DayOfWeek = daymenu.DayOfWeek,
+                                    PlannedOrderMenu = planorder,
                                     MenuForWeek = mfw,
                                     OrderMenu = order
                                 };
@@ -482,15 +502,19 @@ namespace ACSDining.Core.Identity
 
     public class ApplicationSignInManager : SignInManager<User, string>
     {
-        public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager) :
-            base(userManager, authenticationManager) { }
+        public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
+            :
+                base(userManager, authenticationManager)
+        {
+        }
 
         public override Task<ClaimsIdentity> CreateUserIdentityAsync(User user)
         {
-            return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
+            return user.GenerateUserIdentityAsync((ApplicationUserManager) UserManager);
         }
 
-        public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
+        public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options,
+            IOwinContext context)
         {
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }

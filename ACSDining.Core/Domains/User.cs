@@ -21,23 +21,23 @@ namespace ACSDining.Core.Domains
 
     public partial class User : IdentityUser
     {
-    //    [Required]
-    //    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    //    public virtual string Id { get; set; }
         [Required]
         public virtual string FirstName { get; set; }
         [Required]
-        public virtual string LastName { get; set; }        
+        public virtual string LastName { get; set; }
         [Required]
         public virtual bool IsDiningRoomClient { get; set; }
+        [Required]
         [DataType(DataType.DateTime)]
-        public virtual DateTime? LastLoginTime { get; set; }
+        public virtual DateTime LastLoginTime { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
         public virtual DateTime RegistrationDate { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<OrderMenu> OrderMenus { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<PlannedOrderMenu> PlannedOrderMenus { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, string> manager)
         {

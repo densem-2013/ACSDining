@@ -41,6 +41,36 @@ namespace ACSDining.Core.Domains
             .MapRightKey("DishID")
             .ToTable("MFD_Dishes"));
 
+            //modelBuilder.Entity<DishQuantity>()
+            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
+            //.Map(t => t.MapLeftKey("DishQuantityID")
+            //.MapRightKey("DayOfWeekID")
+            //.ToTable("DishQuantityDayOfWeek"));
+
+            //modelBuilder.Entity<DishQuantity>()
+            //.HasMany(dq => dq.DishType).WithMany(m => m.DishQuantities)
+            //.Map(t => t.MapLeftKey("DishQuantityID")
+            //.MapRightKey("DishTypeID")
+            //.ToTable("DishTypeDishQuantity"));
+
+            //modelBuilder.Entity<DishQuantity>()
+            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
+            //.Map(t => t.MapLeftKey("DishQuantityID")
+            //.MapRightKey("MenuForWeekID")
+            //.ToTable("MenuForWeekDishQuantity"));
+
+            //modelBuilder.Entity<DishQuantity>()
+            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
+            //.Map(t => t.MapLeftKey("DishQuantityID")
+            //.MapRightKey("OrderMenuID")
+            //.ToTable("OrderMenuDishQuantity"));
+
+            //modelBuilder.Entity<DishQuantity>()
+            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
+            //.Map(t => t.MapLeftKey("DishQuantityID")
+            //.MapRightKey("PlannedOrderMenuID")
+            //.ToTable("PlannedOrderMenuDishQuantity"));
+
             base.OnModelCreating(modelBuilder);
         }
         public static ApplicationDbContext Create()
@@ -50,9 +80,10 @@ namespace ACSDining.Core.Domains
 
         public virtual DbSet<Dish> Dishes { get; set; }
         public virtual DbSet<DishType> DishTypes { get; set; }
-        public virtual DbSet<MenuForDay> MenuForDay { get; set; }
-        public virtual DbSet<MenuForWeek> MenuForWeek { get; set; }
-        public virtual DbSet<OrderMenu> OrderMenu { get; set; }
+        public virtual DbSet<MenuForDay> MenuForDays { get; set; }
+        public virtual DbSet<MenuForWeek> MenuForWeeks { get; set; }
+        public virtual DbSet<OrderMenu> OrderMenus { get; set; }
+        public virtual DbSet<PlannedOrderMenu> PlannedOrderMenus { get; set; }
         public virtual DbSet<DishQuantity> DishQuantities { get; set; }
         public virtual DbSet<DishDetail> DishDetails { get; set; }
         public virtual DbSet<DayOfWeek> Days { get; set; }
@@ -73,7 +104,7 @@ namespace ACSDining.Core.Domains
         public double[] GetUserWeekOrderDishes(int orderid)
         {
             double[] dquantities = new double[20];
-            OrderMenu order = OrderMenu.Find(orderid);
+            OrderMenu order = OrderMenus.Find(orderid);
             int menuforweekid = order.MenuForWeek.ID;
             List<DishQuantity> quaList =
                 DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)

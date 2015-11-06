@@ -105,12 +105,12 @@ namespace UnitTestProject1
                 };
                 mfdays.Add(dayMenu);
             }
-            context.MenuForWeek.AddOrUpdate(n => n.WeekNumber, new MenuForWeek()
+            context.MenuForWeeks.AddOrUpdate(n => n.WeekNumber, new MenuForWeek()
             {
                 MenuForDay = mfdays,
                 WeekNumber = context.CurrentWeek()
             });
-            Assert.IsTrue(context.MenuForWeek.AsEnumerable().Select(w => w.MenuForDay.Where(m => m.TotalPrice > 0)).Count()>0);
+            Assert.IsTrue(context.MenuForWeeks.AsEnumerable().Select(w => w.MenuForDay.Where(m => m.TotalPrice > 0)).Count()>0);
         }
     }
 }

@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "Управление пользователями";
+}
+
+<hr />
+<div class="col-md-12 " style="padding-bottom: 5px">
+    @*<span data-bind="text: WeekTitle" id="wnDysplay" style="background: rgba(119, 222, 228, 0.61);color:rgb(232, 34, 208); "></span>*@
+</div>
+<div class="col-md-12  object-non-visible" data-animation-effect="fadeIn">
+    <div class="panel panel-default" id="mfwPanel">
+
+        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
+            <thead>
+            <tr>
+                <th rowspan="2">№</th>
+                <th colspan="2" rowspan="2">Ф.И.О.</th>
+                <th colspan="2" rowspan="2">Логин</th>
+                <th colspan="2" rowspan="2">Електронный ящик</th>
+                <th colspan="2" rowspan="2">Дата регистрации</th>
+                <th colspan="2" rowspan="2">Дата последнего посещения</th>
+                <th rowspan="2">Может заказывать еду в столовой</th>
+                <th colspan="2" rowspan="2">Роли</th>
+                <th colspan="2" rowspan="2">Редактировать</th>
+            </tr>
+            <tr></tr>
+            </thead>
+            <tbody>
+                <!--ko foreach: pagedList -->
+                <tr>
+                    <!--ko ifnot: isEditMode() -->
+                    <td style="vertical-align: middle; text-align: center">
+                        <span data-bind="text: $index()+1"></span>
+                    </td>
+
+                    <td colspan="2">
+                        <span data-bind="text: FullName"></span>
+                    </td>
+                    <td colspan="2">
+                        <span data-bind="text: UserName"></span>
+                    </td>
+                    <td colspan="2">
+                        <span data-bind="text: Email"></span>
+                    </td>
+                    <td colspan="2">
+                        <span data-bind="text: RegistrationDate"></span>
+                    </td>
+                    <td colspan="2">
+                        <span data-bind="text: LastLoginTime"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: CanApp"></span>
+                    </td>
+                    <td style="vertical-align: middle; text-align: center;" colspan="2">
+                        <!--ko foreach: Roles-->
+                        <div>
+                            <span data-bind="text: $data"></span>
+                        </div>
+                        <!--/ko-->
+                    </td>
+                    <td colspan="2">
+                        <input type="button" class="btn-success btn-sm" data-bind="click: function(){ $data.isEditMode(true); }" />
+                    </td>
+                    <!--/ko-->
+                </tr>
+                <!--/ko-->
+            </tbody>
+            <tfoot>
+                @*<tr>
+                    <td style="border-bottom: 1px solid;  border-right: 0" colspan="2"><span class="changesaved" data-bind="visible: ChangeSaved"> Изменения сохранены </span></td>
+                    <td style="border-bottom: 1px solid; align-content: stretch; border-left: 0" colspan="2">
+                        <input type="button" class="btn btn-success btn-lg" value="Сохранить изменения" data-bind="click: SaveToServer , visible: BeenChanged" />
+                    </td>
+                    <td style="border-bottom: 1px solid;"></td>
+                </tr>*@
+                <tr>
+                    <td colspan="16">
+                        <div class="row">
+                            <div >
+                                <div class="dataTables_paginate paging_simple_numbers">
+                                    <ul class="pagination">
+                                        <li data-bind="css: { disabled: pageIndex() === 0 }" class="paginate_button previous">
+                                            <a href="#" class="btn" data-bind="click: previousPage">Previous</a>
+                                        </li>
+                                        <li data-bind=" foreach: allPages">
+                                            <a href="#" class="paginate_button" data-bind="text: $data.pageNumber, click: function() { $root.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($root.pageIndex() + 1) }"></a>
+                                        </li>
+                                        <li class="paginate_button next" data-bind="css: { disabled: pageIndex() === maxPageIndex() }">
+                                            <a href="#" data-bind="click: nextPage">Next</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+</div>
+
+@Scripts.Render("~/bundles/AccountsInfo")
+
+<script type="text/javascript">
+    (function () {
+        $("#updateTable").css("maxHeight", "700px")
+        .parents('.banner-caption').css({ "top": "11%" });
+
+        $("#pageTable").height("350px");
+        $("#modalbox").offset({ top: 100 });
+
+    })();
+</script>
+

@@ -78,7 +78,7 @@ namespace ACSDining.Web.Models.ViewModels
         public string Email { get; set; }
         [Required]
         [Display(Name = "Укажите логин")]
-        public string LogIn { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "Значение {0} должно содержать не менее {2} символов.", MinimumLength = 6)]

@@ -25,6 +25,11 @@ namespace ACSDining.Web
                         "~/Areas/EmployeeArea/Content/scripts/EmployeeOrderInfo.js"
                         ));
 
+            bundles.Add(new ScriptBundle("~/bundles/AccountsInfo").Include(
+                        "~/Areas/AdminArea/Content/scripts/app.service.js",
+                        "~/Areas/AdminArea/Content/scripts/AccountsInfo.js"
+                        ));
+
             bundles.Add(new ScriptBundle("~/bundles/WeekOrders").Include(
                         "~/Areas/SU_Area/Content/scripts/OrdersInfo.js"
                         ));
@@ -132,6 +137,7 @@ namespace ACSDining.Web
 
             bundles.Add(new StyleBundle("~/AdminPanel/css").Include(
                        "~/Content/bootstrap.css",
+                        "~/Content/worthy/bootstrap/css/bootstrap.css",
                        "~/Areas/AdminArea/Content/assets/css/font-awesome.css",
                        "~/Areas/AdminArea/Content/assets/js/morris/morris-0.4.3.min.css",
                        "~/Areas/AdminArea/Content/assets/css/custom.css"

@@ -35,6 +35,7 @@
 
             Message: ko.observable(""),
 
+            WeekTitle: ko.observable(""),
 
             NumbersWeeks: ko.observableArray(),
 
@@ -49,10 +50,26 @@
             UserId : ko.observable(),
             UserName : ko.observable(),
             SummaryPrice : ko.observable(0),
-            WeekIsPaid : ko.observable()
-
+            WeekIsPaid : ko.observable(),
+            Year: ko.observable()
         
         };
+        viewModel.WeekTitle = ko.computed(function () {
+            var options = {
+                weekday: "short", year: "numeric", month: "short",
+                day: "numeric"
+            };
+            var year = viewModel.Year();
+            var firstDay = new Date(year, 0, 1).getDay();
+            //console.log(firstDay);
+            //var year = 2015;
+            var week = viewModel.WeekNumber();
+            var d = new Date("Jan 01, " + year + " 01:00:00");
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week - 1);
+            var n1 = new Date(w);
+            var n2 = new Date(w + 345600000);
+            return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+        }.bind(viewModel));
 
         var DishInfo = function (dinfo) {
 
@@ -65,10 +82,10 @@
             self.Category = ko.observable(dinfo.category);
 
             self.isEditMode = ko.observable(false);
-            self.Quantity = ko.observable(0);
+            self.Quantity = ko.observable(dinfo.quantity);
 
             self.clicked = function (item) {
-                $(item).focus();
+                $(item).focusin();
             };
             self.doubleClick = function () {
                 this.isEditMode(true);
@@ -158,15 +175,15 @@
                 type: "GET"
             }).done(function (resp) {
 
-                viewModel.MFD_models();
-
+                viewModel.MFD_models([]);
+                viewModel.Year(resp.year);
                 viewModel.MenuId(resp.id);
                 viewModel.WeekNumber(resp.weekNumber);
 
                 ko.utils.arrayMap(resp.mfD_models, function (object) {
                     var obj = new objForMap();
                     object.dishes.map(obj.sortFunc, obj);
-
+                   
                     var MenuForDayInfo = {
 
                         ID: ko.observable(object.id),
@@ -174,16 +191,6 @@
                         Dishes: ko.observableArray(obj.target),
                         Editing: ko.observable(false),
                         TotalPrice: ko.observable(),
-
-                        Editable: function () {
-                            this.Editing(true);
-                        },
-
-                        UnEditable: function () {
-                            this.Editing(false);
-                        }
-
-
                     }
 
                     MenuForDayInfo.CalcTotal = function () {
@@ -199,8 +206,16 @@
                     }.bind(MenuForDayInfo);
                     viewModel.MFD_models.push(MenuForDayInfo);
                 });
+                var summary = 0;
+                ko.utils.arrayForEach(viewModel.MFD_models(), function (item, index) {
+                    ko.utils.arrayForEach(item.Dishes(), function(value, key) {
 
-
+                        value.Quantity(resp.dishquantities[index * 4 + key]);
+                    });
+                    item.CalcTotal();
+                    summary += parseFloat(item.TotalPrice());
+                });
+                viewModel.SummaryPrice(summary.toFixed(2));
             }).error(function (err) {
                 viewModel.Message("Error! " + err.status);
             });

@@ -28,5 +28,9 @@ namespace ACSDining.Core.Domains
         public virtual User User { get; set; }
         [JsonIgnore]
         public virtual MenuForWeek MenuForWeek { get; set; }
+        //[JsonIgnore]
+        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
+        [JsonIgnore]
+        public virtual PlannedOrderMenu PlannedOrderMenu { get; set; }
     }
 }

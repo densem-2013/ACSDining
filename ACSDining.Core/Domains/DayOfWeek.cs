@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
@@ -10,5 +12,7 @@ namespace ACSDining.Core.Domains
         public int ID { get; set; }
         [Required]
         public string Name { get; set; }
+        //[JsonIgnore]
+        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
     }
 }

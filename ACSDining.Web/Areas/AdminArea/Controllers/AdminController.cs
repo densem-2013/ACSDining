@@ -6,7 +6,11 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
     {
         //
         // GET: /Admin/Admin/
-        public ActionResult Index()
+        public ActionResult Accounts()
+        {
+            return View();
+        }
+        public ActionResult Roles()
         {
             return View();
         }
