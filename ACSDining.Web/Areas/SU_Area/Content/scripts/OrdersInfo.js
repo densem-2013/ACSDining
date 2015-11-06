@@ -224,7 +224,12 @@
             });
         }
     };
-
     ko.applyBindings(OrdersViewModel);
+    
+    $(document).ready(function () {
+        var elem = $('#navbar-collapse-1 ul:first-child');
+        elem.prepend($("<li><input data-bind='datepicker: myDate, datepickerOptions: { minDate: new Date() }' /></li>"));
+
+    });
 })();
 

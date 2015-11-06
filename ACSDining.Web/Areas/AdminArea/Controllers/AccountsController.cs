@@ -66,14 +66,15 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             var user = new User()
             {
                 UserName = createUserModel.UserName,
                 Email = createUserModel.Email,
                 FirstName = createUserModel.FirstName,
                 LastName = createUserModel.LastName,
-                RegistrationDate = DateTime.Now.Date,
+                LastLoginTime = DateTime.Now,
+                RegistrationDate = DateTime.Now,
+                IsDiningRoomClient = true
             };
 
 
