@@ -3,6 +3,19 @@
 }
 
 <hr />
+<div id="menucontainer">
+    <ul id="menu">
+
+        <li>
+            <a href="@Url.RouteUrl(new { action = "Accounts", controller = "Admin", area = "AdminArea" })">Управление пользователями</a>
+        </li>
+
+        <li>
+            <a href="@Url.RouteUrl(new { action = "Roles", controller = "Admin", area = "AdminArea" })">Управление ролями</a>
+        </li>
+
+    </ul>
+</div>
 <div class="col-md-12 " style="padding-bottom: 5px">
     @*<span data-bind="text: WeekTitle" id="wnDysplay" style="background: rgba(119, 222, 228, 0.61);color:rgb(232, 34, 208); "></span>*@
 </div>

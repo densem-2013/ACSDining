@@ -2,23 +2,44 @@
     ViewBag.Title = "Index";
 }
 
-<hr />
-    <div class="col-md-9   col-sm-12 col-xs-12 object-non-visible" data-animation-effect="fadeIn">
+<div class="row">
+    <div class="col-md-9 col-xs-offset-3">
+        <div class="col-md-6">
+            <div class="input-group date">
+                <input type="text" class="form-control" data-provide="datepicker" data-bind="datepicker: myDate" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <nav class="navbar">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="active ">
+                            <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
+                        </li>
+
+                        <li>
+                            <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
+                        </li>
+
+                        <li>
+                            <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
     <div class="panel panel-default" id="mfwPanel">
         <table>
             <tbody>
                 <tr style="background: #565659;">
-                    <td class="col-sm-3">
+                    <td class="col-md-3">
                         <div>
                             <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ $root.LoadWeekMenu($root.CurrentWeekNumber())},css:{disabled: $root.IsCurrentWeek()}" />
                         </div>
                     </td>
-                    <td class="col-sm-2">
-                        <div>
-                            <span data-bind="text: ' Неделя ' + WeekNumber()" id="wnDysplay"></span>
-                        </div>
-                    </td>
-                    <td class="col-sm-4">
+                    <td class="col-md-5  " style="float: right">
                         <div>
                             <input type="button" id="btnaddmenu" class="btn" value="Добавить меню на следующую неделю" />
                         </div>
@@ -31,14 +52,14 @@
                 <tr>
                     <th class="col-sm-1" >День недели</th>
                     <th class="col-sm-2">Категория блюда</th>
-                    <th class="col-sm-6">Название</th>
+                    <th class="col-sm-5" >Название</th>
                     <th class="col-sm-2" colspan="2">Стоимость</th>
                     <th class ="col-sm-2">Изменить</th>
                 </tr>
             </thead>
-            <tbody data-bind="foreach: MFD_models" >
+            <tbody data-bind="foreach: MFD_models">
                 <tr>
-                    <td style="vertical-align: middle; text-align:center">
+                    <td style="vertical-align: middle; text-align: center">
                         <span data-bind="text: DayOfWeek"></span>
                     </td>
                     <td data-bind="foreach: Dishes">
@@ -46,21 +67,22 @@
                             <span data-bind="text: $data.Category() + ' : '"></span>
                         </div>
                     </td>
-                    <td  data-bind="foreach: Dishes" >
+                    <td data-bind="foreach: Dishes">
                         <div style="border-bottom: 1px solid;">
-                            <span data-bind="text: $data.Title"></span>
-                            <button type="button" class=" btn-danger btn-xs col-sm-2" data-bind="visible: $parent.Editing, click: function(){$root.showDishes($data,$parentContext.$index())}" style="float:right">Изменить</button>
+                            <span data-bind="text: Title"></span>
+                            <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$root.showDishes($data,$parentContext.$index())}" style="float: right; height: max-content; width: 70px;"></button>
+
                         </div>
                     </td>
-                    <td data-bind="foreach: Dishes" style=" text-align: right">
+                    <td data-bind="foreach: Dishes" style="text-align: right">
                         <div>
-                            <span data-bind="text: $data.Price" style=" border-bottom: 1px solid"></span><br />
+                            <span data-bind="text: Price" style="border-bottom: 1px solid"></span><br />
                         </div>
                     </td>
-                    <td style="text-align: right; vertical-align:middle; height:100%">
-                        <span data-bind="text: TotalPrice()"></span>
+                    <td style="text-align: right; vertical-align: middle; height: 100%">
+                        <span data-bind="text: TotalPrice"></span>
                     </td>
-                    <td style="vertical-align: middle; text-align:center">
+                    <td style="vertical-align: middle; text-align: center">
                         <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable "></button>
                     </td>
 
@@ -100,61 +122,60 @@
     </div>
 
     <div id="modalbox" class="modal ">
-        <div class="modal-dialog">
-            <div class="panel panel-default">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1>Выберите <span data-bind="text:Category"></span> </h1>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table table-condensed table-striped table-bordered pre-scrollable" id="pageTable">
-                            <thead>
-                                <tr>
-                                    <th>№</th>
-                                    <th>Название</th>
-                                    <th>Стоимость</th>
-                                    <th>Выбрать</th>
-                                </tr>
-                            </thead>
-                            <tbody data-bind="foreach:pagedList">
-                                <tr>
-                                    <td>
-                                        <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
-                                    </td>
-                                    <td>
-                                        <span data-bind="text:Title"></span>
-                                    </td>
-                                    <td>
-                                        <span data-bind="text:Price"></span>
-                                    </td>
-                                    <td>
-                                        <input type="radio" name="dishGroup" data-bind="checked: $root.SelectedDish,checkedValue : DishId, click: $root.changeSelected" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="dataTables_paginate paging_simple_numbers">
-                                    <ul class="pagination">
-                                        <li data-bind="css: { disabled: pageIndex() === 0 }" class="paginate_button previous">
-                                            <a href="#" class="btn" data-bind="click: previousPage">Previous</a>
-                                        </li>
-                                        <li data-bind=" foreach: allPages">
-                                            <a href="#" class="paginate_button" data-bind="text: $data.pageNumber, click: function() { $root.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($root.pageIndex() + 1) }"></a>
-                                        </li>
-                                        <li class="paginate_button next" data-bind="css: { disabled: pageIndex() === maxPageIndex() }">
-                                            <a href="#" data-bind="click: nextPage">Next</a>
-                                        </li>
-                                    </ul>
-                                </div>
+    <div class="modal-dialog">
+        <div class="panel panel-default">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Выберите <span data-bind="text:Category"></span> </h1>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-condensed table-striped table-bordered pre-scrollable" id="pageTable">
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>Название</th>
+                                <th>Стоимость</th>
+                                <th>Выбрать</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach:pagedList">
+                            <tr>
+                                <td>
+                                    <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
+                                </td>
+                                <td>
+                                    <span data-bind="text:Title"></span>
+                                </td>
+                                <td>
+                                    <span data-bind="text:Price"></span>
+                                </td>
+                                <td>
+                                    <input type="radio" name="dishGroup" data-bind="checked: $root.SelectedDish,checkedValue : DishId, click: $root.changeSelected" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="dataTables_paginate paging_simple_numbers">
+                                <ul class="pagination">
+                                    <li data-bind="css: { disabled: pageIndex() === 0 }" class="paginate_button previous">
+                                        <a href="#" class="btn" data-bind="click: previousPage">Previous</a>
+                                    </li>
+                                    <li data-bind=" foreach: allPages">
+                                        <a href="#" class="paginate_button" data-bind="text: $data.pageNumber, click: function() { $root.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($root.pageIndex() + 1) }"></a>
+                                    </li>
+                                    <li class="paginate_button next" data-bind="css: { disabled: pageIndex() === maxPageIndex() }">
+                                        <a href="#" data-bind="click: nextPage">Next</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" data-bind="click: applyChanges">Ok</button>
-                        <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bind="click: applyChanges">Ok</button>
+                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
                 </div>
             </div>
         </div>
@@ -171,6 +192,16 @@
             $("#pageTable").height("350px");
             $("#modalbox").offset({ top: 100 });
 
+            //$(".datepicker").datepicker({
+            //    daysOfWeekDisabled: "0,6",
+            //    calendarWeeks: true,
+            //    todayHighlight: true
+            //});
+            //    .on('changeDate', function (ev) {
+            //    checkout.hide();
+            //}).data('datepicker');
+            //$('.nav.navbar-nav li').eq(0).addClass('active');
         })();
     </script>
+
 

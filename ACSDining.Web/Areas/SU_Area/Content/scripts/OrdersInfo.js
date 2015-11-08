@@ -36,7 +36,7 @@
         Message: ko.observable(),
         CurrentWeekNumber: ko.observable(),
         myDate: ko.observable(new Date()),
-        FirstCourseValues: [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
+        FirstCourseValues: [0, 0.5, 1.0, 2.0, 3.0,  4.0, 5.0],
         QuantValues: [0, 1, 2, 3, 4, 5]
     }
 
@@ -226,10 +226,22 @@
     };
     ko.applyBindings(OrdersViewModel);
     
-    $(document).ready(function () {
-        var elem = $('#navbar-collapse-1 ul:first-child');
-        elem.prepend($("<li><input data-bind='datepicker: myDate, datepickerOptions: { minDate: new Date() }' /></li>"));
+    /*Date picker value binder for knockout*/
+    ko.bindingHandlers.datepicker = {
+        init: function (element, valueAccessor, allBindingsAccessor) {
+            var options = allBindingsAccessor().datepickerOptions || {};
+            $(element).datepicker(options).on("changeDate", function (ev) {
+                var observable = valueAccessor();
+                observable(ev.date);
+                $(element).hide();
+            });
+        },
+        update: function (element, valueAccessor) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            $(element).datepicker("setValue", value);
+        }
+    };
 
-    });
+
 })();
 

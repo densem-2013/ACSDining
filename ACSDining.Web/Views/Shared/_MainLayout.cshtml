@@ -1,0 +1,93 @@
+﻿@using System.Runtime.Versioning
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>
+
+        Работа столовой
+
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=IE8"/>
+        @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/themes/base/css")
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+
+</head>
+<body class="pagebg">
+<div class="wrapper toppad">
+    <div class="tophead">
+        <div class="dleft">
+            <div class="dright">
+                <h1 class="logo">
+                    <a href="">
+                        <img style="border: 0" src="@Url.Content("~/Content/Images/Infocom.png")" title="Инфоком ЛТД" alt="Инфоком ЛТД"/>
+                    </a>
+                </h1>
+                <div class="tophead_i1">
+                    <div class="blockinform">
+                        <div class="dleft">
+                            <div class="logOnGreeting col-md-5" id="infoTitle"><span></span></div>
+                            <div class="dright">
+                                <div class="logOnGreeting  col-md-5" style="text-align: right;">
+                                    @if (Session["Fname"] != null)
+                                    {
+                                        <span> Вы вошли как, @Session["Fname"]   @Session["Lname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            Пожалуйста,
+                                            авторизируйтесь
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page">
+        <div class="dleft">
+            <div class="dright">
+            </div>
+            <div class="main_content_background">
+                @*<div id="menucontainer">
+                    <div class="dright">
+                        <ul class="menu">
+
+                            <li>
+                                <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
+                            </li>
+
+                            <li>
+                                <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
+                            </li>
+
+                            <li>
+                                <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>*@
+                <div class="main_content">
+
+                    @RenderBody()
+
+
+                </div>
+            </div>
+            <div id="footer">
+                Copyright 2012 INFOCOM Ltd. Все права защищены.&nbsp;
+                <br/>
+                <small>192.168.56.17</small>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

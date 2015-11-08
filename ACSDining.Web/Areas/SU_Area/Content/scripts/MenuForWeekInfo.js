@@ -3,6 +3,51 @@
 
 
 (function () {
+    $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
+
+    Date.prototype.getWeek = function () {
+        var onejan = new Date(this.getFullYear(), 0, 1);
+        var today = new Date(this.getFullYear(), this.getMonth(), this.getDate());
+        var dayOfYear = ((today - onejan + 1) / 86400000);
+        return Math.ceil(dayOfYear / 7);
+    };
+
+    ko.bindingHandlers.datepicker = {
+        init: function (element, valueAccessor, allBindingsAccessor) {
+
+            var options = $.extend(
+                {}, 
+                $.datepicker.regional["ru"], 
+                {
+                    dateFormat: 'dd/mm/yy',
+                    showButtonPanel: true,
+                    gotoCurrent: true,
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    showWeek: true,
+                    constraintInput: true,
+                    showAnim: "slideDown",
+                    hideIfNoPrevNext: true
+                }
+            );
+            $(element).datepicker(options);
+
+            ko.utils.registerEventHandler($(element), "change", function() {
+                var observable = valueAccessor();
+                observable($(element).datepicker("getDate"));
+            });
+
+            ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+                $(element).datepicker("destroy");
+            });
+
+        },
+        update: function(element, valueAccessor) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            $(element).datepicker("setDate", value);
+        }
+    };
+
 
     var DishInfo = function (dinfo) {
 
@@ -56,6 +101,7 @@
 
         Message: ko.observable(""),
 
+        myDate: ko.observable(new Date()),
 
         DishesByCategory: ko.observableArray([]),
         Category: ko.observable(),
@@ -70,8 +116,25 @@
 
         BeenChanged: ko.observable(false),
 
-        ChangeSaved: ko.observable(false)
+        ChangeSaved: ko.observable(false),
+        Year: ko.observable()
     };
+    viewModel.WeekTitle = ko.computed(function () {
+        var options = {
+            weekday: "short", year: "numeric", month: "short",
+            day: "numeric"
+        };
+        var year = viewModel.Year();
+        var firstDay = new Date(year, 0, 1).getDay();
+        //console.log(firstDay);
+        //var year = 2015;
+        var week = viewModel.WeekNumber();
+        var d = new Date("Jan 01, " + year + " 01:00:00");
+        var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week - 1);
+        var n1 = new Date(w);
+        var n2 = new Date(w + 345600000);
+        return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+    }.bind(viewModel));
 
     viewModel.pageSize = ko.observable(7);
 
@@ -199,6 +262,8 @@
 
         numweek = numweek == undefined ? '' : numweek;
         year = year == undefined ? '' : "/" + year;
+
+
         $.ajax({
             url: "/api/WeekMenu/" + numweek  + year,
             type: "GET"
@@ -208,6 +273,7 @@
 
             viewModel.MenuId(resp.id);
             viewModel.WeekNumber(resp.weekNumber);
+            viewModel.Year(resp.yearNumber);
             ko.utils.arrayForEach(resp.mfD_models, function (object) {
                 var obj = new objForMap();
                 object.dishes.map(obj.sortFunc, obj);
@@ -254,6 +320,14 @@
             viewModel.Message("Error! " + err.status);
         });
     }
+
+    viewModel.myDate.subscribe = ko.computed(function () {
+        var takedWeek = viewModel.myDate().getWeek()+1;
+        if (takedWeek !== viewModel.WeekNumber()) {
+            viewModel.LoadWeekMenu(takedWeek, viewModel.Year());
+        }
+    }, viewModel);
+
     viewModel.GetCurrentWeekNumber = function () {
         
         $.ajax({
@@ -278,7 +352,7 @@
 
 
         var dish = ko.utils.arrayFirst(viewModel.DishesByCategory(), function (value) {
-            if (value.DishId() == viewModel.SelectedDish()) {
+            if (value.DishId() === viewModel.SelectedDish()) {
                 return value;
             }
         });
@@ -304,7 +378,7 @@
         }
 
         this.SummaryPrice(sum.toFixed(2));
-    };
+    }.bind(viewModel);
 
     viewModel.MFD_models.subscribe = ko.computed(viewModel.CalcTotal, viewModel);
 
