@@ -4,81 +4,93 @@
     // ViewBag.Title = "Выполнить вход";
     ViewBag.LocalTitle = "Выполнить вход";
 }
-    @Styles.Render("~/Modal/css")
-    @Scripts.Render("~/bundles/Modal")
+@Styles.Render("~/Modal/css")
+@Scripts.Render("~/bundles/Modal")
 <!-- GOOGLE FONTS-->
 <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-<div class="container" id="logForm">
-    <div class="row text-center">
-        <div class="row">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <strong>@ViewBag.LocalTitle</strong>
+<div class="page">
+    <div class="dleft">
+        <div class="dright">
+            <div class="container" id="logForm">
+                <div class="row text-center">
+                    <div class="row">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <strong>@ViewBag.LocalTitle</strong>
+                            </div>
+                            <div class="panel-body">
+                                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form", id = "LoginForm" }))
+                                {
+                                    <br />
+                                    @Html.AntiForgeryToken()
+                                    <hr />
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                    <div class="form-group input-group">
+                                        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+                                        @Html.TextBoxFor(m => m.LogIn, new { @class = "form-control", placeholder = "Your Username " })
+                                        @Html.ValidationMessageFor(m => m.LogIn, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group input-group">
+                                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Your Password" })
+                                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" />Запомнить меня
+                                        </label>
+                                    </div>
+
+                                    <button class="btn btn-primary" type="submit">Войти</button>
+                                    <hr />
+                                    @*<p>Нет регистрации ?<a href="#" id="regLink" class="btn btn-success btn-sm" data-whatever="/Account/Register">Нажми здесь</a></p>*@
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
-                <div class="panel-body">
-                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form", id = "LoginForm" }))
-                    {
-                        <br />
-                        @Html.AntiForgeryToken()
-                        <hr />
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        <div class="form-group input-group">
-                            <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-                            @Html.TextBoxFor(m => m.LogIn, new { @class = "form-control", placeholder = "Your Username " })
-                            @Html.ValidationMessageFor(m => m.LogIn, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group input-group">
-                            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Your Password" })
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group">
-                            <label class="checkbox-inline">
-                                <input type="checkbox"  />Запомнить меня
-                            </label>
-                        </div>
-
-                        <button class="btn btn-primary" type="submit">Войти</button>
-                        <hr />
-                        @*<p>Нет регистрации ?<a href="#" id="regLink" class="btn btn-success btn-sm" data-whatever="/Account/Register">Нажми здесь</a></p>*@
-                    }
-                </div>
-
             </div>
 
         </div>
-        <script type="text/javascript">
-            (function () {
-                $('#logForm').css({ 'width': '250px','opacity':'0.5' });
-                $('.panel-heading').css({ 'padding': '20px', 'fontSize': '14pt', 'backgroundColor': '#418AC9' });
-                //$('label, p').css('color', '#000');
-                $('.panel-default').css('backgroundColor', '#85E0B9');
-            })();
-            $('#regLink, #forgotLink').on('click', function (event) {
-
-                //var element = $(event.relatedTarget);
-                
-
-                var url = $(this).data('whatever');
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    success: function (response) {
-                        $('#logForm').html(response);
-
-                    },
-
-                    error: function (xhr, status, error) {
-                        $('#logForm').html(error);
-                    }
-                });
-            });
-        </script>
-
-
     </div>
 </div>
+                        <script type="text/javascript">
+                            (function () {
+                                $('#logForm').css({ 'width': '250px', 'opacity': '0.5' });
+                                $('.panel-heading').css({ 'padding': '20px', 'fontSize': '14pt', 'backgroundColor': '#418AC9' });
+                                //$('label, p').css('color', '#000');
+                                $('.panel-default').css('backgroundColor', '#85E0B9');
+                            })();
+                            $('#regLink, #forgotLink').on('click', function (event) {
+
+                                //var element = $(event.relatedTarget);
+
+
+                                var url = $(this).data('whatever');
+                                $.ajax({
+                                    url: url,
+                                    type: "GET",
+                                    success: function (response) {
+                                        $('#logForm').html(response);
+
+                                    },
+
+                                    error: function (xhr, status, error) {
+                                        $('#logForm').html(error);
+                                    }
+                                });
+                            });
+                        </script>
+
+
+
+
+
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
