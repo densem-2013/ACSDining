@@ -126,8 +126,7 @@
         };
         var year = viewModel.Year();
         var firstDay = new Date(year, 0, 1).getDay();
-        //console.log(firstDay);
-        //var year = 2015;
+
         var week = viewModel.WeekNumber();
         var d = new Date("Jan 01, " + year + " 01:00:00");
         var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week - 1);
@@ -381,6 +380,14 @@
     }.bind(viewModel);
 
     viewModel.MFD_models.subscribe = ko.computed(viewModel.CalcTotal, viewModel);
+
+    viewModel.SetMyDateByWeek = function(weeknumber) {
+        var year = viewModel.Year();
+        var firstDay = new Date(year, 0, 1).getDay();
+        var d = new Date("Jan 01, " + year + " 01:00:00");
+        var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (weeknumber - 1);
+        viewModel.myDate(new Date(w));
+    }.bind(viewModel);
 
     viewModel.LoadWeekMenu();
     viewModel.loadWeekNumbers();

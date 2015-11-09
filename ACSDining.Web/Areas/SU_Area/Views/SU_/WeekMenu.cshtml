@@ -68,9 +68,9 @@
                         </div>
                     </td>
                     <td data-bind="foreach: Dishes">
-                        <div style="border-bottom: 1px solid;">
+                        <div style="border-bottom: 1px solid">
                             <span data-bind="text: Title"></span>
-                            <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$root.showDishes($data,$parentContext.$index())}" style="float: right; height: max-content; width: 70px;"></button>
+                            <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$root.showDishes($data,$parentContext.$index())}" style="float: right; max-height: 15px; width: 70px;"></button>
 
                         </div>
                     </td>
@@ -105,13 +105,13 @@
                         <div class="dataTables_paginate paging_simple_numbers" style="padding:5px;">
                             <ul class="pagination">
                                 <li class=" paginate_button previous">
-                                    <a href="#" data-bind=" click: function(){ $root.LoadWeekMenu($root.WeekNumber() - 1); }">Previous</a>
+                                    <a href="#" data-bind=" click: function(){ $root.SetMyDateByWeek($root.WeekNumber() - 1); }">Previous</a>
                                 </li>
                                 <li class="paginate_button " data-bind="foreach: NumbersWeeks">
-                                    <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $root.WeekNumber()}, click: function(){ $root.LoadWeekMenu($data); }"></a>
+                                    <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $root.WeekNumber()}, click: function(){ $root.SetMyDateByWeek($data); }"></a>
                                 </li>
                                 <li class=" paginate_button next">
-                                    <a href="#" data-bind="click: function(){ $root.LoadWeekMenu($root.WeekNumber() + 1 ); }">Next</a>
+                                    <a href="#" data-bind="click: function(){ $root.SetMyDateByWeek($root.WeekNumber() + 1 ); }">Next</a>
                                 </li>
                             </ul>
                         </div>
