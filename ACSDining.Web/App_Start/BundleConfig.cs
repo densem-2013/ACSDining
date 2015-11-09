@@ -10,6 +10,7 @@ namespace ACSDining.Web
 
 
             bundles.Add(new ScriptBundle("~/bundles/MenuForWeek").Include(
+                        "~/Areas/SU_Area/Content/scripts/app.suService.js",
                         "~/Areas/SU_Area/Content/scripts/MenuForWeekInfo.js"
                         ));
             bundles.Add(new ScriptBundle("~/bundles/EmployeeInfo").Include(

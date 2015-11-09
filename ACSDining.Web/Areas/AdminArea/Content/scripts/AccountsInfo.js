@@ -109,11 +109,6 @@
             self.pageIndex(index);
         };
 
-        self.getByGenre = function(genre) {
-            self.error(''); // Clear the error
-            self.genre(genre);
-            app.service.byGenre(genre).then(addMovies, onError);
-        };
 
         self.edit = function(item) {
             item.editing(true);
@@ -150,9 +145,9 @@
             });
         }
 
-        // Adds a JSON array of movies to the view model.
+        // Adds a JSON array of users to the view model.
         function addUsers(data) {
-           // var thisModel = self;
+
             var mapped = ko.utils.arrayMap(data, function (item) {
                 return new UserInfo(item);
             });

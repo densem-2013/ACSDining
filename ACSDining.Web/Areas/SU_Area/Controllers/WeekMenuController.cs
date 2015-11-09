@@ -51,7 +51,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
 
         [HttpGet]
-        [Route("CurrentWeek")]
+        [Route("curWeekNumber")]
         [ResponseType(typeof(Int32))]
         public  async Task<Int32> CurrentWeekNumber()
         {
@@ -73,18 +73,18 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpPut]
-        [Route("{numweek}")]
-        public async Task<IHttpActionResult> UpdateMenuForWeek([FromUri()]int numweek, [FromBody] WeekMenuModel menuforweek)
+        [Route("{update}")]
+        public async Task<IHttpActionResult> UpdateMenuForWeek(/*[FromUri()]int numweek,*/ [FromBody] WeekMenuModel menuforweek)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (numweek != menuforweek.WeekNumber)
-            {
-                return BadRequest();
-            }
+            //if (numweek != menuforweek.WeekNumber)
+            //{
+            //    return BadRequest();
+            //}
             
             foreach (MenuForDayModel mfd in menuforweek.MFD_models)
             {
@@ -104,25 +104,26 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             mfwModel.SummaryPrice = menuforweek.SummaryPrice;
             DB.Entry(mfwModel).State = EntityState.Modified;
-            try
-            {
-                await DB.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MenuForWeekExists(numweek))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await DB.SaveChangesAsync();
+            //try
+            //{
+            //    await DB.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!MenuForWeekExists(numweek))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(ex.Message);
+            //}
 
             return StatusCode(HttpStatusCode.OK);
         }

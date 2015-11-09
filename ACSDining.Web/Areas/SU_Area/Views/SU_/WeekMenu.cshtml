@@ -36,7 +36,7 @@
                 <tr style="background: #565659;">
                     <td class="col-md-3">
                         <div>
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ $root.LoadWeekMenu($root.CurrentWeekNumber())},css:{disabled: $root.IsCurrentWeek()}" />
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ $root.SetMyDateByWeek($root.CurrentWeekNumber())},css:{disabled: $root.IsCurrentWeek()}" />
                         </div>
                     </td>
                     <td class="col-md-5  " style="float: right">
@@ -83,7 +83,7 @@
                         <span data-bind="text: TotalPrice"></span>
                     </td>
                     <td style="vertical-align: middle; text-align: center">
-                        <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: Editable "></button>
+                        <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: function(){ $root.edit($data)} "></button>
                     </td>
 
                 </tr>
@@ -92,7 +92,7 @@
                 <tr>
                     <td style="border-bottom: 1px solid;  border-right: 0" colspan="2"><span class="changesaved" data-bind="visible: ChangeSaved"> Изменения сохранены </span></td>
                     <td style="border-bottom: 1px solid; align-content: stretch; border-left: 0" colspan="2">
-                        <input type="button" class="btn btn-success btn-lg" value="Сохранить изменения" data-bind="click: SaveToServer , visible: BeenChanged" />
+                        <input type="button" class="btn btn-success btn-lg" value="Сохранить изменения" data-bind="click: save , visible: BeenChanged" />
                         <span style="float: right;"> Итого: </span>
                     </td>
                     <td style="border-bottom: 1px solid; text-align: right" >
