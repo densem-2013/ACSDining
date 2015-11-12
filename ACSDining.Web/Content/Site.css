@@ -35,17 +35,17 @@ body
 .tophead
 {
     overflow: hidden;
-    background: #e2f8fe url("../Content/Images/tophead_bg.png") repeat-x 0 0;
+    /*background: #e2f8fe url("../Content/Images/tophead_bg.png") repeat-x 0 0;*/
 }
 .tophead .dleft
 {
-    background: url("../Content/Images/tophead_left.jpg") no-repeat 0 0;
+    /*background: url("../Content/Images/tophead_left.jpg") no-repeat 0 0;*/
     padding-left: 322px;
     position: relative;
 }
 .tophead .dright
 {
-    background: url("../Content/Images/tophead_right.png") no-repeat 100% 0;
+    /*background: url("../Content/Images/tophead_right.png") no-repeat 100% 0;*/
     padding-right: 5px;
 }
 /*Логотип*/
@@ -93,7 +93,7 @@ h1.logo
 }
 .tophead .blockinform .dleft
 {
-    background: url("../Content/Images/blockinform.png") no-repeat 0 0;
+    /*background: url("../Content/Images/blockinform.png") no-repeat 0 0;*/
     padding-left: 40px;
 }
 .tophead .blockinform .dright
@@ -261,21 +261,21 @@ page width. Or, you can specify an exact pixel width. */
 }
 .page .dleft
 {
-    background: url("../Content/Images/left_border.png") repeat-y 0 0;
+    /*background: url("../Content/Images/left_border.png") repeat-y 0 0;*/
     width: 100%;
     height: 100%;
     padding-right: 0px;
 }
 .page .dright
 {
-    background: url("../Content/Images/right_border.png") repeat-y right;
+    /*background: url("../Content/Images/right_border.png") repeat-y right;*/
     width: 100%;
     height: 100%;
     margin-left: auto;
 }
 #footer
 {
-    background: url("../Content/Images/footer.png") repeat 0 0;
+    /*background: url("../Content/Images/footer.png") repeat 0 0;*/
     color: #999;
     padding: 10px 0;
     text-align: center;
@@ -341,7 +341,7 @@ ul#menu li.selected a
 
 #submenu
 {
-    background: url("../Content/Images/submenu.png") repeat 0 0;
+    /*background: url("../Content/Images/submenu.png") repeat 0 0;*/
     width: 99%;
     height: 45px;
     margin-left: auto;
@@ -540,7 +540,7 @@ div#title
     border-style: solid;
     border-width: 1px;
     border-collapse: separate;
-    background: url("Vista/sprite.png") repeat-x scroll 0 -96px #E8E8E8;
+    /*background: url("Vista/sprite.png") repeat-x scroll 0 -96px #E8E8E8;*/
     
     color: #627A9D;
     cursor: pointer;
@@ -844,10 +844,13 @@ background-color:#F7E1E1;
 .t-grid .t-header-weekend
 {
 border-color:#a7bac5;
-background:#f3a7c3 url('Images/grid-weekend-column.png') repeat-x 0 0px;
+/*background:#f3a7c3 url('Images/grid-weekend-column.png') repeat-x 0 0px;*/
 }
 
 .t-footer-template .t-weekend
 {
 background-color: #E5D5E5;
+}
+.input-group.date input[type=text] {
+    background-color: rgba(200, 236, 245, 0.51)
 }

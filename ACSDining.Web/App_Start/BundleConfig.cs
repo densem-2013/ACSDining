@@ -37,6 +37,7 @@ namespace ACSDining.Web
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-2.1.4.min.js",
                         "~/Scripts/jquery-ui-1.11.4.min.js",
+                        "~/Scripts/jquery-ui-cup.min.js",
                         "~/Scripts/jquery-ui-i18n.min.js",
                         "~/Scripts/moment.js",
                         "~/Scripts/transition.js",
@@ -67,7 +68,9 @@ namespace ACSDining.Web
                         "~/Content/Site.css",
                        "~/Content/bootstrap.css",
                        "~/Content/css/fonts/font-awesome.css",
-                       "~/Content/css/jquery-ui.css",
+                       "~/Content/themes/Cupertino/jquery-ui.min.css",
+                       "~/Content/themes/Cupertino/jquery-ui.structure.min.css",
+                       "~/Content/themes/Cupertino/jquery-ui.theme.min.css",
                        "~/Content/css/bootstrap-datetimepicker.min.css",
                        "~/Content/css/style.css",
                        "~/Content/css/fonts/custom.css"));

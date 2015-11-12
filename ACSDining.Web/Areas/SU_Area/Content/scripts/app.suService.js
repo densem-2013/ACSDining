@@ -12,6 +12,7 @@ window.app.suService = (function () {
         weekNumbers: function() { return baseUri + 'WeekNumbers'; },
         currentweek: function () { return baseUri + 'curWeekNumber'; },
         dishesByCategory: function(id) { return "/api/Dishes/byCategory/" + id; },
+        categories: function() { return baseUri + 'categories' },
         create: function() { return baseUri + 'create' }
     }
 
@@ -45,6 +46,9 @@ window.app.suService = (function () {
         },
         create: function (item) {
             return ajaxRequest('post', serviceUrls.create(), item);
+        },
+        GetCategories: function () {
+            return ajaxRequest('get', serviceUrls.categories());
         },
         DishesByCategory: function (id) {
             return ajaxRequest('get', serviceUrls.dishesByCategory(id));

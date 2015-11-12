@@ -102,15 +102,22 @@
         return this;
     };
 
-    var MenuForDayInfo = function (object) {
+    var MenuForDayInfo = function (object,categs) {
 
         var self = this;
 
         object = object || {};
+        categs = categs || [];
 
         self.ID = ko.observable(object.id).store();
         self.DayOfWeek = ko.observable(object.dayOfWeek);
-        self.Dishes = ko.observableArray(object.dishes).store();
+        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function (item) {
+            var first = ko.utils.arrayFirst(object.dishes, function (element) {
+
+                return element.category === item;
+            });
+            return new DishInfo(first);
+        })).store();
         self.Editing = ko.observable(false);
         self.TotalPrice = ko.observable().store();
 
@@ -137,16 +144,18 @@
         }.bind(self));
 
     }
-    var objForMap = function() {
+    var objForMap = function(categs) {
         this.categories = ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
         this.target = [];
         this.sortFunc = function(value) {
             for (var i = 0; i < 4; i++) {
+                var first=ko.utils.arrayFirst(categs,function(item) {
+                    if (value.category == item) {
 
-                if (value.category == this.categories[i]) {
-
-                    this.target.push(new DishInfo(value));
-                }
+                        this.target.push(new DishInfo(value));
+                    }
+                })
+                
             }
         }
     };
@@ -167,6 +176,7 @@
 
         self.DishesByCategory = ko.observableArray([]);
         self.Category = ko.observable();
+        self.Categories = ko.observableArray();
 
         self.SelectedDish = ko.observable();
 
@@ -332,6 +342,11 @@
 
         self.LoadWeekMenu = function (numweek, year) {
 
+            app.suService.GetCategories().then(function (resp) {
+                self.Categories([]);
+                self.Categories.pushAll(resp);
+                }, onError);
+
             app.suService.LoadWeekMenu(numweek, year).then(function (resp) {
                 self.MFD_models([]);
 
@@ -339,11 +354,8 @@
                 self.WeekNumber(resp.weekNumber);
                 self.Year(resp.yearNumber);
                 ko.utils.arrayForEach(resp.mfD_models, function (object) {
-                    var obj = new objForMap();
-                    object.dishes.map(obj.sortFunc, obj);
-                    object.dishes = obj.target;
 
-                    self.MFD_models.push(new MenuForDayInfo(object));
+                    self.MFD_models.push(new MenuForDayInfo(object,self.Categories()));
 
                 });
 

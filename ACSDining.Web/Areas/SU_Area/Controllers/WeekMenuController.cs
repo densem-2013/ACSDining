@@ -59,6 +59,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpGet]
+        [Route("categories")]
+        [ResponseType(typeof(string[]))]
+        public async Task<string[]> GetCategories()
+        {
+            return await Task.FromResult(DB.DishTypes.AsEnumerable().OrderBy(d=>d.Id).Select(dt => dt.Category).ToArray());
+        }
+
+        [HttpGet]
         [Route("WeekNumbers")]
         [ResponseType(typeof(List<int>))]
         public async Task<IHttpActionResult> GetWeekNumbers()
