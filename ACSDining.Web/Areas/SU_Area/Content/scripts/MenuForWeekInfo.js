@@ -144,21 +144,21 @@
         }.bind(self));
 
     }
-    var objForMap = function(categs) {
-        this.categories = ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
-        this.target = [];
-        this.sortFunc = function(value) {
-            for (var i = 0; i < 4; i++) {
-                var first=ko.utils.arrayFirst(categs,function(item) {
-                    if (value.category == item) {
+    //var objForMap = function(categs) {
+    //    this.categories = ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
+    //    this.target = [];
+    //    this.sortFunc = function(value) {
+    //        for (var i = 0; i < 4; i++) {
+    //            var first=ko.utils.arrayFirst(categs,function(item) {
+    //                if (value.category == item) {
 
-                        this.target.push(new DishInfo(value));
-                    }
-                })
+    //                    this.target.push(new DishInfo(value));
+    //                }
+    //            })
                 
-            }
-        }
-    };
+    //        }
+    //    }
+    //};
 
     var viewModel = function () {
         var self = this;
@@ -260,7 +260,7 @@
                 SummaryPrice: self.SummaryPrice()
 
             }
-            app.suService.update(ko.toJSON(source)).then(
+            app.su_Service.update(ko.toJSON(source)).then(
                 function () {
                     commitChanges(item);
                     viewModel.BeenChanged(false);
@@ -298,7 +298,7 @@
 
 
         self.loadWeekNumbers = function () {
-            app.suService.LoadWeekNumbers().then(function(resp) {
+            app.su_Service.LoadWeekNumbers().then(function(resp) {
 
                 for (var i = 0; i < resp.length; i++) {
 
@@ -309,7 +309,7 @@
         };
 
         self.loadDishes = function (id) {
-            app.suService.DishesByCategory(id).then(function (resp) {
+            app.su_Service.DishesByCategory(id).then(function (resp) {
                 self.DishesByCategory([]);
 
                 for (var i = 0; i < resp.length; i++) {
@@ -342,12 +342,12 @@
 
         self.LoadWeekMenu = function (numweek, year) {
 
-            app.suService.GetCategories().then(function (resp) {
+            app.su_Service.GetCategories().then(function (resp) {
                 self.Categories([]);
                 self.Categories.pushAll(resp);
                 }, onError);
 
-            app.suService.LoadWeekMenu(numweek, year).then(function (resp) {
+            app.su_Service.LoadWeekMenu(numweek, year).then(function (resp) {
                 self.MFD_models([]);
 
                 self.MenuId(resp.id);
@@ -371,7 +371,7 @@
 
         self.GetCurrentWeekNumber = function () {
 
-            app.suService.GetCurrentWeekNumber().then(function (resp) {
+            app.su_Service.GetCurrentWeekNumber().then(function (resp) {
                 self.CurrentWeekNumber(resp);
 
             }, onError);

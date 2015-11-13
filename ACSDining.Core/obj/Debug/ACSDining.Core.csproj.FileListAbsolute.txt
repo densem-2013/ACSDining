@@ -210,3 +210,4 @@ E:\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.pdb
 E:\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
 E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache

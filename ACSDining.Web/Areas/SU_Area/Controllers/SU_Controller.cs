@@ -22,5 +22,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             ViewBag.Title = "Welcome " + Session["Lname"] + " " + Session["Fname"];
             return View();
         }
+        public ActionResult Payment()
+        {
+            ViewBag.Title = "Welcome " + Session["Lname"] + " " + Session["Fname"];
+            return View();
+        }
     }
 }

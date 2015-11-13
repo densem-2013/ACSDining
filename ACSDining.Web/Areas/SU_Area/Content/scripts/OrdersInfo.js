@@ -175,33 +175,41 @@
     OrdersViewModel.GetCurrentWeekNumber();
 
     ko.bindingHandlers.datepicker = {
-        init: function(element, valueAccessor, allBindingsAccessor) {
-            var options = allBindingsAccessor().datepickerOptions || {},
-                $el = $(element);
+        init: function (element, valueAccessor, allBindingsAccessor) {
 
-            //initialize datepicker with some optional options
-            $el.datepicker(options);
+            var options = $.extend(
+                {},
+                $.datepicker.regional["ru"],
+                {
+                    dateFormat: 'dd/mm/yy',
+                    showButtonPanel: true,
+                    gotoCurrent: true,
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    showWeek: true,
+                    constraintInput: true,
+                    showAnim: "slideDown",
+                    hideIfNoPrevNext: true,
+                    onClose: function (dateText, inst) {
+                        $(this).blur();
+                    }
+                }
+            );
+            $(element).datepicker(options);
 
-            //handle the field changing
-            ko.utils.registerEventHandler(element, "change", function() {
+            ko.utils.registerEventHandler($(element), "change", function () {
                 var observable = valueAccessor();
-                observable($el.datepicker("getDate"));
+                observable($(element).datepicker("getDate"));
             });
 
-            //handle disposal (if KO removes by the template binding)
-            ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
-                $el.datepicker("destroy");
+            ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+                $(element).datepicker("destroy");
             });
 
         },
-        update: function(element, valueAccessor) {
-            var value = ko.utils.unwrapObservable(valueAccessor()),
-                $el = $(element),
-                current = $el.datepicker("getDate");
-
-            if (value - current !== 0) {
-                $el.datepicker("setDate", value);
-            }
+        update: function (element, valueAccessor) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            $(element).datepicker("setDate", value);
         }
     };
 

@@ -2,34 +2,6 @@
     ViewBag.Title = "Index";
 }
 
-<div class="row">
-    <div class="col-md-9 col-xs-offset-3">
-        <div class="col-md-6">
-            <div class="input-group date">
-                <input type="text" class="form-control" data-provide="datepicker" data-bind="datepicker: myDate" />
-            </div>
-        </div>
-        <div class="col-md-6">
-            <nav class="navbar">
-                <div class="container-fluid">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="active ">
-                            <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
-                        </li>
-
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
-                        </li>
-
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </div>
-</div>
     <div class="panel panel-default" id="mfwPanel">
         <table>
             <tbody>
