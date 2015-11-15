@@ -39,7 +39,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
             return Ok(roles);
         }
 
-        [Route("create")]
+        [Route("createWeekMenu")]
         public async Task<IHttpActionResult> Create(CreateRoleBindingModel model)
         {
             if (!ModelState.IsValid)

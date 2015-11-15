@@ -1779,7 +1779,7 @@ Expr = Sizzle.selectors = {
 					Sizzle.error( "unsupported pseudo: " + pseudo );
 
 			// The user may use createPseudo to indicate that
-			// arguments are needed to create the filter function
+			// arguments are needed to createWeekMenu the filter function
 			// just as Sizzle does
 			if ( fn[ expando ] ) {
 				return fn( argument );
@@ -4466,7 +4466,7 @@ jQuery.event = {
 		}
 
 		if ( type.indexOf(".") >= 0 ) {
-			// Namespaced trigger; create a regexp to match event type in handle()
+			// Namespaced trigger; createWeekMenu a regexp to match event type in handle()
 			namespaces = type.split(".");
 			type = namespaces.shift();
 			namespaces.sort();
@@ -7068,7 +7068,7 @@ var
 				// Trust units reported by jQuery.css
 				unit = unit || start[ 3 ];
 
-				// Make sure we update the tween properties later on
+				// Make sure we UpdateWeekMenu the tween properties later on
 				parts = parts || [];
 
 				// Iteratively approximate from a nonzero starting point
@@ -7110,7 +7110,7 @@ function createFxNow() {
 	return ( fxNow = jQuery.now() );
 }
 
-// Generate parameters to create a standard animation
+// Generate parameters to createWeekMenu a standard animation
 function genFx( type, includeWidth ) {
 	var which,
 		attrs = { height: type },
@@ -7838,7 +7838,7 @@ jQuery.extend({
 				for ( ; i < max; i++ ) {
 					option = options[ i ];
 
-					// oldIE doesn't update selected after form reset (#2551)
+					// oldIE doesn't UpdateWeekMenu selected after form reset (#2551)
 					if ( ( option.selected || i === index ) &&
 							// Don't return options that are disabled or in a disabled optgroup
 							( support.optDisabled ? !option.disabled : option.getAttribute("disabled") === null ) &&
@@ -8106,7 +8106,7 @@ if ( !getSetAttribute ) {
 	// This fixes almost every IE6/7 issue
 	nodeHook = {
 		set: function( elem, value, name ) {
-			// Set the existing or create a new attribute node
+			// Set the existing or createWeekMenu a new attribute node
 			var ret = elem.getAttributeNode( name );
 			if ( !ret ) {
 				elem.setAttributeNode(
@@ -8923,7 +8923,7 @@ jQuery.extend({
 
 		// For options that shouldn't be deep extended:
 		// you can add your own custom options here if
-		// and when you create one that shouldn't be
+		// and when you createWeekMenu one that shouldn't be
 		// deep extended (see ajaxExtend)
 		flatOptions: {
 			url: true,
@@ -9746,7 +9746,7 @@ if ( xhrSupported ) {
 	});
 }
 
-// Functions to create xhrs
+// Functions to createWeekMenu xhrs
 function createStandardXHR() {
 	try {
 		return new window.XMLHttpRequest();

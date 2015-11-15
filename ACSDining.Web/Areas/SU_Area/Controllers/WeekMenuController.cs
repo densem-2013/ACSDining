@@ -81,57 +81,28 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpPut]
-        [Route("{update}")]
-        public async Task<IHttpActionResult> UpdateMenuForWeek(/*[FromUri()]int numweek,*/ [FromBody] WeekMenuModel menuforweek)
+        [Route("update")]
+        public async Task<IHttpActionResult> UpdateMenuForDay([FromBody] MenuForDayModel menuforday)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            //if (numweek != menuforweek.WeekNumber)
-            //{
-            //    return BadRequest();
-            //}
-            
-            foreach (MenuForDayModel mfd in menuforweek.MFD_models)
-            {
-                List<Dish> dishes = DB.Dishes.AsEnumerable().Join(  mfd.Dishes.AsEnumerable(),
-                                                                    dm => dm.DishID,
-                                                                    md => md.DishID,
-                                                                    (dm, md) => dm).ToList();
+            List<Dish> dishes =
+                menuforday.Dishes.SelectMany(d => DB.Dishes.Where(dish => dish.DishID == d.DishID)).ToList();
 
-                MenuForDay menuFD = await DB.MenuForDays.Include("Dishes").SingleOrDefaultAsync( m=>m.ID==mfd.ID);
+            MenuForDay menuFD = await DB.MenuForDays.Include("Dishes").FirstOrDefaultAsync(m => m.ID == menuforday.ID);
                 menuFD.Dishes = dishes;
-                menuFD.TotalPrice = mfd.TotalPrice;
+                menuFD.TotalPrice = menuforday.TotalPrice;
                 DB.Entry(menuFD).State = EntityState.Modified;
 
-               
-            }
-            MenuForWeek mfwModel = await DB.MenuForWeeks.FindAsync(menuforweek.ID);
+            MenuForWeek mfwModel =
+                await DB.MenuForWeeks.FirstOrDefaultAsync(mfw => mfw.MenuForDay.Any(mfd => mfd.ID == menuforday.ID));
 
-            mfwModel.SummaryPrice = menuforweek.SummaryPrice;
+            mfwModel.SummaryPrice = mfwModel.MenuForDay.Sum(mfd=>mfd.TotalPrice);
             DB.Entry(mfwModel).State = EntityState.Modified;
             await DB.SaveChangesAsync();
-            //try
-            //{
-            //    await DB.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!MenuForWeekExists(numweek))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    return BadRequest(ex.Message);
-            //}
 
             return StatusCode(HttpStatusCode.OK);
         }

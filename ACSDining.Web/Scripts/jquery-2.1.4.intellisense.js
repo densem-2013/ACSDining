@@ -60,7 +60,7 @@ intellisense.annotate(jQuery, {
     /// </signature>
   },
   'cssHooks': function() {
-    /// <summary>Hook directly into jQuery to override how particular CSS properties are retrieved or set, normalize CSS property naming, or create custom properties.</summary>
+    /// <summary>Hook directly into jQuery to override how particular CSS properties are retrieved or set, normalize CSS property naming, or createWeekMenu custom properties.</summary>
     /// <returns type="Object" />
   },
   'data': function() {
@@ -1126,7 +1126,7 @@ intellisense.annotate(jQuery.fn, {
     /// </signature>
     /// <signature>
     ///   <summary>Store arbitrary data associated with the matched elements.</summary>
-    ///   <param name="obj" type="Object">An object of key-value pairs of data to update.</param>
+    ///   <param name="obj" type="Object">An object of key-value pairs of data to UpdateWeekMenu.</param>
     ///   <returns type="jQuery" />
     /// </signature>
   },

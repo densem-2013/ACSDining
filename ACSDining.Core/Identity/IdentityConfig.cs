@@ -108,7 +108,7 @@ namespace ACSDining.Core.Identity
 
     // This is useful if you do not want to tear down the database each time you run the application.
     // public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
-    // This example shows you how to create a new database if the Model changes
+    // This example shows you how to createWeekMenu a new database if the Model changes
     public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
         private static string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") +
@@ -356,7 +356,7 @@ namespace ACSDining.Core.Identity
 
             Year year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
 
-            for (int week = 0; week < 15; week++)
+            for (int week = 0; week < 25; week++)
             {
                 List<MenuForDay> mfdays = new List<MenuForDay>();
 
@@ -426,7 +426,7 @@ namespace ACSDining.Core.Identity
 
             double[][] coursesnums =
             {
-                new[] {0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.5},
+                new[] {0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0},
                 new[] {0, 0, 1.0, 1.0, 1.0, 1.0, 2.0},
                 new[] {0, 1.0},
                 new[] {0, 1.0}

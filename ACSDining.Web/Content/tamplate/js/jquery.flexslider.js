@@ -281,7 +281,7 @@
         active: function() {
           slider.controlNav.removeClass(namespace + "active").eq(slider.animatingTo).addClass(namespace + "active");
         },
-        update: function(action, pos) {
+        UpdateWeekMenu: function(action, pos) {
           if (slider.pagingCount > 1 && action === "add") {
             slider.controlNavScaffold.append($('<li><a>' + slider.count + '</a></li>'));
           } else if (slider.pagingCount === 1) {
@@ -290,7 +290,7 @@
             slider.controlNav.eq(pos).closest('li').remove();
           }
           methods.controlNav.set();
-          (slider.pagingCount > 1 && slider.pagingCount !== slider.controlNav.length) ? slider.update(pos, action) : methods.controlNav.active();
+          (slider.pagingCount > 1 && slider.pagingCount !== slider.controlNav.length) ? slider.UpdateWeekMenu(pos, action) : methods.controlNav.active();
         }
       },
       directionNav: {
@@ -306,7 +306,7 @@
             slider.directionNav = $('.' + namespace + 'direction-nav li a', slider);
           }
 
-          methods.directionNav.update();
+          methods.directionNav.UpdateWeekMenu();
 
           slider.directionNav.bind(eventType, function(event) {
             event.preventDefault();
@@ -324,7 +324,7 @@
             methods.setToClearWatchedEvent();
           });
         },
-        update: function() {
+        UpdateWeekMenu: function() {
           var disabledClass = namespace + 'disabled';
           if (slider.pagingCount === 1) {
             slider.directionNav.addClass(disabledClass).attr('tabindex', '-1');
@@ -354,7 +354,7 @@
             slider.pausePlay = $('.' + namespace + 'pauseplay a', slider);
           }
 
-          methods.pausePlay.update((slider.vars.slideshow) ? namespace + 'pause' : namespace + 'play');
+          methods.pausePlay.UpdateWeekMenu((slider.vars.slideshow) ? namespace + 'pause' : namespace + 'play');
 
           slider.pausePlay.bind(eventType, function(event) {
             event.preventDefault();
@@ -378,7 +378,7 @@
             methods.setToClearWatchedEvent();
           });
         },
-        update: function(state) {
+        UpdateWeekMenu: function(state) {
           (state === "play") ? slider.pausePlay.removeClass(namespace + 'pause').addClass(namespace + 'play').html(slider.vars.playText) : slider.pausePlay.removeClass(namespace + 'play').addClass(namespace + 'pause').html(slider.vars.pauseText);
         }
       },
@@ -563,7 +563,7 @@
             methods.smoothHeight();
           } else if (carousel) { //CAROUSEL:
             slider.slides.width(slider.computedW);
-            slider.update(slider.pagingCount);
+            slider.UpdateWeekMenu(slider.pagingCount);
             slider.setProps();
           }
           else if (vertical) { //VERTICAL:
@@ -688,7 +688,7 @@
         slider.atEnd = target === 0 || target === slider.last;
 
         // DIRECTIONNAV:
-        if (slider.vars.directionNav) methods.directionNav.update();
+        if (slider.vars.directionNav) methods.directionNav.UpdateWeekMenu();
 
         if (target === slider.last) {
           // API: end() of cycle Callback
@@ -783,7 +783,7 @@
       slider.animatedSlides = null;
       slider.playing = false;
       // PAUSEPLAY:
-      if (slider.vars.pausePlay) methods.pausePlay.update("play");
+      if (slider.vars.pausePlay) methods.pausePlay.UpdateWeekMenu("play");
       // SYNC:
       if (slider.syncExists) methods.sync("pause");
     };
@@ -793,7 +793,7 @@
       slider.animatedSlides = slider.animatedSlides || setInterval(slider.animateSlides, slider.vars.slideshowSpeed);
       slider.started = slider.playing = true;
       // PAUSEPLAY:
-      if (slider.vars.pausePlay) methods.pausePlay.update("pause");
+      if (slider.vars.pausePlay) methods.pausePlay.UpdateWeekMenu("pause");
       // SYNC:
       if (slider.syncExists) methods.sync("play");
     };
@@ -966,10 +966,10 @@
       slider.computedW = slider.itemW - slider.boxPadding;
     };
 
-    slider.update = function(pos, action) {
+    slider.UpdateWeekMenu = function(pos, action) {
       slider.doMath();
 
-      // update currentSlide and slider.animatingTo if necessary
+      // UpdateWeekMenu currentSlide and slider.animatingTo if necessary
       if (!carousel) {
         if (pos < slider.currentSlide) {
           slider.currentSlide += 1;
@@ -979,20 +979,20 @@
         slider.animatingTo = slider.currentSlide;
       }
 
-      // update controlNav
+      // UpdateWeekMenu controlNav
       if (slider.vars.controlNav && !slider.manualControls) {
         if ((action === "add" && !carousel) || slider.pagingCount > slider.controlNav.length) {
-          methods.controlNav.update("add");
+          methods.controlNav.UpdateWeekMenu("add");
         } else if ((action === "remove" && !carousel) || slider.pagingCount < slider.controlNav.length) {
           if (carousel && slider.currentSlide > slider.last) {
             slider.currentSlide -= 1;
             slider.animatingTo -= 1;
           }
-          methods.controlNav.update("remove", slider.last);
+          methods.controlNav.UpdateWeekMenu("remove", slider.last);
         }
       }
-      // update directionNav
-      if (slider.vars.directionNav) methods.directionNav.update();
+      // UpdateWeekMenu directionNav
+      if (slider.vars.directionNav) methods.directionNav.UpdateWeekMenu();
 
     };
 
@@ -1009,10 +1009,10 @@
         (pos !== undefined) ? slider.slides.eq(pos).before($obj) : slider.container.append($obj);
       }
 
-      // update currentSlide, animatingTo, controlNav, and directionNav
-      slider.update(pos, "add");
+      // UpdateWeekMenu currentSlide, animatingTo, controlNav, and directionNav
+      slider.UpdateWeekMenu(pos, "add");
 
-      // update slider.slides
+      // UpdateWeekMenu slider.slides
       slider.slides = $(slider.vars.selector + ':not(.clone)', slider);
       // re-setup the slider to accomdate new slide
       slider.setup();
@@ -1023,7 +1023,7 @@
     slider.removeSlide = function(obj) {
       var pos = (isNaN(obj)) ? slider.slides.index($(obj)) : obj;
 
-      // update count
+      // UpdateWeekMenu count
       slider.count -= 1;
       slider.last = slider.count - 1;
 
@@ -1034,11 +1034,11 @@
         (vertical && reverse) ? slider.slides.eq(slider.last).remove() : slider.slides.eq(obj).remove();
       }
 
-      // update currentSlide, animatingTo, controlNav, and directionNav
+      // UpdateWeekMenu currentSlide, animatingTo, controlNav, and directionNav
       slider.doMath();
-      slider.update(pos, "remove");
+      slider.UpdateWeekMenu(pos, "remove");
 
-      // update slider.slides
+      // UpdateWeekMenu slider.slides
       slider.slides = $(slider.vars.selector + ':not(.clone)', slider);
       // re-setup the slider to accomdate new slide
       slider.setup();

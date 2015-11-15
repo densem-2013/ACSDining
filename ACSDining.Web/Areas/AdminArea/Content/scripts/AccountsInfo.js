@@ -133,7 +133,7 @@
         };
 
         self.save = function(item) {
-            app.service.update(item).then(
+            app.service.UpdateWeekMenu(item).then(
                 function() {
                     commitChanges(item);
                 },

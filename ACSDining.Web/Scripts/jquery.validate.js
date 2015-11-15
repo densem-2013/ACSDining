@@ -697,7 +697,7 @@ $.extend($.validator, {
 				// replace message on existing label
 				label.html(message);
 			} else {
-				// create label
+				// createWeekMenu label
 				label = $("<" + this.settings.errorElement + ">")
 					.attr("for", this.idOrName(element))
 					.addClass(this.settings.errorClass)
@@ -967,7 +967,7 @@ $.extend($.validator, {
 		});
 
 		if ( $.validator.autoCreateRanges ) {
-			// auto-create ranges
+			// auto-createWeekMenu ranges
 			if ( rules.min && rules.max ) {
 				rules.range = [rules.min, rules.max];
 				delete rules.min;

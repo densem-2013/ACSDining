@@ -67,7 +67,7 @@
             return { 'controlsDescendantBindings': true };
         },
         // This method is called to initialize the node, and will also be called again if you change what the grid is bound to
-        update: function (element, viewModelAccessor, allBindings) {
+        UpdateWeekMenu: function (element, viewModelAccessor, allBindings) {
             var viewModel = viewModelAccessor();
 
             // Empty the element

@@ -9,16 +9,24 @@ namespace ACSDining.Web
         {
 
 
-            bundles.Add(new ScriptBundle("~/bundles/MenuForWeek").Include(
-                        "~/Areas/SU_Area/Content/scripts/app.su_Service.js",
-                        "~/Areas/SU_Area/Content/scripts/MenuForWeekInfo.js"
+            bundles.Add(new ScriptBundle("~/bundles/ViewModel").Include(
+                        "~/Areas/SU_Area/Content/scripts/app.su_Service.js"//,
+                       // "~/Areas/SU_Area/Content/scripts/AppSUviewModel.js"
                         ));
+
+            bundles.Add(new ScriptBundle("~/bundles/MenuForWeek").Include(
+                "~/Areas/SU_Area/Content/scripts/MenuForWeekInfo.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/DishInfo").Include(
+                "~/Areas/SU_Area/Content/scripts/DishesInfo.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/EmployeeInfo").Include(
                         "~/Areas/EmployeeArea/Content/scripts/EmployeeOrderInfo.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/AccountsInfo").Include(
-                        "~/Areas/AdminArea/Content/scripts/app.service.js",
                         "~/Areas/AdminArea/Content/scripts/AccountsInfo.js"
                         ));
 
@@ -45,6 +53,7 @@ namespace ACSDining.Web
                         "~/Scripts/bootstrap.min.js",
                         "~/Scripts/bootstrap-datetimepicker.js",
                         "~/Scripts/knockout-3.2.0.js",
+                        "~/Scripts/knockout.mapping-latest.js",
                         "~/Scripts/knockout-bootstrap.min.js"
             ));
 

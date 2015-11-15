@@ -127,7 +127,7 @@ window.Modernizr = (function( window, document, undefined ) {
           fakeBody = body || document.createElement('body');
 
       if ( parseInt(nodes, 10) ) {
-          // In order not to give false positives we create a node for each test
+          // In order not to give false positives we createWeekMenu a node for each test
           // This also allows the method to scale for unspecified uses
           while ( nodes-- ) {
               node = document.createElement('div');

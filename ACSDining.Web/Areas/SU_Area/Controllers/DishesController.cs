@@ -33,7 +33,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 Title = d.Title,
                 ProductImage = d.ProductImage,
                 Price = d.Price,
-                Category = d.DishType.Category
+                Category = d.DishType.Category,
+                Foods = d.DishDetail.Foods
 
             }).ToList();
         }
@@ -44,12 +45,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpGet]
-        [Route("byCategory/{dishid:int}")]
+        [Route("byCategory/{category}")]
         [ResponseType(typeof(IEnumerable<DishModel>))]
         // GET api/Dishes
-        public async Task<IHttpActionResult> GetByCategory(int dishid)
+        public async Task<IHttpActionResult> GetByCategory(string category)
         {
-            string category = Dishes.Find(d => d.DishID == dishid).Category;
             if (string.IsNullOrEmpty(category))
             {
                 return NotFound();

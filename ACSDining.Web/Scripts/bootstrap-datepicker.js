@@ -37,7 +37,7 @@
 			this.element.on({
 				focus: $.proxy(this.show, this),
 				//blur: $.proxy(this.hide, this),
-				keyup: $.proxy(this.update, this)
+				keyup: $.proxy(this.UpdateWeekMenu, this)
 			});
 		} else {
 			if (this.component){
@@ -81,7 +81,7 @@
 		this.onRender = options.onRender;
 		this.fillDow();
 		this.fillMonths();
-		this.update();
+		this.UpdateWeekMenu();
 		this.showMode();
 	};
 	
@@ -157,7 +157,7 @@
 			});
 		},
 		
-		update: function(newDate){
+		UpdateWeekMenu: function(newDate){
 			this.date = DPGlobal.parseDate(
 				typeof newDate === 'string' ? newDate : (this.isInput ? this.element.prop('value') : this.element.data('date')),
 				this.format

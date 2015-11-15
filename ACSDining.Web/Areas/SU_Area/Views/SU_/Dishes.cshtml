@@ -1,7 +1,110 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Dishes";
 }
 
-<h2>Dishes</h2>
+
+<div class="row">
+    <div class="col-md-9 col-xs-offset-3">
+        <div class="col-md-6">
+            <div class="input-group date">
+                <input type="button" class="btn-lg btn-success" data-bind="value: 'Добавить ' + SelectedCategory()" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <nav class="navbar">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
+                        </li>
+
+                        <li>
+                            <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
+                        </li>
+
+                        <li class="active ">
+                            <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
+                        </li>
+                        <li>
+                            <a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default" id="mfwPanel">
+    <table>
+        <tbody>
+            <tr style="background: #565659;">
+                <!-- ko foreach: Categories-->
+                <td><span>
+    <input type="radio" name="dishGroup" data-bind="checked: $parent.SelectedCategory,checkedValue : $data, click: $parent.changeSelected" />
+                    <span data-bind="text:$data" style="color: #54ECD2"></span>
+</span>
+                </td>
+                <!--/ko-->
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
+        <thead>
+            <tr>
+                <th class="col-sm-1">№</th>
+                <th class="col-sm-3">Название</th>
+                <th class="col-sm-3">Продукты</th>
+                <th class="col-sm-2" style="text-align: center">Стоимость</th>
+                <th class="col-sm-2" style="text-align: center"><span data-bind="text: BeenChanged()?'Сохранить / Отмена':'Изменить' "></span></th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach:pagedList">
+            <tr>
+                <td>
+                    <span data-bind="text: $parent.pageIndex() * $parent.pageSize() + $index() + 1"></span>
+                </td>
+                <td>
+                    <span data-bind="text:Title"></span>
+                </td>
+                <td>
+                    <span data-bind="text:Foods"></span>
+                </td>
+                <td>
+                    <span data-bind="text:Price"></span>
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                    <!-- ko ifnot: Editing -->
+                    <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: function(){ $parent.edit($data)} "></button>
+                    <!--/ko-->
+                    <!-- ko if: Editing -->
+                    <button class="glyphicon glyphicon-save btn-warning btn-lg" data-bind="click: function(){ $parent.save($data)} "></button>
+                    <button class="glyphicon glyphicon-adjust btn-danger btn-lg" data-bind="click: function(){ $parent.cancel($data)} "></button>
+                    <!--/ko-->
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5">
+                    <div class="col-sm-6">
+                        <div class="dataTables_paginate paging_simple_numbers">
+                            <ul class="pagination">
+                                <li data-bind="css: { disabled: pageIndex() === 0 }" class="paginate_button previous">
+                                    <a href="#" class="btn" data-bind="click: previousPage">Previous</a>
+                                </li>
+                                <li data-bind=" foreach: allPages">
+                                    <a href="#" class="paginate_button" data-bind="text: $data.pageNumber, click: function() { $parent.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($parent.pageIndex() + 1) }"></a>
+                                </li>
+                                <li class="paginate_button next" data-bind="css: { disabled: pageIndex() === maxPageIndex() }">
+                                    <a href="#" data-bind="click: nextPage">Next</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        <tfoot>
+    </table>
+</div>
+@Scripts.Render("~/bundles/DishInfo")
 

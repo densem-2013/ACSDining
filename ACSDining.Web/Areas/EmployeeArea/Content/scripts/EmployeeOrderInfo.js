@@ -250,7 +250,7 @@
             });
             if (dish != undefined) {
 
-                viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].update(dish);
+                viewModel.MFD_models()[viewModel.UpdatableMFD()].Dishes()[catIndex].UpdateWeekMenu(dish);
                 this.CalcSummary();
             };
 

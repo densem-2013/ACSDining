@@ -357,7 +357,7 @@ $.widget = function( name, base, prototype ) {
 		base = $.Widget;
 	}
 
-	// create selector for plugin
+	// createWeekMenu selector for plugin
 	$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
 		return !!$.data( elem, fullName );
 	};
@@ -379,7 +379,7 @@ $.widget = function( name, base, prototype ) {
 	// extend with the existing constructor to carry over any static properties
 	$.extend( constructor, existingConstructor, {
 		version: prototype.version,
-		// copy the object used to create the prototype in case we need to
+		// copy the object used to createWeekMenu the prototype in case we need to
 		// redefine the widget later
 		_proto: $.extend( {}, prototype ),
 		// track widgets that inherit from this widget in case this widget is
@@ -548,7 +548,7 @@ $.Widget.prototype = {
 		disabled: false,
 
 		// callbacks
-		create: null
+		createWeekMenu: null
 	},
 	_createWidget: function( options, element ) {
 		element = $( element || this.defaultElement || this )[ 0 ];
@@ -583,7 +583,7 @@ $.Widget.prototype = {
 			options );
 
 		this._create();
-		this._trigger( "create", null, this._getCreateEventData() );
+		this._trigger( "createWeekMenu", null, this._getCreateEventData() );
 		this._init();
 	},
 	_getCreateOptions: $.noop,
@@ -1681,7 +1681,7 @@ var accordion = $.widget( "ui.accordion", {
 
 	_setOption: function( key, value ) {
 		if ( key === "active" ) {
-			// _activate() will handle invalid values and update this.options
+			// _activate() will handle invalid values and UpdateWeekMenu this.options
 			this._activate( value );
 			return;
 		}
@@ -2475,7 +2475,7 @@ var menu = $.widget( "ui.menu", {
 
 		this.active = item.first();
 		focused = this.active.addClass( "ui-state-focus" ).removeClass( "ui-state-active" );
-		// Only update aria-activedescendant if there's a role
+		// Only UpdateWeekMenu aria-activedescendant if there's a role
 		// otherwise we assume focus is managed elsewhere
 		if ( this.options.role ) {
 			this.element.attr( "aria-activedescendant", focused.attr( "id" ) );
@@ -4070,7 +4070,7 @@ $.extend(Datepicker.prototype, {
 	 * @param  input element - ignored
 	 * @param  date	string or Date - the initial date to display
 	 * @param  onSelect  function - the function to call when a date is selected
-	 * @param  settings  object - update the dialog date picker instance's settings (anonymous object)
+	 * @param  settings  object - UpdateWeekMenu the dialog date picker instance's settings (anonymous object)
 	 * @param  pos int[2] - coordinates for the dialog's position within the screen or
 	 *					event - with x/y coordinates or
 	 *					leave empty for default (screen centre)
@@ -4238,7 +4238,7 @@ $.extend(Datepicker.prototype, {
 
 	/* Update or retrieve the settings for a date picker attached to an input field or division.
 	 * @param  target  element - the target input field or division or span
-	 * @param  name	object - the new settings to update or
+	 * @param  name	object - the new settings to UpdateWeekMenu or
 	 *				string - the name of the setting to change or retrieve,
 	 *				when retrieving also "all" for all instance settings or
 	 *				"defaults" for all global defaults
@@ -4815,7 +4815,7 @@ $.extend(Datepicker.prototype, {
 		var altFormat, date, dateStr,
 			altField = this._get(inst, "altField");
 
-		if (altField) { // update alternate field too
+		if (altField) { // UpdateWeekMenu alternate field too
 			altFormat = this._get(inst, "altFormat") || this._get(inst, "dateFormat");
 			date = this._getDate(inst);
 			dateStr = this.formatDate(altFormat, date, this._getFormatConfig(inst));
@@ -5508,11 +5508,11 @@ $.extend(Datepicker.prototype, {
 				numRows = (isMultiMonth ? this.maxRows > curRows ? this.maxRows : curRows : curRows); //If multiple months, use the higher number of rows (see #7043)
 				this.maxRows = numRows;
 				printDate = this._daylightSavingAdjust(new Date(drawYear, drawMonth, 1 - leadDays));
-				for (dRow = 0; dRow < numRows; dRow++) { // create date picker rows
+				for (dRow = 0; dRow < numRows; dRow++) { // createWeekMenu date picker rows
 					calender += "<tr>";
 					tbody = (!showWeek ? "" : "<td class='ui-datepicker-week-col'>" +
 						this._get(inst, "calculateWeek")(printDate) + "</td>");
-					for (dow = 0; dow < 7; dow++) { // create date picker days
+					for (dow = 0; dow < 7; dow++) { // createWeekMenu date picker days
 						daySettings = (beforeShowDay ?
 							beforeShowDay.apply((inst.input ? inst.input[0] : null), [printDate]) : [true, ""]);
 						otherMonth = (printDate.getMonth() !== drawMonth);
@@ -6638,7 +6638,7 @@ $.ui.plugin.add( "draggable", "connectToSortable", {
 					};
 
 					// Fire the start events of the sortable with our passed browser event,
-					// and our own helper (so it doesn't create a new one)
+					// and our own helper (so it doesn't createWeekMenu a new one)
 					event.target = sortable.currentItem[ 0 ];
 					sortable._mouseCapture( event, true );
 					sortable._mouseStart( event, true, true );
@@ -6664,7 +6664,7 @@ $.ui.plugin.add( "draggable", "connectToSortable", {
 						this.refreshPositions();
 					});
 
-					// hack so receive/update callbacks work (mostly)
+					// hack so receive/UpdateWeekMenu callbacks work (mostly)
 					draggable.currentItem = draggable.element;
 					sortable.fromOutside = draggable;
 				}
@@ -13536,7 +13536,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 		sort: null,
 		start: null,
 		stop: null,
-		update: null
+		UpdateWeekMenu: null
 	},
 
 	_isOverAxis: function( x, reference, size ) {
@@ -14276,7 +14276,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 
 					return element;
 				},
-				update: function(container, p) {
+				UpdateWeekMenu: function(container, p) {
 
 					// 1. If a className is set as 'placeholder option, we don't force sizes - the class is responsible for that
 					// 2. The option 'forcePlaceholderSize can be enabled to force it even if a class name is specified
@@ -14298,7 +14298,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 		that.currentItem.after(that.placeholder);
 
 		//Update the size of the placeholder (TODO: Logic to fuzzy, see line 316/317)
-		o.placeholder.update(that, that.placeholder);
+		o.placeholder.UpdateWeekMenu(that, that.placeholder);
 
 	},
 
@@ -14406,7 +14406,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 			this.currentContainer = this.containers[innermostIndex];
 
 			//Update the placeholder
-			this.options.placeholder.update(this.currentContainer, this.placeholder);
+			this.options.placeholder.UpdateWeekMenu(this.currentContainer, this.placeholder);
 
 			this.containers[innermostIndex]._trigger("over", event, this._uiHash(this));
 			this.containers[innermostIndex].containerCache.over = 1;
@@ -14647,7 +14647,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 		a ? a[0].appendChild(this.placeholder[0]) : i.item[0].parentNode.insertBefore(this.placeholder[0], (this.direction === "down" ? i.item[0] : i.item[0].nextSibling));
 
 		//Various things done here to improve the performance:
-		// 1. we create a setTimeout, that calls refreshPositions
+		// 1. we createWeekMenu a setTimeout, that calls refreshPositions
 		// 2. on the instance, we have a counter variable, that get's higher after every append
 		// 3. on the local scope, we copy the counter variable, and check in the timeout, if it's still the same
 		// 4. this lets only the last addition to the timeout stack through
@@ -14670,7 +14670,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 		var i,
 			delayedTriggers = [];
 
-		// We first have to update the dom position of the actual currentItem
+		// We first have to UpdateWeekMenu the dom position of the actual currentItem
 		// Note: don't do it if the current item is already removed (by a user), or it gets reappended (see #4088)
 		if(!this._noFinalSort && this.currentItem.parent().length) {
 			this.placeholder.before(this.currentItem);
@@ -14692,7 +14692,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 			delayedTriggers.push(function(event) { this._trigger("receive", event, this._uiHash(this.fromOutside)); });
 		}
 		if((this.fromOutside || this.domPosition.prev !== this.currentItem.prev().not(".ui-sortable-helper")[0] || this.domPosition.parent !== this.currentItem.parent()[0]) && !noPropagation) {
-			delayedTriggers.push(function(event) { this._trigger("update", event, this._uiHash()); }); //Trigger update callback if the DOM position has changed
+			delayedTriggers.push(function(event) { this._trigger("UpdateWeekMenu", event, this._uiHash()); }); //Trigger UpdateWeekMenu callback if the DOM position has changed
 		}
 
 		// Check if the items Container has Changed and trigger appropriate
@@ -14701,7 +14701,7 @@ var sortable = $.widget("ui.sortable", $.ui.mouse, {
 			if(!noPropagation) {
 				delayedTriggers.push(function(event) { this._trigger("remove", event, this._uiHash()); });
 				delayedTriggers.push((function(c) { return function(event) { c._trigger("receive", event, this._uiHash(this)); };  }).call(this, this.currentContainer));
-				delayedTriggers.push((function(c) { return function(event) { c._trigger("update", event, this._uiHash(this));  }; }).call(this, this.currentContainer));
+				delayedTriggers.push((function(c) { return function(event) { c._trigger("UpdateWeekMenu", event, this._uiHash(this));  }; }).call(this, this.currentContainer));
 			}
 		}
 
@@ -15214,7 +15214,7 @@ var spinner = $.widget( "ui.spinner", {
 		return value === this._adjustValue( value );
 	},
 
-	// update the value without triggering change
+	// UpdateWeekMenu the value without triggering change
 	_value: function( value, allowAny ) {
 		var parsed;
 		if ( value !== "" ) {
@@ -15352,7 +15352,7 @@ var tabs = $.widget( "ui.tabs", {
 		options.active = this._initialActive();
 
 		// Take disabling tabs via class attribute from HTML
-		// into account and update option properly.
+		// into account and UpdateWeekMenu option properly.
 		if ( $.isArray( options.disabled ) ) {
 			options.disabled = $.unique( options.disabled.concat(
 				$.map( this.tabs.filter( ".ui-state-disabled" ), function( li ) {
@@ -15539,7 +15539,7 @@ var tabs = $.widget( "ui.tabs", {
 
 	_setOption: function( key, value ) {
 		if ( key === "active" ) {
-			// _activate() will handle invalid values and update this.options
+			// _activate() will handle invalid values and UpdateWeekMenu this.options
 			this._activate( value );
 			return;
 		}
@@ -16386,7 +16386,7 @@ var tooltip = $.widget( "ui.tooltip", {
 		}
 
 		// Content can be updated multiple times. If the tooltip already
-		// exists, then just update the content and bail.
+		// exists, then just UpdateWeekMenu the content and bail.
 		tooltipData = this._find( target );
 		if ( tooltipData ) {
 			tooltipData.tooltip.find( ".ui-tooltip-content" ).html( content );

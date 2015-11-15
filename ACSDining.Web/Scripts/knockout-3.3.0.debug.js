@@ -452,7 +452,7 @@ ko.utils = (function () {
 
             // We need there to be exactly one child: a text node.
             // If there are no children, more than one, or if it's not a text node,
-            // we'll clear everything and create a single text node.
+            // we'll clear everything and createWeekMenu a single text node.
             var innerTextNode = ko.virtualElements.firstChild(element);
             if (!innerTextNode || innerTextNode.nodeType != 3 || ko.virtualElements.nextSibling(innerTextNode)) {
                 ko.virtualElements.setDomNodeChildren(element, [element.ownerDocument.createTextNode(value)]);
@@ -664,7 +664,7 @@ ko.utils.domData = new (function () {
         },
         set: function (node, key, value) {
             if (value === undefined) {
-                // Make sure we don't actually create a new domData key if we are actually deleting a value
+                // Make sure we don't actually createWeekMenu a new domData key if we are actually deleting a value
                 if (getAll(node, false) === undefined)
                     return;
             }
@@ -2258,7 +2258,7 @@ ko.expressionRewriting = (function () {
         return result;
     }
 
-    // Two-way bindings include a write function that allow the handler to update the value even if it's not an observable.
+    // Two-way bindings include a write function that allow the handler to UpdateWeekMenu the value even if it's not an observable.
     var twoWayBindings = {};
 
     function preProcessBindings(bindingsStringOrKeyValueArray, bindingOptions) {
@@ -2351,7 +2351,7 @@ ko.exportSymbol('expressionRewriting.preProcessBindings', ko.expressionRewriting
 // as an internal implementation detail in the short term.
 // For those developers who rely on _ko_property_writers in their custom bindings, we expose _twoWayBindings as an
 // undocumented feature that makes it relatively easy to upgrade to KO 3.0. However, this is still not an official
-// public API, and we reserve the right to remove it at any time if we create a real public property writers API.
+// public API, and we reserve the right to remove it at any time if we createWeekMenu a real public property writers API.
 ko.exportSymbol('expressionRewriting._twoWayBindings', ko.expressionRewriting.twoWayBindings);
 
 // For backward compatibility, define the following aliases. (Previously, these function names were misleading because
@@ -2644,7 +2644,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         return ko.bindingHandlers[bindingKey];
     };
 
-    // The ko.bindingContext constructor is only called directly to create the root context. For child
+    // The ko.bindingContext constructor is only called directly to createWeekMenu the root context. For child
     // contexts, use bindingContext.createChildContext or bindingContext.extend.
     ko.bindingContext = function(dataItemOrAccessor, parentContext, dataItemAlias, extendCallback) {
 
@@ -2669,7 +2669,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
                 ko.utils.extend(self, parentContext);
 
                 // Because the above copy overwrites our own properties, we need to reset them.
-                // During the first execution, "subscribable" isn't set, so don't bother doing the update then.
+                // During the first execution, "subscribable" isn't set, so don't bother doing the UpdateWeekMenu then.
                 if (subscribable) {
                     self._subscribable = subscribable;
                 }
@@ -2738,7 +2738,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
     // any obsevables, the new child context will automatically get a dependency on the parent context.
     // But this does not mean that the $data value of the child context will also get updated. If the child
     // view model also depends on the parent view model, you must provide a function that returns the correct
-    // view model on each update.
+    // view model on each UpdateWeekMenu.
     ko.bindingContext.prototype['createChildContext'] = function (dataItemOrAccessor, dataItemAlias, extendCallback) {
         return new ko.bindingContext(dataItemOrAccessor, this, dataItemAlias, function(self, parentContext) {
             // Extend the context hierarchy by setting the appropriate pointers
@@ -2777,7 +2777,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         return valueAccessor();
     }
 
-    // Given a function that returns bindings, create and return a new object that contains
+    // Given a function that returns bindings, createWeekMenu and return a new object that contains
     // binding value-accessors functions. Each accessor function calls the original function
     // so that it always gets the latest value and all dependencies are captured. This is used
     // by ko.applyBindingsToNode and getBindingsAndMakeAccessors.
@@ -2789,7 +2789,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         });
     }
 
-    // Given a bindings function or object, create and return a new object that contains
+    // Given a bindings function or object, createWeekMenu and return a new object that contains
     // binding value-accessors functions. This is used by ko.applyBindingsToNode.
     function makeBindingAccessors(bindings, context, node) {
         if (typeof bindings === 'function') {
@@ -2924,7 +2924,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
             var provider = ko.bindingProvider['instance'],
                 getBindings = provider['getBindingAccessors'] || getBindingsAndMakeAccessors;
 
-            // Get the binding from the provider within a computed observable so that we can update the bindings whenever
+            // Get the binding from the provider within a computed observable so that we can UpdateWeekMenu the bindings whenever
             // the binding context is updated or if the binding provider accesses observables.
             var bindingsUpdater = ko.dependentObservable(
                 function() {
@@ -2944,7 +2944,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         var bindingHandlerThatControlsDescendantBindings;
         if (bindings) {
             // Return the value accessor for a given binding. When bindings are static (won't be updated because of a binding
-            // context update), just return the value accessor from the binding. Otherwise, return a function that always gets
+            // context UpdateWeekMenu), just return the value accessor from the binding. Otherwise, return a function that always gets
             // the latest binding value and registers a dependency on the binding updater.
             var getValueAccessor = bindingsUpdater
                 ? function(bindingKey) {
@@ -2970,12 +2970,12 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
             // First put the bindings into the right order
             var orderedBindings = topologicalSortBindings(bindings);
 
-            // Go through the sorted bindings, calling init and update for each
+            // Go through the sorted bindings, calling init and UpdateWeekMenu for each
             ko.utils.arrayForEach(orderedBindings, function(bindingKeyAndHandler) {
                 // Note that topologicalSortBindings has already filtered out any nonexistent binding handlers,
                 // so bindingKeyAndHandler.handler will always be nonnull.
                 var handlerInitFn = bindingKeyAndHandler.handler["init"],
-                    handlerUpdateFn = bindingKeyAndHandler.handler["update"],
+                    handlerUpdateFn = bindingKeyAndHandler.handler["UpdateWeekMenu"],
                     bindingKey = bindingKeyAndHandler.key;
 
                 if (node.nodeType === 8) {
@@ -2997,7 +2997,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
                         });
                     }
 
-                    // Run update in its own computed wrapper
+                    // Run UpdateWeekMenu in its own computed wrapper
                     if (typeof handlerUpdateFn == "function") {
                         ko.dependentObservable(
                             function() {
@@ -3553,7 +3553,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
             }
         })(ko.components['register']);
 
-        // Whenever you create a document fragment, enable all preregistered component names as custom elements
+        // Whenever you createWeekMenu a document fragment, enable all preregistered component names as custom elements
         // This is needed to make innerShiv/jQuery HTML parsing correctly handle the custom elements
         document.createDocumentFragment = (function(originalFunction) {
             return function() {
@@ -3655,7 +3655,7 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
 })();
 var attrHtmlToJavascriptMap = { 'class': 'className', 'for': 'htmlFor' };
 ko.bindingHandlers['attr'] = {
-    'update': function(element, valueAccessor, allBindings) {
+    UpdateWeekMenu: function(element, valueAccessor, allBindings) {
         var value = ko.utils.unwrapObservable(valueAccessor()) || {};
         ko.utils.objectForEach(value, function(attrName, attrValue) {
             attrValue = ko.utils.unwrapObservable(attrValue);
@@ -3779,7 +3779,7 @@ ko.bindingHandlers['checked'] = {
         if (isRadio && !element.name)
             ko.bindingHandlers['uniqueName']['init'](element, function() { return true });
 
-        // Set up two computeds to update the binding:
+        // Set up two computeds to UpdateWeekMenu the binding:
 
         // The first responds to changes in the checkedValue value and to element clicks
         ko.computed(updateModel, null, { disposeWhenNodeIsRemoved: element });
@@ -3792,14 +3792,14 @@ ko.bindingHandlers['checked'] = {
 ko.expressionRewriting.twoWayBindings['checked'] = true;
 
 ko.bindingHandlers['checkedValue'] = {
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         element.value = ko.utils.unwrapObservable(valueAccessor());
     }
 };
 
 })();var classesWrittenByBindingKey = '__ko__cssValue';
 ko.bindingHandlers['css'] = {
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
         if (value !== null && typeof value == "object") {
             ko.utils.objectForEach(value, function(className, shouldHaveClass) {
@@ -3815,7 +3815,7 @@ ko.bindingHandlers['css'] = {
     }
 };
 ko.bindingHandlers['enable'] = {
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
         if (value && element.disabled)
             element.removeAttribute("disabled");
@@ -3825,8 +3825,8 @@ ko.bindingHandlers['enable'] = {
 };
 
 ko.bindingHandlers['disable'] = {
-    'update': function (element, valueAccessor) {
-        ko.bindingHandlers['enable']['update'](element, function() { return !ko.utils.unwrapObservable(valueAccessor()) });
+    UpdateWeekMenu: function (element, valueAccessor) {
+        ko.bindingHandlers['enable']["UpdateWeekMenu"](element, function() { return !ko.utils.unwrapObservable(valueAccessor()) });
     }
 };
 // For certain common events (currently just 'click'), allow a simplified data-binding syntax
@@ -3913,8 +3913,8 @@ ko.bindingHandlers['foreach'] = {
     'init': function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         return ko.bindingHandlers['template']['init'](element, ko.bindingHandlers['foreach'].makeTemplateValueAccessor(valueAccessor));
     },
-    'update': function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        return ko.bindingHandlers['template']['update'](element, ko.bindingHandlers['foreach'].makeTemplateValueAccessor(valueAccessor), allBindings, viewModel, bindingContext);
+    UpdateWeekMenu: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        return ko.bindingHandlers['template']["UpdateWeekMenu"](element, ko.bindingHandlers['foreach'].makeTemplateValueAccessor(valueAccessor), allBindings, viewModel, bindingContext);
     }
 };
 ko.expressionRewriting.bindingRewriteValidators['foreach'] = false; // Can't rewrite control flow bindings
@@ -3945,7 +3945,7 @@ ko.bindingHandlers['hasfocus'] = {
             var modelValue = valueAccessor();
             ko.expressionRewriting.writeValueToProperty(modelValue, allBindings, 'hasfocus', isFocused, true);
 
-            //cache the latest value, so we can avoid unnecessarily calling focus/blur in the update function
+            //cache the latest value, so we can avoid unnecessarily calling focus/blur in the UpdateWeekMenu function
             element[hasfocusLastValue] = isFocused;
             element[hasfocusUpdatingProperty] = false;
         };
@@ -3957,7 +3957,7 @@ ko.bindingHandlers['hasfocus'] = {
         ko.utils.registerEventHandler(element, "blur",  handleElementFocusOut);
         ko.utils.registerEventHandler(element, "focusout",  handleElementFocusOut); // For IE
     },
-    'update': function(element, valueAccessor) {
+    UpdateWeekMenu: function(element, valueAccessor) {
         var value = !!ko.utils.unwrapObservable(valueAccessor()); //force boolean to compare with last value
         if (!element[hasfocusUpdatingProperty] && element[hasfocusLastValue] !== value) {
             value ? element.focus() : element.blur();
@@ -3974,7 +3974,7 @@ ko.bindingHandlers['html'] = {
         // Prevent binding on the dynamically-injected HTML (as developers are unlikely to expect that, and it has security implications)
         return { 'controlsDescendantBindings': true };
     },
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         // setHtml will unwrap the value if needed
         ko.utils.setHtml(element, valueAccessor());
     }
@@ -3992,7 +3992,7 @@ function makeWithIfBinding(bindingKey, isWith, isNot, makeContextCallback) {
                     needsRefresh = isFirstRender || isWith || (shouldDisplay !== didDisplayOnLastUpdate);
 
                 if (needsRefresh) {
-                    // Save a copy of the inner nodes on the initial update, but only if we have dependencies.
+                    // Save a copy of the inner nodes on the initial UpdateWeekMenu, but only if we have dependencies.
                     if (isFirstRender && ko.computedContext.getDependenciesCount()) {
                         savedNodes = ko.utils.cloneNodes(ko.virtualElements.childNodes(element), true /* shouldCleanNodes */);
                     }
@@ -4038,7 +4038,7 @@ ko.bindingHandlers['options'] = {
         // Ensures that the binding processor doesn't try to bind the options
         return { 'controlsDescendantBindings': true };
     },
-    'update': function (element, valueAccessor, allBindings) {
+    UpdateWeekMenu: function (element, valueAccessor, allBindings) {
         function selectedOptions() {
             return ko.utils.arrayFilter(element.options, function (node) { return node.selected; });
         }
@@ -4137,7 +4137,7 @@ ko.bindingHandlers['options'] = {
                 var isSelected = ko.utils.arrayIndexOf(previousSelectedValues, ko.selectExtensions.readValue(newOptions[0])) >= 0;
                 ko.utils.setOptionNodeSelectionState(newOptions[0], isSelected);
 
-                // If this option was changed from being selected during a single-item update, notify the change
+                // If this option was changed from being selected during a single-item UpdateWeekMenu, notify the change
                 if (itemUpdate && !isSelected) {
                     ko.dependencyDetection.ignore(ko.utils.triggerEvent, null, [element, "change"]);
                 }
@@ -4202,7 +4202,7 @@ ko.bindingHandlers['selectedOptions'] = {
             ko.expressionRewriting.writeValueToProperty(value, allBindings, 'selectedOptions', valueToWrite);
         });
     },
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         if (ko.utils.tagNameLower(element) != "select")
             throw new Error("values binding applies only to SELECT elements");
 
@@ -4217,7 +4217,7 @@ ko.bindingHandlers['selectedOptions'] = {
 };
 ko.expressionRewriting.twoWayBindings['selectedOptions'] = true;
 ko.bindingHandlers['style'] = {
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor() || {});
         ko.utils.objectForEach(value, function(styleName, styleValue) {
             styleValue = ko.utils.unwrapObservable(styleValue);
@@ -4256,7 +4256,7 @@ ko.bindingHandlers['text'] = {
         // It should also make things faster, as we no longer have to consider whether the text node might be bindable.
         return { 'controlsDescendantBindings': true };
     },
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         ko.utils.setTextContent(element, valueAccessor());
     }
 };
@@ -4381,7 +4381,7 @@ ko.bindingHandlers['textInput'] = {
                 });
 
                 if (ko.utils.ieVersion == 8) {
-                    // IE 8 has a bug where it fails to fire 'propertychange' on the first update following a value change from
+                    // IE 8 has a bug where it fails to fire 'propertychange' on the first UpdateWeekMenu following a value change from
                     // JavaScript code. It also doesn't fire if you clear the entire value. To fix this, we bind to the following
                     // events too.
                     onEvent('keyup', updateModel);      // A single keystoke
@@ -4550,11 +4550,11 @@ ko.bindingHandlers['value'] = {
 
         ko.computed(updateFromModel, null, { disposeWhenNodeIsRemoved: element });
     },
-    'update': function() {} // Keep for backwards compatibility with code that may have wrapped value binding
+    UpdateWeekMenu: function() {} // Keep for backwards compatibility with code that may have wrapped value binding
 };
 ko.expressionRewriting.twoWayBindings['value'] = true;
 ko.bindingHandlers['visible'] = {
-    'update': function (element, valueAccessor) {
+    UpdateWeekMenu: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
         var isCurrentlyVisible = !(element.style.display == "none");
         if (value && !isCurrentlyVisible)
@@ -4840,7 +4840,7 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
                     }
                 });
 
-                // Because preprocessNode can change the nodes, including the first and last nodes, update continuousNodeArray to match.
+                // Because preprocessNode can change the nodes, including the first and last nodes, UpdateWeekMenu continuousNodeArray to match.
                 // We need the full set, including inner nodes, because the unmemoize step might remove the first node (and so the real
                 // first node needs to be in the array).
                 continuousNodeArray.length = 0;
@@ -5043,7 +5043,7 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
             }
             return { 'controlsDescendantBindings': true };
         },
-        'update': function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        UpdateWeekMenu: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
             var value = valueAccessor(),
                 dataValue,
                 options = ko.utils.unwrapObservable(value),
@@ -5075,7 +5075,7 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
             } else {
                 // Render once for this single data point (or use the viewModel if no data was provided)
                 var innerBindingContext = ('data' in options) ?
-                    bindingContext['createChildContext'](dataValue, options['as']) :  // Given an explitit 'data' value, we create a child binding context for it
+                    bindingContext['createChildContext'](dataValue, options['as']) :  // Given an explitit 'data' value, we createWeekMenu a child binding context for it
                     bindingContext;                                                        // Given no explicit 'data' value, we retain the same binding context
                 templateComputed = ko.renderTemplate(templateName || element, innerBindingContext, options, element);
             }
@@ -5208,7 +5208,7 @@ ko.exportSymbol('utils.compareArrays', ko.utils.compareArrays);
     // Objective:
     // * Given an input array, a container DOM node, and a function from array elements to arrays of DOM nodes,
     //   map the array elements to arrays of DOM nodes, concatenate together all these arrays, and use them to populate the container DOM node
-    // * Next time we're given the same combination of things (with the array possibly having mutated), update the container DOM node
+    // * Next time we're given the same combination of things (with the array possibly having mutated), UpdateWeekMenu the container DOM node
     //   so that its children is again the concatenation of the mappings of the array elements, but don't re-map any array elements that we
     //   previously mapped - retain those nodes, and just insert/delete other ones
 

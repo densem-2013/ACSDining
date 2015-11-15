@@ -4,17 +4,10 @@
 
 (function() {
 
-    ko.observableArray.fn.pushAll = function(valuesToPush) {
-        var underlyingArray = this();
-        this.valueWillMutate();
-        ko.utils.arrayPushAll(underlyingArray, valuesToPush);
-        this.valueHasMutated();
-        return this;
-    };
 
     var QuantValueModel = function(value) {
-        self = this;
-        //self.parent = parent;
+
+        var self = this;
         self.isEditMode = ko.observable(false);
         self.Quantity = ko.observable(value);
 
@@ -36,43 +29,48 @@
         Message: ko.observable(),
         CurrentWeekNumber: ko.observable(),
         myDate: ko.observable(new Date()),
-        FirstCourseValues: [0, 0.5, 1.0, 2.0, 3.0,  4.0, 5.0],
-        QuantValues: [0, 1, 2, 3, 4, 5]
+        FirstCourseValues: [0, 0.5, 1, 2, 3,  4, 5],
+        QuantValues: [0, 1, 2, 3, 4, 5],
+        BeenChanged: ko.observable(false),
+        Year:ko.observable(),
+        Categories :ko.observableArray([])
+    }
+    // Callback for error responses from the server.
+    function onError(error) {
+        OrdersViewModel.Message('Error: ' + error.status + ' ' + error.statusText);
     }
 
+    OrdersViewModel.CalcSummary = function(item) {
+        var source = {
+            UserId: item.UserId(),
+            UserName: item.UserName(),
+            SummaryPrice: item.SummaryPrice(),
+            WeekIsPaid: item.WeekIsPaid(),
+            Dishquantities: $.map(item.Dishquantities(), function(value) {
+                return value.Quantity;
+            })
+        };
+        app.su_Service.GetOrderSummary(OrdersViewModel.WeekNumber(), OrdersViewModel.Year(), source).then(
+            function(data) {
+                item.SummaryPrice(data.toFixed(2));
+            },
+            function(error) {
+                onError(error);
+            });
+
+    }.bind(OrdersViewModel);
+
+        
+    
     var UserWeekOrder = function(item) {
 
-        self = this;
+        var self = this;
 
         self.UserId = ko.observable(item.userId);
         self.UserName = ko.observable(item.userName);
         self.SummaryPrice = ko.observable(item.summaryPrice.toFixed(2));
         self.WeekIsPaid = ko.observable(item.weekIsPaid);
 
-        self.CalcSummary = function() {
-            var parent = this;
-            var source = {
-                UserId: this.UserId(),
-                Dishquantities: $.map(this.Dishquantities(), function(value) {
-                    return value.Quantity;
-                })
-            };
-
-            var objToServer = ko.toJSON(source);
-            $.ajax({
-                url: '/api/Orders/summary/' + OrdersViewModel.WeekNumber(),
-                type: 'put',
-                data: objToServer,
-                contentType: 'application/json'
-            }).done(function(data) {
-
-                parent.SummaryPrice(data.toFixed(2));
-
-            }).error(function(err) {
-                OrdersViewModel.Message("Error! " + err.status);
-            });
-
-        }.bind(self);
         self.Dishquantities = ko.observableArray(ko.utils.arrayMap(item.dishquantities, function(value) {
             return new QuantValueModel(value);
         }));
@@ -80,7 +78,6 @@
 
     }
 
-    OrdersViewModel.DishCategories = ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
     OrdersViewModel.DaysOfWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"];
 
     OrdersViewModel.pageSize = ko.observable(10);
@@ -121,135 +118,58 @@
         OrdersViewModel.pageIndex(index);
     };
 
-    OrdersViewModel.loadWeekNumbers = function() {
-        $.ajax({
-            url: "/api/WeekMenu/WeekNumbers",
-            type: "GET"
-        }).done(function(resp) {
+    OrdersViewModel.loadWeekNumbers = function () {
+        app.su_Service.LoadWeekNumbers().then(function (resp) {
 
             OrdersViewModel.NumbersOfWeek.pushAll(resp);
 
-        }).error(function(err) {
-            OrdersViewModel.Message("Error! " + err.status);
-        });
+        }, onError);
     };
 
-    OrdersViewModel.LoadOrders = function(numweek, year) {
 
-        numweek = numweek == undefined ? '' : numweek;
-        year = year == undefined ? '' : "/" + year;
-        $.ajax({
-            url: "/api/Orders/" + numweek + year,
-            type: "GET"
-        }).done(function(resp) {
+    OrdersViewModel.LoadOrders = function () {
 
-            OrdersViewModel.UserOrders([]);
-            OrdersViewModel.WeekNumber(resp.weekNumber);
+        app.su_Service.LoadWeekOrders(OrdersViewModel.WeekNumber(), OrdersViewModel.Year()).then(
+           function (resp) {
+               OrdersViewModel.UserOrders([]);
+               OrdersViewModel.WeekNumber(resp.weekNumber);
+               OrdersViewModel.Year(resp.yearNumber);
 
-            ko.utils.arrayForEach(resp.userOrders, function(object) {
+               ko.utils.arrayForEach(resp.userOrders, function (object) {
 
-                OrdersViewModel.UserOrders.push(new UserWeekOrder(object));
+                   OrdersViewModel.UserOrders.push(new UserWeekOrder(object));
 
-            });
-
-        }).error(function(err) {
-            OrdersViewModel.Message("Error! " + err.status);
-        });
+               });
+           },
+           function (error) {
+               onError(error);
+           });
     }
-    OrdersViewModel.GetCurrentWeekNumber = function() {
 
-        $.ajax({
-            url: "/api/WeekMenu/CurrentWeek",
-            type: "GET"
-        }).done(function(resp) {
+    OrdersViewModel.GetCurrentWeekNumber = function () {
+
+        app.su_Service.GetCurrentWeekNumber().then(function (resp) {
             OrdersViewModel.CurrentWeekNumber(resp);
-        });
+
+        }, onError);
     }
 
     OrdersViewModel.IsCurrentWeek = ko.computed(function() {
         return OrdersViewModel.CurrentWeekNumber() == OrdersViewModel.WeekNumber();
     }.bind(OrdersViewModel));
 
+
+    app.su_Service.GetCategories().then(function (resp) {
+        OrdersViewModel.Categories.pushAll(resp);
+    }, onError);
+
     OrdersViewModel.LoadOrders();
     OrdersViewModel.loadWeekNumbers();
     OrdersViewModel.GetCurrentWeekNumber();
 
-    ko.bindingHandlers.datepicker = {
-        init: function (element, valueAccessor, allBindingsAccessor) {
-
-            var options = $.extend(
-                {},
-                $.datepicker.regional["ru"],
-                {
-                    dateFormat: 'dd/mm/yy',
-                    showButtonPanel: true,
-                    gotoCurrent: true,
-                    showOtherMonths: true,
-                    selectOtherMonths: true,
-                    showWeek: true,
-                    constraintInput: true,
-                    showAnim: "slideDown",
-                    hideIfNoPrevNext: true,
-                    onClose: function (dateText, inst) {
-                        $(this).blur();
-                    }
-                }
-            );
-            $(element).datepicker(options);
-
-            ko.utils.registerEventHandler($(element), "change", function () {
-                var observable = valueAccessor();
-                observable($(element).datepicker("getDate"));
-            });
-
-            ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-                $(element).datepicker("destroy");
-            });
-
-        },
-        update: function (element, valueAccessor) {
-            var value = ko.utils.unwrapObservable(valueAccessor());
-            $(element).datepicker("setDate", value);
-        }
-    };
-
-    ko.bindingHandlers.singleClick = {
-        init: function(element, valueAccessor) {
-            var handler = valueAccessor(),
-                delay = 400,
-                clickTimeout = false;
-
-            $(element).click(function() {
-                if (clickTimeout !== false) {
-                    clearTimeout(clickTimeout);
-                    clickTimeout = false;
-                } else {
-                    clickTimeout = setTimeout(function() {
-                        clickTimeout = false;
-                        handler();
-                    }, delay);
-                }
-            });
-        }
-    };
+ 
     ko.applyBindings(OrdersViewModel);
     
-    /*Date picker value binder for knockout*/
-    ko.bindingHandlers.datepicker = {
-        init: function (element, valueAccessor, allBindingsAccessor) {
-            var options = allBindingsAccessor().datepickerOptions || {};
-            $(element).datepicker(options).on("changeDate", function (ev) {
-                var observable = valueAccessor();
-                observable(ev.date);
-                $(element).hide();
-            });
-        },
-        update: function (element, valueAccessor) {
-            var value = ko.utils.unwrapObservable(valueAccessor());
-            $(element).datepicker("setValue", value);
-        }
-    };
-
 
 })();
 

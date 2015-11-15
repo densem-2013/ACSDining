@@ -28,19 +28,22 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             List<OrderMenu> orderMenus =
                 await
                     _db.OrderMenus.Where(
-                            om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year).ToListAsync();
+                        om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
+                        .ToListAsync();
+
             OrdersDTO model = new OrdersDTO()
             {
-                WeekNumber = (int)numweek,
+                WeekNumber = (int) numweek,
                 UserOrders = orderMenus
-                        .Select(order => new UserOrdesDTO()
-                        {
-                            UserId = order.User.Id,
-                            UserName = order.User.UserName,
-                            Dishquantities = _db.GetUserWeekOrderDishes(order.Id),
-                            WeekIsPaid = false,
-                            SummaryPrice = order.SummaryPrice
-                        }).OrderBy(uo => uo.UserName).ToList()
+                    .Select(order => new UserOrdesDTO()
+                    {
+                        UserId = order.User.Id,
+                        UserName = order.User.UserName,
+                        Dishquantities = _db.GetUserWeekOrderDishes(order.Id),
+                        WeekIsPaid = false,
+                        SummaryPrice = order.SummaryPrice
+                    }).OrderBy(uo => uo.UserName).ToList(),
+                YearNumber = (int) year
             };
             if (model == null)
             {
@@ -51,11 +54,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [System.Web.Http.HttpPut]
-        [System.Web.Http.Route("summary/{numweek}")]
-        [ResponseType(typeof(UserOrdesDTO))]
-        public async Task<double> GetSummaryPrice([FromUri]int numweek, [FromBody]UserOrdesDTO usorder)
+        [System.Web.Http.Route("summary/{numweek}/{year}")]
+        [ResponseType(typeof (double))]
+        public async Task<double> GetSummaryPrice([FromBody] UserOrdesDTO usorder, [FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            MenuForWeek weekNeeded = await _db.MenuForWeeks.FirstOrDefaultAsync(wm => wm.WeekNumber == numweek);
+            numweek = numweek ?? _db.CurrentWeek();
+            year = year ?? DateTime.Now.Year;
+            MenuForWeek weekNeeded =
+                await _db.MenuForWeeks.FirstOrDefaultAsync(wm => wm.WeekNumber == numweek && wm.Year.YearNumber == year);
             double Summary = 0;
             if (weekNeeded != null)
             {
