@@ -1,19 +1,19 @@
 ﻿window.app = window.todoApp || {};
 
-window.app.su_Service = (function () {
+window.app.su_Service = (function() {
 
-	var baseWeekMenuUri = '/api/WeekMenu/';
-	var serviceWeekMenuUrls = {
+    var baseWeekMenuUri = '/api/WeekMenu/';
+    var serviceWeekMenuUrls = {
         weekMenu: function(numweek, year) {
             numweek = numweek == undefined ? '' : numweek;
             year = year == undefined ? '' : "/" + year;
             return baseWeekMenuUri + numweek + year;
         },
         weekNumbers: function() { return baseWeekMenuUri + 'WeekNumbers'; },
-        currentweek: function () { return baseWeekMenuUri + 'curWeekNumber'; },
+        currentweek: function() { return baseWeekMenuUri + 'curWeekNumber'; },
         dishesByCategory: function(id) { return "/api/Dishes/byCategory/" + id; },
         categories: function() { return baseWeekMenuUri + 'categories' },
-        create: function() { return baseWeekMenuUri + 'create' }
+        createWeekMenu: function() { return baseWeekMenuUri + 'createWeekMenu' }
     }
 
     function ajaxRequest(type, url, data) {
@@ -32,25 +32,25 @@ window.app.su_Service = (function () {
 
 
     return {
-        LoadWeekMenu: function (numweek, year) {
+        LoadWeekMenu: function(numweek, year) {
             return ajaxRequest('get', serviceWeekMenuUrls.weekMenu(numweek, year));
         },
-        GetCurrentWeekNumber: function () {
+        GetCurrentWeekNumber: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.currentweek());
         },
-        LoadWeekNumbers: function () {
+        LoadWeekNumbers: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.weekNumbers());
         },
-        update: function (item) {
-            return ajaxRequest('put', baseWeekMenuUri, item);
+        UpdateWeekMenu: function(item) {
+            return ajaxRequest('put', baseWeekMenuUri + 'update', item);
         },
-        create: function (item) {
-            return ajaxRequest('post', serviceWeekMenuUrls.create(), item);
+        CreateWeekMenu: function(item) {
+            return ajaxRequest('post', serviceWeekMenuUrls.createWeekMenu(), item);
         },
-        GetCategories: function () {
+        GetCategories: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.categories());
         },
-        DishesByCategory: function (id) {
+        DishesByCategory: function(id) {
             return ajaxRequest('get', serviceWeekMenuUrls.dishesByCategory(id));
         }
     };

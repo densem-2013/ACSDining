@@ -49,8 +49,8 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 	//exposed namespace
 	win.respond		= {};
 	
-	//define update even in native-mq-supporting browsers, to avoid errors
-	respond.update	= function(){};
+	//define UpdateWeekMenu even in native-mq-supporting browsers, to avoid errors
+	respond.UpdateWeekMenu	= function(){};
 	
 	//expose media query support flag for external use
 	respond.mediaQueriesSupported	= win.matchMedia && win.matchMedia( "only all" ).matches;
@@ -207,7 +207,7 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 				body.removeChild( div );
 			}
 			
-			//also update eminpx before returning
+			//also UpdateWeekMenu eminpx before returning
 			ret = eminpx = parseFloat(ret);
 								
 			return ret;
@@ -324,8 +324,8 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 	//translate CSS
 	ripCSS();
 	
-	//expose update for re-running respond later on
-	respond.update = ripCSS;
+	//expose UpdateWeekMenu for re-running respond later on
+	respond.UpdateWeekMenu = ripCSS;
 	
 	//adjust on resize
 	function callMedia(){

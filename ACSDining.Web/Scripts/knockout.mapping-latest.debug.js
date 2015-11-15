@@ -21,7 +21,7 @@
 	var mappingNesting = 0;
 	var dependentObservables;
 	var visitedObjects;
-	var recognizedRootProperties = ["create", "update", "key", "arrayChanged"];
+	var recognizedRootProperties = ["createWeekMenu", "UpdateWeekMenu", "key", "arrayChanged"];
 	var emptyReturn = {};
 
 	var _defaultOptions = {
@@ -237,7 +237,7 @@
 		return ko.utils.arrayGetDistinctValues(a.concat(b));
 	}
 
-	// When using a 'create' callback, we proxy the dependent observable so that it doesn't immediately evaluate on creation.
+	// When using a 'createWeekMenu' callback, we proxy the dependent observable so that it doesn't immediately evaluate on creation.
 	// The reason is that the dependent observables in the user-specified callback may contain references to properties that have not been mapped yet.
 	function withProxyDependentObservable(dependentObservables, callback) {
 		var localDO = ko.dependentObservable;
@@ -313,20 +313,20 @@
 		};
 
 		var hasCreateCallback = function () {
-			return options[parentName] && options[parentName].create instanceof Function;
+			return options[parentName] && options[parentName].createWeekMenu instanceof Function;
 		};
 
 		var createCallback = function (data) {
 			return withProxyDependentObservable(dependentObservables, function () {
 				
 				if (ko.utils.unwrapObservable(parent) instanceof Array) {
-					return options[parentName].create({
+					return options[parentName].createWeekMenu({
 						data: data || callbackParams.data,
 						parent: callbackParams.parent,
 						skip: emptyReturn
 					});
 				} else {
-					return options[parentName].create({
+					return options[parentName].createWeekMenu({
 						data: data || callbackParams.data,
 						parent: callbackParams.parent
 					});
@@ -335,7 +335,7 @@
 		};
 
 		var hasUpdateCallback = function () {
-			return options[parentName] && options[parentName].update instanceof Function;
+			return options[parentName] && options[parentName].UpdateWeekMenu instanceof Function;
 		};
 
 		var updateCallback = function (obj, data) {
@@ -349,7 +349,7 @@
 				params.observable = obj;
 			}
 
-			return options[parentName].update(params);
+			return options[parentName].UpdateWeekMenu(params);
 		}
 
 		var alreadyMapped = visitedObjects.get(rootObject);
@@ -360,7 +360,7 @@
 		parentName = parentName || "";
 
 		if (!isArray) {
-			// For atomic types, do a direct update on the observable
+			// For atomic types, do a direct UpdateWeekMenu on the observable
 			if (!canHaveProperties(rootObject)) {
 				switch (exports.getType(rootObject)) {
 				case "function":
@@ -430,7 +430,7 @@
 				visitedObjects.save(rootObject, mappedRootObject);
 				if (hasUpdateCallback()) return mappedRootObject;
 
-				// For non-atomic types, visit all properties and update recursively
+				// For non-atomic types, visit all properties and UpdateWeekMenu recursively
 				visitPropertiesOrArrayEntries(rootObject, function (indexer) {
 					var fullPropertyName = parentPropertyName.length ? parentPropertyName + "." + indexer : indexer;
 
@@ -646,7 +646,7 @@
 			if (mapKey(item, callback) === key) return item;
 		}
 
-		throw new Error("When calling ko.update*, the key '" + key + "' was not found!");
+		throw new Error("When calling ko.UpdateWeekMenu*, the key '" + key + "' was not found!");
 	}
 
 	function filterArrayByKey(array, callback) {

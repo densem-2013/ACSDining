@@ -3,37 +3,7 @@
 
 
 (function () {
-    ko.observable.fn.store = function () {
-        var self = this;
-        var oldValue = self();
 
-        var observable = ko.computed({
-            read: function () {
-                return self();
-            },
-            write: function (value) {
-                oldValue = self();
-                self(value);
-            }
-        });
-
-        this.revert = function () {
-            self(oldValue);
-        }
-        this.commit = function () {
-            oldValue = self();
-        }
-        return this;
-    }
-
-    $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
-
-    Date.prototype.getWeek = function () {
-        var onejan = new Date(this.getFullYear(), 0, 1);
-        var today = new Date(this.getFullYear(), this.getMonth(), this.getDate());
-        var dayOfYear = ((today - onejan + 1) / 86400000);
-        return Math.ceil(dayOfYear / 7);
-    };
 
     ko.bindingHandlers.datepicker = {
         init: function (element, valueAccessor, allBindingsAccessor) {
@@ -58,21 +28,29 @@
             );
             $(element).datepicker(options);
 
-            ko.utils.registerEventHandler($(element), "change", function () {
+            //handle the field changing
+            ko.utils.registerEventHandler(element, "change", function () {
                 var observable = valueAccessor();
                 observable($(element).datepicker("getDate"));
             });
 
+            //handle disposal (if KO removes by the template binding)
             ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
                 $(element).datepicker("destroy");
             });
 
         },
+        //update the control when the view model changes
         update: function (element, valueAccessor) {
-            var value = ko.utils.unwrapObservable(valueAccessor());
-            $(element).datepicker("setDate", value);
+            var value = ko.utils.unwrapObservable(valueAccessor()),
+                current = $(element).datepicker("getDate");
+
+            if (value - current !== 0) {
+                $(element).datepicker("setDate", value);
+            }
         }
     };
+   // $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
 
 
     var DishInfo = function (dinfo) {
@@ -85,7 +63,7 @@
         self.Price = ko.observable(dinfo.price.toFixed(2));
         self.Category = ko.observable(dinfo.category);
 
-        self.update = function (dishupdate) {
+        self.UpdateWeekMenu = function (dishupdate) {
             this.DishId(dishupdate.DishId());
             this.Title(dishupdate.Title());
             this.ProductImage(dishupdate.ProductImage());
@@ -94,14 +72,6 @@
         };
     }
 
-    ko.observableArray.fn.pushAll = function (valuesToPush) {
-        var underlyingArray = this();
-        this.valueWillMutate();
-        ko.utils.arrayPushAll(underlyingArray, valuesToPush);
-        this.valueHasMutated();
-        return this;
-    };
-
     var MenuForDayInfo = function (object,categs) {
 
         var self = this;
@@ -109,7 +79,7 @@
         object = object || {};
         categs = categs || [];
 
-        self.ID = ko.observable(object.id).store();
+        self.ID = ko.observable(object.id);
         self.DayOfWeek = ko.observable(object.dayOfWeek);
         self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function (item) {
             var first = ko.utils.arrayFirst(object.dishes, function (element) {
@@ -117,17 +87,12 @@
                 return element.category === item;
             });
             return new DishInfo(first);
-        })).store();
+        }));
         self.Editing = ko.observable(false);
-        self.TotalPrice = ko.observable().store();
+        self.TotalPrice = ko.observable();
 
-        self.Editable = function () {
-            self.Editing(true);
-        };
+        self._Undo ;
 
-        self.UnEditable = function () {
-            self.Editing(false);
-        };
 
         self.Dishes.subscribe = ko.computed(function () {
             var sum = 0;
@@ -144,23 +109,8 @@
         }.bind(self));
 
     }
-    //var objForMap = function(categs) {
-    //    this.categories = ["Первое блюдо", "Второе блюдо", "Салат", "Напиток"];
-    //    this.target = [];
-    //    this.sortFunc = function(value) {
-    //        for (var i = 0; i < 4; i++) {
-    //            var first=ko.utils.arrayFirst(categs,function(item) {
-    //                if (value.category == item) {
 
-    //                    this.target.push(new DishInfo(value));
-    //                }
-    //            })
-                
-    //        }
-    //    }
-    //};
-
-    var viewModel = function () {
+    var viewModel = function() {
         var self = this;
 
         self.MenuId = ko.observable();
@@ -196,9 +146,11 @@
             self.Message('Error: ' + error.status + ' ' + error.statusText);
         }
 
-        self.WeekTitle = ko.computed(function () {
+        self.WeekTitle = ko.computed(function() {
             var options = {
-                weekday: "short", year: "numeric", month: "short",
+                weekday: "short",
+                year: "numeric",
+                month: "short",
                 day: "numeric"
             };
             var year = self.Year();
@@ -217,81 +169,73 @@
 
         self.pageIndex = ko.observable(0);
 
-        self.pagedList = ko.dependentObservable(function () {
+        self.pagedList = ko.dependentObservable(function() {
             var size = self.pageSize();
             var start = self.pageIndex() * size;
             return self.DishesByCategory.slice(start, start + size);
         });
 
-        self.maxPageIndex = ko.dependentObservable(function () {
+        self.maxPageIndex = ko.dependentObservable(function() {
             return Math.ceil(self.DishesByCategory().length / self.pageSize()) - 1;
         });
 
-        self.previousPage = function () {
+        self.previousPage = function() {
             if (self.pageIndex() > 0) {
                 self.pageIndex(self.pageIndex() - 1);
             }
         };
 
-        self.nextPage = function () {
+        self.nextPage = function() {
             if (self.pageIndex() < self.maxPageIndex()) {
                 self.pageIndex(self.pageIndex() + 1);
             }
         };
 
-        self.allPages = ko.dependentObservable(function () {
+        self.allPages = ko.dependentObservable(function() {
             var pages = [];
-            for (i = 0; i <= self.maxPageIndex() ; i++) {
+            for (i = 0; i <= self.maxPageIndex(); i++) {
                 pages.push({ pageNumber: (i + 1) });
             }
             return pages;
         });
 
-        self.moveToPage = function (index) {
+        self.moveToPage = function(index) {
             self.pageIndex(index);
         };
 
-        self.save = function () {
+        self.save = function(item) {
 
-            var source = {
-                ID: self.MenuId(),
-                WeekNumber: self.WeekNumber(),
-                MFD_models: self.MFD_models(),
-                SummaryPrice: self.SummaryPrice()
-
-            }
-            app.su_Service.update(ko.toJSON(source)).then(
-                function () {
+            app.su_Service.UpdateWeekMenu(item).then(
+                function() {
                     commitChanges(item);
-                    viewModel.BeenChanged(false);
-                    viewModel.ChangeSaved(true);
                 },
-                function (error) {
+                function(error) {
                     onError(error);
                     revertChanges(item);
-                }).always(function () {
-                    item.UnEditable();
-                });
+                }).always(function() {
+                item.UnEditable();
+            });
         }
 
-        self.edit = function (item) {
+        self.edit = function(item) {
+            self.BeenChanged(true);
+            item._Undo = ko.mapping.toJS(item);
             item.Editing(true);
         };
 
 
-        function applyFn(item, fn) {
-            for (var prop in item) {
-                if (item.hasOwnProperty(prop) && item[prop][fn]) {
-                    item[prop][fn].apply();
-                }
-            }
+        function commitChanges(item) {
+            item.Editing(false);
+            self.BeenChanged(false);
         }
 
-        function commitChanges(item) { applyFn(item, 'commit'); }
+        function revertChanges(item) {
+            item.Editing(false);
+            self.BeenChanged(false);
+        }
 
-        function revertChanges(item) { applyFn(item, 'revert'); }
-
-        self.cancel = function (item) {
+        self.cancel = function(item) {
+            item = ko.mapping.fromJS(item._Undo, {}, item);
             revertChanges(item);
             item.Editing(false);
         };
@@ -340,6 +284,14 @@
             return true;
         }
 
+        self.SetMyDateByWeek = function (weeknumber) {
+            var year = self.Year();
+            var firstDay = new Date(year, 0, 1).getDay();
+            var d = new Date("Jan 01, " + year + " 01:00:00");
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (weeknumber - 1);
+            self.myDate(new Date(w));
+        }.bind(self);
+
         self.LoadWeekMenu = function (numweek, year) {
 
             app.su_Service.GetCategories().then(function (resp) {
@@ -349,6 +301,7 @@
 
             app.su_Service.LoadWeekMenu(numweek, year).then(function (resp) {
                 self.MFD_models([]);
+                //self.SetMyDateByWeek(resp.weekNumber);
 
                 self.MenuId(resp.id);
                 self.WeekNumber(resp.weekNumber);
@@ -362,9 +315,11 @@
             }, onError);
         }
 
+
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() + 1;
-            if (takedWeek !== self.WeekNumber()) {
+            var curweek = self.WeekNumber();
+            if (takedWeek !== curweek) {
                 self.LoadWeekMenu(takedWeek, self.Year());
             }
         }, self);
@@ -385,21 +340,19 @@
 
         self.applyChanges = function () {
 
-            var obj = new objForMap();
-            var catIndex = $.map(obj.categories, function (n, i) {
-                if (self.Category() == n)
+            var catIndex = $.map(self.Categories(), function (n, i) {
+                if (self.Category() === n)
                     return i;
             });
 
 
             var dish = ko.utils.arrayFirst(self.DishesByCategory(), function (value) {
-                if (value.DishId() === self.SelectedDish()) {
-                    return value;
-                }
+                return value.DishId() === self.SelectedDish();
             });
+
             if (dish != undefined) {
 
-                self.MFD_models()[self.UpdatableMFD()].Dishes()[catIndex].update(dish);
+                self.MFD_models()[self.UpdatableMFD()].Dishes()[catIndex].UpdateWeekMenu(dish);
                 this.CalcTotal();
             };
 
@@ -423,25 +376,13 @@
 
         self.MFD_models.subscribe = ko.computed(self.CalcTotal, self);
 
-        self.SetMyDateByWeek = function (weeknumber) {
-            var year = self.Year();
-            var firstDay = new Date(year, 0, 1).getDay();
-            var d = new Date("Jan 01, " + year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (weeknumber - 1);
-            self.myDate(new Date(w));
-        }.bind(self);
-
 
         self.LoadWeekMenu();
         self.loadWeekNumbers();
         self.GetCurrentWeekNumber();
     };
 
+    window.app.AppViewModel.MenuForWeekInfo( new viewModel());
 
-
-
-
-
-    ko.applyBindings(new viewModel());
 
 })();

@@ -58,7 +58,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
         }
 
         [AllowAnonymous]
-        [Route("create")]
+        [Route("createWeekMenu")]
         public async Task<IHttpActionResult> CreateUser(CreateUserBindingModel createUserModel)
         {
 

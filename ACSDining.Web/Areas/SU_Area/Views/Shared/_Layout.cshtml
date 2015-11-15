@@ -11,9 +11,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=IE8" />
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/themes/base/css")
-    @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/ViewModel")
     @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        $(document).ready(function() {
 
+            //ko.applyBindings(window.app.AppViewModel);
+        });
+    </script>
 </head>
 <body class="pagebg">
     <div class="wrapper toppad">
@@ -57,11 +63,6 @@
                 <div class="main_content_background">
                     <div class="row">
                         <div class="col-md-9 col-xs-offset-3">
-                            <div class="col-md-6">
-                                <div class="input-group date">
-                                    <input type="text" class="form-control" data-provide="datepicker" data-bind="datepicker: myDate" />
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <nav class="navbar">
                                     <div class="container-fluid">

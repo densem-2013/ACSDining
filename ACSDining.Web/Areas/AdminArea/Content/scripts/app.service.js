@@ -6,7 +6,7 @@ window.app.service = (function () {
         users: function() { return baseUri + 'users'; },
         byName: function(username) { return baseUri + '?username=' + username; },
         byId: function(id) { return baseUri + id; },
-        create: function() { return baseUri + 'create' }
+        createWeekMenu: function() { return baseUri + 'createWeekMenu' }
     }
 
     function ajaxRequest(type, url, data) {
@@ -30,11 +30,11 @@ window.app.service = (function () {
         byName: function (username) {
             return ajaxRequest('get', serviceUrls.byName(username));
         },
-        update: function (item) {
+        UpdateWeekMenu: function (item) {
             return ajaxRequest('put', serviceUrls.byId(item.ID), item);
         },
         createAccount: function (item) {
-            return ajaxRequest('post', serviceUrls.create(), item);
+            return ajaxRequest('post', serviceUrls.createWeekMenu(), item);
         },
         deleteAccount: function (item) {
             return ajaxRequest('post', serviceUrls.byId(item.ID), item);

@@ -207,7 +207,7 @@
             });
 
         },
-        update: function (element, valueAccessor) {
+        UpdateWeekMenu: function (element, valueAccessor) {
             var value = ko.utils.unwrapObservable(valueAccessor());
             $(element).datepicker("setDate", value);
         }
@@ -244,7 +244,7 @@
                 $(element).hide();
             });
         },
-        update: function (element, valueAccessor) {
+        UpdateWeekMenu: function (element, valueAccessor) {
             var value = ko.utils.unwrapObservable(valueAccessor());
             $(element).datepicker("setValue", value);
         }

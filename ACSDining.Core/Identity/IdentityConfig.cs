@@ -108,7 +108,7 @@ namespace ACSDining.Core.Identity
 
     // This is useful if you do not want to tear down the database each time you run the application.
     // public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
-    // This example shows you how to create a new database if the Model changes
+    // This example shows you how to createWeekMenu a new database if the Model changes
     public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
         private static string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") +
