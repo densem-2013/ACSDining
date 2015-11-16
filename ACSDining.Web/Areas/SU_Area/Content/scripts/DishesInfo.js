@@ -79,9 +79,7 @@
                 function(error) {
                     onError(error);
                     revertChanges(item);
-                }).always(function() {
-                item.UnEditable();
-            });
+                });
         }
 
         self.edit = function(item) {
@@ -107,17 +105,29 @@
             item.Editing(false);
         };
         self.remove = function(item) {
-            app.su_Service.DeleteDish(item).then(function(resp) {
+            app.su_Service.DeleteDish(item.DishId()).then(function(resp) {
                 self.init();
             }, onError);
         };
 
-        self.create = function () {
-            var item = new DishInfo();
-            app.su_Service.CreateDish(item).then(function (resp) {
+        self.showAddDialog = function() {
+
+            $("#modalbox").modal("show");
+        };
+
+        self.create = function() {
+            var item = {
+                title: $("#titleID").val(),
+                price: parseFloat($("#priceID").val()),
+                foods: $("#foodsID").val(),
+                category: self.SelectedCategory()
+            };
+            var dish = new DishInfo(item);
+            app.su_Service.CreateDish(dish).then(function(resp) {
                 self.init();
             }, onError);
-        }
+            $("#modalbox").modal("hide");
+        };
         self.loadDishes = function(category) {
             app.su_Service.DishesByCategory(category).then(function(resp) {
                 self.DishesByCategory([]);

@@ -76,7 +76,7 @@ namespace ACSDining.Web
             bundles.Add(new StyleBundle("~/Content/css").Include(
                         "~/Content/Site.css",
                        "~/Content/bootstrap.css",
-                       "~/Content/css/fonts/font-awesome.css",
+                       "~/Content/font-awesome/font-awesome.css",
                        "~/Content/themes/Cupertino/jquery-ui.min.css",
                        "~/Content/themes/Cupertino/jquery-ui.structure.min.css",
                        "~/Content/themes/Cupertino/jquery-ui.theme.min.css",
