@@ -102,7 +102,9 @@ window.app.su_Service = (function() {
     var baseDishesUri = '/api/Dishes/';
     var serviceDishesUrls = {
         byCategory: function (category) { return baseDishesUri + 'byCategory/' + category },
-        update: function () { return baseDishesUri + 'update' }
+        update: function () { return baseDishesUri + 'update' },
+        deleteDish: function (dishID) { return baseDishesUri + 'delete/' + dishID },
+        create: function () { return baseDishesUri + 'create'}
     }
     function ajaxRequest(type, url, data) {
         var options = {
@@ -138,11 +140,17 @@ window.app.su_Service = (function() {
         GetCategories: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.categories());
         },
+        CreateDish: function (dish) {
+            return ajaxRequest('post', serviceDishesUrls.create(),dish);
+        },
         DishesByCategory: function(category) {
             return ajaxRequest('get', serviceDishesUrls.byCategory(category));
         },
         UpdateDish:function(dish) {
             return ajaxRequest('put', serviceDishesUrls.update(), dish);
+        },
+        DeleteDish: function (dishID) {
+            return ajaxRequest('delete', serviceDishesUrls.deleteDish(dishID));
         },
         LoadWeekOrders: function(numweek, year) {
             return ajaxRequest('get', baseOrdersUri + serviceOrdersUrls.ordersParams(numweek, year));

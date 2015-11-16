@@ -1,4 +1,4 @@
-﻿(function () {
+﻿(function() {
     var DishInfo = function(dish) {
         var self = this;
         self.DishId = ko.observable(dish.dishID);
@@ -106,13 +106,21 @@
             revertChanges(item);
             item.Editing(false);
         };
+        self.remove = function(item) {
+            app.su_Service.DeleteDish(item).then(function(resp) {
+                self.init();
+            }, onError);
+        };
 
+        self.create = function () {
+            var item = new DishInfo();
+            app.su_Service.CreateDish(item).then(function (resp) {
+                self.init();
+            }, onError);
+        }
         self.loadDishes = function(category) {
             app.su_Service.DishesByCategory(category).then(function(resp) {
                 self.DishesByCategory([]);
-                //ko.utils.arrayForEach(resp, function(value) {
-                //    self.DishesByCategory.push(new DishInfo(item));
-                //});
                 self.DishesByCategory.pushAll(ko.utils.arrayMap(resp, function(item) {
                     return new DishInfo(item);
                 }));
@@ -120,13 +128,15 @@
             }, onError);
         }
 
-        app.su_Service.GetCategories().then(function (resp) {
-            self.Categories([]);
-            self.Categories.pushAll(resp);
-            self.SelectedCategory(self.Categories()[0]);
-            self.loadDishes(self.Categories()[0]);
-        }, onError);
-
+        self.init = function() {
+            app.su_Service.GetCategories().then(function(resp) {
+                self.Categories([]);
+                self.Categories.pushAll(resp);
+                self.SelectedCategory(self.Categories()[0]);
+                self.loadDishes(self.Categories()[0]);
+            }, onError);
+        };
+        self.init();
     };
 
     ko.applyBindings(new DishesViewModel());

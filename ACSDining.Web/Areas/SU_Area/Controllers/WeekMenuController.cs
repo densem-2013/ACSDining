@@ -18,12 +18,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     {
         
         ApplicationDbContext DB { get; set; }
-        List<WeekMenuModel> WeekModels { get; set; }
+
+        private List<WeekMenuModel> WeekModels
+        {
+            get { return DB.MenuForWeeks.AsEnumerable().Select(wmenu => new WeekMenuModel(wmenu)).ToList(); }
+        }
 
         public WeekMenuController()
         {
             DB = new ApplicationDbContext();
-            WeekModels = DB.MenuForWeeks.AsEnumerable().Select(wmenu => new WeekMenuModel(wmenu)).ToList();
         }
 
         // GET api/WeekMenu

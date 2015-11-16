@@ -16,33 +16,29 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     {
         private ApplicationDbContext db ;
 
-        List<DishModel> Dishes { get; set; }
+        List<DishModel> Dishes
+        {
+            get
+            {
+                return db.Dishes.Select(d => new DishModel()
+                {
+                    DishID = d.DishID,
+                    Title = d.Title,
+                    ProductImage = d.ProductImage,
+                    Price = d.Price,
+                    Category = d.DishType.Category,
+                    Foods = d.DishDetail.Foods
+
+                }).ToList();
+            }
+        }
 
         public DishesController()
         {
             db = new ApplicationDbContext();
 
-            LoadDishes();
+        }
 
-        }
-        private void LoadDishes()
-        {
-            Dishes = db.Dishes.Select(d => new DishModel()
-            {
-                DishID = d.DishID,
-                Title = d.Title,
-                ProductImage = d.ProductImage,
-                Price = d.Price,
-                Category = d.DishType.Category,
-                Foods = d.DishDetail.Foods
-
-            }).ToList();
-        }
-        // GET api/Dishes
-        public List<DishModel> GetDishes()
-        {
-            return Dishes;
-        }
 
         [HttpGet]
         [Route("byCategory/{category}")]
@@ -60,41 +56,29 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return Ok(dmodels);
         }
 
-        // GET api/Dishes/5
-        [ResponseType(typeof(Dish))]
-        public async Task<IHttpActionResult> GetDish(int id)
-        {
-            Dish dish = await db.Dishes.FindAsync(id);
-            if (dish == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(dish);
-        }
 
         // PUT api/Dishes/5
-        public async Task<IHttpActionResult> PutDish(int id, Dish dish)
+        [HttpPut]
+        [Route("update")]
+        public async Task<IHttpActionResult> PutDish([FromBody] DishModel dish)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != dish.DishID)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(dish).State = EntityState.Modified;
-
             try
             {
+                Dish target = db.Dishes.Find(dish.DishID);
+                target.DishDetail.Foods = dish.Foods;
+                target.Price = dish.Price;
+                target.Title = dish.Title;
+                db.Entry(target).State = EntityState.Modified;
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DishExists(id))
+                if (!DishExists(dish.DishID))
                 {
                     return NotFound();
                 }
@@ -108,15 +92,28 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         // POST api/Dishes
+        [HttpPost]
+        [Route("create")]
         [ResponseType(typeof(Dish))]
-        public async Task<IHttpActionResult> PostDish(Dish dish)
+        public async Task<IHttpActionResult> PostDish(DishModel dmodel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            Dish newdish = new Dish
+            {
+                Title = dmodel.Title,
+                Price = dmodel.Price,
+                ProductImage = dmodel.ProductImage,
+                DishType = db.DishTypes.AsEnumerable().FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
+                DishDetail = new DishDetail
+                {
+                    Foods = dmodel.Foods
+                }
+            };
 
-            db.Dishes.Add(dish);
+            db.Dishes.Add(newdish);
 
             try
             {
@@ -124,7 +121,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             catch (DbUpdateException)
             {
-                if (DishExists(dish.DishID))
+                if (DishExists(newdish.DishID))
                 {
                     return Conflict();
                 }
@@ -134,10 +131,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = dish.DishID }, dish);
+            //return CreatedAtRoute("DefaultApi", new { id = dish.DishID }, dish); 
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // DELETE api/Dishes/5
+        [Route("delete/{id}")]
         [ResponseType(typeof(Dish))]
         public async Task<IHttpActionResult> DeleteDish(int id)
         {
