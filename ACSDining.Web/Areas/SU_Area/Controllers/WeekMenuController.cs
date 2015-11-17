@@ -52,6 +52,21 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return Ok(model);
         }
 
+        [HttpGet]
+        public async Task<MenuForWeek> GetNexWeekMenu()
+        {
+            int nextnum = DB.CurrentWeek() + 1;
+            if(MenuForWeekExists(nextnum))
+            {
+                return await DB.MenuForWeeks.FindAsync(nextnum);
+            }
+            return new MenuForWeek();
+            //{
+            //    WeekNumber = nextnum,,
+            //    Year = await DB.Years.FirstOrDefaultAsync(y => y.YearNumber == menumodel.YearNumber)
+
+            //}
+        }
 
         [HttpGet]
         [Route("curWeekNumber")]
@@ -110,6 +125,32 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return StatusCode(HttpStatusCode.OK);
         }
 
+        [HttpPost]
+        [Route("create")]
+        public async Task<IHttpActionResult> CreateNextWeekMenu([FromBody] WeekMenuModel menumodel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            MenuForWeek target = new MenuForWeek
+            {
+                WeekNumber = menumodel.WeekNumber,
+                SummaryPrice = menumodel.SummaryPrice,
+                Year = await DB.Years.FirstOrDefaultAsync(y => y.YearNumber == menumodel.YearNumber),
+                MenuForDay = menumodel.MFD_models.Select(m=>new MenuForDay
+                {
+                    DayOfWeek = DB.Days.FirstOrDefault(d=>string.Equals(d.Name,m.DayOfWeek)),
+                    Dishes = m.Dishes.Select(d=>DB.Dishes.Find(d.DishID)).ToList()
+                }).ToList()
+            };
+
+            DB.MenuForWeeks.Add(target);
+            await DB.SaveChangesAsync();
+
+            return StatusCode(HttpStatusCode.OK);
+        }
         // DELETE api/WeekMenu/5
         [ResponseType(typeof(MenuForWeek))]
         public async Task<IHttpActionResult> DeleteMenuForWeek(int id)

@@ -64,7 +64,7 @@
 
     }
 
-    var viewModel = function() {
+    var weekMenuModel = function() {
         var self = this;
 
         self.MenuId = ko.observable();
@@ -334,7 +334,7 @@
         self.GetCurrentWeekNumber();
     };
 
-    ko.applyBindings( new viewModel());
+    ko.applyBindings( new weekMenuModel());
 
 
 })();
