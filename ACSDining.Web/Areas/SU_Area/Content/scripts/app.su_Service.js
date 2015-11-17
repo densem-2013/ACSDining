@@ -85,7 +85,8 @@ window.app.su_Service = (function() {
         weekNumbers: function() { return baseWeekMenuUri + 'WeekNumbers'; },
         currentweek: function() { return baseWeekMenuUri + 'curWeekNumber'; },
         categories: function() { return baseWeekMenuUri + 'categories' },
-        create: function() { return baseWeekMenuUri + 'createNextWeekMenu' }
+        create: function () { return baseWeekMenuUri + 'createNextWeekMenu' },
+        nextWeekMenu: function () { return baseWeekMenuUri + 'nextWeekMenu' }
     }
 
     var baseOrdersUri = '/api/Orders/';
@@ -133,6 +134,9 @@ window.app.su_Service = (function() {
         },
         UpdateWeekMenu: function(item) {
             return ajaxRequest('put', baseWeekMenuUri + 'update', item);
+        },
+        GetNextWeekMenu: function () {
+            return ajaxRequest('get', serviceWeekMenuUrls.nextWeekMenu());
         },
         CreateNextWeekMenu: function(item) {
             return ajaxRequest('post', serviceWeekMenuUrls.create(), item);

@@ -263,7 +263,9 @@
             }, onError);
         }
 
-
+        self.GetNextWeekMenu=function() {
+            
+        }
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() + 1;
             var curweek = self.WeekNumber();

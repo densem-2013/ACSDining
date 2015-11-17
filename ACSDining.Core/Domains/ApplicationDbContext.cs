@@ -20,8 +20,8 @@ namespace ACSDining.Core.Domains
     using System.Data.Entity.ModelConfiguration.Conventions;
     using System.Globalization;
     using System.Collections.Generic;
-    
-    public partial class ApplicationDbContext  : IdentityDbContext<User>
+
+    public partial class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext()
             : base("name=ApplicationDbContext", throwIfV1Schema: false)
@@ -32,47 +32,20 @@ namespace ACSDining.Core.Domains
         {
             Database.SetInitializer<ApplicationDbContext>(new ApplicationDbInitializer());
         }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Entity<MenuForDay>()
-            .HasMany(mfd => mfd.Dishes).WithMany(m => m.MenusForDay)
-            .Map(t => t.MapLeftKey("MenuID")
-            .MapRightKey("DishID")
-            .ToTable("MFD_Dishes"));
+                .HasMany(mfd => mfd.Dishes).WithMany(m => m.MenusForDay)
+                .Map(t => t.MapLeftKey("MenuID")
+                    .MapRightKey("DishID")
+                    .ToTable("MFD_Dishes"));
 
-            //modelBuilder.Entity<DishQuantity>()
-            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
-            //.Map(t => t.MapLeftKey("DishQuantityID")
-            //.MapRightKey("DayOfWeekID")
-            //.ToTable("DishQuantityDayOfWeek"));
-
-            //modelBuilder.Entity<DishQuantity>()
-            //.HasMany(dq => dq.DishType).WithMany(m => m.DishQuantities)
-            //.Map(t => t.MapLeftKey("DishQuantityID")
-            //.MapRightKey("DishTypeID")
-            //.ToTable("DishTypeDishQuantity"));
-
-            //modelBuilder.Entity<DishQuantity>()
-            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
-            //.Map(t => t.MapLeftKey("DishQuantityID")
-            //.MapRightKey("MenuForWeekID")
-            //.ToTable("MenuForWeekDishQuantity"));
-
-            //modelBuilder.Entity<DishQuantity>()
-            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
-            //.Map(t => t.MapLeftKey("DishQuantityID")
-            //.MapRightKey("OrderMenuID")
-            //.ToTable("OrderMenuDishQuantity"));
-
-            //modelBuilder.Entity<DishQuantity>()
-            //.HasMany(dq => dq.DayOfWeek).WithMany(m => m.DishQuantities)
-            //.Map(t => t.MapLeftKey("DishQuantityID")
-            //.MapRightKey("PlannedOrderMenuID")
-            //.ToTable("PlannedOrderMenuDishQuantity"));
 
             base.OnModelCreating(modelBuilder);
         }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
@@ -90,16 +63,16 @@ namespace ACSDining.Core.Domains
         public virtual DbSet<Year> Years { get; set; }
 
         public Func<int> CurrentWeek = () =>
-            {
-                CultureInfo myCI = new CultureInfo("uk-UA");
-                Calendar myCal = myCI.Calendar;
+        {
+            CultureInfo myCI = new CultureInfo("uk-UA");
+            Calendar myCal = myCI.Calendar;
 
-                // Gets the DTFI properties required by GetWeekOfYear.
-                CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
-                System.DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
-                DateTime LastDay = new System.DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-                return myCal.GetWeekOfYear(LastDay, myCWR, myFirstDOW);
-            };
+            // Gets the DTFI properties required by GetWeekOfYear.
+            CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
+            System.DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
+            DateTime CurDay = new System.DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            return myCal.GetWeekOfYear(CurDay, myCWR, myFirstDOW);
+        };
 
         public double[] GetUserWeekOrderDishes(int orderid)
         {
@@ -119,10 +92,25 @@ namespace ACSDining.Core.Domains
                         q => q.DayOfWeekID == i && q.DishTypeID == j
                         );
                     if (firstOrDefault != null)
-                        dquantities[(i - 1) * 4 + j - 1] = firstOrDefault.Quantity;
+                        dquantities[(i - 1)*4 + j - 1] = firstOrDefault.Quantity;
                 }
             }
             return dquantities;
+        }
+
+        public int GetNextWeekOfYear()
+        {
+            int curweek = CurrentWeek();
+            if (curweek >= 52)
+            {
+                DateTime LastDay = new System.DateTime(DateTime.Now.Year, 12, 31);
+                if (LastDay.DayOfWeek < System.DayOfWeek.Thursday || curweek == 53)
+                {
+                    return 1;
+                }
+            }
+
+            return curweek + 1;
         }
     }
 }
