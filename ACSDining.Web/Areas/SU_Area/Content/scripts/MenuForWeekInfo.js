@@ -69,6 +69,16 @@
 
         self.MenuId = ko.observable();
         self.CurrentWeekNumber = ko.observable();
+
+        self.IsNextWeekMenuExist = ko.dependentObservable(function () {
+
+            var rezult = self.CurrentWeekNumber;
+            app.su_Service.IsNextWeekMenuExist().then(function(resp) {
+                rezult = resp;
+            }, onError);
+            return rezult;
+        });
+
         self.WeekNumber = ko.observable();
 
         self.MFD_models = ko.observableArray([]);

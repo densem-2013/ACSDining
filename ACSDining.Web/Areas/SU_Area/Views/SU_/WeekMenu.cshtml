@@ -44,7 +44,7 @@
                     </td>
                     <td class="col-md-5  " style="float: right">
                         <div>
-                            <input type="button" id="btnaddmenu" class="btn" value="Добавить меню на следующую неделю" data-bind="click:"/>
+                            <input type="button" id="btnaddmenu" class="btn" data-bind="click:GetNextWeekMenu, text:IsNextWeekMenuExist()?'Редактировать' :'Создать' +' меню на следующую неделю'" />
                         </div>
                     </td>
                 </tr>
