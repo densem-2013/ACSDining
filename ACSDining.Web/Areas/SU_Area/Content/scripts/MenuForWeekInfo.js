@@ -4,7 +4,7 @@
 
 (function () {
 
-   // $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
+    $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
 
 
     var DishInfo = function (dinfo) {
@@ -70,7 +70,7 @@
         self.MenuId = ko.observable();
         self.CurrentWeekNumber = ko.observable();
 
-        self.IsNextWeekMenuExist = ko.dependentObservable(function () {
+        self.IsNextWeekMenuExist = ko.computed(function () {
 
             var rezult = self.CurrentWeekNumber;
             app.su_Service.IsNextWeekMenuExist().then(function(resp) {
@@ -259,7 +259,6 @@
 
             app.su_Service.LoadWeekMenu(numweek, year).then(function (resp) {
                 self.MFD_models([]);
-                //self.SetMyDateByWeek(resp.weekNumber);
 
                 self.MenuId(resp.id);
                 self.WeekNumber(resp.weekNumber);
@@ -274,7 +273,19 @@
         }
 
         self.GetNextWeekMenu=function() {
-            
+            app.su_Service.GetNextWeekMenu().then(function(resp) {
+                self.MFD_models([]);
+
+                self.MenuId(resp.id);
+                self.WeekNumber(resp.weekNumber);
+                self.Year(resp.yearNumber);
+                ko.utils.arrayForEach(resp.mfD_models, function (object) {
+
+                    self.MFD_models.push(new MenuForDayInfo(object, self.Categories()));
+
+                });
+
+                }, onError);
         }
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() + 1;

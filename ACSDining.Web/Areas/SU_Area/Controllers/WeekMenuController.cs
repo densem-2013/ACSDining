@@ -12,6 +12,7 @@ using ACSDining.Web.Areas.SU_Area.Models;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [Authorize(Roles = "SuperUser,Administrator")]
     [RoutePrefix("api/WeekMenu")]
     //[EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
     public class WeekMenuController : ApiController
@@ -71,7 +72,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         [HttpGet]
         [Route("nextWeekMenu")]
-        public async Task<MenuForWeek> GetNexWeekMenu()
+        public async Task<IHttpActionResult> GetNexWeekMenu()
         {
             int curweek = Db.CurrentWeek();
             int nextweeknumber = Db.GetNextWeekOfYear();
@@ -82,18 +83,28 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 await
                     Db.MenuForWeeks.FirstOrDefaultAsync(
                         mfw => mfw.WeekNumber == nextweeknumber && mfw.Year.YearNumber == year.YearNumber);
-            if (nextWeek!=null)
+            WeekMenuModel model = null;
+            if (nextWeek != null)
             {
-                return nextWeek;
+                model = new WeekMenuModel(nextWeek);
+                return Ok(model);
             }
-            return new MenuForWeek
+            nextWeek = new MenuForWeek
             {
                 WeekNumber = nextweeknumber,
                 Year =
                     Db.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year) ??
-                    new Year {YearNumber = year.YearNumber}
+                    new Year {YearNumber = year.YearNumber},
+                    MenuForDay = Db.Days.ToList().OrderBy(d=>d.ID).Select(day=>new MenuForDay
+                    {
+                        DayOfWeek = day
+                    }).ToList()
 
             };
+            //Db.MenuForWeeks.Add(nextWeek);
+            //await Db.SaveChangesAsync();
+            model = new WeekMenuModel(nextWeek,true);
+            return Ok(model);
         }
 
         [HttpGet]
