@@ -22,6 +22,7 @@ ko.bindingHandlers.datepicker = {
             {},
             $.datepicker.regional["ru"],
             {
+                beforeShowDay: $.datepicker.noWeekends,
                 dateFormat: 'dd/mm/yy',
                 showButtonPanel: true,
                 gotoCurrent: true,

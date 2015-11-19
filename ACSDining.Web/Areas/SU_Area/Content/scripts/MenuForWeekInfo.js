@@ -6,7 +6,6 @@
 
     $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
 
-
     var DishInfo = function (dinfo) {
 
         var self = this;
@@ -46,7 +45,7 @@
             }
             var dish= {
                 dishID: '0',
-                title: '_',
+                title: ':',
                 productImage: '',
                 price: 0.0,
                 category: categs[ind++]
@@ -81,7 +80,6 @@
         self.MenuId = ko.observable();
         self.CurrentWeekNumber = ko.observable();
 
-
         self.WeekNumber = ko.observable();
 
 
@@ -106,7 +104,23 @@
 
         self.IsNextWeekMenuExist = ko.observable();
 
+        self.IsNextWeekMenuExist.subscribe = ko.computed(function() {
+
+            var cur = self.CurrentWeekNumber();
+            var result = false;
+            ko.utils.arrayForEach(self.NumbersWeeks(), function (value) {
+                if (value === cur + 1) result = true;
+            });
+            self.IsNextWeekMenuExist(result);
+        });
         self.IsNextWeekMenu = ko.observable(false);
+
+        self.IsNextWeekMenu.subscribe = ko.computed(function() {
+
+            var cur = self.WeekNumber();
+
+            self.IsNextWeekMenu(cur === self.CurrentWeekNumber() + 1);
+        });
 
         self.BeenChanged = ko.observable(false);
 
@@ -264,13 +278,6 @@
 
         self.LoadWeekMenu = function (numweek, year) {
 
-
-            //if (numweek != undefined && numweek !== NaN && numweek < self.CurrentWeekNumber() + 1) {
-            //    self.IsNextWeekMenu(false);
-            //} else {
-            //    self.IsNextWeekMenu(true);
-            //    //self.GetNextWeekMenu();
-            //}
             app.su_Service.LoadWeekMenu(numweek, year).then(function (resp) {
                 self.MFD_models([]);
 
@@ -290,37 +297,14 @@
         self.CreateNextWeekMenu = function() {
             app.su_Service.CreateNextWeekMenu().then(function () {
                 self.loadWeekNumbers();
-                self.LoadWeekMenu(self.CurrentWeekNumber() + 1);
+                self.SetMyDateByWeek(self.CurrentWeekNumber());
             });
         };
-        //self.GetNextWeekMenu=function() {
-        //    app.su_Service.GetNextWeekMenu().then(function(resp) {
-        //        self.MFD_models([]);
 
-        //        self.MenuId(resp.id);
-        //        self.WeekNumber(resp.weekNumber);
-        //        var nextWeekNum = ko.utils.arrayFirst(self.NumbersWeeks(), function(value) {
-        //            return value === resp.weekNumber;
-        //        });
-        //        if (nextWeekNum != null) {
-        //            self.NumbersWeeks.push(resp.weekNumber);
-        //        }
-        //        self.Year(resp.yearNumber);
-        //        ko.utils.arrayForEach(resp.mfD_models, function (object) {
-
-        //            self.MFD_models.push(new MenuForDayInfo(object, self.Categories()));
-
-        //        });
-
-        //        }, onError);
-        //}
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() + 1;
             var curweek = self.WeekNumber();
-            var first = ko.utils.arrayFirst(self.NumbersWeeks(), function(item) {
-                return takedWeek == item;
-            });
-            if (first!=null&&takedWeek !== curweek) {
+            if (takedWeek !== curweek) {
                 self.LoadWeekMenu(takedWeek, self.myDate().getFullYear());
             }
         }, self);
@@ -365,9 +349,9 @@
         self.DeleteNextWeekMenu = function () {
             var num = self.WeekNumber();
             app.su_Service.DeleteNextWeekMenu(num).then(function () {
-                self.IsNextWeekMenu(false);
                 self.LoadWeekMenu();
                 self.loadWeekNumbers();
+                self.SetMyDateByWeek(self.CurrentWeekNumber());
             }, onError);
         }
         self.CalcTotal = function () {
@@ -393,14 +377,8 @@
             self.loadWeekNumbers();
             self.GetCurrentWeekNumber();
             self.LoadWeekMenu();
-            var cur = self.CurrentWeekNumber();
-            ko.utils.arrayForEach(self.NumbersWeeks(), function (value) {
-                if (value === cur + 1) self.IsNextWeekMenuExist(true);
-            });
-            //self.IsNextWeekMenu(false);
         }
         self.init();
-       // self.IsNextWeekMenuExist(false);
     };
 
     ko.applyBindings( new weekMenuModel());
