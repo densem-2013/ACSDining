@@ -85,9 +85,9 @@ window.app.su_Service = (function() {
         weekNumbers: function() { return baseWeekMenuUri + 'WeekNumbers'; },
         currentweek: function() { return baseWeekMenuUri + 'curWeekNumber'; },
         categories: function() { return baseWeekMenuUri + 'categories' },
-        create: function () { return baseWeekMenuUri + 'createNextWeekMenu' },
-        nextWeekMenu: function () { return baseWeekMenuUri + 'nextWeekMenu' },
-        nwMenuExist: function () { return baseWeekMenuUri + 'nwMenuExist' }
+        create: function() { return baseWeekMenuUri + 'create' },
+        nextWeekMenu: function() { return baseWeekMenuUri + 'nextWeekMenu' },
+        delnextweek: function(numweek) { return baseWeekMenuUri + 'delete/' + numweek }
     }
 
     var baseOrdersUri = '/api/Orders/';
@@ -136,14 +136,14 @@ window.app.su_Service = (function() {
         UpdateWeekMenu: function(item) {
             return ajaxRequest('put', baseWeekMenuUri + 'update', item);
         },
-        IsNextWeekMenuExist: function () {
-            return ajaxRequest('get', serviceWeekMenuUrls.nwMenuExist());
+        DeleteNextWeekMenu: function (numweek) {
+            return ajaxRequest('delete', serviceWeekMenuUrls.delnextweek(numweek));
         },
         GetNextWeekMenu: function () {
             return ajaxRequest('get', serviceWeekMenuUrls.nextWeekMenu());
         },
-        CreateNextWeekMenu: function(item) {
-            return ajaxRequest('post', serviceWeekMenuUrls.create(), item);
+        CreateNextWeekMenu: function() {
+            return ajaxRequest('post', serviceWeekMenuUrls.create());
         },
         GetCategories: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.categories());

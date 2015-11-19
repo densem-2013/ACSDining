@@ -25,15 +25,24 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             YearNumber = wmenu.Year.YearNumber;
             if (emptyDishes)
             {
-
+                ApplicationDbContext context=new ApplicationDbContext();
+                List<DishType> dtypes = context.DishTypes.ToList();
                 MFD_models = new List<MenuForDayModel>();
                 foreach (MenuForDay mfd in wmenu.MenuForDay)
                 {
                     dmodels=new List<DishModel>();
-                    for (int i = 0; i <5; i++)
+                    for (int i = 0; i <4; i++)
                     {
-                        dmodels.Add(new DishModel());
+                        dmodels.Add(new DishModel
+                        {
+                            DishID = i+1,
+                            Title = "_",
+                            Price = 0,
+                            Category = dtypes.FirstOrDefault(dt=>dt.Id==i+1).Category,
+                            Foods = "_"
+                        });
                     }
+
                    MFD_models.Add(new MenuForDayModel
                    {
                        ID = mfd.ID,

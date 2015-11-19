@@ -44,7 +44,12 @@
                     </td>
                     <td class="col-md-5  " style="float: right">
                         <div>
-                            <input type="button" id="btnaddmenu" class="btn" data-bind="click:GetNextWeekMenu, value: (IsNextWeekMenuExist()?'Редактировать' :'Создать') +' меню на следующую неделю'" />
+                            <!--ko ifnot: IsNextWeekMenuExist -->
+                                <input type="button" id="btnaddmenu" class="btn" value="Создать меню на следующую неделю" data-bind="click:CreateNextWeekMenu"/> 
+                            <!--/ko--> 
+                            <!--ko if: IsNextWeekMenu-->
+                            <input type="button" id="btnDel" class="btn btn-danger" value="Удалить меню на следующую неделю" data-bind="click:DeleteNextWeekMenu" />
+                            <!--/ko--> 
                         </div>
                     </td>
                 </tr>

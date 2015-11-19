@@ -35,12 +35,23 @@
 
         self.ID = ko.observable(object.id);
         self.DayOfWeek = ko.observable(object.dayOfWeek);
+        var ind = 0;
         self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function (item) {
             var first = ko.utils.arrayFirst(object.dishes, function (element) {
 
                 return element.category === item;
             });
-            return new DishInfo(first);
+            if (first != null) {
+                return new DishInfo(first);
+            }
+            var dish= {
+                dishID: '0',
+                title: '_',
+                productImage: '',
+                price: 0.0,
+                category: categs[ind++]
+            }
+            return new DishInfo(dish);
         }));
         self.Editing = ko.observable(false);
         self.TotalPrice = ko.observable();
@@ -70,16 +81,9 @@
         self.MenuId = ko.observable();
         self.CurrentWeekNumber = ko.observable();
 
-        self.IsNextWeekMenuExist = ko.computed(function () {
-
-            var rezult = self.CurrentWeekNumber;
-            app.su_Service.IsNextWeekMenuExist().then(function(resp) {
-                rezult = resp;
-            }, onError);
-            return rezult;
-        });
 
         self.WeekNumber = ko.observable();
+
 
         self.MFD_models = ko.observableArray([]);
 
@@ -99,6 +103,10 @@
         self.SummaryPrice = ko.observable();
 
         self.NumbersWeeks = ko.observableArray();
+
+        self.IsNextWeekMenuExist = ko.observable();
+
+        self.IsNextWeekMenu = ko.observable(false);
 
         self.BeenChanged = ko.observable(false);
 
@@ -205,7 +213,7 @@
 
         self.loadWeekNumbers = function () {
             app.su_Service.LoadWeekNumbers().then(function(resp) {
-
+                self.NumbersWeeks([]);
                 for (var i = 0; i < resp.length; i++) {
 
                     self.NumbersWeeks.push(resp[i]);
@@ -257,23 +265,13 @@
         self.LoadWeekMenu = function (numweek, year) {
 
 
+            //if (numweek != undefined && numweek !== NaN && numweek < self.CurrentWeekNumber() + 1) {
+            //    self.IsNextWeekMenu(false);
+            //} else {
+            //    self.IsNextWeekMenu(true);
+            //    //self.GetNextWeekMenu();
+            //}
             app.su_Service.LoadWeekMenu(numweek, year).then(function (resp) {
-                self.MFD_models([]);
-
-                self.MenuId(resp.id);
-                self.WeekNumber(resp.weekNumber);
-                self.Year(resp.yearNumber);
-                ko.utils.arrayForEach(resp.mfD_models, function (object) {
-
-                    self.MFD_models.push(new MenuForDayInfo(object,self.Categories()));
-
-                });
-
-            }, onError);
-        }
-
-        self.GetNextWeekMenu=function() {
-            app.su_Service.GetNextWeekMenu().then(function(resp) {
                 self.MFD_models([]);
 
                 self.MenuId(resp.id);
@@ -285,13 +283,45 @@
 
                 });
 
-                }, onError);
+            }, onError);
+
         }
+
+        self.CreateNextWeekMenu = function() {
+            app.su_Service.CreateNextWeekMenu().then(function () {
+                self.loadWeekNumbers();
+                self.LoadWeekMenu(self.CurrentWeekNumber() + 1);
+            });
+        };
+        //self.GetNextWeekMenu=function() {
+        //    app.su_Service.GetNextWeekMenu().then(function(resp) {
+        //        self.MFD_models([]);
+
+        //        self.MenuId(resp.id);
+        //        self.WeekNumber(resp.weekNumber);
+        //        var nextWeekNum = ko.utils.arrayFirst(self.NumbersWeeks(), function(value) {
+        //            return value === resp.weekNumber;
+        //        });
+        //        if (nextWeekNum != null) {
+        //            self.NumbersWeeks.push(resp.weekNumber);
+        //        }
+        //        self.Year(resp.yearNumber);
+        //        ko.utils.arrayForEach(resp.mfD_models, function (object) {
+
+        //            self.MFD_models.push(new MenuForDayInfo(object, self.Categories()));
+
+        //        });
+
+        //        }, onError);
+        //}
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() + 1;
             var curweek = self.WeekNumber();
-            if (takedWeek !== curweek) {
-                self.LoadWeekMenu(takedWeek, self.Year());
+            var first = ko.utils.arrayFirst(self.NumbersWeeks(), function(item) {
+                return takedWeek == item;
+            });
+            if (first!=null&&takedWeek !== curweek) {
+                self.LoadWeekMenu(takedWeek, self.myDate().getFullYear());
             }
         }, self);
 
@@ -332,7 +362,14 @@
             $("#modalbox").modal("hide");
         }
 
-
+        self.DeleteNextWeekMenu = function () {
+            var num = self.WeekNumber();
+            app.su_Service.DeleteNextWeekMenu(num).then(function () {
+                self.IsNextWeekMenu(false);
+                self.LoadWeekMenu();
+                self.loadWeekNumbers();
+            }, onError);
+        }
         self.CalcTotal = function () {
 
             var sum = 0;
@@ -347,14 +384,23 @@
 
         self.MFD_models.subscribe = ko.computed(self.CalcTotal, self);
 
-        app.su_Service.GetCategories().then(function (resp) {
-            self.Categories([]);
-            self.Categories.pushAll(resp);
-        }, onError);
+        self.init = function () {
+            app.su_Service.GetCategories().then(function (resp) {
+                self.Categories([]);
+                self.Categories.pushAll(resp);
+            }, onError);
 
-        self.LoadWeekMenu();
-        self.loadWeekNumbers();
-        self.GetCurrentWeekNumber();
+            self.loadWeekNumbers();
+            self.GetCurrentWeekNumber();
+            self.LoadWeekMenu();
+            var cur = self.CurrentWeekNumber();
+            ko.utils.arrayForEach(self.NumbersWeeks(), function (value) {
+                if (value === cur + 1) self.IsNextWeekMenuExist(true);
+            });
+            //self.IsNextWeekMenu(false);
+        }
+        self.init();
+       // self.IsNextWeekMenuExist(false);
     };
 
     ko.applyBindings( new weekMenuModel());

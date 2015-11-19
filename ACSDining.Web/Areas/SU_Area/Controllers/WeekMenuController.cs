@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -101,8 +101,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     }).ToList()
 
             };
-            //Db.MenuForWeeks.Add(nextWeek);
-            //await Db.SaveChangesAsync();
+
             model = new WeekMenuModel(nextWeek,true);
             return Ok(model);
         }
@@ -130,12 +129,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (List<int>))]
         public async Task<IHttpActionResult> GetWeekNumbers()
         {
-            List<int> numweeks = WeekModels.Select(wm => wm.WeekNumber).Reverse().ToList();
+            List<int> numweeks = WeekModels.Select(wm => wm.WeekNumber).ToList();
             if (numweeks == null)
             {
                 return NotFound();
             }
-
+            numweeks.Sort();
             return Ok(numweeks);
         }
 
@@ -168,45 +167,71 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IHttpActionResult> CreateNextWeekMenu([FromBody] WeekMenuModel menumodel)
+        public async Task<IHttpActionResult> CreateNextWeekMenu()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            MenuForWeek target = new MenuForWeek
+            int curweek = Db.CurrentWeek();
+            int nextweeknumber = Db.GetNextWeekOfYear();
+            Year year = nextweeknumber < curweek
+                ? new Year { YearNumber = DateTime.Now.Year + 1 }
+                : Db.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
+
+            WeekMenuModel model = null;
+
+            if (year != null)
             {
-                WeekNumber = menumodel.WeekNumber,
-                SummaryPrice = menumodel.SummaryPrice,
-                Year = await Db.Years.FirstOrDefaultAsync(y => y.YearNumber == menumodel.YearNumber),
-                MenuForDay = menumodel.MFD_models.Select(m => new MenuForDay
+                int maxID = Db.MenuForDays.Max(m => m.ID);
+                MenuForWeek nextWeek = new MenuForWeek
                 {
-                    DayOfWeek = Db.Days.FirstOrDefault(d => string.Equals(d.Name, m.DayOfWeek)),
-                    Dishes = m.Dishes.Select(d => Db.Dishes.Find(d.DishID)).ToList()
-                }).ToList()
-            };
+                    WeekNumber = nextweeknumber,
+                    Year =
+                        Db.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year) ??
+                        new Year { YearNumber = year.YearNumber },
+                    MenuForDay = Db.Days.ToList().OrderBy(d => d.ID).Select(day => new MenuForDay
+                    {
+                        ID = ++maxID,
+                        DayOfWeek = day
+                    }).ToList()
 
-            Db.MenuForWeeks.Add(target);
-            await Db.SaveChangesAsync();
+                };
+                try
+                {
+                    Db.MenuForWeeks.Add(nextWeek);
+                    await Db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
 
-            return StatusCode(HttpStatusCode.OK);
+                    throw new Exception(ex.Message);
+                }
+                model = new WeekMenuModel(nextWeek, true);
+            }
+            return Ok(model);
         }
 
         // DELETE api/WeekMenu/5
+        [HttpDelete]
+        [Route("delete/{numweek}")]
         [ResponseType(typeof (MenuForWeek))]
-        public async Task<IHttpActionResult> DeleteMenuForWeek(int id)
+        public async Task<IHttpActionResult> DeleteMenuForWeek(int numweek)
         {
-            MenuForWeek menuforweek = await Db.MenuForWeeks.FindAsync(id);
+            MenuForWeek menuforweek = await Db.MenuForWeeks.FirstOrDefaultAsync(mfw => mfw.WeekNumber == numweek);
             if (menuforweek == null)
             {
                 return NotFound();
             }
+            try
+            {
+                Db.MenuForWeeks.Remove(menuforweek);
+                await Db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                    
+                throw new Exception(ex.Message);
+            }
 
-            Db.MenuForWeeks.Remove(menuforweek);
-            await Db.SaveChangesAsync();
-
-            return Ok(menuforweek);
+            return Ok();
         }
 
         protected override void Dispose(bool disposing)
@@ -218,9 +243,5 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             base.Dispose(disposing);
         }
 
-        private bool MenuForWeekExists(int weeknum, int yearnum)
-        {
-            return Db.MenuForWeeks.Count(e => e.WeekNumber == weeknum && e.Year.YearNumber == yearnum) > 0;
-        }
     }
 }
