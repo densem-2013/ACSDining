@@ -43,7 +43,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 UserId = userid,
                 MenuId = weekmodel.ID,
                 SummaryPrice = ordmenu.SummaryPrice,
-                WeekIsPaid = ordmenu.CurrentWeekIsPaid,
+                WeekPaid = ordmenu.WeekPaid,
                 MFD_models = weekmodel.MFD_models,
                 Year = (int) year,
                 WeekNumber = (int) numweek
@@ -51,7 +51,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             if (ordmenu != null)
             {
                 model.OrderId = ordmenu.Id;
-                model.Dishquantities = _context.GetUserWeekOrderDishes(ordmenu.Id);
+                model.Dishquantities = _context.GetUserWeekOrderPaiments(ordmenu.Id);
             }
             return Ok(model);
         }

@@ -98,6 +98,33 @@ namespace ACSDining.Core.Domains
             return dquantities;
         }
 
+        public double[] GetUserWeekOrderPaiments(int orderid)
+        {
+            double[] paiments = new double[20];
+            double[] unitprices = new double[20];
+            OrderMenu order = OrderMenus.Find(orderid);
+            int menuforweekid = order.MenuForWeek.ID;
+            List<DishQuantity> quaList =
+                DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
+                    .ToList();
+
+            string[] categories = DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
+            MenuForWeek mfw = MenuForWeeks.Find(menuforweekid);
+            for (int i = 1; i <= 5; i++)
+            {
+                MenuForDay daymenu = mfw.MenuForDay.ElementAt(i - 1);
+                for (int j = 1; j <= categories.Length; j++)
+                {
+                    var firstOrDefault = quaList.FirstOrDefault(
+                        q => q.DayOfWeekID == i && q.DishTypeID == j
+                        );
+                    if (firstOrDefault != null)
+                        paiments[(i - 1)*4 + j - 1] = firstOrDefault.Quantity * daymenu.Dishes.ElementAt(j - 1).Price;
+                }
+            }
+            return paiments;
+        }
+
         public int GetNextWeekOfYear()
         {
             int curweek = CurrentWeek();

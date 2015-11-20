@@ -240,13 +240,16 @@
     <Compile Include="Areas\EmployeeArea\Models\EmployeeOrderDTO.cs" />
     <Compile Include="Areas\SU_Area\Controllers\DishesController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\OrdersController.cs" />
+    <Compile Include="Areas\SU_Area\Controllers\PaimentController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
     <Compile Include="Areas\SU_Area\Models\DishModel.cs" />
     <Compile Include="Areas\SU_Area\Models\MenuForDayModel.cs" />
     <Compile Include="Areas\SU_Area\Models\OrdersDTO.cs" />
+    <Compile Include="Areas\SU_Area\Models\PaimentsDTO.cs" />
     <Compile Include="Areas\SU_Area\Models\PoolRequestModelBinder.cs" />
     <Compile Include="Areas\SU_Area\Models\UserOrdesDTO.cs" />
+    <Compile Include="Areas\SU_Area\Models\UserPaimentDTO.cs" />
     <Compile Include="Areas\SU_Area\Models\WeekMenuModel.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -267,6 +270,7 @@
   <ItemGroup>
     <Content Include="Areas\SU_Area\Content\scripts\app.su_Service.js" />
     <Content Include="Areas\SU_Area\Content\scripts\DishesInfo.js" />
+    <Content Include="Areas\SU_Area\Content\scripts\PaimentInfo.js" />
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\css\datepicker.css" />

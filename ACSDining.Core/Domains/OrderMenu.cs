@@ -20,7 +20,7 @@ namespace ACSDining.Core.Domains
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public bool CurrentWeekIsPaid { get; set; }
+        public double WeekPaid { get; set; }
         public double Balance { get; set; }
         public double SummaryPrice { get; set; }
 
