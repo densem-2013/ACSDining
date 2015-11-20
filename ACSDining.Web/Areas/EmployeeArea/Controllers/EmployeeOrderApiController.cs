@@ -51,7 +51,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             if (ordmenu != null)
             {
                 model.OrderId = ordmenu.Id;
-                model.Dishquantities = _context.GetUserWeekOrderPaiments(ordmenu.Id);
+                model.Dishquantities = _context.GetUnitWeekPrices(ordmenu.Id);
             }
             return Ok(model);
         }

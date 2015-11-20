@@ -125,6 +125,22 @@ namespace ACSDining.Core.Domains
             return paiments;
         }
 
+        public double[] GetUnitWeekPrices(int menuforweekid)
+        {
+            double[] unitprices = new double[20];
+
+            string[] categories = DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
+            MenuForWeek mfw = MenuForWeeks.Find(menuforweekid);
+            for (int i = 0; i < 5; i++)
+            {
+                MenuForDay daymenu = mfw.MenuForDay.ElementAt(i);
+                for (int j = 0; j < categories.Length; j++)
+                {
+                    unitprices[i * 4 + j] =  daymenu.Dishes.ElementAt(j).Price;
+                }
+            }
+            return unitprices;
+        }
         public int GetNextWeekOfYear()
         {
             int curweek = CurrentWeek();

@@ -39,7 +39,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     {
                         UserId = order.User.Id,
                         UserName = order.User.UserName,
-                        Dishquantities = _db.GetUserWeekOrderPaiments(order.Id),
+                        Dishquantities = _db.GetUnitWeekPrices(order.Id),
                         WeekIsPaid = false,
                         SummaryPrice = order.SummaryPrice
                     }).OrderBy(uo => uo.UserName).ToList(),

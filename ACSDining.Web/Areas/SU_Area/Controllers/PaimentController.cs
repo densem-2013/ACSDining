@@ -18,7 +18,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("")]
         [Route("{numweek}")]
         [Route("{numweek}/{year}")]
-        [ResponseType(typeof(PaimentsDTO))]
+        [ResponseType(typeof (PaimentsDTO))]
         public async Task<IHttpActionResult> GetWeekPaiments([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
             numweek = numweek ?? _db.CurrentWeek();
@@ -28,27 +28,33 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     _db.OrderMenus.Where(
                         om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
                         .ToListAsync();
+            MenuForWeek mfw = _db.MenuForWeeks.FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
+            PaimentsDTO model = null;
+            if (mfw != null)
+            {
+                model = new PaimentsDTO()
+                {
+                    WeekNumber = (int) numweek,
+                    YearNumber = (int) year,
+                    UserPaiments = orderMenus
+                        .Select(order => new UserPaimentDTO()
+                        {
+                            UserId = order.User.Id,
+                            UserName = order.User.UserName,
+                            Paiments = _db.GetUserWeekOrderPaiments(order.Id),
+                            SummaryPrice = order.SummaryPrice,
+                            WeekPaid = order.WeekPaid,
+                            Balance = order.Balance
+                        }).OrderBy(uo => uo.UserName).ToList(),
+                    UnitPrices = _db.GetUnitWeekPrices(mfw.ID)
+                };
+                if (model == null)
+                {
+                    return NotFound();
+                }
 
-            PaimentsDTO model = new PaimentsDTO()
-            {
-                WeekNumber = (int)numweek,
-                YearNumber = (int)year,
-                UserPaiments = orderMenus
-                    .Select(order => new UserPaimentDTO()
-                    {
-                        UserId = order.User.Id,
-                        UserName = order.User.UserName,
-                        Paiments = _db.GetUserWeekOrderPaiments(order.Id),
-                        SummaryPrice = order.SummaryPrice,
-                        WeekPaid = order.WeekPaid,
-                        Balance = order.Balance
-                    }).OrderBy(uo => uo.UserName).ToList()
-            };
-            if (model == null)
-            {
-                return NotFound();
+
             }
-
             return Ok(model);
         }
     }
