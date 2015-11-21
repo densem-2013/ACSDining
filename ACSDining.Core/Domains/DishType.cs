@@ -17,13 +17,18 @@ namespace ACSDining.Core.Domains
     
     public partial class DishType
     {
+        public DishType()
+        {
+            this.DishQuantities = new HashSet<DishQuantity>();
+        }
+
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
         public string Category { get; set; }
-        //[JsonIgnore]
-        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<DishQuantity> DishQuantities { get; set; }
 
     }
 }

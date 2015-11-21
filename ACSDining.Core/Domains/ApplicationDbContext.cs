@@ -77,20 +77,32 @@ namespace ACSDining.Core.Domains
         public double[] GetUserWeekOrderDishes(int orderid)
         {
             double[] dquantities = new double[20];
-            OrderMenu order = OrderMenus.Find(orderid);
+            OrderMenu order = OrderMenus.Include("DishQuantities").FirstOrDefault(om => om.Id == orderid);
             int menuforweekid = order.MenuForWeek.ID;
+            MenuForWeek menuForWeek = MenuForWeeks.Include("DishQuantities").FirstOrDefault(om => om.ID == menuforweekid);
+
             List<DishQuantity> quaList =
-                DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
+                DishQuantities.Include("OrderMenus").Include("MenuForWeeks").Include("DayOfWeeks")
+                .Include("DishTypes").Where(q => q.OrderMenus.Any(om => om.Id == orderid) && q.MenuForWeeks.Any(mwf => mwf.ID == menuforweekid))
                     .ToList();
 
             string[] categories = DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
             for (int i = 1; i <= 5; i++)
             {
+                DayOfWeek day = Days.Include("DishQuantities").FirstOrDefault(om => om.ID == i);
                 for (int j = 1; j <= categories.Length; j++)
                 {
-                    var firstOrDefault = quaList.FirstOrDefault(
-                        q => q.DayOfWeekID == i && q.DishTypeID == j
-                        );
+                    DishType dtype = DishTypes.Include("DishQuantities").FirstOrDefault(om => om.Id == j);
+                    var firstOrDefault = DishQuantities.ToList().FirstOrDefault(q => order.DishQuantities.Any(dq => dq.Id == q.Id) && menuForWeek.DishQuantities.Any(dq => dq.Id == q.Id)
+                        && day.DishQuantities.Any(dq => dq.Id == q.Id) && dtype.DishQuantities.Any(dq => dq.Id == q.Id));
+                    //DishType dtype = DishTypes.Include("DishQuantities").FirstOrDefault(om => om.Id == j);
+                    //var firstOrDefault =
+                    //    quaList.FirstOrDefault(
+                    //        dq =>
+                    //            dq.DishTypes.Any(dt => dt.Id == j) &&
+                    //            dq.DayOfWeeks.Any(dow => dow.ID == i) &&
+                    //            dq.MenuForWeeks.Any(mw => mw.ID == menuforweekid) &&
+                    //            dq.OrderMenus.Any(om => om.Id == orderid));
                     if (firstOrDefault != null)
                         dquantities[(i - 1)*4 + j - 1] = firstOrDefault.Quantity;
                 }
@@ -105,7 +117,7 @@ namespace ACSDining.Core.Domains
             OrderMenu order = OrderMenus.Find(orderid);
             int menuforweekid = order.MenuForWeek.ID;
             List<DishQuantity> quaList =
-                DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
+                DishQuantities.Where(q => q.OrderMenus.Any(om => om.Id == orderid) && q.MenuForWeeks.Any(mwf => mwf.ID == menuforweekid))
                     .ToList();
 
             string[] categories = DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
@@ -116,8 +128,7 @@ namespace ACSDining.Core.Domains
                 for (int j = 1; j <= categories.Length; j++)
                 {
                     var firstOrDefault = quaList.FirstOrDefault(
-                        q => q.DayOfWeekID == i && q.DishTypeID == j
-                        );
+                        q => q.DayOfWeeks.Any(dow=>dow.ID == i) && q.DishTypes.Any(dt=>dt.Id == j));
                     if (firstOrDefault != null)
                         paiments[(i - 1)*4 + j - 1] = firstOrDefault.Quantity * daymenu.Dishes.ElementAt(j - 1).Price;
                 }

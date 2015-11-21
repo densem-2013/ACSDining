@@ -131,19 +131,19 @@ namespace ACSDining.Core.Identity
         {
             //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            //context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
-            //    new DishQuantity {Quantity = 0.0},
-            //    new DishQuantity {Quantity = 0.5},
-            //    new DishQuantity {Quantity = 1.0},
-            //    new DishQuantity {Quantity = 1.5},
-            //    new DishQuantity {Quantity = 2.0},
-            //    new DishQuantity {Quantity = 2.5},
-            //    new DishQuantity {Quantity = 3.0},
-            //    new DishQuantity {Quantity = 3.5},
-            //    new DishQuantity {Quantity = 4.0},
-            //    new DishQuantity {Quantity = 4.5},
-            //    new DishQuantity {Quantity = 5.0}
-            //    );
+            context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
+                new DishQuantity { Quantity = 0.0 },
+                new DishQuantity { Quantity = 0.5 },
+                new DishQuantity { Quantity = 1.0 },
+                //new DishQuantity { Quantity = 1.5 },
+                new DishQuantity { Quantity = 2.0 },
+                //new DishQuantity { Quantity = 2.5 },
+                new DishQuantity { Quantity = 3.0 },
+               // new DishQuantity { Quantity = 3.5 },
+                new DishQuantity { Quantity = 4.0 },
+                //new DishQuantity { Quantity = 4.5 },
+                new DishQuantity { Quantity = 5.0 }
+                );
 
             context.Years.AddOrUpdate(y => y.YearNumber, new Year
             {
@@ -447,7 +447,6 @@ namespace ACSDining.Core.Identity
                         User = user,
                         MenuForWeek = mfw
                     };
-
                     context.PlannedOrderMenus.Add(planorder);
 
                     OrderMenu order = new OrderMenu
@@ -459,9 +458,10 @@ namespace ACSDining.Core.Identity
                     };
                     context.OrderMenus.Add(order);
 
-                    List<DishQuantity> dquaList = new List<DishQuantity>();
+                    //List<DishQuantity> dquaList = new List<DishQuantity>();
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
                     {
+                        DayOfWeek dayOfWeek = daymenu.DayOfWeek;
                         foreach (Dish dish in daymenu.Dishes)
                         {
                             DishType first = null;
@@ -478,22 +478,65 @@ namespace ACSDining.Core.Identity
                                 int catindex = first.Id - 1;
 
                                 rnd = rand.Next(numsForCourses[catindex]);
-                                DishQuantity dqu = new DishQuantity
+                                DishQuantity dqu =
+                                    context.DishQuantities.ToList().FirstOrDefault(
+                                        dq => dq.Quantity == coursesnums[catindex][rnd]);
+                                if (first.DishQuantities.All(dq => dq.Id != dqu.Id))
                                 {
-                                    Quantity = coursesnums[catindex][rnd],
-                                    DishType = dish.DishType,
-                                    DayOfWeek = daymenu.DayOfWeek,
-                                    PlannedOrderMenu = planorder,
-                                    MenuForWeek = mfw,
-                                    OrderMenu = order
-                                };
+                                    first.DishQuantities.Add(dqu);
+                                }
+                                if (dqu.DishTypes.All(dt=>dt.Id!=first.Id))
+                                {
+                                    dqu.DishTypes.Add(first);
+                                }
+                                if (dayOfWeek.DishQuantities.All(dq => dq.Id != dqu.Id))
+                                {
+                                    dayOfWeek.DishQuantities.Add(dqu);
+                                }
+                                if (dqu.DayOfWeeks.All(dW => dW.ID != dayOfWeek.ID))
+                                {
+                                    dqu.DayOfWeeks.Add(dayOfWeek);
+                                }
+                                if (planorder.DishQuantities.All(dq => dq.Id != dqu.Id))
+                                {
+                                    planorder.DishQuantities.Add(dqu);
+                                }
+                                if (dqu.PlannedOrderMenus.All(po => po.Id != planorder.Id))
+                                {
+                                    dqu.PlannedOrderMenus.Add(planorder);
+                                }
+                                if (order.DishQuantities.All(dq => dq.Id != dqu.Id))
+                                {
+                                    order.DishQuantities.Add(dqu);
+                                }
+                                if (dqu.OrderMenus.All(om => om.Id != order.Id))
+                                {
+                                    dqu.OrderMenus.Add(order);
+                                }
+                                if (mfw.DishQuantities.All(dq => dq.Id != dqu.Id))
+                                {
+                                    mfw.DishQuantities.Add(dqu);
+                                }
+                                if (dqu.MenuForWeeks.All(mw => mw.ID != mfw.ID))
+                                {
+                                    dqu.MenuForWeeks.Add(mfw);
+                                }
+                                //DishQuantity dqu = new DishQuantity
+                                //{
+                                //    Quantity = coursesnums[catindex][rnd],
+                                //    DishType = dish.DishType,
+                                //    DayOfWeek = daymenu.DayOfWeek,
+                                //    PlannedOrderMenu = planorder,
+                                //    MenuForWeek = mfw,
+                                //    OrderMenu = order
+                                //};
                                 order.SummaryPrice += dqu.Quantity*dish.Price;
-                                dquaList.Add(dqu);
+                                //dquaList.Add(dqu);
                             }
 
                         }
                     }
-                    context.DishQuantities.AddRange(dquaList);
+                    //context.DishQuantities.AddRange(dquaList);
                     context.SaveChanges();
                 }
             }

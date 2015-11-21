@@ -17,31 +17,40 @@ namespace ACSDining.Core.Domains
 
     public partial class DishQuantity
     {
+        public DishQuantity()
+        {
+            this.DishTypes = new HashSet<DishType>();
+            this.DayOfWeeks = new HashSet<DayOfWeek>();
+            this.MenuForWeeks = new HashSet<MenuForWeek>();
+            this.OrderMenus = new HashSet<OrderMenu>();
+            this.PlannedOrderMenus = new HashSet<PlannedOrderMenu>();
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
         public double Quantity { get; set; }
-        public int PlannedOrderMenuID { get; set; }
-        public int DishTypeID { get; set; }
-        public int DayOfWeekID { get; set; }
-        public int MenuForWeekID { get; set; }
-        public int OrderMenuID { get; set; }
+        //public int PlannedOrderMenuID { get; set; }
+        //public int DishTypeID { get; set; }
+        //public int DayOfWeekID { get; set; }
+        //public int MenuForWeekID { get; set; }
+        //public int OrderMenuID { get; set; }
 
         [JsonIgnore]
        // [InverseProperty("DishQuantities")]
-        public virtual DishType DishType { get; set; }
+        public virtual ICollection<DishType> DishTypes { get; set; }
         [JsonIgnore]
         //[InverseProperty("DishQuantities")]
-        public virtual DayOfWeek DayOfWeek { get; set; }
+        public virtual ICollection<DayOfWeek> DayOfWeeks { get; set; }
         [JsonIgnore]
         //[InverseProperty("DishQuantities")]
-        public virtual MenuForWeek MenuForWeek { get; set; }
+        public virtual ICollection<MenuForWeek> MenuForWeeks { get; set; }
         [JsonIgnore]
         //[InverseProperty("DishQuantities")]
-        public virtual OrderMenu OrderMenu { get; set; }
+        public virtual ICollection<OrderMenu> OrderMenus { get; set; }
         [JsonIgnore]
         //[InverseProperty("DishQuantities")]
-        public virtual PlannedOrderMenu PlannedOrderMenu { get; set; }
+        public virtual ICollection<PlannedOrderMenu> PlannedOrderMenus { get; set; }
     }
 }

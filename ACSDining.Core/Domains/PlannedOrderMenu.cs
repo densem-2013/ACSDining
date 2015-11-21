@@ -11,6 +11,11 @@ namespace ACSDining.Core.Domains
 {
     public class PlannedOrderMenu
     {
+        public PlannedOrderMenu()
+        {
+            this.DishQuantities = new HashSet<DishQuantity>();
+        }
+
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -24,7 +29,7 @@ namespace ACSDining.Core.Domains
         public virtual User User { get; set; }
         [JsonIgnore]
         public virtual MenuForWeek MenuForWeek { get; set; }
-        //[JsonIgnore]
-        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<DishQuantity> DishQuantities { get; set; }
     }
 }
