@@ -34,6 +34,10 @@ namespace ACSDining.Web
                         "~/Areas/SU_Area/Content/scripts/OrdersInfo.js"
                         ));
 
+            bundles.Add(new ScriptBundle("~/bundles/WeekPaiments").Include(
+                        "~/Areas/SU_Area/Content/scripts/PaimentInfo.js"
+                        ));
+
 
             bundles.Add(new ScriptBundle("~/bundles/Modal").Include(
                      "~/Content/worthy/modal/js/jquery-1.10.2.js",

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -131,19 +130,19 @@ namespace ACSDining.Core.Identity
         {
             //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            //context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
-            //    new DishQuantity {Quantity = 0.0},
-            //    new DishQuantity {Quantity = 0.5},
-            //    new DishQuantity {Quantity = 1.0},
-            //    new DishQuantity {Quantity = 1.5},
-            //    new DishQuantity {Quantity = 2.0},
-            //    new DishQuantity {Quantity = 2.5},
-            //    new DishQuantity {Quantity = 3.0},
-            //    new DishQuantity {Quantity = 3.5},
-            //    new DishQuantity {Quantity = 4.0},
-            //    new DishQuantity {Quantity = 4.5},
-            //    new DishQuantity {Quantity = 5.0}
-            //    );
+            context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
+                new DishQuantity { Quantity = 0.0 },
+                new DishQuantity { Quantity = 0.5 },
+                new DishQuantity { Quantity = 1.0 },
+               // new DishQuantity { Quantity = 1.5 },
+                new DishQuantity { Quantity = 2.0 },
+               // new DishQuantity { Quantity = 2.5 },
+                new DishQuantity { Quantity = 3.0 },
+                //new DishQuantity { Quantity = 3.5 },
+                new DishQuantity { Quantity = 4.0 },
+                //new DishQuantity { Quantity = 4.5 },
+                new DishQuantity { Quantity = 5.0 }
+                );
 
             context.Years.AddOrUpdate(y => y.YearNumber, new Year
             {
@@ -437,6 +436,7 @@ namespace ACSDining.Core.Identity
             {
                 numsForCourses[i] = coursesnums[i].Length;
             }
+            List<DishQuantityRelations> dquaList = new List<DishQuantityRelations>();
             foreach (User user in users)
             {
                 foreach (MenuForWeek mfw in weekmenus)
@@ -459,7 +459,6 @@ namespace ACSDining.Core.Identity
                     };
                     context.OrderMenus.Add(order);
 
-                    List<DishQuantity> dquaList = new List<DishQuantity>();
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
                     {
                         foreach (Dish dish in daymenu.Dishes)
@@ -478,25 +477,28 @@ namespace ACSDining.Core.Identity
                                 int catindex = first.Id - 1;
 
                                 rnd = rand.Next(numsForCourses[catindex]);
-                                DishQuantity dqu = new DishQuantity
+                                DishQuantity dqu =
+                                    context.DishQuantities.ToList().FirstOrDefault(
+                                        dq => dq.Quantity == coursesnums[catindex][rnd]);
+                                DishQuantityRelations dqrs = new DishQuantityRelations
                                 {
-                                    Quantity = coursesnums[catindex][rnd],
-                                    DishType = dish.DishType,
+                                    DishQuantity = dqu,
+                                    DishType = first,
                                     DayOfWeek = daymenu.DayOfWeek,
                                     PlannedOrderMenu = planorder,
                                     MenuForWeek = mfw,
                                     OrderMenu = order
                                 };
                                 order.SummaryPrice += dqu.Quantity*dish.Price;
-                                dquaList.Add(dqu);
+                                dquaList.Add(dqrs);
                             }
 
                         }
                     }
-                    context.DishQuantities.AddRange(dquaList);
-                    context.SaveChanges();
                 }
             }
+            context.DQRelations.AddRange(dquaList);
+            context.SaveChanges();
         }
     }
 

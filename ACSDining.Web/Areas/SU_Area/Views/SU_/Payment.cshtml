@@ -16,14 +16,14 @@
                             <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
                         </li>
 
-                        <li class="active ">
+                        <li>
                             <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
                         </li>
 
                         <li>
                             <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
                         </li>
-                        <li>
+                        <li class="active ">
                             <a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a>
                         </li>
                     </ul>
@@ -37,20 +37,30 @@
     <table class="table table-striped table-bordered fixed  table-hover" id="ordesTable">
         <thead>
             <tr>
-                <th rowspan="2"><span>№</span></th>
-                <th rowspan="2" style="text-align:center"><span>Ф.И.О</span></th>
+                <th rowspan="4"><span>№</span></th>
+                <th rowspan="4" style="text-align:center"><span>Ф.И.О</span></th>
                 <!--ko foreach: DaysOfWeek-->
                 <th colspan="4" style="text-align:center"><span data-bind="text:$data"></span></th>
                 <!--/ko-->
-                <th rowspan="2"><span>Стоимость</span></th>
+                <th class="rotate" rowspan="4"><span class="intact_last">Сумма за неделю</span></th>
+                <th class="rotate" rowspan="4"><span class="intact_last">Оплата за неделю</span></th>
+                <th class="rotate" rowspan="4"><span class="intact_last">Баланс</span></th>
+                <th class="rotate" rowspan="4"><span class="intact_last">Возможен заказ удаленно</span></th>
+                <th class="rotate" rowspan="4"><span class="intact_last">Примечание</span></th>
             </tr>
-            <tr data-bind="foreach: DaysOfWeek" id="groups">
-                <!--ko foreach: $root.Categories-->
-                <th class="rotate">
-                    <span class="intact" data-bind="text: $data"></span>
-                </th>
-                <!--/ko-->
-            </tr>
+        <tr data-bind="foreach: DaysOfWeek" id="groups">
+            <!--ko foreach: $root.Categories-->
+            <th class="rotate">
+                <span class="intact" data-bind="text: $data"></span>
+            </th>
+            <!--/ko-->
+        </tr>
+        <tr><th colspan="20" style="text-align: center"><span>Цена за одну порцию, грн</span></th></tr>
+        <tr>
+            <!--ko foreach: UnitPrices-->
+            <th ><span data-bind="text: $data"></span></th>
+            <!--/ko-->
+        </tr>
         </thead>
         <tbody>
             <!--ko foreach: pagedList-->
@@ -59,26 +69,38 @@
                     <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
                 </td>
                 <td class="rights"><span data-bind="text: UserName"></span></td>
-                <!--ko foreach: Dishquantities-->
-                <td data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                <!--ko foreach: DishPaiments-->
+                <td >
+                    <span data-bind="text:$data"></span>
+                </td>
+                <!--/ko-->
+                <td class="lastTD"><span data-bind="text: Summary"></span></td>
+                <!--ko with:Paiment-->
+                <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                    <!--ko if: isEditMode-->
+                    <input type="text" data-bind="value:Paiment, event:{focusout: function(){$data.onFocusOut();} }">
+                    <!--/ko-->
                     <!--ko ifnot: isEditMode-->
-                    <span data-bind="text: Quantity"></span>
-                    <!--/ko-->
-                    <!-- ko if: isEditMode() -->
-                    <!-- ko if: ($index() % 4 === 0) -->
-                    <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity,event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary($parent)} }"></select>
-                    <!--/ko-->
-                    <!-- ko ifnot: ($index() % 4 === 0) -->
-                    <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity,event:{focusout:  function(){$data.onFocusOut();$root.CalcSummary($parent)} }"></select>
-                    <!--/ko-->
+                    <span data-bind="text: Paiment"></span>
                     <!--/ko-->
                 </td>
                 <!--/ko-->
-                <td><span data-bind="text: $data.SummaryPrice"></span></td>
+                <td class="lastTD"><span data-bind="text: Balance"></span></td>
+                <td class="lastTD"><input type="checkbox" data-bind="checked: IsDinningRoomClient"/></td>
+                <!--ko with: Note-->
+                <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                    <!--ko if: isEditMode-->
+                    <input type="text" data-bind="value:Note,event:{focusout: function(){$data.onFocusOut()} }">
+                    <!--/ko-->
+                    <!--ko ifnot: isEditMode-->
+                    <span data-bind="text: Note"></span>
+                    <!--/ko-->
+                </td>
+                <!--/ko-->
             </tr>
             <!--/ko-->
             <tr>
-                <td colspan="24">
+                <td colspan="27">
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="dataTables_paginate paging_simple_numbers">
@@ -101,17 +123,17 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="30">
+                <td colspan="27">
                     <div class="dataTables_paginate paging_simple_numbers" style="padding:5px;">
                         <ul class="pagination">
                             <li class=" paginate_button previous">
-                                <a href="#" data-bind=" click: function(){ $root.LoadOrders($root.WeekNumber() - 1); }">Previous</a>
+                                <a href="#" data-bind=" click: function(){ $root.LoadPaiments($root.WeekNumber() - 1,$root.Year()); }">Previous</a>
                             </li>
                             <li class="paginate_button " data-bind="foreach: NumbersOfWeek">
-                                <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $root.WeekNumber()}, click: function(){ $root.LoadOrders($data); }"></a>
+                                <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $root.WeekNumber()}, click: function(){ $root.LoadPaiments($data,$root.Year()); }"></a>
                             </li>
                             <li class=" paginate_button next">
-                                <a href="#" data-bind="click: function(){ $root.LoadOrders($root.WeekNumber() + 1 ); }">Next</a>
+                                <a href="#" data-bind="click: function(){ $root.LoadPaiments($root.WeekNumber() + 1,$root.Year()); }">Next</a>
                             </li>
                         </ul>
                     </div>
@@ -120,7 +142,7 @@
         </tfoot>
     </table>
 </div>
-@Scripts.Render("~/bundles/WeekOrders")
+@Scripts.Render("~/bundles/WeekPaiments")
 <script type="text/javascript">
 
     //$('.nav.navbar-nav li').eq(1).addClass('active');

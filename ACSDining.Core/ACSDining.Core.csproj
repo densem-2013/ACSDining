@@ -90,7 +90,12 @@
     </Compile>
     <Compile Include="Domains\Dish.cs" />
     <Compile Include="Domains\DishDetail.cs" />
+    <Compile Include="Domains\DishQuantityRelations.cs" />
     <Compile Include="Domains\DishType.cs" />
+    <Compile Include="Domains\Food.cs" />
+    <Compile Include="Domains\FoodCategory.cs" />
+    <Compile Include="Domains\FoodQuantity.cs" />
+    <Compile Include="Domains\FoodQuantityRelations.cs" />
     <Compile Include="Domains\MenuForDay.cs" />
     <Compile Include="Domains\MenuForWeek.cs" />
     <Compile Include="Domains\OrderMenu.cs" />
@@ -100,9 +105,9 @@
     <Compile Include="Domains\UserRole.cs" />
     <Compile Include="Domains\Year.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201511151355515_Initial.cs" />
-    <Compile Include="Migrations\201511151355515_Initial.Designer.cs">
-      <DependentUpon>201511151355515_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201511221433340_Initial.cs" />
+    <Compile Include="Migrations\201511221433340_Initial.Designer.cs">
+      <DependentUpon>201511221433340_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -117,8 +122,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201511151355515_Initial.resx">
-      <DependentUpon>201511151355515_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201511221433340_Initial.resx">
+      <DependentUpon>201511221433340_Initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>

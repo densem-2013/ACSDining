@@ -22,26 +22,9 @@ namespace ACSDining.Core.Domains
         public int Id { get; set; }
         [Required]
         public double Quantity { get; set; }
-        public int PlannedOrderMenuID { get; set; }
-        public int DishTypeID { get; set; }
-        public int DayOfWeekID { get; set; }
-        public int MenuForWeekID { get; set; }
-        public int OrderMenuID { get; set; }
+        public int DishQuantityRelationsID { get; set; }
 
         [JsonIgnore]
-       // [InverseProperty("DishQuantities")]
-        public virtual DishType DishType { get; set; }
-        [JsonIgnore]
-        //[InverseProperty("DishQuantities")]
-        public virtual DayOfWeek DayOfWeek { get; set; }
-        [JsonIgnore]
-        //[InverseProperty("DishQuantities")]
-        public virtual MenuForWeek MenuForWeek { get; set; }
-        [JsonIgnore]
-        //[InverseProperty("DishQuantities")]
-        public virtual OrderMenu OrderMenu { get; set; }
-        [JsonIgnore]
-        //[InverseProperty("DishQuantities")]
-        public virtual PlannedOrderMenu PlannedOrderMenu { get; set; }
+        public virtual ICollection<DishQuantityRelations> Relations { get; set; }
     }
 }

@@ -371,8 +371,8 @@ legend
 
 input[type="text"]
 {
-    width: 150px;
-    border: 1px solid #CCC;
+    /*width: 150px;
+    border: 1px solid #CCC;*/
 }
 
 input[type="password"]

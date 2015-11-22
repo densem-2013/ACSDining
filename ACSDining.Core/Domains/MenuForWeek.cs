@@ -32,7 +32,5 @@ namespace ACSDining.Core.Domains
         public virtual ICollection<PlannedOrderMenu> PlannedOrderMenus { get; set; }
         [JsonIgnore]
         public virtual Year Year { get; set; }
-        //[JsonIgnore]
-        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
     }
 }

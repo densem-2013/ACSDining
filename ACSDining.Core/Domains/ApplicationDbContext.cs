@@ -61,6 +61,11 @@ namespace ACSDining.Core.Domains
         public virtual DbSet<DishDetail> DishDetails { get; set; }
         public virtual DbSet<DayOfWeek> Days { get; set; }
         public virtual DbSet<Year> Years { get; set; }
+        public virtual DbSet<DishQuantityRelations> DQRelations { get; set; }
+        public virtual DbSet<FoodQuantityRelations> FQRelations { get; set; }
+        public virtual DbSet<Food> Foods { get; set; }
+        public virtual DbSet<FoodCategory> FoodCategories { get; set; }
+        public virtual DbSet<FoodQuantity> FoodQuantities { get; set; }
 
         public Func<int> CurrentWeek = () =>
         {
@@ -79,8 +84,8 @@ namespace ACSDining.Core.Domains
             double[] dquantities = new double[20];
             OrderMenu order = OrderMenus.Find(orderid);
             int menuforweekid = order.MenuForWeek.ID;
-            List<DishQuantity> quaList =
-                DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
+            List<DishQuantityRelations> quaList =
+                DQRelations.Where(dqr => dqr.OrderMenuID == orderid && dqr.MenuForWeekID == menuforweekid)
                     .ToList();
 
             string[] categories = DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
@@ -92,7 +97,7 @@ namespace ACSDining.Core.Domains
                         q => q.DayOfWeekID == i && q.DishTypeID == j
                         );
                     if (firstOrDefault != null)
-                        dquantities[(i - 1)*4 + j - 1] = firstOrDefault.Quantity;
+                        dquantities[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity;
                 }
             }
             return dquantities;
@@ -104,8 +109,8 @@ namespace ACSDining.Core.Domains
             double[] unitprices = new double[20];
             OrderMenu order = OrderMenus.Find(orderid);
             int menuforweekid = order.MenuForWeek.ID;
-            List<DishQuantity> quaList =
-                DishQuantities.Where(q => q.OrderMenuID == orderid && q.MenuForWeekID == menuforweekid)
+            List<DishQuantityRelations> quaList =
+                DQRelations.Where(dqr => dqr.OrderMenuID == orderid && dqr.MenuForWeekID == menuforweekid)
                     .ToList();
 
             string[] categories = DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
@@ -119,7 +124,7 @@ namespace ACSDining.Core.Domains
                         q => q.DayOfWeekID == i && q.DishTypeID == j
                         );
                     if (firstOrDefault != null)
-                        paiments[(i - 1)*4 + j - 1] = firstOrDefault.Quantity * daymenu.Dishes.ElementAt(j - 1).Price;
+                        paiments[(i - 1) * 4 + j - 1] = firstOrDefault.DishQuantity.Quantity * daymenu.Dishes.ElementAt(j - 1).Price;
                 }
             }
             return paiments;

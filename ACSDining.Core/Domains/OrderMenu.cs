@@ -23,13 +23,12 @@ namespace ACSDining.Core.Domains
         public double WeekPaid { get; set; }
         public double Balance { get; set; }
         public double SummaryPrice { get; set; }
+        public string Note { get; set; }
 
         [JsonIgnore]
         public virtual User User { get; set; }
         [JsonIgnore]
         public virtual MenuForWeek MenuForWeek { get; set; }
-        //[JsonIgnore]
-        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
         [JsonIgnore]
         public virtual PlannedOrderMenu PlannedOrderMenu { get; set; }
     }
