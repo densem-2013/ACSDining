@@ -23,12 +23,9 @@ namespace ACSDining.Core.Domains
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public double TotalPrice { get; set; }
-
         [JsonIgnore]
         public virtual ICollection<Dish> Dishes { get; set; }
         [JsonIgnore]
         public virtual DayOfWeek DayOfWeek { get; set; }
-        //[JsonIgnore]
-        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
     }
 }

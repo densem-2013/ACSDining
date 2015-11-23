@@ -64,7 +64,8 @@
         self.Categories = ko.observableArray([]);
         self.UnitPrices = ko.observableArray([]);
         self.UnitPricesTotal = ko.observableArray([]);
-
+        self.TotalWeekPaiment = ko.observable();
+        self.TotalBalance = ko.observable();
         // Callback for error responses from the server.
         function onError(error) {
             self.Message('Error: ' + error.status + ' ' + error.statusText);

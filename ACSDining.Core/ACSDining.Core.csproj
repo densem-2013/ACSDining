@@ -105,9 +105,9 @@
     <Compile Include="Domains\UserRole.cs" />
     <Compile Include="Domains\Year.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201511221433340_Initial.cs" />
-    <Compile Include="Migrations\201511221433340_Initial.Designer.cs">
-      <DependentUpon>201511221433340_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201511232003181_Initial.cs" />
+    <Compile Include="Migrations\201511232003181_Initial.Designer.cs">
+      <DependentUpon>201511232003181_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -122,8 +122,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201511221433340_Initial.resx">
-      <DependentUpon>201511221433340_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201511232003181_Initial.resx">
+      <DependentUpon>201511232003181_Initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>

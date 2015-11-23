@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.ComponentModel;
+
 namespace ACSDining.Core.Domains
 {
     using Newtonsoft.Json;
