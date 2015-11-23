@@ -187,13 +187,13 @@ window.app.su_Service = (function() {
         },
         UpdatePaiment: function(orderid, pai) {
             return ajaxRequest('put', servicePaimentsUrls.updatePaiment(orderid), pai);
-        },
+        }//,
         //GetUnitPrices: function(week, year) {
         //    return ajaxRequest('get', servicePaimentsUrls.unitprices(week, year));
         //},
-        GetPaimentsTotalByDish: function (week, year) {
-            return ajaxRequest('get', servicePaimentsUrls.totalPaimentsbyDish(week, year));
-        }
+        //GetPaimentsTotalByDish: function (week, year) {
+        //    return ajaxRequest('get', servicePaimentsUrls.totalPaimentsbyDish(week, year));
+        //}
     };
 
 })();

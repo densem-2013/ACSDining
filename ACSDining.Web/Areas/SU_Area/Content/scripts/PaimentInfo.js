@@ -143,7 +143,7 @@
                         self.UnitPrices([]);
                         self.UnitPricesTotal([]);
                         self.UnitPrices.pushAll(resp.unitPrices);
-                        //self.UnitPricesTotal.pushAll(resp.unitPricesTotal);
+                        self.UnitPricesTotal.pushAll(resp.unitPricesTotal);
 
                         ko.utils.arrayForEach(resp.userPaiments, function (object) {
 
@@ -157,6 +157,14 @@
                 });
         }
 
+
+        self.myDate.subscribe = ko.computed(function () {
+            var takedWeek = self.myDate().getWeek() + 1;
+            var curweek = self.WeekNumber();
+            if (takedWeek !== curweek) {
+                self.LoadPaiments(takedWeek, self.myDate().getFullYear());
+            }
+        });
 
         self.SetMyDateByWeek = function (weeknumber) {
             var year = self.Year();
@@ -197,13 +205,6 @@
             return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
 
-        self.myDate.subscribe = ko.computed(function () {
-            var takedWeek = self.myDate().getWeek() + 1;
-            var curweek = self.WeekNumber();
-            if (takedWeek !== curweek) {
-                self.LoadPaiments(curweek, self.myDate().getFullYear());
-            }
-        });
 
         self.init();
     }

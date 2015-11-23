@@ -30,28 +30,32 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         .ToListAsync();
             MenuForWeek mfw = _db.MenuForWeeks.FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
             PaimentsDTO model = null;
-            if (mfw != null)
+            if (mfw == null || orderMenus == null)
             {
-                model = new PaimentsDTO()
-                {
-                    WeekNumber = (int) numweek,
-                    YearNumber = (int) year,
-                    UserPaiments = orderMenus
-                        .Select(order => new UserPaimentDTO()
-                        {
-                            UserId = order.User.Id,
-                            OrderId = order.Id,
-                            UserName = order.User.UserName,
-                            Paiments = _db.GetUserWeekOrderPaiments(order.Id),
-                            SummaryPrice = order.SummaryPrice,
-                            WeekPaid = order.WeekPaid,
-                            Balance = order.Balance,
-                            IsDiningRoomClient = order.User.IsDiningRoomClient,
-                            Note = order.Note
-                        }).OrderBy(uo => uo.UserName).ToList(),
-                    UnitPrices = _db.GetUnitWeekPrices(mfw.ID)
-                };
+                return NotFound();
             }
+            
+            model = new PaimentsDTO()
+            {
+                WeekNumber = (int) numweek,
+                YearNumber = (int) year,
+                UserPaiments = orderMenus
+                    .Select(order => new UserPaimentDTO()
+                    {
+                        UserId = order.User.Id,
+                        OrderId = order.Id,
+                        UserName = order.User.UserName,
+                        Paiments = _db.GetUserWeekOrderPaiments(order.Id),
+                        SummaryPrice = order.SummaryPrice,
+                        WeekPaid = order.WeekPaid,
+                        Balance = order.Balance,
+                        IsDiningRoomClient = order.User.IsDiningRoomClient,
+                        Note = order.Note
+                    }).OrderBy(uo => uo.UserName).ToList(),
+                UnitPrices = _db.GetUnitWeekPrices(mfw.ID),
+                UnitPricesTotal = PaimentsByDishes((int)numweek, (int)year)
+            };
+
             return Ok(model);
         }
 
@@ -74,28 +78,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //    return Ok(weekprices);
         //}
 
-        [HttpGet]
-        [Route("paimentsByDish/{numweek}/{year}")]
-        [ResponseType(typeof (double[]))]
-        public async Task<IHttpActionResult> PaimentsByDishes([FromUri] int? numweek = null, [FromUri] int? year = null)
+        //[HttpGet]
+        //[Route("paimentsByDish/{numweek}/{year}")]
+        //[ResponseType(typeof (double[]))]
+        public double[] PaimentsByDishes(int numweek, int year )
         {
-            numweek = numweek ?? _db.CurrentWeek();
-            year = year ?? DateTime.Now.Year;
-            double[] paiments = new double[20];
-            MenuForWeek weekmenu =
-                await _db.MenuForWeeks.FirstOrDefaultAsync(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
+            double[] paiments = new double[21];
+            MenuForWeek weekmenu = _db.MenuForWeeks.FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
             double[] weekprices = _db.GetUnitWeekPrices(weekmenu.ID);
 
 
-            OrderMenu[] orderMenus =
-                await
-                    _db.OrderMenus.Where(
+            OrderMenu[] orderMenus =_db.OrderMenus.Where(
                         om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
-                        .ToArrayAsync();
-            if (weekmenu == null || orderMenus == null)
-            {
-                return NotFound();
-            }
+                        .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
             {
                 double[] dishquantities = _db.GetUserWeekOrderDishes(orderMenus[i].Id);
@@ -104,9 +99,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     paiments[j] += weekprices[j]*dishquantities[j];
                 }
             }
-            return Ok(paiments);
+            paiments[20] = paiments.Sum();
+            return paiments;
         }
-
         [HttpPut]
         [Route("updatePaiment/{orderid}")]
         [ResponseType(typeof(double))]

@@ -8,7 +8,7 @@ License: Creative Commons Attribution 3.0 License (https://creativecommons.org/l
 File Description: Place here your custom CSS styles
 */
 
-a.paginate_button.active {
+button.paginate_button.active {
     background-color: #b4e12f;
     color: #0c1d4d;
 }
@@ -50,6 +50,7 @@ span.changesaved {
 	/*height:30px;*/
 	/*float:left;*/
 	/*width:30px;*/
+    text-align: left;
 }
 span.intact {
 	display:inline-block;
@@ -59,11 +60,10 @@ span.intact {
 }
 
 span.intact_last {
-	display:inline-block;
-    margin-left: -120px;
+    display: inline-block;
+    margin-left: -130px;
     margin-top: -250px;
     background-color: #DAF0FD;
-
 }
 td.lastTD > span,td.lastTD > input{
     display: inline-block;
@@ -116,11 +116,8 @@ div.panel.panel-default > table th {
 .nav.navbar-nav>li >a {color:#555;float: none;padding: 10px 16px 11px;}
 .nav.navbar-nav>li >a:hover {color: #F95700; background-color: rgba(0, 0, 0, 0)}
 .nav.navbar-nav>li.active > a, .nav.navbar-nav>li.active > a:hover {color:#F95700;}
-/*.nav.navbar-nav>li >a{
-    background-color: #3548ed;
-    color: #b4ed59;
+
+table th,table td {
+    text-align: right;
+    padding: 2px;
 }
-.nav.navbar-nav> li.active> a,.nav.navbar-nav> li > a:hover {
-    background-color: #f45c83;
-    color: #000000;
-}*/
