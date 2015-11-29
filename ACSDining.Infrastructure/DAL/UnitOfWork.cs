@@ -2,6 +2,7 @@
 using System.Collections;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.Identity;
 
 namespace ACSDining.Infrastructure.DAL
 {

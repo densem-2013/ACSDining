@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using ACSDining.Core.Identity;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Areas.AdminArea.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;

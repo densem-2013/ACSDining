@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http.Routing;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Identity;
+using ACSDining.Infrastructure.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ACSDining.Web.Areas.AdminArea.Models

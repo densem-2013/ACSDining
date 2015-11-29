@@ -201,3 +201,7 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.Cook
 E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.csprojResolveAssemblyReference.cache
 E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.dll
 E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.pdb
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Infrastructure.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Infrastructure.pdb
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.xml

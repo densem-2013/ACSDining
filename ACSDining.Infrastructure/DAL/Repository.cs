@@ -5,6 +5,7 @@ using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using ACSDining.Infrastructure.Identity;
 
 namespace ACSDining.Infrastructure.DAL
 {
@@ -27,21 +28,24 @@ namespace ACSDining.Infrastructure.DAL
         public virtual void Insert(T entity)
         {
             DbSet.Add(entity);
+            acsContext.SaveChanges();
         }
 
         public virtual void Update(T entity)
         {
             acsContext.Entry(entity).State = EntityState.Modified;
+            acsContext.SaveChanges();
         }
 
         public void Delete(T entity)
         {
             DbSet.Remove(entity);
+            acsContext.SaveChanges();
         }
 
-        public virtual IQueryable<T> Find(Expression<Func<T, bool>> predicate)
+        public virtual T Find(Expression<Func<T, bool>> predicate)
         {
-            return DbSet.Where(predicate);
+            return DbSet.FirstOrDefault(predicate);
         }
 
         public virtual IQueryable<T> GetAll()
@@ -49,7 +53,7 @@ namespace ACSDining.Infrastructure.DAL
             return DbSet;
         }
 
-        public virtual T GetById(string id)
+        public virtual T GetById(int id)
         {
             return DbSet.Find(id);
         }

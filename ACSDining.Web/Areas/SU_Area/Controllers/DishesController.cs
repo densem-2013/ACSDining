@@ -6,7 +6,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Areas.SU_Area.Models;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -14,13 +16,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Dishes")]
     public class DishesController : ApiController
     {
-        private ApplicationDbContext db ;
+        private IUnitOfWork unitOfWork;
+        private IRepository<Dish> _dishRepository;
+        private IRepository<DishType> _dishtypeRepository;
+        //private ApplicationDbContext db ;
 
         List<DishModel> Dishes
         {
             get
             {
-                return db.Dishes.Select(d => new DishModel()
+                return _dishRepository.GetAll().Select(d => new DishModel()
                 {
                     DishID = d.DishID,
                     Title = d.Title,
@@ -33,9 +38,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
         }
 
-        public DishesController()
+        public DishesController(IUnitOfWork unitOfWork)
         {
-            db = new ApplicationDbContext();
+            this.unitOfWork = unitOfWork;
+            _dishRepository = this.unitOfWork.Repository<Dish>();
 
         }
 
@@ -69,12 +75,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             try
             {
-                Dish target = db.Dishes.Find(dish.DishID);
+                Dish target = _dishRepository.Find(d=>d.DishID==dish.DishID);
                 target.DishDetail.Foods = dish.Foods;
                 target.Price = dish.Price;
                 target.Title = dish.Title;
-                db.Entry(target).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                _dishRepository.Update(target);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -106,18 +111,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 Title = dmodel.Title,
                 Price = dmodel.Price,
                 ProductImage = dmodel.ProductImage,
-                DishType = db.DishTypes.AsEnumerable().FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
+                DishType = _dishtypeRepository.GetAll().AsEnumerable().FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
                 DishDetail = new DishDetail
                 {
                     Foods = dmodel.Foods
                 }
             };
 
-            db.Dishes.Add(newdish);
-
             try
             {
-                await db.SaveChangesAsync();
+                _dishRepository.Insert(newdish);
             }
             catch (DbUpdateException)
             {
@@ -140,30 +143,20 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(Dish))]
         public async Task<IHttpActionResult> DeleteDish(int id)
         {
-            Dish dish = await db.Dishes.FindAsync(id);
+            Dish dish = _dishRepository.GetById(id);
             if (dish == null)
             {
                 return NotFound();
             }
 
-            db.Dishes.Remove(dish);
-            await db.SaveChangesAsync();
+            _dishRepository.Delete(dish);
 
-            return Ok(dish);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            return Ok();
         }
 
         private bool DishExists(int id)
         {
-            return db.Dishes.Count(e => e.DishID == id) > 0;
+            return _dishRepository.GetAll().Count(e => e.DishID == id) > 0;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using ACSDining.Core.Domains;
-using ACSDining.Core.Identity;
+using ACSDining.Infrastructure.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;

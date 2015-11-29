@@ -9,9 +9,9 @@ namespace ACSDining.Core.DAL
         void Insert(T entity);
         void Update(T entity);
         void Delete(T entity);
-        IQueryable<T> Find(Expression<Func<T, bool>> predicate);
+        T Find(Expression<Func<T, bool>> predicate);
         IQueryable<T> GetAll();
-        T GetById(string id);
+        T GetById(int id);
     }
 
 }

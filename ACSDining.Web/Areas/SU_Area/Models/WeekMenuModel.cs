@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.Identity;
 
 namespace ACSDining.Web.Areas.SU_Area.Models
 {

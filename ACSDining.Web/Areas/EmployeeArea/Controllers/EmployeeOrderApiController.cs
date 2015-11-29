@@ -7,6 +7,7 @@ using System.Web.Http;
 using ACSDining.Core.Domains;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Areas.SU_Area.Models;
 using Microsoft.AspNet.Identity;
 using ACSDining.Web.Areas.EmployeeArea.Models;

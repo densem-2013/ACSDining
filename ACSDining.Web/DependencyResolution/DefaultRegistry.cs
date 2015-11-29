@@ -15,15 +15,12 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.Identity;
+
 namespace ACSDining.Web.DependencyResolution {
-    using ACSDining.Core.DAL;
-    using ACSDining.Core.Domains;
-    using ACSDining.Infrastructure.DAL;
-    using Microsoft.AspNet.Identity;
-    using Microsoft.AspNet.Identity.EntityFramework;
     using StructureMap.Configuration.DSL;
     using StructureMap.Graph;
-    using System.Data.Entity;
 	
     public class DefaultRegistry : Registry {
         #region Constructors and Destructors
@@ -35,10 +32,11 @@ namespace ACSDining.Web.DependencyResolution {
                     scan.WithDefaultConventions();
 					scan.With(new ControllerConvention());
                 });
-            For(typeof(IRepository<>)).Use(typeof(Repository<>));
-            For<IUnitOfWork>().Use<UnitOfWork>();
-            For(typeof(IUserStore<User>)).Use(typeof(UserStore<User>));
-            For(typeof(DbContext)).Use(typeof(ApplicationDbContext));
+            //For<IExample>().Use<Example>();
+            For<Microsoft.AspNet.Identity.IUserStore<User>>()
+            .Use<Microsoft.AspNet.Identity.EntityFramework.UserStore<User>>();
+
+            For<System.Data.Entity.DbContext>().Use(() => new ApplicationDbContext());
         }
 
         #endregion
