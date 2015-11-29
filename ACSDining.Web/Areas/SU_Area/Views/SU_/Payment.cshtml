@@ -37,31 +37,32 @@
 
             <table class="table table-striped table-bordered fixed  table-hover" id="ordesTable">
                 <thead>
-                    <tr>
-                        <th rowspan="4"><span>№</span></th>
-                        <th rowspan="4" style="text-align: center"><span>Ф.И.О</span></th>
-                        <!--ko foreach: DaysOfWeek-->
-                        <th colspan="4" style="text-align: center"><span data-bind="text:$data"></span></th>
-                        <!--/ko-->
-                        <th class="rotate" rowspan="4"><span class="intact_last">Сумма за неделю</span></th>
-                        <th class="rotate" rowspan="4"><span class="intact_last">Оплата за неделю</span></th>
-                        <th class="rotate" rowspan="4"><span class="intact_last">Баланс</span></th>
-                        <th class="rotate" rowspan="4"><span class="intact_last">Возможен заказ удаленно</span></th>
-                        <th class="rotate" rowspan="4"><span class="intact_last">Примечание</span></th>
-                    </tr>
-                    <tr data-bind="foreach: DaysOfWeek" id="groups">
-                        <!--ko foreach: $root.Categories-->
-                        <th class="rotate">
-                            <span class="intact" data-bind="text: $data"></span>
-                        </th>
-                        <!--/ko-->
-                    </tr>
-                    <tr><th colspan="20" style="text-align: center"><span>Цена за одну порцию, грн</span></th></tr>
-                    <tr>
-                        <!--ko foreach: UnitPrices-->
-                        <th><span data-bind="text: $data"></span></th>
-                        <!--/ko-->
-                    </tr>
+                <tr><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+                <tr>
+                    <th rowspan="4"><span>№</span></th>
+                    <th rowspan="4" style="text-align: center"><span>Ф.И.О</span></th>
+                    <!--ko foreach: DaysOfWeek-->
+                    <th colspan="4" style="text-align: center"><span data-bind="text:$data"></span></th>
+                    <!--/ko-->
+                    <th class="rotate" rowspan="4"><span class="intact_last">Сумма за неделю</span></th>
+                    <th class="rotate" rowspan="4"><span class="intact_last">Оплата за неделю</span></th>
+                    <th class="rotate" rowspan="4"><span class="intact_last">Баланс</span></th>
+                    <th class="rotate" rowspan="4"><span class="intact_last">Возможен заказ удаленно</span></th>
+                    <th class="rotate" rowspan="4"><span class="intact_last">Примечание</span></th>
+                </tr>
+                <tr data-bind="foreach: DaysOfWeek" id="groups">
+                    <!--ko foreach: $root.Categories-->
+                    <th class="rotate">
+                        <span class="intact" data-bind="text: $data"></span>
+                    </th>
+                    <!--/ko-->
+                </tr>
+                <tr><th colspan="20" style="text-align: center"><span>Цена за одну порцию, грн</span></th></tr>
+                <tr>
+                    <!--ko foreach: UnitPrices-->
+                    <th><span data-bind="text: $data"></span></th>
+                    <!--/ko-->
+                </tr>
                 </thead>
                 <tbody>
                     <!--ko foreach: pagedList-->

@@ -58,7 +58,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public async Task<bool> IsNexWeekMenuExist()
         {
             int curweek = Db.CurrentWeek();
-            int nextweeknumber = Db.GetNextWeekOfYear();
+            int nextweeknumber = Db.GetNextWeekYear();
             Year year = nextweeknumber < curweek
                 ? new Year {YearNumber = DateTime.Now.Year + 1}
                 : Db.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
@@ -75,7 +75,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public async Task<IHttpActionResult> GetNexWeekMenu()
         {
             int curweek = Db.CurrentWeek();
-            int nextweeknumber = Db.GetNextWeekOfYear();
+            int nextweeknumber = Db.GetNextWeekYear();
             Year year = nextweeknumber < curweek
                 ? new Year {YearNumber = DateTime.Now.Year + 1}
                 : Db.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
@@ -171,7 +171,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
 
             int curweek = Db.CurrentWeek();
-            int nextweeknumber = Db.GetNextWeekOfYear();
+            int nextweeknumber = Db.GetNextWeekYear();
             Year year = nextweeknumber < curweek
                 ? new Year { YearNumber = DateTime.Now.Year + 1 }
                 : Db.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);

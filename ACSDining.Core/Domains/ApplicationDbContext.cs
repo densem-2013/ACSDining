@@ -148,7 +148,7 @@ namespace ACSDining.Core.Domains
             }
             return unitprices;
         }
-        public int GetNextWeekOfYear()
+        public int GetNextWeekYear()
         {
             int curweek = CurrentWeek();
             if (curweek >= 52)

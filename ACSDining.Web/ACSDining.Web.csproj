@@ -251,6 +251,7 @@
     <Compile Include="Areas\SU_Area\Models\UserOrdesDTO.cs" />
     <Compile Include="Areas\SU_Area\Models\UserPaimentDTO.cs" />
     <Compile Include="Areas\SU_Area\Models\WeekMenuModel.cs" />
+    <Compile Include="Areas\SU_Area\Models\WeekYearDTO.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
