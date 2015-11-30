@@ -179,7 +179,6 @@ E:\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csproj.GenerateResource.Cac
 E:\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.dll
 E:\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.pdb
 E:\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
-C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.Migrations.Initial.resources
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Core.dll.config
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Core.dll
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Core.pdb

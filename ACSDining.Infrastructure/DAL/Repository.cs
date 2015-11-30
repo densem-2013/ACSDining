@@ -2,7 +2,9 @@
 using ACSDining.Core.Domains;
 using NLog;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using ACSDining.Infrastructure.Identity;
@@ -48,12 +50,16 @@ namespace ACSDining.Infrastructure.DAL
             return DbSet.FirstOrDefault(predicate);
         }
 
-        public virtual IQueryable<T> GetAll()
+        public virtual IEnumerable<T> GetAll()
         {
-            return DbSet;
+            return DbSet.ToList();
         }
 
         public virtual T GetById(int id)
+        {
+            return DbSet.Find(id);
+        }
+        public virtual T GetById(string id)
         {
             return DbSet.Find(id);
         }
@@ -61,6 +67,7 @@ namespace ACSDining.Infrastructure.DAL
 
         #endregion
 
+  
 
     }
 }

@@ -7,30 +7,37 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Web.Areas.SU_Area.Models;
 using System.Collections.Generic;
-using System.Web.Mvc;
-using ACSDining.Infrastructure.Identity;
+using ACSDining.Core.DAL;
+using ACSDining.Infrastructure.DAL;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [System.Web.Http.RoutePrefix("api/Orders")]
+    [RoutePrefix("api/Orders")]
     public class OrdersController : ApiController
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<OrderMenu> _orderRepository;
+        private readonly IRepository<MenuForWeek> _weekmenuRepository;
 
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("")]
-        [System.Web.Http.Route("{numweek}")]
-        [System.Web.Http.Route("{numweek}/{year}")]
+        public OrdersController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+            _orderRepository = _unitOfWork.Repository<OrderMenu>();
+            _weekmenuRepository = _unitOfWork.Repository<MenuForWeek>();
+        }
+
+        [HttpGet]
+        [Route("")]
+        [Route("{numweek}")]
+        [Route("{numweek}/{year}")]
         [ResponseType(typeof (OrdersDTO))]
         public async Task<IHttpActionResult> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            numweek = numweek ?? _db.CurrentWeek();
+            numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
-            List<OrderMenu> orderMenus =
-                await
-                    _db.OrderMenus.Where(
+            List<OrderMenu> orderMenus =_orderRepository.GetAll().Where(
                         om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
-                        .ToListAsync();
+                        .ToList();
 
             OrdersDTO model = new OrdersDTO()
             {
@@ -40,42 +47,37 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     {
                         UserId = order.User.Id,
                         UserName = order.User.UserName,
-                        Dishquantities = _db.GetUserWeekOrderDishes(order.Id),
+                        Dishquantities = _unitOfWork.GetUserWeekOrderDishes(order.Id),
                         WeekIsPaid = false,
                         SummaryPrice = order.SummaryPrice
                     }).OrderBy(uo => uo.UserName).ToList(),
                 YearNumber = (int) year
             };
-            if (model == null)
-            {
-                return NotFound();
-            }
 
             return Ok(model);
         }
 
-        [System.Web.Http.HttpPut]
-        [System.Web.Http.Route("summary/{numweek}/{year}")]
+        [HttpPut]
+        [Route("summary/{numweek}/{year}")]
         [ResponseType(typeof (double))]
         public async Task<double> GetSummaryPrice([FromBody] UserOrdesDTO usorder, [FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            numweek = numweek ?? _db.CurrentWeek();
+            numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
-            MenuForWeek weekNeeded =
-                await _db.MenuForWeeks.FirstOrDefaultAsync(wm => wm.WeekNumber == numweek && wm.Year.YearNumber == year);
-            double Summary = 0;
+            MenuForWeek weekNeeded = _weekmenuRepository.Find(wm => wm.WeekNumber == numweek && wm.Year.YearNumber == year);
+            double summary = 0;
             if (weekNeeded != null)
             {
                 for (int i = 0; i < 5; i++)
                 {
                     for (int j = 0; j < 4; j++)
                     {
-                        Summary += weekNeeded.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price*
+                        summary += weekNeeded.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price*
                                    usorder.Dishquantities[4*i + j];
                     }
                 }
             }
-            return await Task.FromResult(Summary);
+            return await Task.FromResult(summary);
         }
     }
 }

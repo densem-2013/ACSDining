@@ -15,23 +15,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Web.Mvc;
 using ACSDining.Web.App_Start;
-
+using ACSDining.Web.DependencyResolution;
+using Microsoft.Web.Infrastructure.DynamicModuleHelper;
+using StructureMap;
 using WebActivatorEx;
 
 [assembly: PreApplicationStartMethod(typeof(StructuremapMvc), "Start")]
 [assembly: ApplicationShutdownMethod(typeof(StructuremapMvc), "End")]
 
 namespace ACSDining.Web.App_Start {
-	using System.Web.Mvc;
-
-    using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-
-	using ACSDining.Web.DependencyResolution;
-
-    using StructureMap;
-    
-	public static class StructuremapMvc {
+    public static class StructuremapMvc {
         #region Public Properties
 
         public static StructureMapDependencyScope StructureMapDependencyScope { get; set; }

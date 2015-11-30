@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Xml.Linq;
+using ACSDining.Infrastructure.DAL;
 
 namespace ACSDining.Infrastructure.Identity
 {
@@ -273,7 +274,7 @@ namespace ACSDining.Infrastructure.Identity
                 {
                     Year = year,
                     MenuForDay = mfdays,
-                    WeekNumber = context.CurrentWeek() - week,
+                    WeekNumber = UnitOfWork.CurrentWeek() - week,
                     SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
                 });
             }
@@ -293,20 +294,24 @@ namespace ACSDining.Infrastructure.Identity
                     {
                         XElement xElement = el.Element("FirstName");
                         if (xElement != null)
-                            return new User
-                            {
-                                FirstName = xElement.Value,
-                                LastName = el.Element("LastName").Value,
-                                UserName =
-                                    string.Format("{0} {1}", el.Element("LastName").Value, xElement.Value),
-                                PasswordHash = hasher.HashPassword("777123"),
-                                Email = "test@test.com",
-                                EmailConfirmed = true,
-                                SecurityStamp = Guid.NewGuid().ToString(),
-                                IsDiningRoomClient = true,
-                                RegistrationDate = DateTime.UtcNow,
-                                LastLoginTime = DateTime.UtcNow
-                            };
+                        {
+                            XElement element = el.Element("LastName");
+                            if (element != null)
+                                return new User
+                                {
+                                    FirstName = xElement.Value,
+                                    LastName = element.Value,
+                                    UserName =
+                                        string.Format("{0} {1}", element.Value, xElement.Value),
+                                    PasswordHash = hasher.HashPassword("777123"),
+                                    Email = "test@test.com",
+                                    EmailConfirmed = true,
+                                    SecurityStamp = Guid.NewGuid().ToString(),
+                                    IsDiningRoomClient = true,
+                                    RegistrationDate = DateTime.UtcNow,
+                                    LastLoginTime = DateTime.UtcNow
+                                };
+                        }
                         return null;
                     }).ToArray();
                     foreach (User user in users)

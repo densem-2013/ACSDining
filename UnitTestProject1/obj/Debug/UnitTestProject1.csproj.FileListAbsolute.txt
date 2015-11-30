@@ -205,3 +205,7 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Infrastructure.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Infrastructure.pdb
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.xml
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Infrastructure.dll
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.dll
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Infrastructure.pdb
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.xml

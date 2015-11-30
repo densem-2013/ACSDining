@@ -15,7 +15,10 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Web.Http;
+using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
 
 namespace ACSDining.Web.DependencyResolution {
@@ -32,7 +35,9 @@ namespace ACSDining.Web.DependencyResolution {
                     scan.WithDefaultConventions();
 					scan.With(new ControllerConvention());
                 });
+
             //For<IExample>().Use<Example>();
+            For<IUnitOfWork>().Use<UnitOfWork>();
             For<Microsoft.AspNet.Identity.IUserStore<User>>()
             .Use<Microsoft.AspNet.Identity.EntityFramework.UserStore<User>>();
 

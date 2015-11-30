@@ -17,8 +17,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class DishesController : ApiController
     {
         private IUnitOfWork unitOfWork;
-        private IRepository<Dish> _dishRepository;
-        private IRepository<DishType> _dishtypeRepository;
+        private readonly IRepository<Dish> _dishRepository;
+        private readonly IRepository<DishType> _dishtypeRepository;
         //private ApplicationDbContext db ;
 
         List<DishModel> Dishes
@@ -42,6 +42,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             this.unitOfWork = unitOfWork;
             _dishRepository = this.unitOfWork.Repository<Dish>();
+            _dishtypeRepository = this.unitOfWork.Repository<DishType>();
 
         }
 

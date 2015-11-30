@@ -17,7 +17,6 @@ namespace ACSDining.Web
             //config.EnableCors();
             // Web API routes
             config.MapHttpAttributeRoutes();
-
             config.Routes.MapHttpRoute(
                 name: "CurWeekMenu",
                 routeTemplate: "api/{controller}",

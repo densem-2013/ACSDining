@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>StructureMap.WebApi2</id>
+    <version>3.0.4.125</version>
+    <authors>Web Advanced</authors>
+    <owners>Web Advanced</owners>
+    <licenseUrl>https://github.com/webadvanced/Structuremap.WebAPI2/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/webadvanced/Structuremap.WebAPI2</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Adds the latest version of structuremap and configures it as the default Dependency Resolver.</description>
+    <summary>A WebApi IDependencyResolver wrapper for Structuremap 3.x</summary>
+    <language>en-US</language>
+    <dependencies>
+      <dependency id="StructureMap.MVC5" version="3.0.4.125" />
+    </dependencies>
+  </metadata>
+</package>

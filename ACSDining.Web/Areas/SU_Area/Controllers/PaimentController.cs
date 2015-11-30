@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.DAL;
 using ACSDining.Web.Areas.SU_Area.Models;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -14,7 +15,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<OrderMenu> _orderRepository;
+        private readonly IRepository<MenuForWeek> _weekmenuRepository;
+
+        public PaimentController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+            _orderRepository = _unitOfWork.Repository<OrderMenu>();
+            _weekmenuRepository = _unitOfWork.Repository<MenuForWeek>();
+        }
 
         [Route("")]
         [Route("{numweek}")]
@@ -22,14 +32,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (PaimentsDTO))]
         public async Task<IHttpActionResult> GetWeekPaiments([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            numweek = numweek ?? _db.CurrentWeek();
+            numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
-            List<OrderMenu> orderMenus =
-                await
-                    _db.OrderMenus.Where(
+            List<OrderMenu> orderMenus =_orderRepository.GetAll().Where(
                         om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
-                        .ToListAsync();
-            MenuForWeek mfw = _db.MenuForWeeks.FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
+                        .ToList();
+            MenuForWeek mfw = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
             PaimentsDTO model = null;
             if (mfw == null || orderMenus == null)
             {
@@ -46,55 +54,33 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         UserId = order.User.Id,
                         OrderId = order.Id,
                         UserName = order.User.UserName,
-                        Paiments = _db.GetUserWeekOrderPaiments(order.Id),
+                        Paiments = _unitOfWork.GetUserWeekOrderPaiments(order.Id),
                         SummaryPrice = order.SummaryPrice,
                         WeekPaid = order.WeekPaid,
                         Balance = order.Balance,
                         IsDiningRoomClient = order.User.IsDiningRoomClient,
                         Note = order.Note
                     }).OrderBy(uo => uo.UserName).ToList(),
-                UnitPrices = _db.GetUnitWeekPrices(mfw.ID),
+                UnitPrices = _unitOfWork.GetUnitWeekPrices(mfw.ID),
                 UnitPricesTotal = PaimentsByDishes((int)numweek, (int)year)
             };
 
             return Ok(model);
         }
 
-        //[HttpGet]
-        //[Route("unitprices/{numweek}/{year}")]
-        //[ResponseType(typeof (double[]))]
-        //public async Task<IHttpActionResult> UnitPrices([FromUri] int? numweek = null, [FromUri] int? year = null)
-        //{
-        //    numweek = numweek ?? _db.CurrentWeek();
-        //    year = year ?? DateTime.Now.Year;
-        //    MenuForWeek weekmenu =
-        //        await _db.MenuForWeeks.FirstOrDefaultAsync(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
-        //    if (weekmenu == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    double[] weekprices = _db.GetUnitWeekPrices(weekmenu.ID);
-
-        //    return Ok(weekprices);
-        //}
-
-        //[HttpGet]
-        //[Route("paimentsByDish/{numweek}/{year}")]
-        //[ResponseType(typeof (double[]))]
-        public double[] PaimentsByDishes(int numweek, int year )
+        private double[] PaimentsByDishes(int numweek, int year )
         {
             double[] paiments = new double[21];
-            MenuForWeek weekmenu = _db.MenuForWeeks.FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
-            double[] weekprices = _db.GetUnitWeekPrices(weekmenu.ID);
+            MenuForWeek weekmenu = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
+            double[] weekprices = _unitOfWork.GetUnitWeekPrices(weekmenu.ID);
 
 
-            OrderMenu[] orderMenus =_db.OrderMenus.Where(
+            OrderMenu[] orderMenus = _orderRepository.GetAll().Where(
                         om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
                         .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
             {
-                double[] dishquantities = _db.GetUserWeekOrderDishes(orderMenus[i].Id);
+                double[] dishquantities = _unitOfWork.GetUserWeekOrderDishes(orderMenus[i].Id);
                 for (int j = 0; j < 20; j++)
                 {
                     paiments[j] += weekprices[j]*dishquantities[j];
@@ -103,12 +89,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             paiments[20] = paiments.Sum();
             return paiments;
         }
+
         [HttpPut]
         [Route("updatePaiment/{orderid}")]
         [ResponseType(typeof(double))]
         public async Task<IHttpActionResult> UpdatePaiment( int orderid, double pai)
         {
-            OrderMenu order = await _db.OrderMenus.FindAsync(orderid);
+            OrderMenu order =_orderRepository.Find(om=>om.Id==orderid);
             if (order == null)
             {
                 return NotFound();
@@ -116,8 +103,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             order.Balance += order.WeekPaid;
             order.WeekPaid = pai;
             order.Balance -= order.WeekPaid;
-            _db.Entry(order).State=EntityState.Modified;
-            await _db.SaveChangesAsync();
+
+            _orderRepository.Update(order);
 
             return Ok(order.Balance);
         }
