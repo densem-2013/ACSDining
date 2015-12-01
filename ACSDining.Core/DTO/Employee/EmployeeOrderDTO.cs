@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using ACSDining.Core.Domains;
-using ACSDining.Web.Areas.SU_Area.Models;
+﻿using System.Collections.Generic;
+using ACSDining.Core.DTO.SuperUser;
 
-namespace ACSDining.Web.Areas.EmployeeArea.Models
+namespace ACSDining.Core.DTO.Employee
 {
     public class EmployeeOrderDTO
     {
@@ -14,8 +10,8 @@ namespace ACSDining.Web.Areas.EmployeeArea.Models
         public int? OrderId { get; set; }
         public double SummaryPrice { get; set; }
         public double WeekPaid { get; set; }
-        public double[] Dishquantities { get; set; } 
-        public List<MenuForDayModel> MFD_models { get; set; }
+        public double[] Dishquantities { get; set; }
+        public List<MenuForDayDto> MFD_models { get; set; }
         public int Year { get; set; }
         public int WeekNumber { get; set; }
 

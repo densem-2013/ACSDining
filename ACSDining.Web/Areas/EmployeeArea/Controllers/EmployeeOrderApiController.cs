@@ -7,10 +7,10 @@ using ACSDining.Core.Domains;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
 using ACSDining.Core.DAL;
+using ACSDining.Core.DTO.Employee;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Web.Areas.SU_Area.Models;
 using Microsoft.AspNet.Identity;
-using ACSDining.Web.Areas.EmployeeArea.Models;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 {
@@ -44,7 +44,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             if (mfw == null) return Content(HttpStatusCode.BadRequest, "not created");
 
-            WeekMenuModel weekmodel=new WeekMenuModel(mfw);
+            WeekMenuDto weekmodel = _unitOfWork.MenuForWeekToDto(mfw);
 
             OrderMenu ordmenu = _orderRepository.Find(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == mfw.ID);
             EmployeeOrderDTO model = new EmployeeOrderDTO

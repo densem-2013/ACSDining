@@ -1,6 +1,6 @@
-﻿namespace ACSDining.Web.Areas.SU_Area.Models
+﻿namespace ACSDining.Core.DTO.SuperUser
 {
-    public class DishModel
+    public class DishModelDto
     {
         public int DishID { get; set; }
         public string Title { get; set; }

@@ -5,13 +5,15 @@ using System.Globalization;
 using System.Linq;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
+using DayOfWeek = System.DayOfWeek;
 
 namespace ACSDining.Infrastructure.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private ApplicationDbContext _acsContext;
+        private readonly ApplicationDbContext _acsContext;
         private Hashtable _repositories;
 
         public UnitOfWork()
@@ -45,37 +47,37 @@ namespace ACSDining.Infrastructure.DAL
             _acsContext.SaveChanges();
         }
 
-        private bool disposed = false;
+        private bool _disposed;
 
         public virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
                     _acsContext.Dispose();
                 }
             }
-            this.disposed = true;
+            _disposed = true;
         }
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }     
-        //#region Context Members
+        }
+        #region _acsContext Members
 
         public static Func<int> CurrentWeek = () =>
         {
-            CultureInfo myCI = new CultureInfo("uk-UA");
-            Calendar myCal = myCI.Calendar;
+            CultureInfo myCi = new CultureInfo("uk-UA");
+            Calendar myCal = myCi.Calendar;
 
             // Gets the DTFI properties required by GetWeekOfYear.
-            CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
-            System.DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
-            DateTime CurDay = new System.DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            return myCal.GetWeekOfYear(CurDay, myCWR, myFirstDOW);
+            CalendarWeekRule myCwr = myCi.DateTimeFormat.CalendarWeekRule;
+            DayOfWeek myFirstDow = myCi.DateTimeFormat.FirstDayOfWeek;
+            DateTime curDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            return myCal.GetWeekOfYear(curDay, myCwr, myFirstDow);
         };
 
         public double[] GetUserWeekOrderDishes(int orderid)
@@ -105,7 +107,6 @@ namespace ACSDining.Infrastructure.DAL
         public double[] GetUserWeekOrderPaiments(int orderid)
         {
             double[] paiments = new double[20];
-            double[] unitprices = new double[20];
             OrderMenu order = _acsContext.OrderMenus.Find(orderid);
             int menuforweekid = order.MenuForWeek.ID;
             List<DishQuantityRelations> quaList =
@@ -145,20 +146,86 @@ namespace ACSDining.Infrastructure.DAL
             }
             return unitprices;
         }
-        public int GetNextWeekYear()
+        public WeekYearDTO GetNextWeekYear(WeekYearDTO wyDto)
         {
-            int curweek = CurrentWeek();
-            if (curweek >= 52)
+            WeekYearDTO result=new WeekYearDTO();
+            if (wyDto.Week >= 52)
             {
-                DateTime LastDay = new System.DateTime(DateTime.Now.Year, 12, 31);
-                if (LastDay.DayOfWeek < System.DayOfWeek.Thursday || curweek == 53)
+                DateTime lastDay = new DateTime(wyDto.Year, 12, 31);
+                if (lastDay.DayOfWeek < DayOfWeek.Thursday || wyDto.Week == 53)
                 {
-                    return 1;
+                    result.Week = 1;
+                    result.Year = wyDto.Year+1;
                 }
             }
+            else
+            {
+                result.Week = wyDto.Week + 1;
+                result.Year = wyDto.Year;
+            }
 
-            return curweek + 1;
+            return result;
         }
-        //#endregion
+
+        public WeekMenuDto MenuForWeekToDto(MenuForWeek wmenu, bool emptyDishes = false)
+        {
+            WeekMenuDto dtoModel = new WeekMenuDto
+            {
+                ID = wmenu.ID,
+                WeekNumber = wmenu.WeekNumber,
+                SummaryPrice = wmenu.SummaryPrice,
+                YearNumber = wmenu.Year.YearNumber
+            };
+            if (emptyDishes)
+            {
+                List<DishType> dtypes = _acsContext.DishTypes.ToList();
+                dtoModel.MFD_models = new List<MenuForDayDto>();
+                foreach (MenuForDay mfd in wmenu.MenuForDay)
+                {
+                    var dmodels = new List<DishModelDto>();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        DishType firstOrDefault = dtypes.FirstOrDefault(dt => dt.Id == i + 1);
+                        if (firstOrDefault != null)
+                            dmodels.Add(new DishModelDto
+                            {
+                                DishID = i + 1,
+                                Title = "_",
+                                Price = 0,
+                                Category = firstOrDefault.Category,
+                                Foods = "_"
+                            });
+                    }
+
+                    dtoModel.MFD_models.Add(new MenuForDayDto
+                    {
+                        ID = mfd.ID,
+                        DayOfWeek = mfd.DayOfWeek.Name,
+                        TotalPrice = mfd.TotalPrice,
+                        Dishes = dmodels
+                    });
+                }
+            }
+            else
+            {
+                dtoModel.MFD_models = wmenu.MenuForDay.ToList().Select(m => new MenuForDayDto
+                {
+                    ID = m.ID,
+                    DayOfWeek = m.DayOfWeek.Name,
+                    TotalPrice = m.TotalPrice,
+                    Dishes = m.Dishes.AsEnumerable().Select(dm => new DishModelDto
+                    {
+                        DishID = dm.DishID,
+                        Title = dm.Title,
+                        ProductImage = dm.ProductImage,
+                        Price = dm.Price,
+                        Category = dm.DishType.Category
+                    }).ToList()
+
+                }).ToList();
+            }
+            return dtoModel;
+        }
+        #endregion
     }
 }

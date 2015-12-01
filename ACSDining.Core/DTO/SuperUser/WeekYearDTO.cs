@@ -1,4 +1,4 @@
-﻿namespace ACSDining.Web.Areas.SU_Area.Models
+﻿namespace ACSDining.Core.DTO.SuperUser
 {
     public class WeekYearDTO
     {

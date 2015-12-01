@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Web.Areas.SU_Area.Models;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {

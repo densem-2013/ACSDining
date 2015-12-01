@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
@@ -8,8 +7,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.Identity;
-using ACSDining.Web.Areas.SU_Area.Models;
+using ACSDining.Core.DTO.SuperUser;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -21,11 +19,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IRepository<DishType> _dishtypeRepository;
         //private ApplicationDbContext db ;
 
-        List<DishModel> Dishes
+        List<DishModelDto> Dishes
         {
             get
             {
-                return _dishRepository.GetAll().Select(d => new DishModel()
+                return _dishRepository.GetAll().Select(d => new DishModelDto()
                 {
                     DishID = d.DishID,
                     Title = d.Title,
@@ -49,7 +47,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         [HttpGet]
         [Route("byCategory/{category}")]
-        [ResponseType(typeof(IEnumerable<DishModel>))]
+        [ResponseType(typeof(IEnumerable<DishModelDto>))]
         // GET api/Dishes
         public async Task<IHttpActionResult> GetByCategory(string category)
         {
@@ -58,7 +56,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            List<DishModel> dmodels = Dishes.Where(d => string.Equals(d.Category, category)).ToList();
+            List<DishModelDto> dmodels = Dishes.Where(d => string.Equals(d.Category, category)).ToList();
 
             return Ok(dmodels);
         }
@@ -67,7 +65,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         // PUT api/Dishes/5
         [HttpPut]
         [Route("update")]
-        public async Task<IHttpActionResult> PutDish([FromBody] DishModel dish)
+        public async Task<IHttpActionResult> PutDish([FromBody] DishModelDto dish)
         {
             if (!ModelState.IsValid)
             {
@@ -101,7 +99,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPost]
         [Route("create")]
         [ResponseType(typeof(Dish))]
-        public async Task<IHttpActionResult> PostDish(DishModel dmodel)
+        public async Task<IHttpActionResult> PostDish(DishModelDto dmodel)
         {
             if (!ModelState.IsValid)
             {

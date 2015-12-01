@@ -238,21 +238,12 @@
     <Compile Include="Areas\EmployeeArea\Controllers\EmployeeController.cs" />
     <Compile Include="Areas\EmployeeArea\Controllers\EmployeeOrderApiController.cs" />
     <Compile Include="Areas\EmployeeArea\EmployeeAreaAreaRegistration.cs" />
-    <Compile Include="Areas\EmployeeArea\Models\EmployeeOrderDTO.cs" />
     <Compile Include="Areas\SU_Area\Controllers\DishesController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\OrdersController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\PaimentController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
-    <Compile Include="Areas\SU_Area\Models\DishModel.cs" />
-    <Compile Include="Areas\SU_Area\Models\MenuForDayModel.cs" />
-    <Compile Include="Areas\SU_Area\Models\OrdersDTO.cs" />
-    <Compile Include="Areas\SU_Area\Models\PaimentsDTO.cs" />
     <Compile Include="Areas\SU_Area\Models\PoolRequestModelBinder.cs" />
-    <Compile Include="Areas\SU_Area\Models\UserOrdesDTO.cs" />
-    <Compile Include="Areas\SU_Area\Models\UserPaimentDTO.cs" />
-    <Compile Include="Areas\SU_Area\Models\WeekMenuModel.cs" />
-    <Compile Include="Areas\SU_Area\Models\WeekYearDTO.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -603,6 +594,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\EmployeeArea\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

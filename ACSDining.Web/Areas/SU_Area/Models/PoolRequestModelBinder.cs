@@ -1,5 +1,6 @@
 ﻿using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
+using ACSDining.Core.DTO.SuperUser;
 using Newtonsoft.Json;
 
 namespace ACSDining.Web.Areas.SU_Area.Models
@@ -12,10 +13,10 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             //var jsonFormatter = GlobalConfiguration.Configuration.Formatters.JsonFormatter;// OfType<JsonMediaTypeFormatter>().First();
             //jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-            var pollRequest = JsonConvert.DeserializeObject<WeekMenuModel>(body/*, jsonFormatter.SerializerSettings*/);
+            var pollRequest = JsonConvert.DeserializeObject<WeekMenuDto>(body/*, jsonFormatter.SerializerSettings*/);
             // string strRequest=body.Split('/');
             //var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            //WeekMenuModel pollRequest = serializer.Deserialize<WeekMenuModel>(body);
+            //WeekMenuDto pollRequest = serializer.Deserialize<WeekMenuDto>(body);
             bindingContext.Model = pollRequest;
             return true;
         }

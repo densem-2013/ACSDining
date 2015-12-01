@@ -1,4 +1,7 @@
-﻿namespace ACSDining.Core.DAL
+﻿using ACSDining.Core.Domains;
+using ACSDining.Core.DTO.SuperUser;
+
+namespace ACSDining.Core.DAL
 {
     public interface IUnitOfWork
     {
@@ -9,6 +12,7 @@
         double[] GetUserWeekOrderDishes(int orderid);
         double[] GetUserWeekOrderPaiments(int orderid);
         double[] GetUnitWeekPrices(int menuforweekid);
-        int GetNextWeekYear();
+        WeekYearDTO GetNextWeekYear(WeekYearDTO wydto);
+        WeekMenuDto MenuForWeekToDto(MenuForWeek mfw, bool empty = false);
     }
 }

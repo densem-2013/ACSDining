@@ -1,13 +1,12 @@
 ﻿using ACSDining.Core.Domains;
 using System;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using ACSDining.Web.Areas.SU_Area.Models;
 using System.Collections.Generic;
 using ACSDining.Core.DAL;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
