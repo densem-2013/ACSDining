@@ -166,6 +166,23 @@ namespace ACSDining.Infrastructure.DAL
 
             return result;
         }
+        public WeekYearDTO GetPrevWeekYear(WeekYearDTO wyDto)
+        {
+            WeekYearDTO result = new WeekYearDTO();
+            if (wyDto.Week == 1)
+            {
+                int? maxWeekNum = _acsContext.MenuForWeeks.Where(mfw => mfw.Year.YearNumber == wyDto.Year).Max(mfw => mfw.WeekNumber);
+                result.Week = (int)maxWeekNum;
+                result.Year = wyDto.Year - 1;
+            }
+            else
+            {
+                result.Week = wyDto.Week - 1;
+                result.Year = wyDto.Year;
+            }
+
+            return result;
+        }
 
         public WeekMenuDto MenuForWeekToDto(MenuForWeek wmenu, bool emptyDishes = false)
         {

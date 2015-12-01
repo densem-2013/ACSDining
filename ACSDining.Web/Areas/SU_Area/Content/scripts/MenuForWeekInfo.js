@@ -268,15 +268,14 @@
             return true;
         }
 
-        self.SetMyDateByWeek = function (weeknumber) {
-            var year = self.Year();
-            var firstDay = new Date(year, 0, 1).getDay();
-            var d = new Date("Jan 01, " + year + " 01:00:00");
+        self.SetMyDateByWeek = function (weeknumber, yearnumber) {
+            var firstDay = new Date(yearnumber, 0, 1).getDay();
+            var d = new Date("Jan 01, " + yearnumber + " 01:00:00");
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (weeknumber - 1);
             self.myDate(new Date(w));
         }.bind(self);
 
-        self.LoadWeekMenu = function (numweek, year) {
+        var loadmenu = function (numweek, year) {
 
             app.su_Service.LoadWeekMenu(numweek, year).then(function (resp) {
                 self.MFD_models([]);
@@ -294,6 +293,27 @@
 
         }
 
+        self.LoadWeekMenu = function (numweek, year) {
+
+            loadmenu(numweek, year);
+
+        }
+        self.NextWeekMenu = function () {
+            var weekYear = new WeekYearModel(self.WeekNumber(), self.Year());
+            app.su_Service.GetNextWeekYear(weekYear).then(function(resp) {
+
+                self.SetMyDateByWeek(resp.week, resp.year);
+            }, onError);
+
+        }
+        self.PrevWeekMenu = function () {
+            var weekYear = new WeekYearModel(self.WeekNumber(), self.Year());
+            app.su_Service.GetPrevWeekYear(weekYear).then(function (resp) {
+
+                self.SetMyDateByWeek(resp.week, resp.year);
+            }, onError);
+
+        }
         self.CreateNextWeekMenu = function() {
             app.su_Service.CreateNextWeekMenu().then(function () {
                 self.loadWeekNumbers();

@@ -13,6 +13,7 @@ namespace ACSDining.Core.DAL
         double[] GetUserWeekOrderPaiments(int orderid);
         double[] GetUnitWeekPrices(int menuforweekid);
         WeekYearDTO GetNextWeekYear(WeekYearDTO wydto);
+        WeekYearDTO GetPrevWeekYear(WeekYearDTO wydto);
         WeekMenuDto MenuForWeekToDto(MenuForWeek mfw, bool empty = false);
     }
 }

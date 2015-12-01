@@ -39,7 +39,7 @@
                 <tr style="background: #565659;">
                     <td class="col-md-3">
                         <div>
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click: SetMyDateByWeek(CurrentWeekNumber()),css:{disabled: IsCurrentWeek}" />
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click: function(){$root.SetMyDateByWeek($rootCurrentWeekNumber(),$rootYear())},css:{disabled: IsCurrentWeek}" />
                         </div>
                     </td>
                     <td class="col-md-5  " style="float: right">
@@ -118,13 +118,13 @@
                         <div class="dataTables_paginate paging_simple_numbers" style="padding:5px;">
                             <ul class="pagination">
                                 <li class=" paginate_button previous">
-                                    <a href="#" data-bind=" click: function(){ SetMyDateByWeek(WeekNumber() - 1); }">Previous</a>
+                                    <a href="#" data-bind=" click: PrevWeekMenu">Previous</a>
                                 </li>
                                 <li class="paginate_button " data-bind="foreach: NumbersWeeks">
-                                    <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $parent.WeekNumber()}, click: function(){ $parent.SetMyDateByWeek($data); }"></a>
+                                    <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $parent.WeekNumber()}, click: function(){ $parent.SetMyDateByWeek($data,$parent.Year()); }"></a>
                                 </li>
                                 <li class=" paginate_button next">
-                                    <a href="#" data-bind="click: function(){ SetMyDateByWeek(WeekNumber() + 1 ); }">Next</a>
+                                    <a href="#" data-bind="click: NextWeekMenu">Next</a>
                                 </li>
                             </ul>
                         </div>

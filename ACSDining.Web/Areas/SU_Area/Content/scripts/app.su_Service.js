@@ -55,25 +55,31 @@ ko.bindingHandlers.datepicker = {
     }
 };
 
-ko.bindingHandlers.singleClick = {
-    init: function (element, valueAccessor) {
-        var handler = valueAccessor(),
-            delay = 400,
-            clickTimeout = false;
-
-        $(element).click(function () {
-            if (clickTimeout !== false) {
-                clearTimeout(clickTimeout);
+    ko.bindingHandlers.singleClick = {
+        init: function (element, valueAccessor) {
+            var handler = valueAccessor(),
+                delay = 400,
                 clickTimeout = false;
-            } else {
-                clickTimeout = setTimeout(function () {
+
+            $(element).click(function () {
+                if (clickTimeout !== false) {
+                    clearTimeout(clickTimeout);
                     clickTimeout = false;
-                    handler();
-                }, delay);
-            }
-        });
+                } else {
+                    clickTimeout = setTimeout(function () {
+                        clickTimeout = false;
+                        handler();
+                    }, delay);
+                }
+            });
+        }
+    };
+    var WeekYearModel=function(week, year) {
+        var self = this;
+        self.Week = ko.observable(week);
+        self.Year = ko.observable(year);
     }
-};
+
 window.app.su_Service = (function() {
 
     var baseWeekMenuUri = '/api/WeekMenu/';
@@ -87,8 +93,10 @@ window.app.su_Service = (function() {
         currentweek: function() { return baseWeekMenuUri + 'curWeekNumber'; },
         categories: function() { return baseWeekMenuUri + 'categories' },
         create: function() { return baseWeekMenuUri + 'create' },
-        nextWeekMenu: function() { return baseWeekMenuUri + 'nextWeekMenu' },
-        delnextweek: function(numweek) { return baseWeekMenuUri + 'delete/' + numweek }
+        nextWeekMenu: function () { return baseWeekMenuUri + 'nextWeekMenu' },
+        nextWeekYear: function () { return baseWeekMenuUri + 'nextWeekYear' },
+        prevWeekYear: function () { return baseWeekMenuUri + 'prevWeekYear' },
+        deleteWeekMenu: function(numweek) { return baseWeekMenuUri + 'delete/' + numweek }
     }
 
     var baseOrdersUri = '/api/Orders/';
@@ -98,8 +106,8 @@ window.app.su_Service = (function() {
             year = year == undefined ? '' : "/" + year;
             return numweek + year;
         },
-        updateNextWeekOrders: function(week, year) { return baseOrdersUri + 'update' + serviceOrdersUrls.ordersParams(week, year) },
-        createNextWeekOrders: function(week, year) { return baseOrdersUri + 'create' + serviceOrdersUrls.ordersParams(week, year) },
+        updateOrder: function(week, year) { return baseOrdersUri + 'update' + serviceOrdersUrls.ordersParams(week, year) },
+        createOrder: function(week, year) { return baseOrdersUri + 'create' + serviceOrdersUrls.ordersParams(week, year) },
         calcsummary: function(week, year) { return baseOrdersUri + 'summary/' + serviceOrdersUrls.ordersParams(week, year) }
     }
     var baseDishesUri = '/api/Dishes/';
@@ -137,6 +145,12 @@ window.app.su_Service = (function() {
         LoadWeekMenu: function(numweek, year) {
             return ajaxRequest('get', serviceWeekMenuUrls.weekMenu(numweek, year));
         },
+        GetNextWeekYear: function (item) {
+            return ajaxRequest('put', serviceWeekMenuUrls.nextWeekYear(), item);
+        },
+        GetPrevWeekYear: function (item) {
+            return ajaxRequest('put', serviceWeekMenuUrls.prevWeekYear(), item);
+        },
         GetCurrentWeekNumber: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.currentweek());
         },
@@ -147,7 +161,7 @@ window.app.su_Service = (function() {
             return ajaxRequest('put', baseWeekMenuUri + 'update', item);
         },
         DeleteNextWeekMenu: function(numweek) {
-            return ajaxRequest('delete', serviceWeekMenuUrls.delnextweek(numweek));
+            return ajaxRequest('delete', serviceWeekMenuUrls.deleteWeekMenu(numweek));
         },
         GetNextWeekMenu: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.nextWeekMenu());
@@ -177,10 +191,10 @@ window.app.su_Service = (function() {
             return ajaxRequest('put', serviceOrdersUrls.calcsummary(week, year), item);
         },
         UpdateOrder: function(week, year, item) {
-            return ajaxRequest('put', serviceOrdersUrls.updateNextWeekOrders(week, year), item);
+            return ajaxRequest('put', serviceOrdersUrls.updateOrder(week, year), item);
         },
         CreateOrdersNextweek: function(week, year) {
-            return ajaxRequest('post', serviceOrdersUrls.createNextWeekOrders(week, year));
+            return ajaxRequest('post', serviceOrdersUrls.createOrder(week, year));
         },
         GetPaiments: function(week, year) {
             return ajaxRequest('get', servicePaimentsUrls.paiments(week, year));

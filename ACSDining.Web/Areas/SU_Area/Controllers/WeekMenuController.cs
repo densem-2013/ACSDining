@@ -89,7 +89,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         [HttpGet]
         [Route("nextWeekMenu")]
-        public async Task<IHttpActionResult> GetNexWeekMenu(WeekYearDTO weekyear)
+        public async Task<IHttpActionResult> GetNextWeekMenu(WeekYearDTO weekyear)
         {
             WeekYearDTO nextweeknumber = _unitOfWork.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
@@ -116,6 +116,22 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             dto = _unitOfWork.MenuForWeekToDto(nextWeek, true);
             return Ok(dto);
+        }
+
+        [HttpPut]
+        [Route("nextWeekYear")]
+        [ResponseType(typeof(WeekYearDTO))]
+        public Task<WeekYearDTO> GetNextWeekYear([FromBody]WeekYearDTO weekyear)
+        {
+            return Task.FromResult(_unitOfWork.GetNextWeekYear(weekyear));
+        }
+
+        [HttpPut]
+        [Route("prevWeekYear")]
+        [ResponseType(typeof(WeekYearDTO))]
+        public Task<WeekYearDTO> GetPrevWeekYear([FromBody]WeekYearDTO weekyear)
+        {
+            return Task.FromResult(_unitOfWork.GetPrevWeekYear(weekyear));
         }
 
         [HttpGet]

@@ -674,5 +674,3 @@ E:\GitProjects\ACSDining\ACSDining.Web\bin\zh-Hant\System.Spatial.resources.dll
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.dll
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb
-E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.Migrations.Initial.resources
-E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csproj.GenerateResource.Cache
