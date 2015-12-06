@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Web.Areas.SU_Area.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
@@ -19,14 +22,16 @@ namespace UnitTestProject1
         private readonly IRepository<MenuForWeek> _weekmenuRepository;
         private readonly IRepository<Dish> _dishRepository;
         private readonly IRepository<DayOfWeek> _dayRepository;
+        private readonly IRepository<OrderMenu> _orderRepository;
 
-        public UnitTest1(IUnitOfWork unitOfWork)
+        public UnitTest1()
         {
-            _unitOfWork = unitOfWork;
+            _unitOfWork = new UnitOfWork();
             _dishtypeRepository = _unitOfWork.Repository<DishType>();
             _weekmenuRepository = _unitOfWork.Repository<MenuForWeek>();
             _dishRepository = _unitOfWork.Repository<Dish>();
             _dayRepository = _unitOfWork.Repository<DayOfWeek>();
+            _orderRepository = _unitOfWork.Repository<OrderMenu>();
         }
 
         [TestMethod]
@@ -137,6 +142,64 @@ namespace UnitTestProject1
                 WeekNumber = UnitOfWork.CurrentWeek()
             });
             Assert.IsTrue(_weekmenuRepository.GetAll().Select(w => w.MenuForDay.Where(m => m.TotalPrice > 0)).Any());
+        }
+
+        [TestMethod]
+        public void PrintExcelTest()
+        {
+            List<OrderMenu> orderMenus = _orderRepository.GetAll().Where(
+                        om => om.MenuForWeek.WeekNumber == 49 && om.MenuForWeek.Year.YearNumber == 2015)
+                        .ToList();
+            MenuForWeek mfw = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WeekNumber == 49 && m.Year.YearNumber == 2015);
+            PaimentsDTO model = null;
+
+            model = new PaimentsDTO()
+            {
+                WeekNumber = 49,
+                YearNumber = 2015,
+                UserPaiments = orderMenus
+                    .Select(order => new UserPaimentDTO()
+                    {
+                        UserId = order.User.Id,
+                        OrderId = order.Id,
+                        UserName = order.User.UserName,
+                        Paiments = _unitOfWork.GetUserWeekOrderPaiments(order.Id),
+                        SummaryPrice = order.SummaryPrice,
+                        WeekPaid = order.WeekPaid,
+                        Balance = order.Balance,
+                        IsDiningRoomClient = order.User.IsDiningRoomClient,
+                        Note = order.Note
+                    }).OrderBy(uo => uo.UserName).ToList(),
+                UnitPrices = _unitOfWork.GetUnitWeekPrices(mfw.ID),
+                UnitPricesTotal = PaimentsByDishes(49, 2015)
+            };
+
+            PrintExcelController peController = new PrintExcelController(_unitOfWork);
+            peController.ExportToExcel(model);
+            string path = string.Format(@"{0}\ExcelData.xlsx",
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
+            Assert.IsTrue(File.Exists(path));
+        }
+        private double[] PaimentsByDishes(int numweek, int year)
+        {
+            double[] paiments = new double[21];
+            MenuForWeek weekmenu = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
+            double[] weekprices = _unitOfWork.GetUnitWeekPrices(weekmenu.ID);
+
+
+            OrderMenu[] orderMenus = _orderRepository.GetAll().Where(
+                        om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
+                        .ToArray();
+            for (int i = 0; i < orderMenus.Length; i++)
+            {
+                double[] dishquantities = _unitOfWork.GetUserWeekOrderDishes(orderMenus[i].Id);
+                for (int j = 0; j < 20; j++)
+                {
+                    paiments[j] += weekprices[j] * dishquantities[j];
+                }
+            }
+            paiments[20] = paiments.Sum();
+            return paiments;
         }
     }
 }

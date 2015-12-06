@@ -1,19 +1,20 @@
-﻿using ACSDining.Core.Domains;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Xml.Linq;
+using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DAL;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System;
-using System.Xml.Linq;
-using ACSDining.Infrastructure.DAL;
+using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Infrastructure.Identity
 {
     public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
-        private static string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") +
+        private static string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
                                       @"ACSDining.Core\DBinitial\DishDetails.xml";
 
         private static Random rand = new Random();
@@ -56,11 +57,11 @@ namespace ACSDining.Infrastructure.Identity
                 );
 
             context.Days.AddOrUpdate(d => d.Name,
-                new ACSDining.Core.Domains.DayOfWeek { Name = "Понедельник" },
-                new ACSDining.Core.Domains.DayOfWeek { Name = "Вторник" },
-                new ACSDining.Core.Domains.DayOfWeek { Name = "Среда" },
-                new ACSDining.Core.Domains.DayOfWeek { Name = "Четверг" },
-                new ACSDining.Core.Domains.DayOfWeek { Name = "Пятница" }
+                new DayOfWeek { Name = "Понедельник" },
+                new DayOfWeek { Name = "Вторник" },
+                new DayOfWeek { Name = "Среда" },
+                new DayOfWeek { Name = "Четверг" },
+                new DayOfWeek { Name = "Пятница" }
                 );
 
 

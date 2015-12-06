@@ -47,7 +47,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         UserId = order.User.Id,
                         UserName = order.User.UserName,
                         Dishquantities = _unitOfWork.GetUserWeekOrderDishes(order.Id),
-                        WeekIsPaid = false,
+                        WeekPaid = order.WeekPaid,
                         SummaryPrice = order.SummaryPrice
                     }).OrderBy(uo => uo.UserName).ToList(),
                 YearNumber = (int) year

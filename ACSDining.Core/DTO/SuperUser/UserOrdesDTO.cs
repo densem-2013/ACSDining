@@ -6,7 +6,7 @@
         public string UserName { get; set; }
         public double[] Dishquantities { get; set; }
         public double SummaryPrice { get; set; }
-        public bool WeekIsPaid { get; set; }
+        public double WeekPaid { get; set; }
 
     }
 }

@@ -8,7 +8,7 @@ namespace ACSDining.Web.Migrations
 
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-        string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
+        string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
@@ -23,10 +23,10 @@ namespace ACSDining.Web.Migrations
 
             //
             ApplicationDbInitializer.InitializeIdentityForEF(context);
-            var dishes = ApplicationDbInitializer.GetDishesFromXML(context, path);
+            var dishes = ApplicationDbInitializer.GetDishesFromXML(context, _path);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
-            path = path.Replace(@"DishDetails", "Employeers");
-            ApplicationDbInitializer.GetUsersFromXml(context, path);
+            _path = _path.Replace(@"DishDetails", "Employeers");
+            ApplicationDbInitializer.GetUsersFromXml(context, _path);
             ApplicationDbInitializer.CreateOrders(context);
 
         }

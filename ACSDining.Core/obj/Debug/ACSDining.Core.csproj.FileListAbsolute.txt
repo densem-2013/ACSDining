@@ -208,4 +208,3 @@ E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csproj.Generate
 E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.dll
 E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache
-E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache
