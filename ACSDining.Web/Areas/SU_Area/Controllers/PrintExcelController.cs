@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Web.Http;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
 using ACSDining.Core.DTO.SuperUser;
+using Microsoft.Office.Interop.Excel;
 using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -32,13 +32,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public void ExportToExcel(PaimentsDTO paimodel)
         {
             // Load Excel application
-            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+            Application excel = new Application();
 
             // Create empty workbook
             excel.Workbooks.Add();
 
             // Create Worksheet from active sheet
-            Microsoft.Office.Interop.Excel._Worksheet workSheet = excel.ActiveSheet;
+            _Worksheet workSheet = excel.ActiveSheet;
 
             // I created Application and Worksheet objects before try/catch,
             // so that i can close them in finnaly block.
@@ -104,7 +104,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 workSheet.Cells[3, "C"] = "Цена за одну порцию, грн";
                 str = String.Format("C3:{0}3", colname);
                 workSheet.Range[str].Merge();
-                workSheet.Range[str].Style.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+                workSheet.Range[str].Style.HorizontalAlignment = XlHAlign.xlHAlignCenter;
                 int orderid =
                     _orderRepository.Find(
                         ord =>
@@ -153,8 +153,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 workSheet.Cells[i, colname] = paimodel.UserPaiments.Sum(up => up.Balance);
 
                 // Apply some predefined styles for data to look nicely :)
-                workSheet.Range["A1:E1"].AutoFormat();
-
+               // workSheet.Range["A1:E1"].AutoFormat();
+                //workSheet.Range["B1:B42"].Rows.AutoFit();
+                workSheet.Range["A1:Y42"].Style.HorizontalAlignment = XlHAlign.xlHAlignRight;
+                //workSheet.Range["B1:B41"].Style.HorizontalAlignment = XlHAlign.xlHAlignLeft;
+                workSheet.Range["B1:B41"].Columns.AutoFit();
                 // Define filename
                 string fileName = string.Format(@"{0}\ExcelData.xlsx",
                     Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
@@ -174,10 +177,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
                 // Release COM objects (very important!)
                 if (excel != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excel);
+                    Marshal.ReleaseComObject(excel);
 
                 if (workSheet != null)
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(workSheet);
+                    Marshal.ReleaseComObject(workSheet);
 
                 // Empty variables
                 excel = null;
