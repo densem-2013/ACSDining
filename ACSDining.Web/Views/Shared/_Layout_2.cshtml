@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/worthy")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/worthy")
+    @RenderSection("scripts", required: false)
+</head>
+<body class="no-trans">
+    <!-- scrollToTop -->
+    <!-- ================ -->
+    <div class="scrollToTop"><i class="icon-up-open-big"></i></div>
+    <!-- banner start -->
+    <!-- ================ -->
+    <div id="banner" class="banner">
+        <div class="banner-image"></div>
+        <div class="banner-caption">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2 object-non-visible" data-animation-effect="fadeIn">      
+                         @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- banner end -->
+    <!-- header start -->
+    <!-- ================ -->
+    <header class="header fixed clearfix navbar navbar-fixed-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+
+                    <!-- header-left start -->
+                    <!-- ================ -->
+                    <div class="header-left clearfix">
+
+                        <!-- logo -->
+                        @*<div class="logo smooth-scroll">
+                                <a href="#banner"><img id="logo" src="@Url.Content("~/Content/worthy/images/logo.png")" alt="Worthy"/></a>
+                            </div>*@
+
+                        <!-- name-and-slogan -->
+                        <div class="site-name-and-slogan smooth-scroll">
+                            <div class="site-name"><a href="#banner">Infocom</a></div>
+                            <div class="site-slogan">Automated control system for the dining room</div>
+                        </div>
+
+                    </div>
+                    <!-- header-left end -->
+
+                </div>
+                <div class="col-md-8">
+
+                    <!-- header-right start -->
+                    <!-- ================ -->
+                    <div class="header-right clearfix">
+
+                        <!-- main-navigation start -->
+                        <!-- ================ -->
+                        <div class="main-navigation animated">
+
+                            <!-- navbar start -->
+                            <!-- ================ -->
+                            <nav class="navbar navbar-default" role="navigation">
+                                <div class="container-fluid">
+
+                                    <!-- Toggle get grouped for better mobile display -->
+                                    <div class="navbar-header">
+                                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+                                            <span class="sr-only">Toggle navigation</span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Collect the nav links, forms, and other content for toggling -->
+                                    @*<div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
+                                            <ul class="nav navbar-nav navbar-right">
+                                                <li class="active"><a href="#banner">Home</a></li>
+                                                <li><a href="#about">About</a></li>
+                                                <li><a href="#services">Services</a></li>
+                                                <li><a href="#portfolio">Portfolio</a></li>
+                                                <li><a href="#clients">Clients</a></li>
+                                                <li><a href="#contact">Contact</a></li>
+                                            </ul>
+                                        </div>*@
+
+                                </div>
+                            </nav>
+                            <!-- navbar end -->
+
+                        </div>
+                        <!-- main-navigation end -->
+
+                    </div>
+                    <!-- header-right end -->
+
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- header end -->
+    <!-- banner start -->
+    <!-- ================ -->
+    <!-- banner end -->
+    <!-- JavaScript files placed at the end of the document so the pages load faster
+    ================================================== -->
+    <!-- Jquery and Bootstap core js files -->
+</body>
+</html>

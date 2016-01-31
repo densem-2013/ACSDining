@@ -157,8 +157,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (List<int>))]
         public async Task<IHttpActionResult> GetWeekNumbers()
         {
-            List<int> numweeks = WeekModels.Select(wm => wm.WeekNumber).ToList();
-            numweeks.Sort();
+            List<int> years = WeekModels.Select(wm => wm.YearNumber).Distinct().ToList();
+            years.Sort();
+            List<int> numweeks=new List<int>();
+            List<int> yearweeks;
+            foreach (int year in years)
+            {
+                yearweeks = WeekModels.Where(m => m.YearNumber == year).Select(wm => wm.WeekNumber).ToList();
+                yearweeks.Sort();
+                numweeks=numweeks.Concat(yearweeks).ToList();
+            }
             return Ok(numweeks);
         }
 

@@ -80,6 +80,18 @@ namespace ACSDining.Infrastructure.DAL
             return myCal.GetWeekOfYear(curDay, myCwr, myFirstDow);
         };
 
+        public static Func<int> LastYearWeekCount = () =>
+        {
+            CultureInfo myCi = new CultureInfo("uk-UA");
+            Calendar myCal = myCi.Calendar;
+
+            // Gets the DTFI properties required by GetWeekOfYear.
+            CalendarWeekRule myCwr = myCi.DateTimeFormat.CalendarWeekRule;
+            DayOfWeek myFirstDow = myCi.DateTimeFormat.FirstDayOfWeek;
+            DateTime lastweek = new DateTime(DateTime.Now.Year -1, 12, 31);
+            return myCal.GetWeekOfYear(lastweek, myCwr, myFirstDow);
+        };
+
         public double[] GetUserWeekOrderDishes(int orderid)
         {
             double[] dquantities = new double[20];

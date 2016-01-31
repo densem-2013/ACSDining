@@ -1,116 +1,75 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using System.Runtime.Versioning
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8" />
-    <title>@ViewBag.Title - My ASP.NET MVC Application</title>
-    <meta name="viewport" content="width=device-width" />
-    @Styles.Render("~/Content/worthy")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/worthy")
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>
+
+        Работа столовой
+
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=IE8" />
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/themes/base/css")
+        @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/ViewModel")
     @RenderSection("scripts", required: false)
 </head>
-<body class="no-trans">
-    <!-- scrollToTop -->
-    <!-- ================ -->
-    <div class="scrollToTop"><i class="icon-up-open-big"></i></div>
-    <!-- banner start -->
-    <!-- ================ -->
-    <div id="banner" class="banner">
-        <div class="banner-image"></div>
-        <div class="banner-caption">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2 object-non-visible" data-animation-effect="fadeIn">      
-                         @RenderBody()
+<body class="pagebg">
+    <div class="wrapper toppad">
+        <div class="tophead">
+            <div class="dleft">
+                <div class="dright">
+                    <h1 class="logo">
+                        <a href="">
+                            <img style="border: 0" src="@Url.Content("~/Content/Images/Infocom.png")" title="Инфоком ЛТД" alt="Инфоком ЛТД" />
+                        </a>
+                    </h1>
+                    <div class="tophead_i1">
+                        <div class="blockinform">
+                            <div class="dleft">
+                                <div class="logOnGreeting col-md-5" id="infoTitle"><span></span></div>
+                                <div class="dright">
+                                    <div class="logOnGreeting  col-md-5" style="text-align: right;">
+                                        @if (Session["Fname"] != null)
+                                        {
+                                            <span> Вы вошли как, @Session["Fname"]   @Session["Lname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                Пожалуйста,
+                                                авторизируйтесь
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="page">
+            <div class="dleft">
+                <div class="dright">
+                </div>
+                <div class="main_content_background">
+                    <div class="main_content">
+
+                        @RenderBody()
+
+
+                    </div>
+                </div>
+                <div id="footer">
+                    Copyright 2015 INFOCOM Ltd. Все права защищены.&nbsp;
+                    <br />
+                    <small>192.168.56.17</small>
+
                 </div>
             </div>
         </div>
     </div>
-    <!-- banner end -->
-    <!-- header start -->
-    <!-- ================ -->
-    <header class="header fixed clearfix navbar navbar-fixed-top">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-
-                    <!-- header-left start -->
-                    <!-- ================ -->
-                    <div class="header-left clearfix">
-
-                        <!-- logo -->
-                        @*<div class="logo smooth-scroll">
-                                <a href="#banner"><img id="logo" src="@Url.Content("~/Content/worthy/images/logo.png")" alt="Worthy"/></a>
-                            </div>*@
-
-                        <!-- name-and-slogan -->
-                        <div class="site-name-and-slogan smooth-scroll">
-                            <div class="site-name"><a href="#banner">Infocom</a></div>
-                            <div class="site-slogan">Automated control system for the dining room</div>
-                        </div>
-
-                    </div>
-                    <!-- header-left end -->
-
-                </div>
-                <div class="col-md-8">
-
-                    <!-- header-right start -->
-                    <!-- ================ -->
-                    <div class="header-right clearfix">
-
-                        <!-- main-navigation start -->
-                        <!-- ================ -->
-                        <div class="main-navigation animated">
-
-                            <!-- navbar start -->
-                            <!-- ================ -->
-                            <nav class="navbar navbar-default" role="navigation">
-                                <div class="container-fluid">
-
-                                    <!-- Toggle get grouped for better mobile display -->
-                                    <div class="navbar-header">
-                                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
-                                            <span class="sr-only">Toggle navigation</span>
-                                            <span class="icon-bar"></span>
-                                            <span class="icon-bar"></span>
-                                            <span class="icon-bar"></span>
-                                        </button>
-                                    </div>
-
-                                    <!-- Collect the nav links, forms, and other content for toggling -->
-                                    @*<div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
-                                            <ul class="nav navbar-nav navbar-right">
-                                                <li class="active"><a href="#banner">Home</a></li>
-                                                <li><a href="#about">About</a></li>
-                                                <li><a href="#services">Services</a></li>
-                                                <li><a href="#portfolio">Portfolio</a></li>
-                                                <li><a href="#clients">Clients</a></li>
-                                                <li><a href="#contact">Contact</a></li>
-                                            </ul>
-                                        </div>*@
-
-                                </div>
-                            </nav>
-                            <!-- navbar end -->
-
-                        </div>
-                        <!-- main-navigation end -->
-
-                    </div>
-                    <!-- header-right end -->
-
-                </div>
-            </div>
-        </div>
-    </header>
-    <!-- header end -->
-    <!-- banner start -->
-    <!-- ================ -->
-    <!-- banner end -->
-    <!-- JavaScript files placed at the end of the document so the pages load faster
-    ================================================== -->
-    <!-- Jquery and Bootstap core js files -->
 </body>
 </html>

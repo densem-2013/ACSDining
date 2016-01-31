@@ -47,6 +47,9 @@ namespace ACSDining.Infrastructure.Identity
             context.Years.AddOrUpdate(y => y.YearNumber, new Year
             {
                 YearNumber = DateTime.Now.Year
+            }, new Year
+            {
+                YearNumber = DateTime.Now.Year - 1
             });
 
             context.DishTypes.AddOrUpdate(dt => dt.Category,
@@ -254,9 +257,17 @@ namespace ACSDining.Infrastructure.Identity
             };
 
             Year year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
-
+            bool weekLessZero = false;
+            Year correct_year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year - 1);
+            int correct_week = 0;
             for (int week = 0; week < 25; week++)
             {
+                weekLessZero = UnitOfWork.CurrentWeek() - week <= 0;
+                if (weekLessZero)
+                {
+                    year = correct_year;
+                    correct_week = UnitOfWork.LastYearWeekCount();
+                }
                 List<MenuForDay> mfdays = new List<MenuForDay>();
 
                 for (int i = 1; i <= 5; i++)
@@ -275,7 +286,7 @@ namespace ACSDining.Infrastructure.Identity
                 {
                     Year = year,
                     MenuForDay = mfdays,
-                    WeekNumber = UnitOfWork.CurrentWeek() - week,
+                    WeekNumber = UnitOfWork.CurrentWeek() - week + correct_week,
                     SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
                 });
             }
