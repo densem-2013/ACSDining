@@ -34,9 +34,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
             List<OrderMenu> orderMenus =_orderRepository.GetAll().Where(
-                        om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
+                        om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToList();
-            MenuForWeek mfw = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
+            MenuForWeek mfw = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
             PaimentsDTO model = null;
             if (mfw == null || orderMenus == null)
             {
@@ -70,12 +70,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private double[] PaimentsByDishes(int numweek, int year )
         {
             double[] paiments = new double[21];
-            MenuForWeek weekmenu = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WeekNumber == numweek && m.Year.YearNumber == year);
+            MenuForWeek weekmenu = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
             double[] weekprices = _unitOfWork.GetUnitWeekPrices(weekmenu.ID);
 
 
             OrderMenu[] orderMenus = _orderRepository.GetAll().Where(
-                        om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
+                        om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
             {

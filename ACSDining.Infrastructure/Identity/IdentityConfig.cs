@@ -1,4 +1,5 @@
 ﻿using System;
+using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
@@ -102,10 +103,13 @@ namespace ACSDining.Infrastructure.Identity
 
     public class ApplicationSignInManager : SignInManager<User, string>
     {
+        private PrincipalContext _ad;
+
         public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
             :
                 base(userManager, authenticationManager)
         {
+            _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
         }
 
         public override Task<ClaimsIdentity> CreateUserIdentityAsync(User user)
@@ -117,6 +121,28 @@ namespace ACSDining.Infrastructure.Identity
             IOwinContext context)
         {
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
+        }
+
+        public Task<SignInStatus> ValidateUserFromAd(string login, string password)
+        {
+            UserPrincipal u = new UserPrincipal(_ad);
+            u.SamAccountName = login;
+            bool res = _ad.ValidateCredentials(u.SamAccountName, password);
+            if (res)
+            {
+                if (!u.IsAccountLockedOut())
+                {
+                    return Task.FromResult(SignInStatus.Success);
+                }
+                else
+                {
+                    return Task.FromResult(SignInStatus.LockedOut);
+                }
+            }
+            else
+            {
+                return Task.FromResult(SignInStatus.Failure);
+            }
         }
     }
 }

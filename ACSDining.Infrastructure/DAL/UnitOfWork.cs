@@ -13,10 +13,10 @@ namespace ACSDining.Infrastructure.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly ApplicationDbContext _acsContext;
+        private static readonly ApplicationDbContext _acsContext;
         private Hashtable _repositories;
 
-        public UnitOfWork()
+        static UnitOfWork()
         {
             _acsContext = new ApplicationDbContext();
         }
@@ -66,6 +66,11 @@ namespace ACSDining.Infrastructure.DAL
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        public static ApplicationDbContext GetContext()
+        {
+            return _acsContext;
+        }
         #region _acsContext Members
 
         public static Func<int> CurrentWeek = () =>
@@ -80,7 +85,8 @@ namespace ACSDining.Infrastructure.DAL
             return myCal.GetWeekOfYear(curDay, myCwr, myFirstDow);
         };
 
-        public static Func<int> LastYearWeekCount = () =>
+        //Get Last Week Number of Year
+        public static Func<int,int> YearWeekCount = (int year) =>
         {
             CultureInfo myCi = new CultureInfo("uk-UA");
             Calendar myCal = myCi.Calendar;
@@ -88,7 +94,7 @@ namespace ACSDining.Infrastructure.DAL
             // Gets the DTFI properties required by GetWeekOfYear.
             CalendarWeekRule myCwr = myCi.DateTimeFormat.CalendarWeekRule;
             DayOfWeek myFirstDow = myCi.DateTimeFormat.FirstDayOfWeek;
-            DateTime lastweek = new DateTime(DateTime.Now.Year -1, 12, 31);
+            DateTime lastweek = new DateTime(year, 12, 31);
             return myCal.GetWeekOfYear(lastweek, myCwr, myFirstDow);
         };
 
@@ -102,15 +108,20 @@ namespace ACSDining.Infrastructure.DAL
                     .ToList();
 
             string[] categories = _acsContext.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            for (int i = 1; i <= 5; i++)
+            MenuForWeek mfw = _acsContext.MenuForWeeks.Find(menuforweekid);
+            for (int i = 1; i <= 7; i++)
             {
-                for (int j = 1; j <= categories.Length; j++)
+                WorkingDay workday = mfw.WorkingWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.ID == i);
+                if (workday != null && workday.IsWorking)
                 {
-                    var firstOrDefault = quaList.FirstOrDefault(
-                        q => q.DayOfWeekID == i && q.DishTypeID == j
-                        );
-                    if (firstOrDefault != null)
-                        dquantities[(i - 1) * 4 + j - 1] = firstOrDefault.DishQuantity.Quantity;
+                    for (int j = 1; j <= categories.Length; j++)
+                    {
+                        var firstOrDefault = quaList.FirstOrDefault(
+                            q => q.WorkDay.DayOfWeek.ID == i && q.DishTypeID == j
+                            );
+                        if (firstOrDefault != null)
+                            dquantities[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity;
+                    }
                 }
             }
             return dquantities;
@@ -127,16 +138,21 @@ namespace ACSDining.Infrastructure.DAL
 
             string[] categories = _acsContext.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
             MenuForWeek mfw = _acsContext.MenuForWeeks.Find(menuforweekid);
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= 7; i++)
             {
-                MenuForDay daymenu = mfw.MenuForDay.ElementAt(i - 1);
-                for (int j = 1; j <= categories.Length; j++)
+                WorkingDay workday = mfw.WorkingWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.ID == i);
+                if (workday != null && workday.IsWorking)
                 {
-                    var firstOrDefault = quaList.FirstOrDefault(
-                        q => q.DayOfWeekID == i && q.DishTypeID == j
-                        );
-                    if (firstOrDefault != null)
-                        paiments[(i - 1) * 4 + j - 1] = firstOrDefault.DishQuantity.Quantity * daymenu.Dishes.ElementAt(j - 1).Price;
+                    MenuForDay daymenu = mfw.MenuForDay.ElementAt(i - 1);
+                    for (int j = 1; j <= categories.Length; j++)
+                    {
+                        var firstOrDefault = quaList.FirstOrDefault(
+                            q => q.WorkDay.DayOfWeek.ID == i && q.DishTypeID == j
+                            );
+                        if (firstOrDefault != null)
+                            paiments[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity*
+                                                          daymenu.Dishes.ElementAt(j - 1).Price;
+                    }
                 }
             }
             return paiments;
@@ -183,8 +199,8 @@ namespace ACSDining.Infrastructure.DAL
             WeekYearDTO result = new WeekYearDTO();
             if (wyDto.Week == 1)
             {
-                int? maxWeekNum = _acsContext.MenuForWeeks.Where(mfw => mfw.Year.YearNumber == wyDto.Year).Max(mfw => mfw.WeekNumber);
-                result.Week = (int)maxWeekNum;
+                //int maxWeekNum = (int)_acsContext.MenuForWeeks.Where(mfw => mfw.Year.YearNumber == wyDto.Year).Max(mfw => mfw.WeekNumber);
+                result.Week =YearWeekCount(wyDto.Year);//maxWeekNum;
                 result.Year = wyDto.Year - 1;
             }
             else
@@ -201,9 +217,9 @@ namespace ACSDining.Infrastructure.DAL
             WeekMenuDto dtoModel = new WeekMenuDto
             {
                 ID = wmenu.ID,
-                WeekNumber = wmenu.WeekNumber,
+                WeekNumber = wmenu.WorkingWeek.WeekNumber,
                 SummaryPrice = wmenu.SummaryPrice,
-                YearNumber = wmenu.Year.YearNumber
+                YearNumber = wmenu.WorkingWeek.Year.YearNumber
             };
             if (emptyDishes)
             {
@@ -229,7 +245,7 @@ namespace ACSDining.Infrastructure.DAL
                     dtoModel.MFD_models.Add(new MenuForDayDto
                     {
                         ID = mfd.ID,
-                        DayOfWeek = mfd.DayOfWeek.Name,
+                        DayOfWeek = mfd.WorkingDay.DayOfWeek.Name,
                         TotalPrice = mfd.TotalPrice,
                         Dishes = dmodels
                     });
@@ -240,7 +256,7 @@ namespace ACSDining.Infrastructure.DAL
                 dtoModel.MFD_models = wmenu.MenuForDay.ToList().Select(m => new MenuForDayDto
                 {
                     ID = m.ID,
-                    DayOfWeek = m.DayOfWeek.Name,
+                    DayOfWeek = m.WorkingDay.DayOfWeek.Name,
                     TotalPrice = m.TotalPrice,
                     Dishes = m.Dishes.AsEnumerable().Select(dm => new DishModelDto
                     {

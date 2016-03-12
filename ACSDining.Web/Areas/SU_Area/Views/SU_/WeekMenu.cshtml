@@ -39,7 +39,7 @@
                 <tr style="background: #565659;">
                     <td class="col-md-3">
                         <div>
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click: function(){$root.SetMyDateByWeek($rootCurrentWeekNumber(),$rootYear())},css:{disabled: IsCurrentWeek}" />
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click: function(){$root.SetMyDateByWeek($root.CurrentWeekNumber(),$root.Year())},css:{disabled: IsCurrentWeek}" />
                         </div>
                     </td>
                     <td class="col-md-5  " style="float: right">

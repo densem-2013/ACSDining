@@ -7,7 +7,8 @@ namespace ACSDining.Web
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
-           // filters.Add(new NotImplementedFilterAttribute());
+            // filters.Add(new NotImplementedFilterAttribute());
+            filters.Add(new AuthorizeAttribute());       
         }
     }
 }

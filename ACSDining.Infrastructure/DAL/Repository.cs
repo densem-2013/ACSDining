@@ -33,6 +33,15 @@ namespace ACSDining.Infrastructure.DAL
             acsContext.SaveChanges();
         }
 
+        public virtual void AddRange(IEnumerable<T> list)
+        {
+            var collection = acsContext.Set(typeof(T)).Local;
+            foreach (T entity in list)
+            {
+                collection.Add(entity);
+            }
+            acsContext.SaveChanges();
+        }
         public virtual void Update(T entity)
         {
             acsContext.Entry(entity).State = EntityState.Modified;

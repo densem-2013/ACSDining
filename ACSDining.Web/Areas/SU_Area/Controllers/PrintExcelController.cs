@@ -108,8 +108,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 int orderid =
                     _orderRepository.Find(
                         ord =>
-                            ord.MenuForWeek.WeekNumber == paimodel.WeekNumber &&
-                            ord.MenuForWeek.Year.YearNumber == paimodel.YearNumber).Id;
+                            ord.MenuForWeek.WorkingWeek.WeekNumber == paimodel.WeekNumber &&
+                            ord.MenuForWeek.WorkingWeek.Year.YearNumber == paimodel.YearNumber).Id;
                 double[] dishprices = paimodel.UnitPrices;
                 for (int j = 0; j < 20; j++)
                 {

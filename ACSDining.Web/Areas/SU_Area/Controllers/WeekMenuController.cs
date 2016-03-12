@@ -26,7 +26,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IRepository<MenuForDay> _daymenuRepository;
         private readonly IRepository<Year> _yearRepository;
         private readonly IRepository<DishType> _dishtypeRepository;
-        private readonly IRepository<Dish> _dishRepository; 
+        private readonly IRepository<Dish> _dishRepository;
+        private readonly IRepository<WorkingWeek> _workingWeekRepository;
+        private readonly IRepository<WorkingDay> _workingDayRepository; 
 
         public WeekMenuController(IUnitOfWork unitOfWork)
         {
@@ -37,6 +39,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _yearRepository = _unitOfWork.Repository<Year>();
             _dishtypeRepository = _unitOfWork.Repository<DishType>();
             _dishRepository = _unitOfWork.Repository<Dish>();
+            _workingWeekRepository = unitOfWork.Repository<WorkingWeek>();
+            _workingDayRepository = unitOfWork.Repository<WorkingDay>();
         }
 
 
@@ -82,7 +86,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             WeekYearDTO nextweeknumber = _unitOfWork.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
                 _weekmenuRepository.Find(
-                        mfw => mfw.WeekNumber == nextweeknumber.Week && mfw.Year.YearNumber == nextweeknumber.Year);
+                        mfw => mfw.WorkingWeek.WeekNumber == nextweeknumber.Week && mfw.WorkingWeek.Year.YearNumber == nextweeknumber.Year);
 
             return Task.FromResult(nextWeek != null);
         }
@@ -94,23 +98,30 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             WeekYearDTO nextweeknumber = _unitOfWork.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
                 _weekmenuRepository.Find(
-                        mfw => mfw.WeekNumber == nextweeknumber.Week && mfw.Year.YearNumber == nextweeknumber.Year);
+                        mfw => mfw.WorkingWeek.WeekNumber == nextweeknumber.Week && mfw.WorkingWeek.Year.YearNumber == nextweeknumber.Year);
             WeekMenuDto dto;
             if (nextWeek != null)
             {
                 dto = _unitOfWork.MenuForWeekToDto(nextWeek);
                 return Ok(dto);
             }
+            WorkingWeek workingWeek =
+                _workingWeekRepository.Find(
+                    w => w.WeekNumber == nextweeknumber.Week && w.Year.YearNumber == nextweeknumber.Year);
             nextWeek = new MenuForWeek
             {
-                WeekNumber = nextweeknumber.Week,
-                Year =
-                    _yearRepository.Find(y => y.YearNumber == DateTime.Now.Year) ??
-                    new Year { YearNumber = nextweeknumber.Year},
-                    MenuForDay = _dayRepository.GetAll().OrderBy(d => d.ID).Select(day => new MenuForDay
-                    {
-                        DayOfWeek = day
-                    }).ToList()
+                WorkingWeek = workingWeek,
+                //Year =
+                //    _yearRepository.Find(y => y.YearNumber == DateTime.Now.Year) ??
+                //    new Year { YearNumber = nextweeknumber.Year},
+                MenuForDay = _dayRepository.GetAll().OrderBy(d => d.ID).Select(day => new MenuForDay
+                {
+                    WorkingWeek = workingWeek,
+                    WorkingDay =
+                        _workingDayRepository.Find(
+                            wd => wd.WorkingWeek.ID == workingWeek.ID && wd.DayOfWeek.ID == day.ID)
+
+                }).ToList()
 
             };
 
@@ -203,16 +214,22 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             WeekYearDTO nextweekDto = _unitOfWork.GetNextWeekYear(weekyear);
 
             int maxID = _daymenuRepository.GetAll().Max(m => m.ID);
+            WorkingWeek workingWeek =
+                _workingWeekRepository.Find(
+                    w => w.WeekNumber == nextweekDto.Week && w.Year.YearNumber == nextweekDto.Year);
             MenuForWeek nextWeek = new MenuForWeek
             {
-                WeekNumber = nextweekDto.Week,
-                Year =
-                    _yearRepository.Find(y => y.YearNumber == DateTime.Now.Year) ??
-                    new Year { YearNumber = nextweekDto.Year },
+                WorkingWeek = workingWeek,
+                //Year =
+                //    _yearRepository.Find(y => y.YearNumber == DateTime.Now.Year) ??
+                //    new Year { YearNumber = nextweekDto.Year },
                 MenuForDay = _dayRepository.GetAll().OrderBy(d => d.ID).Select(day => new MenuForDay
                 {
                     ID = ++maxID,
-                    DayOfWeek = day
+                    WorkingDay =
+                        _workingDayRepository.Find(
+                            wd => wd.WorkingWeek.ID == workingWeek.ID && wd.DayOfWeek.ID == day.ID),
+                    WorkingWeek = workingWeek
                 }).ToList()
 
             };
@@ -222,7 +239,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             catch (Exception ex)
             {
-
                 throw new Exception(ex.Message);
             }
             var dto = _unitOfWork.MenuForWeekToDto(nextWeek, true);
@@ -235,7 +251,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (MenuForWeek))]
         public async Task<IHttpActionResult> DeleteMenuForWeek(int numweek)
         {
-            MenuForWeek menuforweek = _weekmenuRepository.Find(mfw => mfw.WeekNumber == numweek);
+            MenuForWeek menuforweek = _weekmenuRepository.Find(mfw => mfw.WorkingWeek.WeekNumber == numweek);
             if (menuforweek == null)
             {
                 return NotFound();

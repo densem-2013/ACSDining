@@ -17,10 +17,6 @@ namespace ACSDining.Core.Domains
 
     public partial class UserRole : IdentityRole
     {
-
-        //[Required]
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        //public virtual string Id { get; set; }
         public UserRole() : base() { }
         public UserRole(string name) : base(name) { }
         public UserRole(string name, string descr)

@@ -68,6 +68,8 @@ namespace ACSDining.Infrastructure.Identity
         public virtual DbSet<Food> Foods { get; set; }
         public virtual DbSet<FoodCategory> FoodCategories { get; set; }
         public virtual DbSet<FoodQuantity> FoodQuantities { get; set; }
+        public virtual DbSet<WorkingWeek> WorkingWeeks { get; set; }
+        public virtual DbSet<WorkingDay> WorkingDays { get; set; } 
 
        
     }

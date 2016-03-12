@@ -10,6 +10,10 @@ using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Models.ViewModels;
 using ACSDining.Core.Domains;
 using NLog;
+using System.DirectoryServices.AccountManagement;
+using ACSDining.Core.DAL;
+using ACSDining.Infrastructure.DAL;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ACSDining.Web.Controllers
 {
@@ -18,9 +22,16 @@ namespace ACSDining.Web.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        private PrincipalContext _ad;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<User> _userRepository;
+        private readonly IRepository<UserRole> _roleRepository;
         public AccountController()
         {
+            _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
+            _unitOfWork = new UnitOfWork();
+            _userRepository = _unitOfWork.Repository<User>();
+            _roleRepository = _unitOfWork.Repository<UserRole>();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -62,8 +73,7 @@ namespace ACSDining.Web.Controllers
             return View();
         }
 
-        //
-        // POST: /Account/Login
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -76,38 +86,136 @@ namespace ACSDining.Web.Controllers
 
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
+            //var result = await SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
             switch (result)
             {
                 case SignInStatus.Success:
-                    var user = UserManager.Users.FirstOrDefault(u => u.UserName.Equals(model.LogIn));
-                    user.LastLoginTime = DateTime.UtcNow;
-                    Session["Fname"] = user.FirstName;
-                    Session["Lname"] = user.LastName;
-                    Session["LastLoginDate"] = user.LastLoginTime;
-                    if (UserManager.IsInRole(user.Id, "Administrator"))
+                    var user = UserManager.FindByName(model.LogIn);
+                    if (user != null)
                     {
-                        return RedirectToAction("Accounts", "Admin", new { Area = "AdminArea" });
+                        result =
+                            await
+                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                    shouldLockout: false);
+                        if (result == SignInStatus.Success)
+                        {
+                            if (UserManager.IsInRole(user.Id, "Employee"))
+                            {
+                                user.LastLoginTime = DateTime.UtcNow;
+                                Session["Fname"] = user.FirstName;
+                                Session["Lname"] = user.LastName;
+                                Session["LastLoginDate"] = user.LastLoginTime;
+                                return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
+                            }
+
+                        }
+                        else
+                        {
+                            //using (ApplicationDbContext context = new ApplicationDbContext())
+                            //{
+
+                                User userchangePass =
+                                    _userRepository.Find(u => string.Equals(u.UserName, model.LogIn));
+                                if (userchangePass != null)
+                                {
+                                    userchangePass.PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password);
+                                    _userRepository.Update(userchangePass);
+                                    //context.SaveChanges();
+                                    Login(model, returnUrl);
+                                }
+                                //context.Users.
+                            //}
+                        }
                     }
-                    if (UserManager.IsInRole(user.Id, "SuperUser"))
+                    else
                     {
-                        return RedirectToAction("WeekMenu", "SU_", new { Area = "SU_Area" });
-                    }
-                    if (UserManager.IsInRole(user.Id, "Employee"))
-                    {
-                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
+                        //using (ApplicationDbContext context = new ApplicationDbContext())
+                        //{
+                            IdentityRole role = _roleRepository.Find(r => string.Equals(r.Name, "Employee"));
+
+                            UserPrincipal u = new UserPrincipal(_ad) {SamAccountName = model.LogIn};
+                            PrincipalSearcher search = new PrincipalSearcher(u);
+                            UserPrincipal usprincrezult = (UserPrincipal) search.FindOne();
+                            search.Dispose();
+                            if (usprincrezult != null)
+                                user = new User
+                                {
+                                    FirstName = usprincrezult.GivenName,
+                                    LastName = usprincrezult.Surname,
+                                    Email = usprincrezult.EmailAddress,
+                                    UserName = usprincrezult.SamAccountName,
+                                    IsDiningRoomClient = true,
+                                    LastLoginTime = DateTime.UtcNow,
+                                    RegistrationDate = DateTime.UtcNow,
+                                    EmailConfirmed = true,
+                                    SecurityStamp = Guid.NewGuid().ToString(),
+                                    PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
+                                };
+                            user.Roles.Add(new IdentityUserRole {RoleId = role.Id, UserId = user.Id});
+                            _userRepository.Insert(user);
+                            //context.SaveChanges();
+
+                            await
+                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                    shouldLockout: false);
+
+                            user.LastLoginTime = DateTime.UtcNow;
+                            Session["Fname"] = user.FirstName;
+                            Session["Lname"] = user.LastName;
+                            Session["LastLoginDate"] = user.LastLoginTime;
+
+                            return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
+                        //}
+                        ModelState.AddModelError("", "Неудачная попытка регистрации пользователя.");
                     }
                     return RedirectToLocal(returnUrl);
-                //case SignInStatus.LockedOut:
-                //    return View("Lockout");
+
+                case SignInStatus.LockedOut:
+                    ModelState.AddModelError("", "Ваша учётная запись заблокирована.");
+                    return View(model);
+
                 //case SignInStatus.RequiresVerification:
                 //    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
+                    var specuser = UserManager.FindByName(model.LogIn);
+                    if (specuser != null)
+                    {
+                        if (UserManager.IsInRole(specuser.Id, "Administrator"))
+                        {
+                            specuser.LastLoginTime = DateTime.UtcNow;
+                            Session["Fname"] = specuser.FirstName;
+                            Session["Lname"] = specuser.LastName;
+                            Session["LastLoginDate"] = specuser.LastLoginTime;
+                            await
+                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                    shouldLockout: false);
+
+                            return RedirectToAction("Accounts", "Admin", new {Area = "AdminArea"});
+                        }
+                        if (UserManager.IsInRole(specuser.Id, "SuperUser"))
+                        {
+                            specuser.LastLoginTime = DateTime.UtcNow;
+                            Session["Fname"] = specuser.FirstName;
+                            Session["Lname"] = specuser.LastName;
+                            Session["LastLoginDate"] = specuser.LastLoginTime;
+                            await
+                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                    shouldLockout: false);
+
+                            return RedirectToAction("WeekMenu", "SU_", new {Area = "SU_Area"});
+                        }
+
+                    }
+                    ModelState.AddModelError("", "Неудачная попытка входа.");
+                    return View(model);
+
                 default:
                     ModelState.AddModelError("", "Неудачная попытка входа.");
                     return View(model);
             }
         }
+
         //
         // GET: /Account/VerifyCode
         //[AllowAnonymous]

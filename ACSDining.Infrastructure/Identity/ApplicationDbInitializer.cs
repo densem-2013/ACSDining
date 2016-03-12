@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Xml.Linq;
+using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
 using Microsoft.AspNet.Identity;
@@ -21,8 +23,12 @@ namespace ACSDining.Infrastructure.Identity
 
         protected override void Seed(ApplicationDbContext context)
         {
+            if (System.Diagnostics.Debugger.IsAttached == false)
+                System.Diagnostics.Debugger.Launch();
+
             InitializeIdentityForEF(context);
             var dishes = GetDishesFromXML(context, _path);
+            CreateWorkingDays(context);
             CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
             GetUsersFromXml(context, _path);
@@ -44,13 +50,6 @@ namespace ACSDining.Infrastructure.Identity
                 new DishQuantity { Quantity = 5.0 }
                 );
 
-            context.Years.AddOrUpdate(y => y.YearNumber, new Year
-            {
-                YearNumber = DateTime.Now.Year
-            }, new Year
-            {
-                YearNumber = DateTime.Now.Year - 1
-            });
 
             context.DishTypes.AddOrUpdate(dt => dt.Category,
                 new DishType { Category = "Первое блюдо" },
@@ -64,9 +63,10 @@ namespace ACSDining.Infrastructure.Identity
                 new DayOfWeek { Name = "Вторник" },
                 new DayOfWeek { Name = "Среда" },
                 new DayOfWeek { Name = "Четверг" },
-                new DayOfWeek { Name = "Пятница" }
+                new DayOfWeek { Name = "Пятница" },
+                new DayOfWeek { Name = "Суббота" },
+                new DayOfWeek { Name = "Воскресенье" }
                 );
-
 
             var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
@@ -234,6 +234,57 @@ namespace ACSDining.Infrastructure.Identity
 
         }
 
+        public static void CreateWorkingDays(ApplicationDbContext context)
+        {
+            context.Years.AddRange(new Year[]
+            {
+                new Year
+                {
+                    YearNumber = DateTime.Now.Year,
+                    WorkingWeeks = new List<WorkingWeek>()
+                }
+                , new Year
+                {
+                    YearNumber = DateTime.Now.Year - 1,
+                    WorkingWeeks = new List<WorkingWeek>()
+                }
+            });
+            context.SaveChanges();
+            foreach (Year year in context.Years.ToList())
+            {
+                int weekcount = UnitOfWork.YearWeekCount(year.YearNumber);
+                List<WorkingWeek> workweeks = new List<WorkingWeek>();
+                for (int i = 0; i < weekcount; i++)
+                {
+                    WorkingWeek workingWeek = new WorkingWeek
+                    {
+                        WeekNumber = i + 1,
+                        Year = year,
+                        WorkingDays = new List<WorkingDay>()
+                    };
+                    List<WorkingDay> workdays = new List<WorkingDay>();
+                    for (int j = 0; j < 7; j++)
+                    {
+                        WorkingDay workday = new WorkingDay
+                        {
+                            IsWorking = j < 5,
+                            DayOfWeek = context.Days.FirstOrDefault(d => d.ID == j + 1)
+                            
+                        };
+                        workdays.Add(workday);
+                        workingWeek.WorkingDays.Add(workday);
+                    }
+
+                    context.WorkingDays.AddRange(workdays);
+
+                    year.WorkingWeeks.Add(workingWeek);
+                }
+                context.WorkingWeeks.AddRange(workweeks);
+
+            }
+            context.SaveChanges();
+        }
+
         public static void CreateMenuForWeek(ApplicationDbContext context, Dish[] dishArray)
         {
             string[] categories = context.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
@@ -260,36 +311,56 @@ namespace ACSDining.Infrastructure.Identity
             bool weekLessZero = false;
             Year correct_year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year - 1);
             int correct_week = 0;
+            List<MenuForWeek> weekmenus=new List<MenuForWeek>();
             for (int week = 0; week < 25; week++)
             {
                 weekLessZero = UnitOfWork.CurrentWeek() - week <= 0;
                 if (weekLessZero)
                 {
                     year = correct_year;
-                    correct_week = UnitOfWork.LastYearWeekCount();
+                    correct_week = UnitOfWork.YearWeekCount(DateTime.Now.Year - 1);
                 }
                 List<MenuForDay> mfdays = new List<MenuForDay>();
-
-                for (int i = 1; i <= 5; i++)
+                WorkingWeek workweek =
+                    context.WorkingWeeks.ToList().FirstOrDefault(
+                        w => w.WeekNumber == UnitOfWork.CurrentWeek() - week + correct_week);
+                for (int i = 1; i <= 7; i++)
                 {
                     List<Dish> dishes = getDishes();
-                    MenuForDay dayMenu = new MenuForDay
+                    WorkingDay workday =
+                        context.WorkingDays.ToList().FirstOrDefault(
+                            wd =>
+                                wd.DayOfWeek.ID == i &&
+                                wd.WorkingWeek.WeekNumber == UnitOfWork.CurrentWeek() - week + correct_week);
+                    if (workday != null && workday.IsWorking)
                     {
-                        Dishes = dishes,
-                        DayOfWeek = context.Days.FirstOrDefault(day => day.ID == i),
-                        TotalPrice = dishes.Select(d => d.Price).Sum()
-                    };
+                        MenuForDay dayMenu = new MenuForDay
+                        {
+                            Dishes = dishes,
+                            WorkingDay = workday,
+                            WorkingWeek = workweek,
+                            TotalPrice = dishes.Select(d => d.Price).Sum()
+                        };
 
-                    mfdays.Add(dayMenu);
+                        mfdays.Add(dayMenu);
+
+                    }
                 }
-                context.MenuForWeeks.AddOrUpdate(m => m.WeekNumber, new MenuForWeek
+                weekmenus.Add(new MenuForWeek
                 {
-                    Year = year,
                     MenuForDay = mfdays,
-                    WeekNumber = UnitOfWork.CurrentWeek() - week + correct_week,
+                    WorkingWeek = workweek,
                     SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
                 });
+                //context.MenuForWeeks.AddOrUpdate(m => m.WorkingWeek, new MenuForWeek
+                //{
+                //    MenuForDay = mfdays,
+                //    WorkingWeek = workweek,
+                //    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
+                //});
             }
+            context.MenuForWeeks.AddRange(weekmenus);
+            context.SaveChanges();
         }
 
         public static void GetUsersFromXml(ApplicationDbContext context, string userpath)
@@ -333,9 +404,22 @@ namespace ACSDining.Infrastructure.Identity
                     }
                     context.SaveChanges();
                 }
+                catch (DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        System.Diagnostics.Debug.Print("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            System.Diagnostics.Debug.Write(ve.ErrorMessage, ve.PropertyName);
+                        }
+                    }
+                    throw;
+                }
                 catch (Exception ex)
                 {
-                    throw new Exception(ex.Message);
+                    System.Diagnostics.Debug.Write(ex.InnerException, ex.Message);
                 }
             }
         }
@@ -407,7 +491,7 @@ namespace ACSDining.Infrastructure.Identity
                                 {
                                     DishQuantity = dqu,
                                     DishType = first,
-                                    DayOfWeek = daymenu.DayOfWeek,
+                                    WorkDay = daymenu.WorkingDay,
                                     PlannedOrderMenu = planorder,
                                     MenuForWeek = mfw,
                                     OrderMenu = order

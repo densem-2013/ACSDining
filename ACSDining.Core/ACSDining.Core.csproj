@@ -102,6 +102,8 @@
     <Compile Include="Domains\PlannedOrderMenu.cs" />
     <Compile Include="Domains\User.cs" />
     <Compile Include="Domains\UserRole.cs" />
+    <Compile Include="Domains\WorkingDay.cs" />
+    <Compile Include="Domains\WorkingWeek.cs" />
     <Compile Include="Domains\Year.cs" />
     <Compile Include="DTO\Employee\EmployeeOrderDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

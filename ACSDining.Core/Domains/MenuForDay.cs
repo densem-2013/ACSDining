@@ -26,6 +26,8 @@ namespace ACSDining.Core.Domains
         [JsonIgnore]
         public virtual ICollection<Dish> Dishes { get; set; }
         [JsonIgnore]
-        public virtual DayOfWeek DayOfWeek { get; set; }
+        public virtual WorkingDay WorkingDay { get; set; }
+        [JsonIgnore]
+        public virtual WorkingWeek WorkingWeek { get; set; }
     }
 }

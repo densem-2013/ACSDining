@@ -40,7 +40,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
             MenuForWeek mfw =
-                _weekmenuRepository.Find(wm => wm.WeekNumber == numweek && wm.Year.YearNumber == year);
+                _weekmenuRepository.Find(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
 
             if (mfw == null) return Content(HttpStatusCode.BadRequest, "not created");
 
@@ -79,7 +79,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         [ResponseType(typeof(List<int>))]
         public async Task<IHttpActionResult> GetWeekNumbers()
         {
-            List<int> numweeks = _weekmenuRepository.GetAll().Select(wm => wm.WeekNumber).Reverse().ToList();
+            List<int> numweeks = _weekmenuRepository.GetAll().Select(wm => wm.WorkingWeek.WeekNumber).Reverse().ToList();
 
             return Ok(numweeks);
         }

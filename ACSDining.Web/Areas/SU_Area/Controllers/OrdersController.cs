@@ -35,7 +35,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
             List<OrderMenu> orderMenus =_orderRepository.GetAll().Where(
-                        om => om.MenuForWeek.WeekNumber == numweek && om.MenuForWeek.Year.YearNumber == year)
+                        om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToList();
 
             OrdersDTO model = new OrdersDTO()
@@ -63,7 +63,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
-            MenuForWeek weekNeeded = _weekmenuRepository.Find(wm => wm.WeekNumber == numweek && wm.Year.YearNumber == year);
+            MenuForWeek weekNeeded = _weekmenuRepository.Find(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
             double summary = 0;
             if (weekNeeded != null)
             {

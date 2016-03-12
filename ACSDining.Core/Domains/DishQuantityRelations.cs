@@ -12,16 +12,16 @@ namespace ACSDining.Core.Domains
         public int DishQuantityID { get; set; }
         public int PlannedOrderMenuID { get; set; }
         public int DishTypeID { get; set; }
-        public int DayOfWeekID { get; set; }
-        public int MenuForWeekID { get; set; }
+        public int WorkDayID { get; set; }
         public int OrderMenuID { get; set; }
+        public int MenuForWeekID { get; set; }
 
         [JsonIgnore]
         public virtual DishQuantity DishQuantity { get; set; }
         [JsonIgnore]
         public virtual DishType DishType { get; set; }
         [JsonIgnore]
-        public virtual DayOfWeek DayOfWeek { get; set; }
+        public virtual WorkingDay WorkDay { get; set; }
         [JsonIgnore]
         public virtual MenuForWeek MenuForWeek { get; set; }
         [JsonIgnore]

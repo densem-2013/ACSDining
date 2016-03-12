@@ -22,17 +22,15 @@ namespace ACSDining.Core.Domains
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [Required]
-        public int WeekNumber { get; set; }
         public double SummaryPrice { get; set; }
 
+        [Required]
+        public virtual WorkingWeek WorkingWeek { get; set; }
         [JsonIgnore]
         public virtual ICollection<MenuForDay> MenuForDay { get; set; }
         [JsonIgnore]
         public virtual ICollection<OrderMenu> Orders { get; set; }
         [JsonIgnore]
         public virtual ICollection<PlannedOrderMenu> PlannedOrderMenus { get; set; }
-        [JsonIgnore]
-        public virtual Year Year { get; set; }
     }
 }
