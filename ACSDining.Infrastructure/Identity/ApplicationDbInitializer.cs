@@ -96,7 +96,7 @@ namespace ACSDining.Infrastructure.Identity
                     Email = "test@test.com",
                     FirstName = "Admin",
                     LastName = "User",
-                    IsDiningRoomClient = true,
+                   // IsDiningRoomClient = true,
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
@@ -115,7 +115,7 @@ namespace ACSDining.Infrastructure.Identity
                     Email = "test@test.com",
                     FirstName = "Super",
                     LastName = "User",
-                    IsDiningRoomClient = true,
+                    //IsDiningRoomClient = true,
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
@@ -143,7 +143,7 @@ namespace ACSDining.Infrastructure.Identity
                     Email = "test@test.com",
                     FirstName = "DiningEmployee",
                     LastName = "User",
-                    IsDiningRoomClient = true,
+                    //IsDiningRoomClient = true,
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
@@ -171,7 +171,7 @@ namespace ACSDining.Infrastructure.Identity
                     Email = "test@test.com",
                     FirstName = "Employee",
                     LastName = "User",
-                    IsDiningRoomClient = true,
+                    //IsDiningRoomClient = true,
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow
                 };
@@ -390,7 +390,6 @@ namespace ACSDining.Infrastructure.Identity
                                     Email = "test@test.com",
                                     EmailConfirmed = true,
                                     SecurityStamp = Guid.NewGuid().ToString(),
-                                    IsDiningRoomClient = true,
                                     RegistrationDate = DateTime.UtcNow,
                                     LastLoginTime = DateTime.UtcNow
                                 };

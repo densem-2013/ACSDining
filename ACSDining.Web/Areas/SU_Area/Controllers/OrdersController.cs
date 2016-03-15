@@ -6,8 +6,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using System.Collections.Generic;
 using ACSDining.Core.DAL;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO.SuperUser;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {

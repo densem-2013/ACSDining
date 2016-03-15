@@ -104,6 +104,7 @@
             revertChanges(item);
             item.Editing(false);
         };
+
         self.remove = function(item) {
             app.su_Service.DeleteDish(item.DishId()).then(function(resp) {
                 self.init();

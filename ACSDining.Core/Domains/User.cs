@@ -25,8 +25,8 @@ namespace ACSDining.Core.Domains
         public virtual string FirstName { get; set; }
         [Required]
         public virtual string LastName { get; set; }
-        [Required]
-        public virtual bool IsDiningRoomClient { get; set; }
+        //[Required]
+        //public virtual bool IsDiningRoomClient { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
         public virtual DateTime LastLoginTime { get; set; }

@@ -32,6 +32,7 @@ namespace ACSDining.Web.DependencyResolution {
             Scan(
                 scan => {
                     scan.TheCallingAssembly();
+                    scan.AssemblyContainingType<UnitOfWork>();
                     scan.WithDefaultConventions();
 					scan.With(new ControllerConvention());
                 });

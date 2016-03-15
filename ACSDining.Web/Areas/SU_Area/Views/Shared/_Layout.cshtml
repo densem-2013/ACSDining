@@ -57,6 +57,39 @@
                 <div class="main_content_background">
                     <div class="main_content">
 
+                        <div class="row">
+                            <div class="col-md-9 col-xs-offset-3">
+                                <div class="col-md-6">
+                                    <nav class="navbar">
+                                        <div class="container-fluid">
+                                            <ul class="nav navbar-nav navbar-right">
+                                                <li class="active ">
+                                                    <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
+                                                </li>
+
+                                                <li>
+                                                    <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
+                                                </li>
+
+                                                <li>
+                                                    <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.RouteUrl(new { action = "WorkDayManagement", controller = "SU_", area = "SU_Area" })">Рабочие дни</a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.RouteUrl(new { action = "AccountManagement", controller = "SU_", area = "SU_Area" })">Управление пользователями</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+
                         @RenderBody()
 
 

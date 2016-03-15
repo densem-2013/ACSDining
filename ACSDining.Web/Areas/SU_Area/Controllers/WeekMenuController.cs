@@ -7,14 +7,13 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
-using WebGrease.Css.Extensions;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "SuperUser,Administrator")]
+    [Authorize(Roles = "SuperUser")]
     [RoutePrefix("api/WeekMenu")]
     //[EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
     public class WeekMenuController : ApiController
@@ -51,7 +50,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 IEnumerable<MenuForWeek> mfwList = _weekmenuRepository.GetAll();
                 foreach (var item in mfwList)
                 {
-                    yield return _unitOfWork.MenuForWeekToDto(item);
+                    yield return ((UnitOfWork)_unitOfWork).MenuForWeekToDto(item);
                 }
             }
         }
@@ -83,7 +82,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("nwMenuExist")]
         public  Task<bool> IsNexWeekMenuExist(WeekYearDTO weekyear)
         {
-            WeekYearDTO nextweeknumber = _unitOfWork.GetNextWeekYear(weekyear);
+            WeekYearDTO nextweeknumber = UnitOfWork.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
                 _weekmenuRepository.Find(
                         mfw => mfw.WorkingWeek.WeekNumber == nextweeknumber.Week && mfw.WorkingWeek.Year.YearNumber == nextweeknumber.Year);
@@ -95,14 +94,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("nextWeekMenu")]
         public async Task<IHttpActionResult> GetNextWeekMenu(WeekYearDTO weekyear)
         {
-            WeekYearDTO nextweeknumber = _unitOfWork.GetNextWeekYear(weekyear);
+            WeekYearDTO nextweeknumber = UnitOfWork.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
                 _weekmenuRepository.Find(
                         mfw => mfw.WorkingWeek.WeekNumber == nextweeknumber.Week && mfw.WorkingWeek.Year.YearNumber == nextweeknumber.Year);
             WeekMenuDto dto;
             if (nextWeek != null)
             {
-                dto = _unitOfWork.MenuForWeekToDto(nextWeek);
+                dto = ((UnitOfWork)_unitOfWork).MenuForWeekToDto(nextWeek);
                 return Ok(dto);
             }
             WorkingWeek workingWeek =
@@ -125,7 +124,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             };
 
-            dto = _unitOfWork.MenuForWeekToDto(nextWeek, true);
+            dto = ((UnitOfWork)_unitOfWork).MenuForWeekToDto(nextWeek, true);
             return Ok(dto);
         }
 
@@ -134,7 +133,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(WeekYearDTO))]
         public Task<WeekYearDTO> GetNextWeekYear([FromBody]WeekYearDTO weekyear)
         {
-            return Task.FromResult(_unitOfWork.GetNextWeekYear(weekyear));
+            return Task.FromResult(UnitOfWork.GetNextWeekYear(weekyear));
         }
 
         [HttpPut]
@@ -142,7 +141,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(WeekYearDTO))]
         public Task<WeekYearDTO> GetPrevWeekYear([FromBody]WeekYearDTO weekyear)
         {
-            return Task.FromResult(_unitOfWork.GetPrevWeekYear(weekyear));
+            return Task.FromResult(UnitOfWork.GetPrevWeekYear(weekyear));
         }
 
         [HttpGet]
@@ -211,7 +210,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public async Task<IHttpActionResult> CreateNextWeekMenu(WeekYearDTO weekyear)
         {
 
-            WeekYearDTO nextweekDto = _unitOfWork.GetNextWeekYear(weekyear);
+            WeekYearDTO nextweekDto = UnitOfWork.GetNextWeekYear(weekyear);
 
             int maxID = _daymenuRepository.GetAll().Max(m => m.ID);
             WorkingWeek workingWeek =
@@ -241,7 +240,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 throw new Exception(ex.Message);
             }
-            var dto = _unitOfWork.MenuForWeekToDto(nextWeek, true);
+            var dto = ((UnitOfWork)_unitOfWork).MenuForWeekToDto(nextWeek, true);
             return Ok(dto);
         }
 

@@ -145,7 +145,6 @@ namespace ACSDining.Web.Controllers
                                     LastName = usprincrezult.Surname,
                                     Email = usprincrezult.EmailAddress,
                                     UserName = usprincrezult.SamAccountName,
-                                    IsDiningRoomClient = true,
                                     LastLoginTime = DateTime.UtcNow,
                                     RegistrationDate = DateTime.UtcNow,
                                     EmailConfirmed = true,
@@ -613,7 +612,8 @@ namespace ACSDining.Web.Controllers
                 }
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
-        }/// <summary>
+        }
+        /// <summary>
         /// Handle HttpAntiForgeryException and redirect if user is already authenticated
         /// </summary>
         /// <param name="filterContext"></param>

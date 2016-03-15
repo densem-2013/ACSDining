@@ -7,10 +7,11 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [Authorize(Roles = "SuperUser")]
     [RoutePrefix("api/Dishes")]
     public class DishesController : ApiController
     {
@@ -23,7 +24,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             get
             {
-                return _dishRepository.GetAll().Select(d => new DishModelDto()
+                return _dishRepository.GetAll().Select(d => new DishModelDto
                 {
                     DishID = d.DishID,
                     Title = d.Title,
@@ -86,10 +87,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return StatusCode(HttpStatusCode.NoContent);
@@ -127,10 +125,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 {
                     return Conflict();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             //return CreatedAtRoute("DefaultApi", new { id = dish.DishID }, dish); 

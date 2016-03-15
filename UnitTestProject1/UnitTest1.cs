@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Web.Areas.SU_Area.Controllers;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -142,7 +139,7 @@ namespace UnitTestProject1
                 WorkingWeek workingWeek = null;
                 while (workingWeek != null&&i<10)
                 {
-                    WeekYearDTO nextweekDto = _unitOfWork.GetNextWeekYear(new WeekYearDTO
+                    WeekYearDTO nextweekDto = UnitOfWork.GetNextWeekYear(new WeekYearDTO
                     {
                         Week = UnitOfWork.CurrentWeek() + i,
                         Year = (UnitOfWork.CurrentWeek() + i > UnitOfWork.YearWeekCount(DateTime.Now.Year)) ? DateTime.Now.Year + 1 : DateTime.Now.Year
@@ -286,7 +283,6 @@ namespace UnitTestProject1
                                     Email = "test@test.com",
                                     EmailConfirmed = true,
                                     SecurityStamp = Guid.NewGuid().ToString(),
-                                    IsDiningRoomClient = true,
                                     RegistrationDate = DateTime.UtcNow,
                                     LastLoginTime = DateTime.UtcNow
                                 };

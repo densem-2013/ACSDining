@@ -7,9 +7,9 @@ using ACSDining.Core.Domains;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
 using ACSDining.Core.DAL;
-using ACSDining.Core.DTO.Employee;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO.Employee;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using Microsoft.AspNet.Identity;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
@@ -33,7 +33,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         [Route("")]
         [Route("{numweek}")]
         [Route("{numweek}/{year}")]
-        [ResponseType(typeof(EmployeeOrderDTO))]
+        [ResponseType(typeof(EmployeeOrderDto))]
         public async Task<IHttpActionResult> GetWeekMenu([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
             string userid = RequestContext.Principal.Identity.GetUserId();
@@ -44,16 +44,16 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             if (mfw == null) return Content(HttpStatusCode.BadRequest, "not created");
 
-            WeekMenuDto weekmodel = _unitOfWork.MenuForWeekToDto(mfw);
+            WeekMenuDto weekmodel = ((UnitOfWork) _unitOfWork).MenuForWeekToDto(mfw);
 
             OrderMenu ordmenu = _orderRepository.Find(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == mfw.ID);
-            EmployeeOrderDTO model = new EmployeeOrderDTO
+            EmployeeOrderDto model = new EmployeeOrderDto
             {
                 UserId = userid,
                 MenuId = weekmodel.ID,
                 SummaryPrice = ordmenu.SummaryPrice,
                 WeekPaid = ordmenu.WeekPaid,
-                MFD_models = weekmodel.MFD_models,
+                MfdModels = weekmodel.MFD_models,
                 Year = (int) year,
                 WeekNumber = (int) numweek
             };

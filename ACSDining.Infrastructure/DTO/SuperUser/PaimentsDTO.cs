@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ACSDining.Core.DTO.SuperUser
+namespace ACSDining.Infrastructure.DTO.SuperUser
 {
     public class PaimentsDTO
     {

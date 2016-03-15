@@ -90,6 +90,18 @@
   <ItemGroup>
     <Compile Include="DAL\Repository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="DTO\Employee\EmployeeOrderDTO.cs" />
+    <Compile Include="DTO\SuperUser\AccountDto.cs" />
+    <Compile Include="DTO\SuperUser\DishModelDto.cs" />
+    <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />
+    <Compile Include="DTO\SuperUser\OrdersDTO.cs" />
+    <Compile Include="DTO\SuperUser\PaimentsDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserOrdesDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserPaimentDTO.cs" />
+    <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
+    <Compile Include="DTO\SuperUser\WeekYearDTO.cs" />
+    <Compile Include="DTO\SuperUser\WorkDayDto.cs" />
+    <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />
     <Compile Include="Identity\ApplicationDbContext.cs" />
     <Compile Include="Identity\ApplicationDbInitializer.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
@@ -116,6 +128,9 @@
     <EmbeddedResource Include="Migrations\201603111304513_Initial.resx">
       <DependentUpon>201603111304513_Initial.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DTO\Admin\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

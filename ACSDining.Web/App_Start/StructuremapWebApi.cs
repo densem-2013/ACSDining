@@ -16,11 +16,14 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Web.Http;
+using ACSDining.Web;
+using ACSDining.Web.App_Start;
 using ACSDining.Web.DependencyResolution;
 
-[assembly: WebActivatorEx.PostApplicationStartMethod(typeof(ACSDining.Web.App_Start.StructuremapWebApi), "Start")]
+[assembly: WebActivatorEx.PostApplicationStartMethod(typeof(StructuremapWebApi), "Start")]
 
-namespace ACSDining.Web.App_Start {
+namespace ACSDining.Web.App_Start
+{
     public static class StructuremapWebApi {
         public static void Start() {
 			var container = StructuremapMvc.StructureMapDependencyScope.Container;

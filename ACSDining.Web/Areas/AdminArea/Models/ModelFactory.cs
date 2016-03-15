@@ -34,7 +34,6 @@ namespace ACSDining.Web.Areas.AdminArea.Models
                 FirstName = appUser.FirstName,
                 LastName = appUser.LastName,
                 EmailConfirmed = appUser.EmailConfirmed,
-                IsDiningRoomClient = appUser.IsDiningRoomClient,
                 LastLoginTime = appUser.LastLoginTime,
                 RegistrationDate = appUser.RegistrationDate,
                 Roles = _AppUserManager.GetRolesAsync(appUser.Id).Result,
@@ -66,7 +65,7 @@ namespace ACSDining.Web.Areas.AdminArea.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public bool EmailConfirmed { get; set; }
-        public bool IsDiningRoomClient { get; set; }
+        //public bool IsDiningRoomClient { get; set; }
         public DateTime LastLoginTime { get; set; }
         public DateTime RegistrationDate { get; set; }
         public IList<string> Roles { get; set; }

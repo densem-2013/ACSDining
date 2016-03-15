@@ -261,12 +261,14 @@
     <Compile Include="Areas\EmployeeArea\Controllers\EmployeeController.cs" />
     <Compile Include="Areas\EmployeeArea\Controllers\EmployeeOrderApiController.cs" />
     <Compile Include="Areas\EmployeeArea\EmployeeAreaAreaRegistration.cs" />
+    <Compile Include="Areas\SU_Area\Controllers\AccountManagementApiController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\DishesController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\OrdersController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\PaimentController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\PrintExcelController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
+    <Compile Include="Areas\SU_Area\Controllers\WorkDayApiController.cs" />
     <Compile Include="Areas\SU_Area\Models\PoolRequestModelBinder.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -288,9 +290,11 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\SU_Area\Content\scripts\AccountsInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\app.su_Service.js" />
     <Content Include="Areas\SU_Area\Content\scripts\DishesInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\PaimentInfo.js" />
+    <Content Include="Areas\SU_Area\Content\scripts\WorkDaysInfo.js" />
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\css\datepicker.css" />
@@ -560,6 +564,8 @@
     <Content Include="Content\css\fonts\fontawesome-webfont.woff" />
     <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
     <Content Include="Content\css\fonts\FontAwesome.otf" />
+    <Content Include="Areas\SU_Area\Views\SU_\AccountManagement.cshtml" />
+    <Content Include="Areas\SU_Area\Views\SU_\WorkDayManagement.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap.js" />

@@ -2,14 +2,16 @@
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ACSDining.Core.DAL;
 using ACSDining.Infrastructure.Identity;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "SuperUser,Administrator")]
+    [System.Web.Http.Authorize(Roles = "SuperUser")]
     public class SU_Controller : Controller
     {
+        private IUnitOfWork _unitOfWork;
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
         {
@@ -22,8 +24,46 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 _userManager = value;
             }
         }
+
+        public SU_Controller(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+
+        }
         // GET: /SU_Area/SU_/
         public ActionResult WeekMenu()
+        {
+            AddInfoToViewData();
+            return View();
+        }
+
+        public ActionResult Orders()
+        {
+            AddInfoToViewData();
+            return View();
+        }
+        public ActionResult Dishes()
+        {
+            AddInfoToViewData();
+            return View();
+        }
+        public ActionResult Payment()
+        {
+            AddInfoToViewData();
+            return View();
+        }
+        public ActionResult AccountManagement()
+        {
+            AddInfoToViewData();
+            return View();
+        }
+        public ActionResult WorkDayManagement()
+        {
+            AddInfoToViewData();
+            return View();
+        }
+
+        private void AddInfoToViewData()
         {
             Core.Domains.User user =
                 UserManager.Users.FirstOrDefault(u => string.Equals(u.UserName, HttpContext.User.Identity.Name));
@@ -31,38 +71,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             ViewBag.Fname = user.FirstName;
             ViewData["Lname"] = user.LastName;
             ViewData["LastLoginDate"] = user.LastLoginTime;
-            return View();
-        }
-
-        public ActionResult Orders()
-        {
-            Core.Domains.User user =
-                UserManager.Users.FirstOrDefault(u => string.Equals(u.UserName, HttpContext.User.Identity.Name));
-            user.LastLoginTime = DateTime.UtcNow;
-            ViewData["Fname"] = user.FirstName;
-            ViewData["Lname"] = user.LastName;
-            ViewData["LastLoginDate"] = user.LastLoginTime;
-            return View();
-        }
-        public ActionResult Dishes()
-        {
-            Core.Domains.User user =
-                UserManager.Users.FirstOrDefault(u => string.Equals(u.UserName, HttpContext.User.Identity.Name));
-            user.LastLoginTime = DateTime.UtcNow;
-            ViewData["Fname"] = user.FirstName;
-            ViewData["Lname"] = user.LastName;
-            ViewData["LastLoginDate"] = user.LastLoginTime;
-            return View();
-        }
-        public ActionResult Payment()
-        {
-            Core.Domains.User user =
-                UserManager.Users.FirstOrDefault(u => string.Equals(u.UserName, HttpContext.User.Identity.Name));
-            user.LastLoginTime = DateTime.UtcNow;
-            ViewData["Fname"] = user.FirstName;
-            ViewData["Lname"] = user.LastName;
-            ViewData["LastLoginDate"] = user.LastLoginTime;
-            return View();
         }
     }
 }

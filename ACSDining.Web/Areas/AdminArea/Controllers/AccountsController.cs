@@ -73,8 +73,7 @@ namespace ACSDining.Web.Areas.AdminArea.Controllers
                 FirstName = createUserModel.FirstName,
                 LastName = createUserModel.LastName,
                 LastLoginTime = DateTime.Now,
-                RegistrationDate = DateTime.Now,
-                IsDiningRoomClient = true
+                RegistrationDate = DateTime.Now
             };
 
 

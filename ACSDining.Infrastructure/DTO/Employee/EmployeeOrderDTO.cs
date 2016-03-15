@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser;
 
-namespace ACSDining.Core.DTO.Employee
+namespace ACSDining.Infrastructure.DTO.Employee
 {
-    public class EmployeeOrderDTO
+    public class EmployeeOrderDto
     {
         public string UserId { get; set; }
         public int MenuId { get;set; }
@@ -11,7 +11,7 @@ namespace ACSDining.Core.DTO.Employee
         public double SummaryPrice { get; set; }
         public double WeekPaid { get; set; }
         public double[] Dishquantities { get; set; }
-        public List<MenuForDayDto> MFD_models { get; set; }
+        public List<MenuForDayDto> MfdModels { get; set; }
         public int Year { get; set; }
         public int WeekNumber { get; set; }
 

@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
 using DayOfWeek = System.DayOfWeek;
 
@@ -174,7 +174,7 @@ namespace ACSDining.Infrastructure.DAL
             }
             return unitprices;
         }
-        public WeekYearDTO GetNextWeekYear(WeekYearDTO wyDto)
+        public static WeekYearDTO GetNextWeekYear(WeekYearDTO wyDto)
         {
             WeekYearDTO result=new WeekYearDTO();
             if (wyDto.Week >= 52)
@@ -194,13 +194,12 @@ namespace ACSDining.Infrastructure.DAL
 
             return result;
         }
-        public WeekYearDTO GetPrevWeekYear(WeekYearDTO wyDto)
+        public static WeekYearDTO GetPrevWeekYear(WeekYearDTO wyDto)
         {
             WeekYearDTO result = new WeekYearDTO();
             if (wyDto.Week == 1)
             {
-                //int maxWeekNum = (int)_acsContext.MenuForWeeks.Where(mfw => mfw.Year.YearNumber == wyDto.Year).Max(mfw => mfw.WeekNumber);
-                result.Week =YearWeekCount(wyDto.Year);//maxWeekNum;
+                result.Week = YearWeekCount(wyDto.Year);
                 result.Year = wyDto.Year - 1;
             }
             else
@@ -270,6 +269,18 @@ namespace ACSDining.Infrastructure.DAL
                 }).ToList();
             }
             return dtoModel;
+        }
+
+        public static bool WeekDaysCanBeChanged(WorkingWeek workweek)
+        {
+            WeekYearDTO curDto = new WeekYearDTO
+            {
+                Week = CurrentWeek(),
+                Year = DateTime.Now.Year
+            };
+            WeekYearDTO nextDto = GetNextWeekYear(curDto);
+            return (workweek.WeekNumber == curDto.Week && workweek.Year.YearNumber == curDto.Year) ||
+                   (workweek.WeekNumber == nextDto.Week && workweek.Year.YearNumber == nextDto.Year);
         }
         #endregion
     }

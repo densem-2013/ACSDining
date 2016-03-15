@@ -5,18 +5,19 @@ using System.Runtime.InteropServices;
 using System.Web.Http;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using Microsoft.Office.Interop.Excel;
 using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [Authorize(Roles = "SuperUser")]
+    [RoutePrefix("api/PrintExcel")]
     public class PrintExcelController : ApiController
     {
         
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<OrderMenu> _orderRepository;
-        private readonly IRepository<MenuForWeek> _weekmenuRepository;
         private readonly IRepository<DishType> _dishtypeRepository;
         private readonly IRepository<DayOfWeek> _dayRepository;
 
@@ -24,7 +25,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             _unitOfWork = unitOfWork;
             _orderRepository = _unitOfWork.Repository<OrderMenu>();
-            _weekmenuRepository = _unitOfWork.Repository<MenuForWeek>();
             _dishtypeRepository = _unitOfWork.Repository<DishType>();
             _dayRepository = _unitOfWork.Repository<DayOfWeek>();
         }
@@ -54,14 +54,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 workSheet.Range["B1:B4"].Merge();
                 int count = _dayRepository.GetAll().Count();
                 int i = 0;
-                string str = String.Empty;
-                string colname = String.Empty;
-                string colname_2 = String.Empty;
-                for (int j = 0; j < count; j++)
+                string str;
+                string colname;
+                string colname_2;
+                for (int[] j = {0}; j[0] < count; j[0]++)
                 {
-                    colname = GetExcelColumnName(j*4 + 3);
-                    colname_2 = GetExcelColumnName(j*4 + 6);
-                    workSheet.Cells[1, colname] = _dayRepository.Find(d => d.ID == j + 1).Name;
+                    colname = GetExcelColumnName(j[0]*4 + 3);
+                    colname_2 = GetExcelColumnName(j[0]*4 + 6);
+                    workSheet.Cells[1, colname] = _dayRepository.Find(d => d.ID == j[0] + 1).Name;
                     str = String.Format("{0}1:{1}1", colname, colname_2);
                     workSheet.Range[str].Merge();
                 }
@@ -168,7 +168,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             catch (Exception exception)
             {
-
+                // ignored
             }
             finally
             {

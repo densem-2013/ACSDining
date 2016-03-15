@@ -6,11 +6,12 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO.SuperUser;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [Authorize(Roles = "SuperUser")]
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {
@@ -43,12 +44,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
             
-            model = new PaimentsDTO()
+            model = new PaimentsDTO
             {
                 WeekNumber = (int) numweek,
                 YearNumber = (int) year,
                 UserPaiments = orderMenus
-                    .Select(order => new UserPaimentDTO()
+                    .Select(order => new UserPaimentDTO
                     {
                         UserId = order.User.Id,
                         OrderId = order.Id,
@@ -57,7 +58,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         SummaryPrice = order.SummaryPrice,
                         WeekPaid = order.WeekPaid,
                         Balance = order.Balance,
-                        IsDiningRoomClient = order.User.IsDiningRoomClient,
                         Note = order.Note
                     }).OrderBy(uo => uo.UserName).ToList(),
                 UnitPrices = _unitOfWork.GetUnitWeekPrices(mfw.ID),
