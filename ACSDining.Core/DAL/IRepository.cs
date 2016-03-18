@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace ACSDining.Core.DAL
 {
@@ -11,8 +12,8 @@ namespace ACSDining.Core.DAL
         void AddRange(IEnumerable<T> list);
         void Update(T entity);
         void Delete(T entity);
-        T Find(Expression<Func<T, bool>> predicate);
-        IEnumerable<T> GetAll();
+        Task<T> Find(Expression<Func<T, bool>> predicate);
+        Task<List<T>> GetAll();
         T GetById(int id);
         T GetById(string id);
     }

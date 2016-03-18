@@ -1,67 +1,74 @@
-﻿using ACSDining.Core.DAL;
-using ACSDining.Core.Domains;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using ACSDining.Core.DAL;
 using ACSDining.Infrastructure.Identity;
+using NLog;
 
 namespace ACSDining.Infrastructure.DAL
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected ApplicationDbContext acsContext;
+        protected ApplicationDbContext AcsContext;
         protected DbSet<T> DbSet;
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
 
         public Repository(ApplicationDbContext acsContext)
         {
-            this.acsContext = acsContext;
-            this.DbSet = acsContext.Set<T>();
+            AcsContext = acsContext;
+            DbSet = AcsContext.Set<T>();
         }
 
 
         #region IRepository<T> Members
 
-        public virtual void Insert(T entity)
+        public virtual async void Insert(T entity)
         {
             DbSet.Add(entity);
-            acsContext.SaveChanges();
+            await AcsContext.SaveChangesAsync();
         }
 
         public virtual void AddRange(IEnumerable<T> list)
         {
-            var collection = acsContext.Set(typeof(T)).Local;
+            var collection = AcsContext.Set(typeof(T)).Local;
             foreach (T entity in list)
             {
                 collection.Add(entity);
             }
-            acsContext.SaveChanges();
+            AcsContext.SaveChanges();
         }
         public virtual void Update(T entity)
         {
-            acsContext.Entry(entity).State = EntityState.Modified;
-            acsContext.SaveChanges();
+            AcsContext.Entry(entity).State = EntityState.Modified;
+            AcsContext.SaveChanges();
         }
 
-        public void Delete(T entity)
+        public async void Delete(T entity)
         {
             DbSet.Remove(entity);
-            acsContext.SaveChanges();
+            await AcsContext.SaveChangesAsync();
         }
 
-        public virtual T Find(Expression<Func<T, bool>> predicate)
+        public virtual async Task<T> Find(Expression<Func<T, bool>> predicate)
         {
-            return DbSet.FirstOrDefault(predicate);
+            return await DbSet.FirstOrDefaultAsync<T>(predicate);
         }
 
-        public virtual IEnumerable<T> GetAll()
+        public virtual async Task<List<T>> GetAll()
         {
-            return DbSet.ToList();
+            try
+            {
+                return await DbSet.ToListAsync<T>();
+            }
+            catch (Exception)
+            {
+                    
+                throw;
+            }
         }
 
         public virtual T GetById(int id)

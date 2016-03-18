@@ -42,7 +42,7 @@ namespace ACSDining.Web.DependencyResolution {
             For<Microsoft.AspNet.Identity.IUserStore<User>>()
             .Use<Microsoft.AspNet.Identity.EntityFramework.UserStore<User>>();
 
-            For<System.Data.Entity.DbContext>().Use(() => new ApplicationDbContext());
+            For<System.Data.Entity.DbContext>().Use(() => UnitOfWork.GetContext());
         }
 
         #endregion

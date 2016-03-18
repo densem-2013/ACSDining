@@ -15,6 +15,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
+
 namespace ACSDining.Web.DependencyResolution {
     using System;
     using System.Web.Mvc;
@@ -27,9 +29,9 @@ namespace ACSDining.Web.DependencyResolution {
     public class ControllerConvention : IRegistrationConvention {
         #region Public Methods and Operators
 
-        public void Process(Type type, Registry registry) {
+        public async void Process(Type type, Registry registry) {
             if (type.CanBeCastTo<Controller>() && !type.IsAbstract) {
-                registry.For(type).LifecycleIs(new UniquePerRequestLifecycle());
+               await Task.FromResult(registry.For(type).LifecycleIs(new UniquePerRequestLifecycle()));
             }
         }
 

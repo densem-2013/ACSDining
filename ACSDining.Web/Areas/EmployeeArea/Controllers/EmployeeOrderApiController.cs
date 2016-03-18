@@ -40,13 +40,13 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
             MenuForWeek mfw =
-                _weekmenuRepository.Find(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
+                _weekmenuRepository.Find(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year).Result;
 
             if (mfw == null) return Content(HttpStatusCode.BadRequest, "not created");
 
             WeekMenuDto weekmodel = ((UnitOfWork) _unitOfWork).MenuForWeekToDto(mfw);
 
-            OrderMenu ordmenu = _orderRepository.Find(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == mfw.ID);
+            OrderMenu ordmenu = _orderRepository.Find(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == mfw.ID).Result;
             EmployeeOrderDto model = new EmployeeOrderDto
             {
                 UserId = userid,
@@ -79,7 +79,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         [ResponseType(typeof(List<int>))]
         public async Task<IHttpActionResult> GetWeekNumbers()
         {
-            List<int> numweeks = _weekmenuRepository.GetAll().Select(wm => wm.WorkingWeek.WeekNumber).Reverse().ToList();
+            List<int> numweeks = _weekmenuRepository.GetAll().Result.Select(wm => wm.WorkingWeek.WeekNumber).Reverse().ToList();
 
             return Ok(numweeks);
         }

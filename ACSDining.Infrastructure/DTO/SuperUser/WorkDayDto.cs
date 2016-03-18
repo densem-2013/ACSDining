@@ -7,6 +7,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public int WorkdayId { get; set; }
         public bool IsWorking { get; set; }
         public int DayNumber { get; set; }
+        public string DayName { get; set; }
 
         public static WorkDayDto MapDto(WorkingDay workday)
         {
@@ -14,7 +15,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             {
                 WorkdayId = workday.ID,
                 IsWorking = workday.IsWorking,
-                DayNumber = workday.DayOfWeek.ID
+                DayNumber = workday.DayOfWeek.ID,
+                DayName = workday.DayOfWeek.Name
             };
         }
     }

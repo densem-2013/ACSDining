@@ -116,7 +116,7 @@ namespace ACSDining.Web.Controllers
                             //{
 
                                 User userchangePass =
-                                    _userRepository.Find(u => string.Equals(u.UserName, model.LogIn));
+                                    _userRepository.Find(u => string.Equals(u.UserName, model.LogIn)).Result;
                                 if (userchangePass != null)
                                 {
                                     userchangePass.PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password);
@@ -132,7 +132,7 @@ namespace ACSDining.Web.Controllers
                     {
                         //using (ApplicationDbContext context = new ApplicationDbContext())
                         //{
-                            IdentityRole role = _roleRepository.Find(r => string.Equals(r.Name, "Employee"));
+                        IdentityRole role = _roleRepository.Find(r => string.Equals(r.Name, "Employee")).Result;
 
                             UserPrincipal u = new UserPrincipal(_ad) {SamAccountName = model.LogIn};
                             PrincipalSearcher search = new PrincipalSearcher(u);

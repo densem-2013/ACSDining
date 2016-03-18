@@ -1,7 +1,64 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "WorkDayManagement";
 }
 
 <h2>WorkDayManagement</h2>
 
+<div class="row">
+    <div class="col-md-9 col-xs-offset-3">
+        <div class="col-md-6">
+            <div class="input-group date">
+                <input type="text" class="form-control" data-provide="datepicker" data-bind="datepicker: myDate"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 col-xs-offset-3">
+    <div class="panel panel-default" id="mfwPanel">
+        <table>
+            <tbody style="background: #565659;">
+                <!--ko foreach: WorkingDays-->
+                <tr>
+                    <td>
+                        <!-- ko text: DayNumber--><!-- /ko-->
+                        <span data-bind="text: DayName"></span>
+                    </td>
+                    <td>
+                        <input type="checkbox" data-bind="checkedValue: IsWorking" />
+                    </td>
+                </tr>
+                <!-- /ko-->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="modalMessage" class="modal">
+
+    <div class="modal-dialog">
+        <div class="panel panel-default">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Внимание, ошибка! </h1>
+                </div>
+                <div class="modal-body">
+                    <span data-bind="text:Message"></span>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/WorkDays")
+
+
+<script type="text/javascript">
+    (function () {
+        $("#modalMessage").offset({ top: 200 });
+
+    })();
+</script>

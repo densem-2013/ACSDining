@@ -33,15 +33,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 await
                     Task.FromResult(
                         WorkWeekDto.MapWorkWeekDto(
-                            _workingWeekRepository.Find(ww => ww.WeekNumber == numweek && ww.Year.YearNumber == year)));
+                            _workingWeekRepository.Find(ww => ww.WeekNumber == numweek && ww.Year.YearNumber == year).Result));
         }
 
         [HttpPut]
-        [Route("update/{workweekid}")]
+        [Route("update")]
         [ResponseType(typeof (int))]
-        public async Task<IHttpActionResult> UpdateWorkDays(int workweekid, WorkWeekDto weekModel)
+        public async Task<IHttpActionResult> UpdateWorkDays(WorkWeekDto weekModel)
         {
-            WorkingWeek week = _workingWeekRepository.Find(w => w.ID == workweekid);
+            WorkingWeek week = _workingWeekRepository.Find(w => w.ID == weekModel.WorkWeekId).Result;
             if (week == null)
             {
                 return NotFound();
@@ -49,10 +49,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             week.WorkingDays.ForEach(x =>
             {
                 var firstOrDefault = weekModel.WorkDays.FirstOrDefault(wd => wd.WorkdayId == x.ID);
-                bool isWorking = firstOrDefault != null && firstOrDefault.IsWorking;
+                var isWorking = firstOrDefault != null && firstOrDefault.IsWorking;
                 x.IsWorking = isWorking;
             });
-            return Ok(workweekid);
+            return Ok(weekModel.WorkWeekId);
         }
     }
 }

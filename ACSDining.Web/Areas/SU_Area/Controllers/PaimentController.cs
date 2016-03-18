@@ -34,10 +34,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;
-            List<OrderMenu> orderMenus =_orderRepository.GetAll().Where(
+            List<OrderMenu> orderMenus =_orderRepository.GetAll().Result.Where(
                         om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToList();
-            MenuForWeek mfw = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
+            MenuForWeek mfw = _weekmenuRepository.GetAll().Result.FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
             PaimentsDTO model = null;
             if (mfw == null || orderMenus == null)
             {
@@ -70,11 +70,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private double[] PaimentsByDishes(int numweek, int year )
         {
             double[] paiments = new double[21];
-            MenuForWeek weekmenu = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
+            MenuForWeek weekmenu = _weekmenuRepository.GetAll().Result.FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
             double[] weekprices = _unitOfWork.GetUnitWeekPrices(weekmenu.ID);
 
 
-            OrderMenu[] orderMenus = _orderRepository.GetAll().Where(
+            OrderMenu[] orderMenus = _orderRepository.GetAll().Result.Where(
                         om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
@@ -94,7 +94,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(double))]
         public async Task<IHttpActionResult> UpdatePaiment( int orderid, double pai)
         {
-            OrderMenu order =_orderRepository.Find(om=>om.Id==orderid);
+            OrderMenu order = _orderRepository.Find(om => om.Id == orderid).Result;
             if (order == null)
             {
                 return NotFound();

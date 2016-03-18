@@ -132,7 +132,7 @@ window.app.su_Service = (function() {
     var baseWorkDaysUri = '/api/WorkDays/';
     var serviseWorkDaysUrls = {
         workDays: function(week, year) { return baseWorkDaysUri + serviceOrdersUrls.ordersParams(week, year) },
-        updateWorkDays: function(workweekid) { return baseAccountsUri + 'update/' + workweekid }
+        updateWorkDays: function () { return baseWorkDaysUri + 'update'  }
     }
 
     function ajaxRequest(type, url, data) {
@@ -220,8 +220,8 @@ window.app.su_Service = (function() {
         GetWorkDays: function (week,year) {
             return ajaxRequest('get', serviseWorkDaysUrls.workDays(week, year));
         },
-        UpdateWorkDays: function (workWeekId, weekinfo) {
-            return ajaxRequest('put', serviseWorkDaysUrls.updateWorkDays(workWeekId),weekinfo);
+        UpdateWorkDays: function (weekinfo) {
+            return ajaxRequest('put', serviseWorkDaysUrls.updateWorkDays(),weekinfo);
         }
     };
 

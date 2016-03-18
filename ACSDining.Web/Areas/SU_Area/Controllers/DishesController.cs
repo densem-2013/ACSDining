@@ -24,7 +24,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             get
             {
-                return _dishRepository.GetAll().Select(d => new DishModelDto
+                return _dishRepository.GetAll().Result.Select(d => new DishModelDto
                 {
                     DishID = d.DishID,
                     Title = d.Title,
@@ -75,7 +75,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             try
             {
-                Dish target = _dishRepository.Find(d=>d.DishID==dish.DishID);
+                Dish target = _dishRepository.Find(d => d.DishID == dish.DishID).Result;
                 target.DishDetail.Foods = dish.Foods;
                 target.Price = dish.Price;
                 target.Title = dish.Title;
@@ -108,7 +108,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 Title = dmodel.Title,
                 Price = dmodel.Price,
                 ProductImage = dmodel.ProductImage,
-                DishType = _dishtypeRepository.GetAll().AsEnumerable().FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
+                DishType = _dishtypeRepository.GetAll().Result.FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
                 DishDetail = new DishDetail
                 {
                     Foods = dmodel.Foods
@@ -150,7 +150,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         private bool DishExists(int id)
         {
-            return _dishRepository.GetAll().Count(e => e.DishID == id) > 0;
+            return _dishRepository.GetAll().Result.Count(e => e.DishID == id) > 0;
         }
     }
 }

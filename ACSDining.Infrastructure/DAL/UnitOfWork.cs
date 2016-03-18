@@ -18,7 +18,10 @@ namespace ACSDining.Infrastructure.DAL
 
         static UnitOfWork()
         {
-            _acsContext = new ApplicationDbContext();
+            if (_acsContext == null)
+            {
+                _acsContext = new ApplicationDbContext();
+            }
         }
 
         public IRepository<T> Repository<T>() where T : class
@@ -42,9 +45,9 @@ namespace ACSDining.Infrastructure.DAL
             return (IRepository<T>)_repositories[type];
         }
 
-        public void SubmitChanges()
+        public async void SubmitChanges()
         {
-            _acsContext.SaveChanges();
+           await  _acsContext.SaveChangesAsync();
         }
 
         private bool _disposed;
@@ -162,8 +165,8 @@ namespace ACSDining.Infrastructure.DAL
         {
             double[] unitprices = new double[20];
 
-            string[] categories = _acsContext.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            MenuForWeek mfw = _acsContext.MenuForWeeks.Find(menuforweekid);
+            string[] categories = Repository<DishType>().GetAll().Result.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
+            MenuForWeek mfw = Repository<MenuForWeek>().Find(mw=>mw.ID==menuforweekid).Result;
             for (int i = 0; i < 5; i++)
             {
                 MenuForDay daymenu = mfw.MenuForDay.ElementAt(i);
@@ -222,7 +225,7 @@ namespace ACSDining.Infrastructure.DAL
             };
             if (emptyDishes)
             {
-                List<DishType> dtypes = _acsContext.DishTypes.ToList();
+                List<DishType> dtypes = Repository<DishType>().GetAll().Result;
                 dtoModel.MFD_models = new List<MenuForDayDto>();
                 foreach (MenuForDay mfd in wmenu.MenuForDay)
                 {
@@ -252,21 +255,16 @@ namespace ACSDining.Infrastructure.DAL
             }
             else
             {
-                dtoModel.MFD_models = wmenu.MenuForDay.ToList().Select(m => new MenuForDayDto
+                try
                 {
-                    ID = m.ID,
-                    DayOfWeek = m.WorkingDay.DayOfWeek.Name,
-                    TotalPrice = m.TotalPrice,
-                    Dishes = m.Dishes.AsEnumerable().Select(dm => new DishModelDto
-                    {
-                        DishID = dm.DishID,
-                        Title = dm.Title,
-                        ProductImage = dm.ProductImage,
-                        Price = dm.Price,
-                        Category = dm.DishType.Category
-                    }).ToList()
 
-                }).ToList();
+                    dtoModel.MFD_models = wmenu.MenuForDay.ToList().Select(MenuForDayDto.MapDto).ToList();
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
             }
             return dtoModel;
         }

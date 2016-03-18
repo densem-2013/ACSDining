@@ -5,6 +5,7 @@
         self.WorkDayId = ko.observable(workday.workDayId);
         self.IsWorking = ko.observable(workday.isWorking);
         self.DayNumber = ko.observable(workday.dayNumber);
+        self.DayName = ko.observable(workday.dayName);
     }
 
     var workingWeekViewModel = function() {
@@ -14,9 +15,11 @@
         self.YearNumber = ko.observable();
         self.WorkingDays = ko.observableArray();
         self.CanBeChanged = ko.observable();
+        self.Message = ko.observable();
 
         function onError(error) {
-            self.Message('Error: ' + error.status + ' ' + error.statusText);
+            self.Message("Error: " + error.status + " " + error.statusText);
+            $("#modalMessage").modal("show");
         };
 
         self.loadWorkWeeks = function(week, year) {
@@ -33,7 +36,18 @@
                 }));
             }, onError);
         };
+        self.updateWorkDays = function() {
+            var item = {
+                WorkweekId: self.WorkweekId(),
+                WeekNumber: self.WeekNumber(),
+                YearNumber: self.YearNumber(),
+                WorkingDays: self.WorkingDays(),
+                CanBeChanged: self.CanBeChanged()
+            };
+            app.su_Service.UpdateWorkDays(item).then(function(resp) {
 
+            }, onError);
+        }
         self.loadWorkWeeks();
     }
 

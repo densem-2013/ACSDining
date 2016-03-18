@@ -52,7 +52,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 workSheet.Range["A1:A4"].Merge();
                 workSheet.Cells[1, "B"] = "Ф.И.О.";
                 workSheet.Range["B1:B4"].Merge();
-                int count = _dayRepository.GetAll().Count();
+                int count = _dayRepository.GetAll().Result.Count();
                 int i = 0;
                 string str;
                 string colname;
@@ -61,7 +61,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 {
                     colname = GetExcelColumnName(j[0]*4 + 3);
                     colname_2 = GetExcelColumnName(j[0]*4 + 6);
-                    workSheet.Cells[1, colname] = _dayRepository.Find(d => d.ID == j[0] + 1).Name;
+                    workSheet.Cells[1, colname] = _dayRepository.Find(d => d.ID == j[0] + 1).Result.Name;
                     str = String.Format("{0}1:{1}1", colname, colname_2);
                     workSheet.Range[str].Merge();
                 }
@@ -89,7 +89,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 str = String.Format("{0}1:{1}4", colname, colname);
                 workSheet.Range[str].Merge();
                 workSheet.Range[str].Orientation = 90;
-                List<DishType> dishTypes = _dishtypeRepository.GetAll().ToList();
+                List<DishType> dishTypes = _dishtypeRepository.GetAll().Result;
                 i = 3;
                 for (int j = 0; j < 5; j++)
                 {

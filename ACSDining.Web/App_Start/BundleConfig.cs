@@ -18,6 +18,10 @@ namespace ACSDining.Web
                 "~/Areas/SU_Area/Content/scripts/MenuForWeekInfo.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/WorkDays").Include(
+                "~/Areas/SU_Area/Content/scripts/WorkDaysInfo.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/DishInfo").Include(
                 "~/Areas/SU_Area/Content/scripts/DishesInfo.js"
                 ));

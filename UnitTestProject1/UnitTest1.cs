@@ -54,7 +54,7 @@ namespace UnitTestProject1
             {
                 var collection = xml.Root.Descendants("dish");
 
-                List<DishType> dtList = _dishtypeRepository.GetAll().ToList();
+                List<DishType> dtList = _dishtypeRepository.GetAll().Result;
 
                 Func<string, DishType> getDishType =
                     el1 =>
@@ -119,13 +119,13 @@ namespace UnitTestProject1
         {
             Random rand = new Random(); 
             string[] categories = { "Первое блюдо", "Второе блюдо", "Салат", "Напиток" };
-            Dictionary<string, int> catCount = categories.ToDictionary(cat => cat, count => _dishRepository.GetAll().Count(d => string.Equals(d.DishType.Category, count)));
+            Dictionary<string, int> catCount = categories.ToDictionary(cat => cat, count => _dishRepository.GetAll().Result.Count(d => string.Equals(d.DishType.Category, count)));
             Func<List<Dish>> getDishes = () =>
             {
                 List<Dish> ds = new List<Dish>();
                 foreach (KeyValuePair<string, int> pair in catCount)
                 {
-                    ds.Add(_dishRepository.GetAll().Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(rand.Next(pair.Value)));
+                    ds.Add(_dishRepository.GetAll().Result.Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(rand.Next(pair.Value)));
                 }
                 return ds;
             };
@@ -146,7 +146,7 @@ namespace UnitTestProject1
                     });
                     workingWeek =
                 _workingWeekRepository.Find(
-                    w => w.WeekNumber == (nextweekDto.Week) && w.Year.YearNumber == nextweekDto.Year);
+                    w => w.WeekNumber == (nextweekDto.Week) && w.Year.YearNumber == nextweekDto.Year).Result;
                     i++;
                 }
                 return workingWeek;
@@ -173,18 +173,18 @@ namespace UnitTestProject1
                 MenuForDay = mfdays,
                 WorkingWeek = week
             });
-            Assert.IsTrue(_weekmenuRepository.GetAll().Select(w => w.MenuForDay.Where(m => m.TotalPrice > 0)).Any());
+            Assert.IsTrue(_weekmenuRepository.GetAll().Result.Select(w => w.MenuForDay.Where(m => m.TotalPrice > 0)).Any());
         }
 
        
         private double[] PaimentsByDishes(int numweek, int year)
         {
             double[] paiments = new double[21];
-            MenuForWeek weekmenu = _weekmenuRepository.GetAll().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
+            MenuForWeek weekmenu = _weekmenuRepository.GetAll().Result.FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
             double[] weekprices = _unitOfWork.GetUnitWeekPrices(weekmenu.ID);
 
 
-            OrderMenu[] orderMenus = _orderRepository.GetAll().Where(
+            OrderMenu[] orderMenus = _orderRepository.GetAll().Result.Where(
                         om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
@@ -202,7 +202,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void CreateWorkingDays()
         {
-            IEnumerable<Year> startyears = _yearRepository.GetAll();
+            IEnumerable<Year> startyears = _yearRepository.GetAll().Result;
             if (!startyears.Any())
             {
                 _yearRepository.Insert(new Year
@@ -215,8 +215,8 @@ namespace UnitTestProject1
                 });
 
             }
-            List<Year> years = _yearRepository.GetAll().ToList();
-            IEnumerable<WorkingDay> startWorkingDays = _workingDayRepository.GetAll();
+            List<Year> years = _yearRepository.GetAll().Result;
+            IEnumerable<WorkingDay> startWorkingDays = _workingDayRepository.GetAll().Result;
             if (!startWorkingDays.Any())
             {
                 foreach (Year year in years)
@@ -237,7 +237,7 @@ namespace UnitTestProject1
                             WorkingDay workday = new WorkingDay
                             {
                                 IsWorking = j < 5,
-                                DayOfWeek = _dayRepository.Find(d => d.ID == j + 1)
+                                DayOfWeek = _dayRepository.Find(d => d.ID == j + 1).Result
                             };
                             workdays.Add(workday);
                             workingWeek.WorkingDays.Add(workday);
@@ -251,7 +251,7 @@ namespace UnitTestProject1
                     _workingWeekRepository.AddRange(workweeks);
                 }
             }
-            Assert.IsTrue(_workingDayRepository.GetAll().Any());
+            Assert.IsTrue(_workingDayRepository.GetAll().Result.Any());
         }
 
         [TestMethod]
@@ -322,7 +322,7 @@ namespace UnitTestProject1
         {
             Random rand = new Random();
             Dish[] dishArray = GetDishesFromXML();
-            string[] categories = _dishtypeRepository.GetAll().OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
+            string[] categories = _dishtypeRepository.GetAll().Result.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
 
             Func<string, IEnumerable<Dish>, int> countDish = (str, list) =>
             {
@@ -342,7 +342,7 @@ namespace UnitTestProject1
                 return ds;
             };
 
-            Year year = _yearRepository.Find(y => y.YearNumber == DateTime.Now.Year);
+            Year year = _yearRepository.Find(y => y.YearNumber == DateTime.Now.Year).Result;
             bool weekLessZero = false;
             Year correct_year = _db.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year - 1);
             int correct_week = 0;
@@ -405,7 +405,7 @@ namespace UnitTestProject1
             var xml = XDocument.Load(userspath);
             var collection = xml.Root.Descendants("dish");
 
-            List<DishType> dtList = _dishtypeRepository.GetAll().ToList();
+            List<DishType> dtList = _dishtypeRepository.GetAll().Result;
 
             Func<string, DishType> getDishType =
                 el1 =>
