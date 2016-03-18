@@ -16,8 +16,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Web.Http;
-using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
+using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
 

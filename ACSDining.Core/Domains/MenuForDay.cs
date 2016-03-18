@@ -17,8 +17,12 @@ namespace ACSDining.Core.Domains
     using System.Data.Entity;
     using System.Threading.Tasks;
     
-    public partial class MenuForDay
+    public partial class MenuForDay:Entity
     {
+        public MenuForDay()
+        {
+            Dishes=new List<Dish>();
+        }
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }

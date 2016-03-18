@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using ACSDining.Core.Infrastructure;
+
 namespace ACSDining.Core.Domains
 {
     using Microsoft.AspNet.Identity;
@@ -19,23 +21,34 @@ namespace ACSDining.Core.Domains
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    public partial class User : IdentityUser
+    public partial class User : IdentityUser, IObjectState
     {
+        public User():base()
+        {
+            OrderMenus = new List<OrderMenu>();
+            PlannedOrderMenus = new List<PlannedOrderMenu>();
+        }
+
+        [NotMapped]
+        public ObjectState ObjectState { get; set; }
+
         [Required]
         public virtual string FirstName { get; set; }
+
         [Required]
         public virtual string LastName { get; set; }
-        //[Required]
-        //public virtual bool IsDiningRoomClient { get; set; }
+
         [Required]
         [DataType(DataType.DateTime)]
         public virtual DateTime LastLoginTime { get; set; }
+
         [Required]
         [DataType(DataType.DateTime)]
         public virtual DateTime RegistrationDate { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<OrderMenu> OrderMenus { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<PlannedOrderMenu> PlannedOrderMenus { get; set; }
 

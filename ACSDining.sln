@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACSDining.Web", "ACSDining.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{3B416539-2CC9-4A3E-9340-9B6F850B804C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACSDining.Service", "ACSDining.Service\ACSDining.Service.csproj", "{34ACDAEA-E5DB-4D41-8FC0-6EF8DD520200}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACSDiningRepository", "ACSDiningRepository\ACSDiningRepository.csproj", "{50785D69-A38E-47A2-9569-0036E21DE1D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{3B416539-2CC9-4A3E-9340-9B6F850B804C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B416539-2CC9-4A3E-9340-9B6F850B804C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B416539-2CC9-4A3E-9340-9B6F850B804C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34ACDAEA-E5DB-4D41-8FC0-6EF8DD520200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34ACDAEA-E5DB-4D41-8FC0-6EF8DD520200}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34ACDAEA-E5DB-4D41-8FC0-6EF8DD520200}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34ACDAEA-E5DB-4D41-8FC0-6EF8DD520200}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50785D69-A38E-47A2-9569-0036E21DE1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50785D69-A38E-47A2-9569-0036E21DE1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50785D69-A38E-47A2-9569-0036E21DE1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50785D69-A38E-47A2-9569-0036E21DE1D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

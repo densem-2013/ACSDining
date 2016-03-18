@@ -5,7 +5,6 @@ using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Xml.Linq;
-using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
 using Microsoft.AspNet.Identity;

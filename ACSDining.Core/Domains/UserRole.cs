@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using ACSDining.Core.Infrastructure;
+
 namespace ACSDining.Core.Domains
 {
     using Microsoft.AspNet.Identity.EntityFramework;
@@ -15,8 +17,11 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class UserRole : IdentityRole
+    public partial class UserRole : IdentityRole, IObjectState
     {
+        [NotMapped]
+        public ObjectState ObjectState { get; set; }
+
         public UserRole() : base() { }
         public UserRole(string name) : base(name) { }
         public UserRole(string name, string descr)

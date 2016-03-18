@@ -14,16 +14,14 @@ namespace ACSDining.Core.Domains
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    
-    public partial class DishType
+
+    public partial class DishType : Entity
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         [Required]
         public string Category { get; set; }
-        //[JsonIgnore]
-        //public virtual ICollection<DishQuantity> DishQuantities { get; set; }
-
     }
 }

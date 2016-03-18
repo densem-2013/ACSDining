@@ -15,13 +15,20 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class DishQuantity
+    public partial class DishQuantity : Entity
     {
+        public DishQuantity()
+        {
+            Relations = new List<DishQuantityRelations>();
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         [Required]
         public double Quantity { get; set; }
+
         public int DishQuantityRelationsID { get; set; }
 
         [JsonIgnore]

@@ -4,13 +4,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public partial class Year
+    public class Year : Entity
     {
+        public Year()
+        {
+            WorkingWeeks = new List<WorkingWeek>();
+        }
+
         [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         [Required]
         public int YearNumber { get; set; }
+
         public virtual ICollection<WorkingWeek> WorkingWeeks { get; set; }
     }
 }

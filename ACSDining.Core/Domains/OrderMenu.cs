@@ -14,12 +14,13 @@ namespace ACSDining.Core.Domains
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    
-    public partial class OrderMenu
+
+    public partial class OrderMenu : Entity
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         public double WeekPaid { get; set; }
         public double Balance { get; set; }
         public double SummaryPrice { get; set; }
@@ -27,8 +28,10 @@ namespace ACSDining.Core.Domains
 
         [JsonIgnore]
         public virtual User User { get; set; }
+
         [JsonIgnore]
         public virtual MenuForWeek MenuForWeek { get; set; }
+
         [JsonIgnore]
         public virtual PlannedOrderMenu PlannedOrderMenu { get; set; }
     }

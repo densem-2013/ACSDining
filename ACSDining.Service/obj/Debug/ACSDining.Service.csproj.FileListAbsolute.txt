@@ -1,0 +1,15 @@
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.csprojResolveAssemblyReference.cache
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Service.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Service.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Core.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.EntityFramework.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.Core.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Newtonsoft.Json.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\EntityFramework.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Core.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.EntityFramework.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.Core.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Newtonsoft.Json.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\EntityFramework.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.pdb

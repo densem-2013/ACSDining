@@ -14,12 +14,18 @@ namespace ACSDining.Core.Domains
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    
-    public partial class Dish
+
+    public partial class Dish : Entity
     {
+        public Dish()
+        {
+            MenusForDay = new List<MenuForDay>();
+        }
+
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int DishID { get; set; }
+
         public string Title { get; set; }
         public string Description { get; set; }
         public string ProductImage { get; set; }
@@ -27,8 +33,10 @@ namespace ACSDining.Core.Domains
 
         [JsonIgnore]
         public virtual DishType DishType { get; set; }
+
         [JsonIgnore]
         public virtual DishDetail DishDetail { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<MenuForDay> MenusForDay { get; set; }
 
