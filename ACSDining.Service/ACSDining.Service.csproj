@@ -40,14 +40,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IService.cs" />
+    <Compile Include="MenuForWeekService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service.cs" />
-    <Compile Include="UserOrderService.cs" />
+    <Compile Include="OrderMenuService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACSDining.Core\ACSDining.Core.csproj">
       <Project>{b4d50f6a-de92-4007-9b71-f855a3831e91}</Project>
       <Name>ACSDining.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ACSDining.Infrastructure\ACSDining.Infrastructure.csproj">
+      <Project>{F3D62C6D-8A65-48C5-A9D0-E5D4088E8800}</Project>
+      <Name>ACSDining.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ACSDining.Repository\ACSDining.Repository.csproj">
+      <Project>{D01D1860-A8AF-40F9-A0B1-90A2DE5BCC85}</Project>
+      <Name>ACSDining.Repository</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

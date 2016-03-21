@@ -56,6 +56,7 @@
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
@@ -116,7 +117,7 @@
     <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />
     <Compile Include="DTO\SuperUser\OrdersDTO.cs" />
     <Compile Include="DTO\SuperUser\PaimentsDTO.cs" />
-    <Compile Include="DTO\SuperUser\UserOrdesDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserOrdersDTO.cs" />
     <Compile Include="DTO\SuperUser\UserPaimentDTO.cs" />
     <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
     <Compile Include="DTO\SuperUser\WeekYearDTO.cs" />

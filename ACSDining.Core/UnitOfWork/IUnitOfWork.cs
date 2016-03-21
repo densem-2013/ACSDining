@@ -13,8 +13,8 @@ namespace ACSDining.Core.UnitOfWork
         void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified);
         bool Commit();
         void Rollback();
-        double[] GetUserWeekOrderDishes(int orderid);
-        double[] GetUserWeekOrderPaiments(int orderid);
-        double[] GetUnitWeekPrices(int menuforweekid);
+        //double[] GetUserWeekOrderDishes(int orderid);
+        //double[] GetUserWeekOrderPaiments(int orderid);
+        //double[] GetUnitWeekPrices(int menuforweekid);
     }
 }

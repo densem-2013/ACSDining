@@ -1,0 +1,1 @@
+C:\Soft\GitProjects\ACSDining\ACSDining.Repository\obj\Debug\ACSDining.Repository.csprojResolveAssemblyReference.cache

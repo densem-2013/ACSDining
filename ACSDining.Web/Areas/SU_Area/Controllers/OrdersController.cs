@@ -6,6 +6,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using System.Collections.Generic;
 using ACSDining.Core.DAL;
+using ACSDining.Core.Repositories;
+using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
 
@@ -42,7 +44,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 WeekNumber = (int) numweek,
                 UserOrders = orderMenus
-                    .Select(order => new UserOrdesDTO()
+                    .Select(order => new UserOrdersDTO()
                     {
                         UserId = order.User.Id,
                         UserName = order.User.UserName,
@@ -59,7 +61,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPut]
         [Route("summary/{numweek}/{year}")]
         [ResponseType(typeof (double))]
-        public async Task<double> GetSummaryPrice([FromBody] UserOrdesDTO usorder, [FromUri] int? numweek = null, [FromUri] int? year = null)
+        public async Task<double> GetSummaryPrice([FromBody] UserOrdersDTO usorder, [FromUri] int? numweek = null, [FromUri] int? year = null)
         {
             numweek = numweek ?? UnitOfWork.CurrentWeek();
             year = year ?? DateTime.Now.Year;

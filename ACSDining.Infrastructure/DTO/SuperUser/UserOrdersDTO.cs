@@ -1,6 +1,6 @@
 ﻿namespace ACSDining.Infrastructure.DTO.SuperUser
 {
-    public class UserOrdesDTO
+    public class UserOrdersDTO
     {
         public string UserId { get; set; }
         public string UserName { get; set; }

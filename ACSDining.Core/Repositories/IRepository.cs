@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using ACSDining.Core.Infrastructure;
+using ACSDining.Core.UnitOfWork;
 
 namespace ACSDining.Core.Repositories
 {

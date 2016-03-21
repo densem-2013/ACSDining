@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ACSDiningRepository")]
+[assembly: AssemblyTitle("ACSDining.Repository")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ACSDiningRepository")]
+[assembly: AssemblyProduct("ACSDining.Repository")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9294e7ab-e197-4136-9eef-5cfb364667f2")]
+[assembly: Guid("c8f70a14-38ee-4187-b5cd-f17a42c87e89")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -20,6 +20,7 @@ using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Service;
 
 namespace ACSDining.Web.DependencyResolution {
     using StructureMap.Configuration.DSL;
@@ -42,7 +43,8 @@ namespace ACSDining.Web.DependencyResolution {
             For<Microsoft.AspNet.Identity.IUserStore<User>>()
             .Use<Microsoft.AspNet.Identity.EntityFramework.UserStore<User>>();
 
-            For<System.Data.Entity.DbContext>().Use(() => UnitOfWork.GetContext());
+            For<System.Data.Entity.DbContext>().Use(new DataContext());
+            For<IMenuForWeekService>().Use(new MenuForWeekService());
         }
 
         #endregion
