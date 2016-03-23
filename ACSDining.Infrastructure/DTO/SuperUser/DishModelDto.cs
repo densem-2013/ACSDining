@@ -19,7 +19,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 Title = dish.Title,
                 ProductImage = dish.ProductImage,
                 Price = dish.Price,
-                Category = dish.DishType.Category
+                Category = dish.DishType.Category,
+                Foods = dish.DishDetail.Foods
             };
         }
     }

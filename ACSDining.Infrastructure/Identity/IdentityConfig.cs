@@ -24,7 +24,9 @@ namespace ACSDining.Infrastructure.Identity
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options,
             IOwinContext context)
         {
-            var manager = new ApplicationUserManager(new UserStore<User>(context.Get<ApplicationDbContext>()));
+            UserStore<User> store = new UserStore<User>(context.Get<ApplicationDbContext>()) {AutoSaveChanges = false};
+
+            var manager = new ApplicationUserManager(store);
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<User>(manager)
             {
@@ -125,8 +127,7 @@ namespace ACSDining.Infrastructure.Identity
 
         public Task<SignInStatus> ValidateUserFromAd(string login, string password)
         {
-            UserPrincipal u = new UserPrincipal(_ad);
-            u.SamAccountName = login;
+            UserPrincipal u = new UserPrincipal(_ad) {SamAccountName = login};
             bool res = _ad.ValidateCredentials(u.SamAccountName, password);
             if (res)
             {

@@ -1,84 +1,48 @@
-﻿using ACSDining.Core.Domains;
-using System;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Collections.Generic;
-using ACSDining.Core.DAL;
-using ACSDining.Core.Repositories;
-using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
     [RoutePrefix("api/Orders")]
     public class OrdersController : ApiController
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<OrderMenu> _orderRepository;
-        private readonly IRepository<MenuForWeek> _weekmenuRepository;
+        private readonly IMenuForWeekService _weekMenuService;
+        private readonly IOrderMenuService _orderMenuService;
 
-        public OrdersController(IUnitOfWork unitOfWork)
+        public OrdersController(IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
         {
-            _unitOfWork = unitOfWork;
-            _orderRepository = _unitOfWork.Repository<OrderMenu>();
-            _weekmenuRepository = _unitOfWork.Repository<MenuForWeek>();
+            _weekMenuService = weekMenuService;
+            _orderMenuService = orderMenuService;
         }
+
 
         [HttpGet]
         [Route("")]
         [Route("{numweek}")]
         [Route("{numweek}/{year}")]
-        [ResponseType(typeof (OrdersDTO))]
-        public async Task<IHttpActionResult> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
+        public async Task<OrdersDTO> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            numweek = numweek ?? UnitOfWork.CurrentWeek();
-            year = year ?? DateTime.Now.Year;
-            List<OrderMenu> orderMenus = _orderRepository.GetAll().Result.Where(
-                        om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
-                        .ToList();
+            int week = numweek ?? UnitOfWork.CurrentWeek();
+            int yearnum = year ?? DateTime.Now.Year;
 
-            OrdersDTO model = new OrdersDTO()
-            {
-                WeekNumber = (int) numweek,
-                UserOrders = orderMenus
-                    .Select(order => new UserOrdersDTO()
-                    {
-                        UserId = order.User.Id,
-                        UserName = order.User.UserName,
-                        Dishquantities = _unitOfWork.GetUserWeekOrderDishes(order.Id),
-                        WeekPaid = order.WeekPaid,
-                        SummaryPrice = order.SummaryPrice
-                    }).OrderBy(uo => uo.UserName).ToList(),
-                YearNumber = (int) year
-            };
-
-            return Ok(model);
+            return await Task.FromResult(_orderMenuService.OrdersDtoByWeekYear(week, yearnum));
         }
 
         [HttpPut]
         [Route("summary/{numweek}/{year}")]
         [ResponseType(typeof (double))]
-        public async Task<double> GetSummaryPrice([FromBody] UserOrdersDTO usorder, [FromUri] int? numweek = null, [FromUri] int? year = null)
+        public async Task<double> GetSummaryPrice([FromBody] UserOrdersDTO usorder, [FromUri] int? numweek = null,
+            [FromUri] int? year = null)
         {
-            numweek = numweek ?? UnitOfWork.CurrentWeek();
-            year = year ?? DateTime.Now.Year;
-            MenuForWeek weekNeeded = _weekmenuRepository.Find(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year).Result;
-            double summary = 0;
-            if (weekNeeded != null)
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    for (int j = 0; j < 4; j++)
-                    {
-                        summary += weekNeeded.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price*
-                                   usorder.Dishquantities[4*i + j];
-                    }
-                }
-            }
-            return await Task.FromResult(summary);
+            int week = numweek ?? UnitOfWork.CurrentWeek();
+            int yearnum = year ?? DateTime.Now.Year;
+
+            return await Task.FromResult(_weekMenuService.SummaryPrice(usorder, week, yearnum));
         }
     }
 }

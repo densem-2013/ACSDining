@@ -16,7 +16,9 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Web.Http;
+using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
+using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
@@ -39,12 +41,27 @@ namespace ACSDining.Web.DependencyResolution {
                 });
 
             //For<IExample>().Use<Example>();
+            For<IDataContextAsync>().Use<DataContext>();
             For<IUnitOfWork>().Use<UnitOfWork>();
             For<Microsoft.AspNet.Identity.IUserStore<User>>()
             .Use<Microsoft.AspNet.Identity.EntityFramework.UserStore<User>>();
 
-            For<System.Data.Entity.DbContext>().Use(new DataContext());
-            For<IMenuForWeekService>().Use(new MenuForWeekService());
+            For<IMenuForWeekService>().Use<MenuForWeekService>();
+            For<IRepositoryAsync<MenuForWeek>>().Use<Repository<MenuForWeek>>();
+
+            For<IOrderMenuService>().Use<OrderMenuService>();
+            For<IRepositoryAsync<OrderMenu>>().Use<Repository<OrderMenu>>();
+
+            For<IGetExcelService>().Use<GetExcelService>();
+
+            For<IUserAccountService>().Use<UserAccountService>();
+            For<IRepositoryAsync<User>>().Use<Repository<User>>();
+
+            For<IWorkDaysService>().Use<WorkDaysService>();
+            For<IRepositoryAsync<WorkingWeek>>().Use<Repository<WorkingWeek>>();
+
+            For<IDishService>().Use<DishService>();
+            For<IRepositoryAsync<Dish>>().Use<Repository<Dish>>();
         }
 
         #endregion

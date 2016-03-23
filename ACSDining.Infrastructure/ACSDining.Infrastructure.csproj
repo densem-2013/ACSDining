@@ -145,9 +145,7 @@
       <Name>ACSDining.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTO\Admin\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201603160936568_Initial.resx">
       <DependentUpon>201603160936568_Initial.cs</DependentUpon>

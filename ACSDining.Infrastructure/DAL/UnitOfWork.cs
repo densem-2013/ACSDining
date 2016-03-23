@@ -188,82 +188,7 @@ namespace ACSDining.Infrastructure.DAL
             return myCal.GetWeekOfYear(lastweek, myCwr, myFirstDow);
         };
 
-        public double[] GetUserWeekOrderDishes(int orderid)
-        {
-            double[] dquantities = new double[20];
-            OrderMenu order = _repositories["OrderMenu"].Find(orderid);
-            int menuforweekid = order.MenuForWeek.ID;
-            List<DishQuantityRelations> quaList =
-                _acsContext.DQRelations.Where(dqr => dqr.OrderMenuID == orderid && dqr.MenuForWeekID == menuforweekid)
-                    .ToList();
-
-            string[] categories = _acsContext.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            MenuForWeek mfw = _acsContext.MenuForWeeks.Find(menuforweekid);
-            for (int i = 1; i <= 7; i++)
-            {
-                WorkingDay workday = mfw.WorkingWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.ID == i);
-                if (workday != null && workday.IsWorking)
-                {
-                    for (int j = 1; j <= categories.Length; j++)
-                    {
-                        var firstOrDefault = quaList.FirstOrDefault(
-                            q => q.WorkDay.DayOfWeek.ID == i && q.DishTypeID == j
-                            );
-                        if (firstOrDefault != null)
-                            dquantities[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity;
-                    }
-                }
-            }
-            return dquantities;
-        }
-
-        public double[] GetUserWeekOrderPaiments(int orderid)
-        {
-            double[] paiments = new double[20];
-            OrderMenu order = _acsContext.OrderMenus.Find(orderid);
-            int menuforweekid = order.MenuForWeek.ID;
-            List<DishQuantityRelations> quaList =
-                _acsContext.DQRelations.Where(dqr => dqr.OrderMenuID == orderid && dqr.MenuForWeekID == menuforweekid)
-                    .ToList();
-
-            string[] categories = _acsContext.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            MenuForWeek mfw = _acsContext.MenuForWeeks.Find(menuforweekid);
-            for (int i = 1; i <= 7; i++)
-            {
-                WorkingDay workday = mfw.WorkingWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.ID == i);
-                if (workday != null && workday.IsWorking)
-                {
-                    MenuForDay daymenu = mfw.MenuForDay.ElementAt(i - 1);
-                    for (int j = 1; j <= categories.Length; j++)
-                    {
-                        var firstOrDefault = quaList.FirstOrDefault(
-                            q => q.WorkDay.DayOfWeek.ID == i && q.DishTypeID == j
-                            );
-                        if (firstOrDefault != null)
-                            paiments[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity*
-                                                          daymenu.Dishes.ElementAt(j - 1).Price;
-                    }
-                }
-            }
-            return paiments;
-        }
-
-        public double[] GetUnitWeekPrices(int menuforweekid)
-        {
-            double[] unitprices = new double[20];
-
-            string[] categories = Repository<DishType>().GetAll().Result.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            MenuForWeek mfw = Repository<MenuForWeek>().Find(mw=>mw.ID==menuforweekid).Result;
-            for (int i = 0; i < 5; i++)
-            {
-                MenuForDay daymenu = mfw.MenuForDay.ElementAt(i);
-                for (int j = 0; j < categories.Length; j++)
-                {
-                    unitprices[i * 4 + j] = daymenu.Dishes.ElementAt(j).Price;
-                }
-            }
-            return unitprices;
-        }
+        
         public static WeekYearDTO GetNextWeekYear(WeekYearDTO wyDto)
         {
             WeekYearDTO result=new WeekYearDTO();
@@ -301,60 +226,7 @@ namespace ACSDining.Infrastructure.DAL
             return result;
         }
 
-        public WeekMenuDto MenuForWeekToDto(MenuForWeek wmenu, bool emptyDishes = false)
-        {
-            WeekMenuDto dtoModel = new WeekMenuDto
-            {
-                ID = wmenu.ID,
-                WeekNumber = wmenu.WorkingWeek.WeekNumber,
-                SummaryPrice = wmenu.SummaryPrice,
-                YearNumber = wmenu.WorkingWeek.Year.YearNumber
-            };
-            if (emptyDishes)
-            {
-                List<DishType> dtypes = Repository<DishType>().GetAll().Result;
-                dtoModel.MFD_models = new List<MenuForDayDto>();
-                foreach (MenuForDay mfd in wmenu.MenuForDay)
-                {
-                    var dmodels = new List<DishModelDto>();
-                    for (int i = 0; i < 4; i++)
-                    {
-                        DishType firstOrDefault = dtypes.FirstOrDefault(dt => dt.Id == i + 1);
-                        if (firstOrDefault != null)
-                            dmodels.Add(new DishModelDto
-                            {
-                                DishID = i + 1,
-                                Title = "_",
-                                Price = 0,
-                                Category = firstOrDefault.Category,
-                                Foods = "_"
-                            });
-                    }
-
-                    dtoModel.MFD_models.Add(new MenuForDayDto
-                    {
-                        ID = mfd.ID,
-                        DayOfWeek = mfd.WorkingDay.DayOfWeek.Name,
-                        TotalPrice = mfd.TotalPrice,
-                        Dishes = dmodels
-                    });
-                }
-            }
-            else
-            {
-                try
-                {
-
-                    dtoModel.MFD_models = wmenu.MenuForDay.ToList().Select(MenuForDayDto.MapDto).ToList();
-                }
-                catch (Exception ex)
-                {
-
-                    throw;
-                }
-            }
-            return dtoModel;
-        }
+       
 
         public static bool WeekDaysCanBeChanged(WorkingWeek workweek)
         {

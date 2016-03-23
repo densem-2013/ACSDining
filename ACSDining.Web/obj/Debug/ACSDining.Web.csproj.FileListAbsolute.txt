@@ -565,6 +565,7 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Core.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Infrastructure.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Service.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Antlr3.Runtime.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\DelegateDecompiler.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\EntityFramework.dll
@@ -607,8 +608,11 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.WebPages.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.WebPages.Razor.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\WebActivatorEx.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\WebGrease.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Repository.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Core.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Infrastructure.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Service.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Antlr3.Runtime.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\EntityFramework.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\EntityFramework.SqlServer.xml
@@ -647,6 +651,9 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.Razor.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.WebPages.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.WebPages.Deployment.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.WebPages.Razor.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Repository.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\de\Microsoft.Data.Edm.resources.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\es\Microsoft.Data.Edm.resources.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\fr\Microsoft.Data.Edm.resources.dll

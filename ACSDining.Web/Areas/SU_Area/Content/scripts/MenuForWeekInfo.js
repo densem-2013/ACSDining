@@ -367,8 +367,8 @@
         }
 
         self.DeleteNextWeekMenu = function () {
-            var num = self.WeekNumber();
-            app.su_Service.DeleteNextWeekMenu(num).then(function () {
+            var menuid = self.MenuId();
+            app.su_Service.DeleteNextWeekMenu(menuid).then(function () {
                 self.LoadWeekMenu();
                 self.loadWeekNumbers();
                 self.SetMyDateByWeek(self.CurrentWeekNumber());

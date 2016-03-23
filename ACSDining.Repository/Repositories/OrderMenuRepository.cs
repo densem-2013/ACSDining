@@ -17,8 +17,9 @@ namespace ACSDining.Repository.Repositories
         public static OrdersDTO GetOrdersDtoByWeekYear(this IRepositoryAsync<OrderMenu> repository, int week, int year)
         {
             List<OrderMenu> orderMenus = repository.Queryable().Where(
-                        om => om.MenuForWeek.WorkingWeek.WeekNumber == week && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
-                        .ToList();
+                om =>
+                    om.MenuForWeek.WorkingWeek.WeekNumber == week && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
+                .ToList();
 
             OrdersDTO model = new OrdersDTO()
             {
@@ -32,12 +33,12 @@ namespace ACSDining.Repository.Repositories
                         WeekPaid = order.WeekPaid,
                         SummaryPrice = order.SummaryPrice
                     }).OrderBy(uo => uo.UserName).ToList(),
-                YearNumber = (int)year
+                YearNumber = (int) year
             };
             return model;
         }
 
-        public static double[] GetUserWeekOrderDishes(this IRepositoryAsync<OrderMenu> repository,int orderid)
+        public static double[] GetUserWeekOrderDishes(this IRepositoryAsync<OrderMenu> repository, int orderid)
         {
 
             double[] dquantities = new double[20];
@@ -63,12 +64,13 @@ namespace ACSDining.Repository.Repositories
                             q => q.WorkDay.DayOfWeek.ID == i && q.DishTypeID == j
                             );
                         if (firstOrDefault != null)
-                            dquantities[(i - 1) * 4 + j - 1] = firstOrDefault.DishQuantity.Quantity;
+                            dquantities[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity;
                     }
                 }
             }
             return dquantities;
         }
+
         public static double[] GetUserWeekOrderPaiments(this IRepositoryAsync<OrderMenu> repository, int orderid)
         {
 
@@ -76,8 +78,8 @@ namespace ACSDining.Repository.Repositories
             OrderMenu order = repository.Find(orderid);
             int menuforweekid = order.MenuForWeek.ID;
             List<DishQuantityRelations> quaList = repository.GetRepository<DishQuantityRelations>()
-                    .Queryable().Where(dqr => dqr.OrderMenuID == orderid && dqr.MenuForWeekID == menuforweekid)
-                    .ToList();
+                .Queryable().Where(dqr => dqr.OrderMenuID == orderid && dqr.MenuForWeekID == menuforweekid)
+                .ToList();
 
             string[] categories =
                 repository.GetRepository<DishType>().Queryable().OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
@@ -94,7 +96,7 @@ namespace ACSDining.Repository.Repositories
                             q => q.WorkDay.DayOfWeek.ID == i && q.DishTypeID == j
                             );
                         if (firstOrDefault != null)
-                            paiments[(i - 1) * 4 + j - 1] = firstOrDefault.DishQuantity.Quantity *
+                            paiments[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity*
                                                           daymenu.Dishes.ElementAt(j - 1).Price;
                     }
                 }
@@ -102,7 +104,8 @@ namespace ACSDining.Repository.Repositories
             return paiments;
         }
 
-        public static double GetSummaryPriceUserByWeekYear(this IRepositoryAsync<OrderMenu> repository, UserOrdersDTO usorder, int numweek, int year)
+        public static double GetSummaryPriceUserByWeekYear(this IRepositoryAsync<OrderMenu> repository,
+            UserOrdersDTO usorder, int numweek, int year)
         {
             MenuForWeek menuForWeekRepository =
                 repository.GetRepository<MenuForWeek>()
@@ -117,15 +120,16 @@ namespace ACSDining.Repository.Repositories
                 {
                     for (int j = 0; j < 4; j++)
                     {
-                        summary += menuForWeekRepository.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price *
-                                   usorder.Dishquantities[4 * i + j];
+                        summary += menuForWeekRepository.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price*
+                                   usorder.Dishquantities[4*i + j];
                     }
                 }
             }
             return summary;
         }
 
-        public static EmployeeOrderDto EmployeeOrderByWeekYear(this IRepositoryAsync<OrderMenu> repository,WeekMenuDto weekmodel, string userid, int numweek, int year)
+        public static EmployeeOrderDto EmployeeOrderByWeekYear(this IRepositoryAsync<OrderMenu> repository,
+            WeekMenuDto weekmodel, string userid, int numweek, int year)
         {
             OrderMenu ordmenu =
                 repository.Queryable()
@@ -137,8 +141,8 @@ namespace ACSDining.Repository.Repositories
                 SummaryPrice = ordmenu.SummaryPrice,
                 WeekPaid = ordmenu.WeekPaid,
                 MfdModels = weekmodel.MFD_models,
-                Year = (int)year,
-                WeekNumber = (int)numweek
+                Year = (int) year,
+                WeekNumber = (int) numweek
             };
             if (ordmenu != null)
             {
@@ -146,6 +150,13 @@ namespace ACSDining.Repository.Repositories
                 model.Dishquantities = repository.GetUserWeekOrderDishes(ordmenu.Id);
             }
             return model;
+        }
+
+        public static OrderMenu OrderMenuByWeekYear(this IRepositoryAsync<OrderMenu> repository, int week, int year)
+        {
+            return repository.Queryable().FirstOrDefault(
+                om =>
+                    om.MenuForWeek.WorkingWeek.WeekNumber == week && om.MenuForWeek.WorkingWeek.Year.YearNumber == year);
         }
 
     }

@@ -5,9 +5,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -15,34 +15,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Dishes")]
     public class DishesController : ApiController
     {
-        private IUnitOfWork unitOfWork;
-        private readonly IRepository<Dish> _dishRepository;
-        private readonly IRepository<DishType> _dishtypeRepository;
-        //private ApplicationDbContext db ;
+        private readonly IDishService _dishService;
 
-        List<DishModelDto> Dishes
+        public DishesController(IDishService dishService)
         {
-            get
-            {
-                return _dishRepository.GetAll().Result.Select(d => new DishModelDto
-                {
-                    DishID = d.DishID,
-                    Title = d.Title,
-                    ProductImage = d.ProductImage,
-                    Price = d.Price,
-                    Category = d.DishType.Category,
-                    Foods = d.DishDetail.Foods
-
-                }).ToList();
-            }
-        }
-
-        public DishesController(IUnitOfWork unitOfWork)
-        {
-            this.unitOfWork = unitOfWork;
-            _dishRepository = this.unitOfWork.Repository<Dish>();
-            _dishtypeRepository = this.unitOfWork.Repository<DishType>();
-
+            _dishService = dishService;
         }
 
 
@@ -57,7 +34,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            List<DishModelDto> dmodels = Dishes.Where(d => string.Equals(d.Category, category)).ToList();
+            List<DishModelDto> dmodels = _dishService.GetDishModelDtoByCategory(category);
 
             return Ok(dmodels);
         }
@@ -72,14 +49,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             try
             {
-                Dish target = _dishRepository.Find(d => d.DishID == dish.DishID).Result;
-                target.DishDetail.Foods = dish.Foods;
-                target.Price = dish.Price;
-                target.Title = dish.Title;
-                _dishRepository.Update(target);
+                _dishService.UpdateDishByDishModel(dish);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -103,54 +75,35 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest(ModelState);
             }
-            Dish newdish = new Dish
-            {
-                Title = dmodel.Title,
-                Price = dmodel.Price,
-                ProductImage = dmodel.ProductImage,
-                DishType = _dishtypeRepository.GetAll().Result.FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
-                DishDetail = new DishDetail
-                {
-                    Foods = dmodel.Foods
-                }
-            };
 
             try
             {
-                _dishRepository.Insert(newdish);
+                _dishService.InsertDishByDishModel(dmodel);
             }
             catch (DbUpdateException)
             {
-                if (DishExists(newdish.DishID))
+                if (DishExists(dmodel.DishID))
                 {
                     return Conflict();
                 }
                 throw;
             }
 
-            //return CreatedAtRoute("DefaultApi", new { id = dish.DishID }, dish); 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // DELETE api/Dishes/5
         [Route("delete/{id}")]
         [ResponseType(typeof(Dish))]
-        public async Task<IHttpActionResult> DeleteDish(int id)
+        public async Task<bool> DeleteDish(int id)
         {
-            Dish dish = _dishRepository.GetById(id);
-            if (dish == null)
-            {
-                return NotFound();
-            }
 
-            _dishRepository.Delete(dish);
-
-            return Ok();
+            return await _dishService.DeleteDishById(id);
         }
 
         private bool DishExists(int id)
         {
-            return _dishRepository.GetAll().Result.Count(e => e.DishID == id) > 0;
+            return _dishService.AllDish().Any(e => e.DishID == id);
         }
     }
 }

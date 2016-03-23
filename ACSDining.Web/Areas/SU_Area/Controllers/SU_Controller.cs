@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ACSDining.Core.DAL;
 using ACSDining.Infrastructure.Identity;
 using Microsoft.AspNet.Identity.Owin;
 
@@ -11,7 +10,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [System.Web.Http.Authorize(Roles = "SuperUser")]
     public class SU_Controller : Controller
     {
-        private IUnitOfWork _unitOfWork;
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
         {
@@ -25,11 +23,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
         }
 
-        public SU_Controller(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-
-        }
         // GET: /SU_Area/SU_/
         public ActionResult WeekMenu()
         {

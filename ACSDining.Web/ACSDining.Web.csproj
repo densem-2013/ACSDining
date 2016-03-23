@@ -265,7 +265,7 @@
     <Compile Include="Areas\SU_Area\Controllers\DishesController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\OrdersController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\PaimentController.cs" />
-    <Compile Include="Areas\SU_Area\Controllers\PrintExcelController.cs" />
+    <Compile Include="Areas\SU_Area\Controllers\GetExcelController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WorkDayApiController.cs" />

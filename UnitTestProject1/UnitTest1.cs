@@ -4,7 +4,6 @@ using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
-using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;

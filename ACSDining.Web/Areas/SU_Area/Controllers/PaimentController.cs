@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using ACSDining.Core.DAL;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -15,15 +15,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<OrderMenu> _orderRepository;
-        private readonly IRepository<MenuForWeek> _weekmenuRepository;
+        private readonly IMenuForWeekService _weekMenuService;
+        private readonly IOrderMenuService _orderMenuService;
 
-        public PaimentController(IUnitOfWork unitOfWork)
+        public PaimentController(IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
         {
-            _unitOfWork = unitOfWork;
-            _orderRepository = _unitOfWork.Repository<OrderMenu>();
-            _weekmenuRepository = _unitOfWork.Repository<MenuForWeek>();
+            _weekMenuService = weekMenuService;
+            _orderMenuService = orderMenuService;
         }
 
         [Route("")]
@@ -32,36 +30,34 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (PaimentsDTO))]
         public async Task<IHttpActionResult> GetWeekPaiments([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            numweek = numweek ?? UnitOfWork.CurrentWeek();
-            year = year ?? DateTime.Now.Year;
-            List<OrderMenu> orderMenus =_orderRepository.GetAll().Result.Where(
-                        om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
+            int week = numweek ?? UnitOfWork.CurrentWeek();
+            int yearnum = year ?? DateTime.Now.Year;
+            List<OrderMenu> orderMenus = _orderMenuService.GetAllByWeekYear(week,yearnum)
                         .ToList();
-            MenuForWeek mfw = _weekmenuRepository.GetAll().Result.FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
-            PaimentsDTO model = null;
-            if (mfw == null || orderMenus == null)
+            MenuForWeek mfw = _weekMenuService.GetWeekMenuByWeekYear(week, yearnum);
+            if (mfw == null)
             {
                 return NotFound();
             }
-            
-            model = new PaimentsDTO
+
+            PaimentsDTO model = new PaimentsDTO
             {
-                WeekNumber = (int) numweek,
-                YearNumber = (int) year,
+                WeekNumber = week,
+                YearNumber = yearnum,
                 UserPaiments = orderMenus
                     .Select(order => new UserPaimentDTO
                     {
                         UserId = order.User.Id,
                         OrderId = order.Id,
                         UserName = order.User.UserName,
-                        Paiments = _unitOfWork.GetUserWeekOrderPaiments(order.Id),
+                        Paiments = _orderMenuService.UserWeekOrderPaiments(order.Id),
                         SummaryPrice = order.SummaryPrice,
                         WeekPaid = order.WeekPaid,
                         Balance = order.Balance,
                         Note = order.Note
                     }).OrderBy(uo => uo.UserName).ToList(),
-                UnitPrices = _unitOfWork.GetUnitWeekPrices(mfw.ID),
-                UnitPricesTotal = PaimentsByDishes((int)numweek, (int)year)
+                UnitPrices = _weekMenuService.UnitWeekPrices(mfw.ID),
+                UnitPricesTotal = PaimentsByDishes(week, yearnum)
             };
 
             return Ok(model);
@@ -70,16 +66,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private double[] PaimentsByDishes(int numweek, int year )
         {
             double[] paiments = new double[21];
-            MenuForWeek weekmenu = _weekmenuRepository.GetAll().Result.FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
-            double[] weekprices = _unitOfWork.GetUnitWeekPrices(weekmenu.ID);
+            MenuForWeek weekmenu = _weekMenuService.GetAll().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
+            double[] weekprices = _weekMenuService.UnitWeekPrices(weekmenu.ID);
 
 
-            OrderMenu[] orderMenus = _orderRepository.GetAll().Result.Where(
-                        om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
+            OrderMenu[] orderMenus = _orderMenuService.GetAllByWeekYear(numweek,year)
                         .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
             {
-                double[] dishquantities = _unitOfWork.GetUserWeekOrderDishes(orderMenus[i].Id);
+                double[] dishquantities = _orderMenuService.UserWeekOrderDishes(orderMenus[i].Id);
                 for (int j = 0; j < 20; j++)
                 {
                     paiments[j] += weekprices[j]*dishquantities[j];
@@ -94,7 +89,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(double))]
         public async Task<IHttpActionResult> UpdatePaiment( int orderid, double pai)
         {
-            OrderMenu order = _orderRepository.Find(om => om.Id == orderid).Result;
+            OrderMenu order = _orderMenuService.Find(orderid);
             if (order == null)
             {
                 return NotFound();
@@ -103,7 +98,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             order.WeekPaid = pai;
             order.Balance -= order.WeekPaid;
 
-            _orderRepository.Update(order);
+            _orderMenuService.UpdateOrderMenu(order);
 
             return Ok(order.Balance);
         }

@@ -96,7 +96,7 @@ window.app.su_Service = (function() {
         nextWeekMenu: function() { return baseWeekMenuUri + 'nextWeekMenu' },
         nextWeekYear: function() { return baseWeekMenuUri + 'nextWeekYear' },
         prevWeekYear: function() { return baseWeekMenuUri + 'prevWeekYear' },
-        deleteWeekMenu: function(numweek) { return baseWeekMenuUri + 'delete/' + numweek }
+        deleteWeekMenu: function (menuid) { return baseWeekMenuUri + 'delete/' + menuid }
     }
 
     var baseOrdersUri = '/api/Orders/';
@@ -169,8 +169,8 @@ window.app.su_Service = (function() {
         UpdateWeekMenu: function(item) {
             return ajaxRequest('put', baseWeekMenuUri + 'update', item);
         },
-        DeleteNextWeekMenu: function(numweek) {
-            return ajaxRequest('delete', serviceWeekMenuUrls.deleteWeekMenu(numweek));
+        DeleteNextWeekMenu: function(menuid) {
+            return ajaxRequest('delete', serviceWeekMenuUrls.deleteWeekMenu(menuid));
         },
         GetNextWeekMenu: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.nextWeekMenu());

@@ -10,6 +10,5 @@
         public double WeekPaid { get; set; }
         public double Balance { get; set; }
         public string Note { get; set; }
-        public bool IsDiningRoomClient { get; set; }
     }
 }

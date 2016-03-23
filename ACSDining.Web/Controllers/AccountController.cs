@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -11,9 +10,6 @@ using ACSDining.Web.Models.ViewModels;
 using ACSDining.Core.Domains;
 using NLog;
 using System.DirectoryServices.AccountManagement;
-using ACSDining.Core.DAL;
-using ACSDining.Infrastructure.DAL;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ACSDining.Web.Controllers
 {
@@ -22,16 +18,16 @@ namespace ACSDining.Web.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private PrincipalContext _ad;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<User> _userRepository;
-        private readonly IRepository<UserRole> _roleRepository;
+        private readonly PrincipalContext _ad;
+        //private readonly IUnitOfWork _unitOfWork;
+        //private readonly IRepository<User> _userRepository;
+        //private readonly IRepository<UserRole> _roleRepository;
         public AccountController()
         {
             _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
-            _unitOfWork = new UnitOfWork();
-            _userRepository = _unitOfWork.Repository<User>();
-            _roleRepository = _unitOfWork.Repository<UserRole>();
+        //    _unitOfWork = new UnitOfWork();
+        //    _userRepository = _unitOfWork.Repository<User>();
+        //    _roleRepository = _unitOfWork.Repository<UserRole>();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -115,14 +111,14 @@ namespace ACSDining.Web.Controllers
                             //using (ApplicationDbContext context = new ApplicationDbContext())
                             //{
 
-                                User userchangePass =
-                                    _userRepository.Find(u => string.Equals(u.UserName, model.LogIn)).Result;
+                            User userchangePass = await UserManager.FindByNameAsync(model.LogIn);
                                 if (userchangePass != null)
                                 {
                                     userchangePass.PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password);
-                                    _userRepository.Update(userchangePass);
+                                    //_userRepository.Update(userchangePass);
+                                    UserManager.Update(userchangePass);
                                     //context.SaveChanges();
-                                    Login(model, returnUrl);
+                                    await Login(model, returnUrl);
                                 }
                                 //context.Users.
                             //}
@@ -132,7 +128,7 @@ namespace ACSDining.Web.Controllers
                     {
                         //using (ApplicationDbContext context = new ApplicationDbContext())
                         //{
-                        IdentityRole role = _roleRepository.Find(r => string.Equals(r.Name, "Employee")).Result;
+                        //IdentityRole role = UserManager.Find(r => string.Equals(r.Name, "Employee")).Result;
 
                             UserPrincipal u = new UserPrincipal(_ad) {SamAccountName = model.LogIn};
                             PrincipalSearcher search = new PrincipalSearcher(u);
@@ -151,22 +147,34 @@ namespace ACSDining.Web.Controllers
                                     SecurityStamp = Guid.NewGuid().ToString(),
                                     PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
                                 };
-                            user.Roles.Add(new IdentityUserRole {RoleId = role.Id, UserId = user.Id});
-                            _userRepository.Insert(user);
+
+
+                            //user.Roles.Add(new IdentityUserRole {RoleId = role.Id, UserId = user.Id});
+                            //_userRepository.Insert(user);
                             //context.SaveChanges();
+                        var res = UserManager.CreateAsync(user).Result;
+                        if (res!=null)
+                        {
+                            if (user != null) await UserManager.AddToRoleAsync(user.Id, "Employee");
+                        }
 
                             await
                                 SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
 
+                        if (user != null)
+                        {
                             user.LastLoginTime = DateTime.UtcNow;
                             Session["Fname"] = user.FirstName;
                             Session["Lname"] = user.LastName;
                             Session["LastLoginDate"] = user.LastLoginTime;
+                        }
 
-                            return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
+                        return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         //}
+/*
                         ModelState.AddModelError("", "Неудачная попытка регистрации пользователя.");
+*/
                     }
                     return RedirectToLocal(returnUrl);
 
