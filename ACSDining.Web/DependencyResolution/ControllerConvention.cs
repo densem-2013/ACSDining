@@ -16,6 +16,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Threading.Tasks;
+using StructureMap.Web.Pipeline;
 
 namespace ACSDining.Web.DependencyResolution {
     using System;
@@ -31,7 +32,7 @@ namespace ACSDining.Web.DependencyResolution {
 
         public async void Process(Type type, Registry registry) {
             if (type.CanBeCastTo<Controller>() && !type.IsAbstract) {
-               await Task.FromResult(registry.For(type).LifecycleIs(new UniquePerRequestLifecycle()));
+                await Task.FromResult(registry.For(type).LifecycleIs(new HttpContextLifecycle()));
             }
         }
 

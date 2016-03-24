@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ACSDining.Core.DataContext;
@@ -15,7 +13,6 @@ using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
-using ACSDining.Infrastructure.Identity;
 using Microsoft.Practices.ServiceLocation;
 using DayOfWeek = System.DayOfWeek;
 

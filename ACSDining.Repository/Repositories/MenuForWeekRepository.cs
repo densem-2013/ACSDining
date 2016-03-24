@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
@@ -92,7 +93,14 @@ namespace ACSDining.Repository.Repositories
             int year)
         {
             MenuForWeek mfw =
-                repository.Queryable()
+                repository.Query()
+                    .Include(wm => wm.MenuForDay.Select(dm => dm.Dishes.Select(d => d.DishType)))
+                    .Include(wm => wm.MenuForDay.Select(dm => dm.Dishes.Select(d => d.DishDetail)))
+                    .Include(wm => wm.Orders)
+                    .Include(wm => wm.PlannedOrderMenus)
+                    .Include(wm => wm.WorkingWeek.Year)
+                    .Include(wm => wm.WorkingWeek.WorkingDays.Select(d=>d.DayOfWeek))
+                    .Select()
                     .FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
 
             return repository.GetMapWeekMenuDto(mfw);

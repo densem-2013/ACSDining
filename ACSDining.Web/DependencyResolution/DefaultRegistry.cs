@@ -23,6 +23,7 @@ using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
+using StructureMap.Web.Pipeline;
 
 namespace ACSDining.Web.DependencyResolution {
     using StructureMap.Configuration.DSL;
