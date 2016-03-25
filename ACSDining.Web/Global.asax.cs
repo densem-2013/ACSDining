@@ -9,7 +9,7 @@ namespace ACSDining.Web
     {
         protected void Application_Start()
         {
-              AreaRegistration.RegisterAllAreas();
+              AreaRegistration.RegisterAllAreas(); 
               GlobalConfiguration.Configure(WebApiConfig.Register);
               ModelBinders.Binders.DefaultBinder = new PerpetuumSoft.Knockout.KnockoutModelBinder();
               GlobalConfiguration.Configuration.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;

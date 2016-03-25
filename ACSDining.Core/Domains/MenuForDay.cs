@@ -16,21 +16,26 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity;
     using System.Threading.Tasks;
-    
-    public partial class MenuForDay:Entity
+
+    public partial class MenuForDay : Entity
     {
         public MenuForDay()
         {
-            Dishes=new List<Dish>();
+            Dishes = new List<Dish>();
         }
+
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
         public double TotalPrice { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<Dish> Dishes { get; set; }
+
         [JsonIgnore]
         public virtual WorkingDay WorkingDay { get; set; }
+
         [JsonIgnore]
         public virtual WorkingWeek WorkingWeek { get; set; }
     }

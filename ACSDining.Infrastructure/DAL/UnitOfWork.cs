@@ -13,7 +13,10 @@ using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.Identity;
+using Microsoft.Owin;
 using Microsoft.Practices.ServiceLocation;
+using Microsoft.AspNet.Identity.Owin;
 using DayOfWeek = System.DayOfWeek;
 
 namespace ACSDining.Infrastructure.DAL
@@ -32,9 +35,9 @@ namespace ACSDining.Infrastructure.DAL
 
         #region Constuctor/Dispose
 
-        public UnitOfWork(IDataContextAsync dataContext)
+        public UnitOfWork(/*IDataContextAsync dataContext*/)
         {
-            _dataContext = dataContext;
+            _dataContext = ApplicationDbContext.Create();//dataContext;
             _repositories = new Dictionary<string, dynamic>();
         }
 
@@ -160,6 +163,10 @@ namespace ACSDining.Infrastructure.DAL
         #endregion
         #region _acsContext Members
 
+        //public static IDataContextAsync GetContext()
+        //{
+        //    return _dataContext;
+        //}
         public static Func<int> CurrentWeek = () =>
         {
             CultureInfo myCi = new CultureInfo("uk-UA");

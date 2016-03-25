@@ -1,4 +1,3 @@
-C:\Soft\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Service.dll.config
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Service.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Service.pdb
@@ -39,5 +38,6 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Securit
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Security.Cookies.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\office.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.pdb

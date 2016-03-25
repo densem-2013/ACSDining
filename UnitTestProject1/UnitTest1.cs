@@ -14,6 +14,7 @@ using ACSDining.Infrastructure.Identity;
 using ACSDining.Repository.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
@@ -23,7 +24,8 @@ namespace UnitTestProject1
     public class UnitTest1
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly IDataContextAsync dbcontext=new DataContext();
+        //public readonly IOwinContext _owincontext=new OwinContext();
+        //private readonly IDataContextAsync dbcontext=ApplicationDbContext.Create();
         private readonly IRepositoryAsync<DishType> _dishtypeRepository;
         private readonly IRepositoryAsync<MenuForWeek> _weekmenuRepository;
         private readonly IRepositoryAsync<Year> _yearRepository;
@@ -37,8 +39,9 @@ namespace UnitTestProject1
 
         public UnitTest1()
         {
-            //_db = UnitOfWork.GetContext();
-            _unitOfWork = new UnitOfWork(dbcontext);
+
+            //_unitOfWork = new UnitOfWork();
+            _unitOfWork = new UnitOfWork();
             _dishtypeRepository = _unitOfWork.RepositoryAsync<DishType>();
             _weekmenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();
             _yearRepository = _unitOfWork.RepositoryAsync<Year>();

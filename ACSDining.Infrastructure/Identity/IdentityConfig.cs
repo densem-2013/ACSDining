@@ -24,7 +24,7 @@ namespace ACSDining.Infrastructure.Identity
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options,
             IOwinContext context)
         {
-            UserStore<User> store = new UserStore<User>(context.Get<ApplicationDbContext>()) {AutoSaveChanges = false};
+            UserStore<User> store = new UserStore<User>(ApplicationDbContext.Create()/*context.Get<ApplicationDbContext>()*/) { AutoSaveChanges = false };
 
             var manager = new ApplicationUserManager(store);
             // Configure validation logic for usernames
@@ -80,7 +80,7 @@ namespace ACSDining.Infrastructure.Identity
         public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options,
             IOwinContext context)
         {
-            return new ApplicationRoleManager(new RoleStore<UserRole>(context.Get<ApplicationDbContext>()));
+            return new ApplicationRoleManager(new RoleStore<UserRole>(ApplicationDbContext.Create()/*context.Get<ApplicationDbContext>()*/));
         }
     }
 

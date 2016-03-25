@@ -8,7 +8,10 @@ namespace ACSDining.Web.Migrations
 
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-        string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
+        private string _path =
+            AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
+            @"ACSDining.Core\DBinitial\DishDetails.xml";
+
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
@@ -22,7 +25,7 @@ namespace ACSDining.Web.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
 
             //
-            ApplicationDbInitializer.InitializeIdentityForEF(context);
+            ApplicationDbInitializer.InitializeIdentityForEF(context, _path);
             var dishes = ApplicationDbInitializer.GetDishesFromXML(context, _path);
             ApplicationDbInitializer.CreateWorkingDays(context);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);

@@ -202,8 +202,6 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Pract
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Newtonsoft.Json.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\NLog.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Owin.dll
-C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\StructureMap.dll
-C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\StructureMap.Net4.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\ACSDining.Core.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\EntityFramework.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\EntityFramework.SqlServer.xml
@@ -220,11 +218,8 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Pract
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Newtonsoft.Json.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\NLog.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\StructureMap.pdb
-C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\StructureMap.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\StructureMap.Net4.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csprojResolveAssemblyReference.cache
-C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.dll
-C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Web.Migrations.Initial.resources
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csproj.GenerateResource.Cache
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.pdb
