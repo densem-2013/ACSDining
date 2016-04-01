@@ -11,7 +11,7 @@ using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
 {
-    public interface IMenuForWeekService
+    public interface IMenuForWeekService: IService<MenuForWeek>
     {
         double[] UnitWeekPrices(int menuforweekid);
 
@@ -33,7 +33,7 @@ namespace ACSDining.Service
 
         void UpdateMenuForDay(MenuForDayDto menuforday);
 
-        WeekMenuDto CreateNextWeekMenu(WeekYearDTO weekyear);
+        MenuForWeek CreateNextWeekMenu(WeekYearDTO weekyear);
 
         Task<bool> DeleteMenuForWeek(int menuid);
     }
@@ -65,12 +65,28 @@ namespace ACSDining.Service
 
         public List<int> WeekNumbers()
         {
-            return _repository.GetWeekNumbers();
+            try
+            {
+                return _repository.GetWeekNumbers();
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
         }
 
         public double SummaryPrice(UserOrdersDTO usorder, int numweek, int year)
         {
-            return _repository.GetSummaryPrice(usorder, numweek, year);
+            try
+            {
+                return _repository.GetSummaryPrice(usorder, numweek, year);
+            }
+            catch (Exception)
+            {
+                    
+                throw;
+            }
         }
 
         public IQueryable<MenuForWeek> GetAll()
@@ -85,7 +101,14 @@ namespace ACSDining.Service
 
         public IQueryable<string> GetCategories()
         {
-            return _repository.GetRepository<DishType>().Queryable().OrderBy(d => d.Id).Select(dt => dt.Category);
+            try
+            {
+                return _repository.GetRepository<DishType>().Queryable().ToList().OrderBy(d => d.Id).Select(dt => dt.Category).AsQueryable();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void UpdateMenuForDay(MenuForDayDto menuforday)
@@ -93,7 +116,7 @@ namespace ACSDining.Service
             _repository.UpdateMenuForDay(menuforday);
         }
 
-        public WeekMenuDto CreateNextWeekMenu(WeekYearDTO weekyear)
+        public MenuForWeek CreateNextWeekMenu(WeekYearDTO weekyear)
         {
             return _repository.CreateNextWeekMenu(weekyear);
         }

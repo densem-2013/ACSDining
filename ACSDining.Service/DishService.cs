@@ -9,7 +9,7 @@ using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
 {
-    public interface IDishService
+    public interface IDishService: IService<Dish>
     {
         List<DishModelDto> GetAllDishModelDto();
         List<DishModelDto> GetDishModelDtoByCategory(string category);

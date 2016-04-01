@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
+using ACSDining.Core.Infrastructure;
+using ACSDining.Core.Repositories;
+using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Service;
@@ -17,9 +20,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     {
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
+        private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public PaimentController(IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
+        public PaimentController(IUnitOfWorkAsync unitOfWorkAsync, IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
         {
+            //IRepositoryAsync<MenuForWeek> weekRepo = unitOfWorkAsync.RepositoryAsync<MenuForWeek>();
+            //_weekMenuService = new MenuForWeekService(weekRepo);
+            //IRepositoryAsync<OrderMenu> orderRepo = unitOfWorkAsync.RepositoryAsync<OrderMenu>();
+            //_orderMenuService = new OrderMenuService(orderRepo);
+            _unitOfWork = unitOfWorkAsync;
             _weekMenuService = weekMenuService;
             _orderMenuService = orderMenuService;
         }
@@ -98,9 +107,21 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             order.WeekPaid = pai;
             order.Balance -= order.WeekPaid;
 
-            _orderMenuService.UpdateOrderMenu(order);
+            order.ObjectState=ObjectState.Modified;
+
+            _orderMenuService.Update(order);
+            await _unitOfWork.SaveChangesAsync();
 
             return Ok(order.Balance);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

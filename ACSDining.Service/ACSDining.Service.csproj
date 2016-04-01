@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="DishService.cs" />
     <Compile Include="IService.cs" />
+    <Compile Include="MenuForDayService.cs" />
     <Compile Include="MenuForWeekService.cs" />
     <Compile Include="GetExcelService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

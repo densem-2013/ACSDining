@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using ACSDining.Core.DataContext;
@@ -32,8 +33,8 @@ namespace ACSDining.Infrastructure.Identity
         private readonly Guid _instanceId;
         bool _disposed;
         #endregion Private Fields
-        private static readonly Lazy<ApplicationDbContext> lazy =
-        new Lazy<ApplicationDbContext>(() => new ApplicationDbContext());
+        //private static readonly Lazy<ApplicationDbContext> lazy =
+        //new Lazy<ApplicationDbContext>(() => new ApplicationDbContext());
 
         public Guid InstanceId { get { return _instanceId; } }
 
@@ -41,7 +42,7 @@ namespace ACSDining.Infrastructure.Identity
             : base("name=ApplicationDbContext", throwIfV1Schema: false)
         {
             _instanceId = Guid.NewGuid();
-            //Configuration.LazyLoadingEnabled = false;
+            Configuration.LazyLoadingEnabled = false;
             Configuration.ProxyCreationEnabled = false;
         }
 
@@ -67,8 +68,8 @@ namespace ACSDining.Infrastructure.Identity
 
         public static ApplicationDbContext Create()
         {
-           // return new ApplicationDbContext();
-            return lazy.Value;
+             return new ApplicationDbContext();
+            //return lazy.Value;
         }
 
         public virtual DbSet<Dish> Dishes { get; set; }
@@ -88,6 +89,9 @@ namespace ACSDining.Infrastructure.Identity
         public virtual DbSet<FoodQuantity> FoodQuantities { get; set; }
         public virtual DbSet<WorkingWeek> WorkingWeeks { get; set; }
         public virtual DbSet<WorkingDay> WorkingDays { get; set; }
+        //public virtual DbSet<UserRoleRelation>  UserRoleRelations { get; set; }
+        //public override DbSet<User> Users { get; set; }
+        //public new DbSet<UserRole> Roles { get; set; }
 
         public override int SaveChanges()
         {

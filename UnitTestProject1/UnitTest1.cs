@@ -5,8 +5,9 @@ using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
-using ACSDining.Core.DataContext;
+//using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
+using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
@@ -41,7 +42,7 @@ namespace UnitTestProject1
         {
 
             //_unitOfWork = new UnitOfWork();
-            _unitOfWork = new UnitOfWork();
+            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
             _dishtypeRepository = _unitOfWork.RepositoryAsync<DishType>();
             _weekmenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();
             _yearRepository = _unitOfWork.RepositoryAsync<Year>();
@@ -301,7 +302,13 @@ namespace UnitTestProject1
                     }).ToArray();
                     foreach (User user in users)
                     {
-                        if (role != null) user.Roles.Add(new IdentityUserRole { RoleId = role.Id, UserId = user.Id });
+                        if (role != null)
+                            user.Roles.Add(new UserRoleRelation
+                            {
+                                RoleId = role.Id,
+                                UserId = user.Id,
+                                ObjectState = ObjectState.Added
+                            });
                         _userRepository.Insert(user);
                     }
                     Assert.IsTrue(_userRepository.Queryable().Any());

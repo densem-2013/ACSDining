@@ -6,9 +6,9 @@ using LinqKit;
 
 namespace ACSDining.Service
 {
-    public interface IWorkDaysService
+    public interface IWorkDaysService:IService<WorkingWeek>
     {
-        WorkWeekDto GetWorkweekByWeekYear(int week, int year);
+        WorkWeekDto GetWorkWeekByWeekYear(int week, int year);
         int UpdateWorkDays(WorkWeekDto weekModel);
     }
 
@@ -22,7 +22,7 @@ namespace ACSDining.Service
             _repository = repository;
         }
 
-        public WorkWeekDto GetWorkweekByWeekYear(int week, int year)
+        public WorkWeekDto GetWorkWeekByWeekYear(int week, int year)
         {
             return
                 WorkWeekDto.MapWorkWeekDto(

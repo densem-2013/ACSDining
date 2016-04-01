@@ -15,7 +15,7 @@ namespace ACSDining.Web.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            AutomaticMigrationDataLossAllowed = false;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(ApplicationDbContext context)
@@ -25,13 +25,13 @@ namespace ACSDining.Web.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
 
             //
-            ApplicationDbInitializer.InitializeIdentityForEF(context, _path);
-            var dishes = ApplicationDbInitializer.GetDishesFromXML(context, _path);
-            ApplicationDbInitializer.CreateWorkingDays(context);
-            ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
-            _path = _path.Replace(@"DishDetails", "Employeers");
-            ApplicationDbInitializer.GetUsersFromXml(context, _path);
-            ApplicationDbInitializer.CreateOrders(context);
+            //ApplicationDbInitializer.InitializeIdentityForEF(context, _path);
+            //var dishes = ApplicationDbInitializer.GetDishesFromXML(context, _path);
+            //ApplicationDbInitializer.CreateWorkingDays(context);
+            //ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
+            //_path = _path.Replace(@"DishDetails", "Employeers");
+            //ApplicationDbInitializer.GetUsersFromXml(context, _path);
+            //ApplicationDbInitializer.CreateOrders(context);
 
         }
 

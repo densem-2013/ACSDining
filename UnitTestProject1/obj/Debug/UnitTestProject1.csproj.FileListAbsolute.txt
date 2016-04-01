@@ -241,11 +241,11 @@ C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Uni
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebActivatorEx.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.Cookies.dll
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.Mvc.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.WebHost.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.Owin.dll
-C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\PerpetuumSoft.Knockout.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.OAuth.dll
@@ -278,11 +278,11 @@ C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Optimization
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.Cookies.xml
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.Mvc.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.WebHost.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.Owin.xml
-C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\office.xml

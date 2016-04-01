@@ -16,25 +16,37 @@ namespace ACSDining.Web.Controllers
     [Authorize(Roles = "Administrator")]
     public class AccountController : Controller
     {
+       // private IUserAccountService _accountService;
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private readonly PrincipalContext _ad;
-        //private readonly IUnitOfWork _unitOfWork;
+        //private readonly IUnitOfWorkAsync _unitOfWork;
+        //private readonly IRepositoryAsync<User> _useRepositoryAsync; 
         //private readonly IRepository<User> _userRepository;
         //private readonly IRepository<UserRole> _roleRepository;
-        public AccountController()
-        {
-            _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
-        //    _unitOfWork = new UnitOfWork();
-        //    _userRepository = _unitOfWork.Repository<User>();
-        //    _roleRepository = _unitOfWork.Repository<UserRole>();
-        }
-
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
-            UserManager = userManager;
-            SignInManager = signInManager;
+            _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
+            //_unitOfWork = unitOfWork;
+            //_useRepositoryAsync = unitOfWork.RepositoryAsync<User>();
+            //_accountService = new UserAccountService(_useRepositoryAsync);
+            //UserStore<User> store = new UserStore<User>(UnitOfWork.GetContext());
+            _userManager = userManager;
+            _signInManager = signInManager;
+            //    _unitOfWork = new UnitOfWork();
+            //    _userRepository = _unitOfWork.Repository<User>();
+            //    _roleRepository = _unitOfWork.Repository<UserRole>();
         }
+
+        //public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, IUnitOfWorkAsync unitOfWork)
+        //{
+        //    UserManager = userManager;
+        //    SignInManager = signInManager;
+        //    _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
+        //    _unitOfWork = unitOfWork;
+        //    _useRepositoryAsync = _unitOfWork.RepositoryAsync<User>();
+        //    _accountService = new UserAccountService(_useRepositoryAsync);
+        //}
 
         public ApplicationSignInManager SignInManager
         {
@@ -83,7 +95,7 @@ namespace ACSDining.Web.Controllers
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
             //var result = await SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
-            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
+            var result = await _signInManager.ValidateUserFromAd(model.LogIn, model.Password);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -92,11 +104,11 @@ namespace ACSDining.Web.Controllers
                     {
                         result =
                             await
-                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
                         if (result == SignInStatus.Success)
                         {
-                            if (UserManager.IsInRole(user.Id, "Employee"))
+                            if (await UserManager.IsInRoleAsync(user.Id, "Employee"))
                             {
                                 user.LastLoginTime = DateTime.UtcNow;
                                 Session["Fname"] = user.FirstName;
@@ -108,20 +120,20 @@ namespace ACSDining.Web.Controllers
                         }
                         else
                         {
-                            //using (ApplicationDbContext context = new ApplicationDbContext())
-                            //{
+                        //    //using (ApplicationDbContext context = new ApplicationDbContext())
+                        //    //{
 
-                            User userchangePass = await UserManager.FindByNameAsync(model.LogIn);
+                            User userchangePass = UserManager.FindByName(model.LogIn);
                                 if (userchangePass != null)
                                 {
-                                    userchangePass.PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password);
+                                    userchangePass.PasswordHash = _userManager.PasswordHasher.HashPassword(model.Password);
                                     //_userRepository.Update(userchangePass);
-                                    UserManager.Update(userchangePass);
+                                    _userManager.Update(userchangePass);
                                     //context.SaveChanges();
                                     await Login(model, returnUrl);
                                 }
-                                //context.Users.
-                            //}
+                        //        //context.Users.
+                        //    //}
                         }
                     }
                     else
@@ -144,8 +156,8 @@ namespace ACSDining.Web.Controllers
                                     LastLoginTime = DateTime.UtcNow,
                                     RegistrationDate = DateTime.UtcNow,
                                     EmailConfirmed = true,
-                                    SecurityStamp = Guid.NewGuid().ToString(),
-                                    PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
+                                   // SecurityStamp = Guid.NewGuid().ToString(),
+                                    PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
                                 };
 
 
@@ -153,13 +165,14 @@ namespace ACSDining.Web.Controllers
                             //_userRepository.Insert(user);
                             //context.SaveChanges();
                         var res = UserManager.CreateAsync(user).Result;
-                        if (res!=null)
+                        //var res = _accountService.CreateUser(user);
+                        if (res==IdentityResult.Success)
                         {
                             if (user != null) await UserManager.AddToRoleAsync(user.Id, "Employee");
                         }
 
                             await
-                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
 
                         if (user != null)
@@ -188,26 +201,26 @@ namespace ACSDining.Web.Controllers
                     var specuser = UserManager.FindByName(model.LogIn);
                     if (specuser != null)
                     {
-                        if (UserManager.IsInRole(specuser.Id, "Administrator"))
+                        if (await UserManager.IsInRoleAsync(specuser.Id, "Administrator"))
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["Fname"] = specuser.FirstName;
                             Session["Lname"] = specuser.LastName;
                             Session["LastLoginDate"] = specuser.LastLoginTime;
                             await
-                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
 
                             return RedirectToAction("Accounts", "Admin", new {Area = "AdminArea"});
                         }
-                        if (UserManager.IsInRole(specuser.Id, "SuperUser"))
+                        if (await UserManager.IsInRoleAsync(specuser.Id, "SuperUser"))
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["Fname"] = specuser.FirstName;
                             Session["Lname"] = specuser.LastName;
                             Session["LastLoginDate"] = specuser.LastLoginTime;
                             await
-                                SignInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
 
                             return RedirectToAction("WeekMenu", "SU_", new {Area = "SU_Area"});
@@ -289,12 +302,13 @@ namespace ACSDining.Web.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     UserName = model.UserName,
-                    RegistrationDate = DateTime.UtcNow
+                    RegistrationDate = DateTime.UtcNow,
+                    PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
                 };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                var result = UserManager.Create(user);
+                if (result==IdentityResult.Success)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    await _signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
                     // Дополнительные сведения о том, как включить подтверждение учетной записи и сброс пароля, см. по адресу: http://go.microsoft.com/fwlink/?LinkID=320771
                     // Отправка сообщения электронной почты с этой ссылкой
@@ -304,7 +318,7 @@ namespace ACSDining.Web.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
-                AddErrors(result);
+                AddErrors(IdentityResult.Failed());
             }
 
             // Появление этого сообщения означает наличие ошибки; повторное отображение формы
@@ -313,16 +327,16 @@ namespace ACSDining.Web.Controllers
 
         //
         // GET: /Account/ConfirmEmail
-        [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
-                return View("Error");
-            }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        }
+        //[AllowAnonymous]
+        //public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        //{
+        //    if (userId == null || code == null)
+        //    {
+        //        return View("Error");
+        //    }
+        //    var result = await UserManager.ConfirmEmailAsync(userId, code);
+        //    return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        //}
 
         //
         //// GET: /Account/ForgotPassword

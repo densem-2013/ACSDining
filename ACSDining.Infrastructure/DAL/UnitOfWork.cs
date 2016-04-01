@@ -13,10 +13,7 @@ using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
-using ACSDining.Infrastructure.Identity;
-using Microsoft.Owin;
 using Microsoft.Practices.ServiceLocation;
-using Microsoft.AspNet.Identity.Owin;
 using DayOfWeek = System.DayOfWeek;
 
 namespace ACSDining.Infrastructure.DAL
@@ -24,8 +21,9 @@ namespace ACSDining.Infrastructure.DAL
     public class UnitOfWork : IUnitOfWorkAsync
     {
         #region Private Fields
-
-        private IDataContextAsync _dataContext;
+        
+        private static IDataContextAsync _dataContext;
+       // private static ApplicationDbContext _dataContext;
         private bool _disposed;
         private ObjectContext _objectContext;
         private DbTransaction _transaction;
@@ -35,12 +33,16 @@ namespace ACSDining.Infrastructure.DAL
 
         #region Constuctor/Dispose
 
-        public UnitOfWork(/*IDataContextAsync dataContext*/)
+        public UnitOfWork(IDataContextAsync dataContext)
         {
-            _dataContext = ApplicationDbContext.Create();//dataContext;
+            _dataContext = dataContext;
             _repositories = new Dictionary<string, dynamic>();
         }
 
+        //static UnitOfWork()
+        //{
+        //    _dataContext = _dataContext ?? new ApplicationDbContext();
+        //}
         public void Dispose()
         {
             Dispose(true);
@@ -109,6 +111,11 @@ namespace ACSDining.Infrastructure.DAL
             return _dataContext.SaveChangesAsync(cancellationToken);
         }
 
+        //public static ApplicationDbContext GetContext()
+        //{
+        //    _dataContext = _dataContext ?? new ApplicationDbContext();
+        //    return _dataContext;
+        //}
         public IRepositoryAsync<TEntity> RepositoryAsync<TEntity>() where TEntity : class, IObjectState
         {
             if (ServiceLocator.IsLocationProviderSet)

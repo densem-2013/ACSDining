@@ -3,6 +3,7 @@ using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DAL;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -24,7 +25,7 @@ namespace ACSDining.Infrastructure.Identity
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options,
             IOwinContext context)
         {
-            UserStore<User> store = new UserStore<User>(ApplicationDbContext.Create()/*context.Get<ApplicationDbContext>()*/) { AutoSaveChanges = false };
+            UserStore<User> store = new UserStore<User>(/*UnitOfWork.GetContext()*/context.Get<ApplicationDbContext>());
 
             var manager = new ApplicationUserManager(store);
             // Configure validation logic for usernames
@@ -80,7 +81,7 @@ namespace ACSDining.Infrastructure.Identity
         public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options,
             IOwinContext context)
         {
-            return new ApplicationRoleManager(new RoleStore<UserRole>(ApplicationDbContext.Create()/*context.Get<ApplicationDbContext>()*/));
+            return new ApplicationRoleManager(new RoleStore<UserRole>(context.Get<ApplicationDbContext>()));
         }
     }
 

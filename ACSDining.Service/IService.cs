@@ -9,7 +9,7 @@ using ACSDining.Core.Repositories;
 
 namespace ACSDining.Service
 {
-    public interface IService<TEntity> where TEntity : IObjectState
+    public interface IService<TEntity> where TEntity : class, IObjectState
     {
         TEntity Find(params object[] keyValues);
         IQueryable<TEntity> SelectQuery(string query, params object[] parameters);

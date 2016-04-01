@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
+using ACSDining.Core.Repositories;
+using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Service;
 
@@ -16,9 +18,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class DishesController : ApiController
     {
         private readonly IDishService _dishService;
+        private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public DishesController(IDishService dishService)
+        public DishesController(IUnitOfWorkAsync unitOfWork, IDishService dishService)
         {
+           // IRepositoryAsync<Dish> _dishRepo = unitOfWork.RepositoryAsync<Dish>();
+            _unitOfWork = unitOfWork;
             _dishService = dishService;
         }
 
@@ -104,6 +109,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private bool DishExists(int id)
         {
             return _dishService.AllDish().Any(e => e.DishID == id);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

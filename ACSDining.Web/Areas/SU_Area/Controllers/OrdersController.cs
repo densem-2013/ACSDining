@@ -2,6 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using ACSDining.Core.Domains;
+using ACSDining.Core.Repositories;
+using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Service;
@@ -13,9 +16,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     {
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
+        private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public OrdersController(IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
+        public OrdersController(IUnitOfWorkAsync unitOfWorkAsync, IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
         {
+            //IRepositoryAsync<MenuForWeek> weekRepo = unitOfWorkAsync.RepositoryAsync<MenuForWeek>();
+            //_weekMenuService = new MenuForWeekService(weekRepo);
+            //IRepositoryAsync<OrderMenu> orderRepo = unitOfWorkAsync.RepositoryAsync<OrderMenu>();
+            //_orderMenuService = new OrderMenuService(orderRepo);
+            _unitOfWork = unitOfWorkAsync;
             _weekMenuService = weekMenuService;
             _orderMenuService = orderMenuService;
         }
@@ -43,6 +52,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             int yearnum = year ?? DateTime.Now.Year;
 
             return await Task.FromResult(_weekMenuService.SummaryPrice(usorder, week, yearnum));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

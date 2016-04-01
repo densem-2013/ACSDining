@@ -196,10 +196,11 @@ namespace ACSDining.Repository.Repositories
             MenuForWeek mfwModel = repository.Queryable().FirstOrDefault(mfw => mfw.MenuForDay.Any(mfd => mfd.ID == menuforday.ID));
 
             mfwModel.SummaryPrice = mfwModel.MenuForDay.Sum(mfd => mfd.TotalPrice);
+
             repository.Update(mfwModel);
         }
 
-        public static WeekMenuDto CreateNextWeekMenu(this IRepositoryAsync<MenuForWeek> repository, WeekYearDTO weekyear)
+        public static MenuForWeek CreateNextWeekMenu(this IRepositoryAsync<MenuForWeek> repository, WeekYearDTO weekyear)
         {
             WeekYearDTO nextweekDto = UnitOfWork.GetNextWeekYear(weekyear);
             Year nextYear =
@@ -236,16 +237,7 @@ namespace ACSDining.Repository.Repositories
 
             };
 
-            try
-            {
-                repository.Insert(nextWeek);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            WeekMenuDto dto = repository.GetMapWeekMenuDto(nextWeek, true);
-            return dto;
+            return nextWeek;
         }
     }
 }

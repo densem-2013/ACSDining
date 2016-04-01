@@ -10,7 +10,7 @@ using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
 {
-    public interface IGetExcelService
+    public interface IGetExcelService: IService<OrderMenu>
     {
         string PaimentsDtoToExcelFile(PaimentsDTO paimodel);
     }

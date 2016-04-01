@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
+using ACSDining.Core.Infrastructure;
+using ACSDining.Core.Repositories;
+using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Service;
@@ -19,10 +22,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class WeekMenuController : ApiController
     {
         private readonly IMenuForWeekService _weekmenuService;
+        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IDishService _dishService;
+        private readonly IMenuforDayService _daymenuRepository; 
 
-        public WeekMenuController(IMenuForWeekService weekmenuService)
+        public WeekMenuController(IUnitOfWorkAsync unitOfWork, IMenuForWeekService weekmenuService,
+            IDishService dishService, IMenuforDayService daymenuRepository)
         {
+            //IRepositoryAsync<MenuForWeek> _menuRepositoryAsync = unitOfWork.RepositoryAsync<MenuForWeek>();
+            //_weekmenuService = new MenuForWeekService(_menuRepositoryAsync);
+            _unitOfWork = unitOfWork;
             _weekmenuService = weekmenuService;
+            _dishService = dishService;
+            _daymenuRepository = daymenuRepository;
         }
 
 
@@ -40,16 +52,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             var dto = _weekmenuService.WeekMenuDtoByWeekYear(week, yearnum);
 
-            return dto;
+            return await Task.FromResult(dto);
         }
 
         [HttpGet]
         [Route("nwMenuExist")]
-        public  Task<bool> IsNexWeekMenuExist(WeekYearDTO weekyear)
+        public Task<bool> IsNexWeekMenuExist(WeekYearDTO weekyear)
         {
             WeekYearDTO nextweeknumber = UnitOfWork.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
-                _weekmenuService.GetWeekMenuByWeekYear(nextweeknumber.Week,nextweeknumber.Year);
+                _weekmenuService.GetWeekMenuByWeekYear(nextweeknumber.Week, nextweeknumber.Year);
 
             return Task.FromResult(nextWeek != null);
         }
@@ -63,16 +75,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         [HttpPut]
         [Route("nextWeekYear")]
-        [ResponseType(typeof(WeekYearDTO))]
-        public Task<WeekYearDTO> GetNextWeekYear([FromBody]WeekYearDTO weekyear)
+        [ResponseType(typeof (WeekYearDTO))]
+        public Task<WeekYearDTO> GetNextWeekYear([FromBody] WeekYearDTO weekyear)
         {
             return Task.FromResult(UnitOfWork.GetNextWeekYear(weekyear));
         }
 
         [HttpPut]
         [Route("prevWeekYear")]
-        [ResponseType(typeof(WeekYearDTO))]
-        public Task<WeekYearDTO> GetPrevWeekYear([FromBody]WeekYearDTO weekyear)
+        [ResponseType(typeof (WeekYearDTO))]
+        public Task<WeekYearDTO> GetPrevWeekYear([FromBody] WeekYearDTO weekyear)
         {
             return Task.FromResult(UnitOfWork.GetPrevWeekYear(weekyear));
         }
@@ -104,11 +116,34 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("update")]
         public async Task<IHttpActionResult> UpdateMenuForDay([FromBody] MenuForDayDto menuforday)
         {
+            MenuForDay menuFd = _daymenuRepository.Find(menuforday.ID);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _weekmenuService.UpdateMenuForDay(menuforday);
+            if (menuFd == null)
+            {
+                return NotFound();
+            }
+            List<Dish> dishes =
+                menuforday.Dishes.SelectMany(d => _dishService.AllDish().Where(dish => dish.DishID == d.DishID)).ToList();
+
+            menuFd.Dishes = dishes;
+            menuFd.TotalPrice = menuforday.TotalPrice;
+
+            menuFd.ObjectState = ObjectState.Modified;
+            _daymenuRepository.Update(menuFd);
+
+
+            MenuForWeek mfwModel = _weekmenuService.GetAll().ToList().FirstOrDefault(mfw => mfw.MenuForDay.Any(mfd => mfd.ID == menuforday.ID));
+
+            mfwModel.SummaryPrice = mfwModel.MenuForDay.Sum(mfd => mfd.TotalPrice);
+
+            mfwModel.ObjectState = ObjectState.Modified;
+            _weekmenuService.Update(mfwModel);
+
+            await _unitOfWork.SaveChangesAsync();
+
             return StatusCode(HttpStatusCode.OK);
         }
 
@@ -116,7 +151,28 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("create")]
         public async Task<WeekMenuDto> CreateNextWeekMenu(WeekYearDTO weekyear)
         {
-            return await Task.FromResult(_weekmenuService.CreateNextWeekMenu(weekyear));
+            MenuForWeek nextWeek = _weekmenuService.CreateNextWeekMenu(weekyear);
+
+            if (nextWeek == null)
+            {
+                return null;
+            }
+
+            nextWeek.ObjectState = ObjectState.Added;
+
+            try
+            {
+                _weekmenuService.Insert(nextWeek);
+            }
+
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return await Task.FromResult(_weekmenuService.MapWeekMenuDto(nextWeek, true));
         }
 
         // DELETE api/WeekMenu/5
@@ -125,11 +181,27 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (MenuForWeek))]
         public async Task<IHttpActionResult> DeleteMenuForWeek(int menuid)
         {
+            MenuForWeek mfw = _weekmenuService.Find(menuid);
+            if (mfw == null)
+            {
+                return NotFound();
+            }
 
-            var res = await _weekmenuService.DeleteMenuForWeek(menuid);
+            mfw.ObjectState = ObjectState.Deleted;
+            _weekmenuService.Delete(mfw);
 
-            return Ok(res);
+            await _unitOfWork.SaveChangesAsync();
+
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

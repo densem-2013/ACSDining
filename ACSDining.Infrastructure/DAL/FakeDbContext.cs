@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
 using ACSDining.Core.DataContext;
+using ACSDining.Core.Domains;
 using ACSDining.Core.Infrastructure;
 
 namespace ACSDining.Infrastructure.DAL

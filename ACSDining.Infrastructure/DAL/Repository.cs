@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ACSDining.Core.DataContext;
+//using ACSDining.Core.DataContext;
 using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
@@ -28,11 +29,12 @@ namespace ACSDining.Infrastructure.DAL
 
         public Repository(IDataContextAsync context, IUnitOfWorkAsync unitOfWork)
         {
+           // _context = context;
             _context = context;
             _unitOfWork = unitOfWork;
 
             // Temporarily for FakeDbContext, Unit Test and Fakes
-            var dbContext = context as ApplicationDbContext;
+            var dbContext = _context as ApplicationDbContext;
 
             if (dbContext != null)
             {

@@ -8,7 +8,7 @@ using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
 {
-    public interface IOrderMenuService
+    public interface IOrderMenuService: IService<OrderMenu>
     {
         OrdersDTO OrdersDtoByWeekYear(int week, int year);
         OrderMenu GetOrderMenuByWeekYear(int week, int year);

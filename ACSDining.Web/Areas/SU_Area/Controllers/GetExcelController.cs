@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Mvc;
+using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Service;
 
@@ -12,9 +13,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     {
 
         private readonly IGetExcelService _getExcelService;
+        private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public GetExcelController(IGetExcelService getExcelService)
+        public GetExcelController(IUnitOfWorkAsync unitOfWork,IGetExcelService getExcelService)
         {
+            _unitOfWork = unitOfWork;
             _getExcelService = getExcelService;
         }
 
@@ -27,6 +30,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             string filename = _getExcelService.PaimentsDtoToExcelFile(paimodel);
             return new FilePathResult(filename, "multipart/form-data");
         }
-          
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

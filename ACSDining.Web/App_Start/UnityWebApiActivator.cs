@@ -1,6 +1,9 @@
 ﻿using System.Web.Http;
 using ACSDining.Web;
+using Microsoft.Practices.Unity.Mvc;
 using Microsoft.Practices.Unity.WebApi;
+using UnityDependencyResolver = Microsoft.Practices.Unity.WebApi.UnityDependencyResolver;
+
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(UnityWebApiActivator), "Start")]
 [assembly: WebActivatorEx.ApplicationShutdownMethod(typeof(UnityWebApiActivator), "Shutdown")]
@@ -14,9 +17,9 @@ namespace ACSDining.Web
         public static void Start() 
         {
             // Use UnityHierarchicalDependencyResolver if you want to use a new child container for each IHttpController resolution.
-            // var resolver = new UnityHierarchicalDependencyResolver(UnityConfig.GetConfiguredContainer());
-            var resolver = new UnityDependencyResolver(UnityConfig.GetConfiguredContainer());
-
+            var resolver = new UnityHierarchicalDependencyResolver(UnityConfig.GetConfiguredContainer());
+            //var resolver = new UnityDependencyResolver(UnityConfig.GetConfiguredContainer());
+            // Microsoft.Web.Infrastructure.DynamicModuleHelper.DynamicModuleUtility.RegisterModule(typeof(UnityPerRequestHttpModule));
             GlobalConfiguration.Configuration.DependencyResolver = resolver;
         }
 
