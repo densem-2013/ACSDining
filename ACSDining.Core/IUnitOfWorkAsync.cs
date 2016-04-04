@@ -8,6 +8,6 @@ namespace ACSDining.Core.UnitOfWork
     {
         Task<int> SaveChangesAsync();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-        IRepositoryAsync<TEntity> RepositoryAsync<TEntity>() where TEntity : class; 
+        IRepositoryAsync<TEntity> RepositoryAsync<TEntity>() where TEntity : class;
     }
 }

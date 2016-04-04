@@ -3,9 +3,13 @@ using System.Data.Entity;
 using System.Web;
 ////using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
+using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Service;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using Microsoft.Practices.Unity;
 
@@ -43,26 +47,29 @@ namespace ACSDining.Web
             // container.LoadConfiguration();
             // TODO: Register your types here
             container
-                .RegisterType<DbContext>(new InjectionFactory(o => new ApplicationDbContext()))
-                //.RegisterType<DbContext, ApplicationDbContext>(new HierarchicalLifetimeManager())
                 .RegisterType<IUnitOfWorkAsync, UnitOfWork>(new HierarchicalLifetimeManager())
-                //.RegisterType<DbContext>(new InjectionFactory(o=>UnitOfWork.GetContext()))
-                .RegisterType<IAuthenticationManager>(
-                    new InjectionFactory(o => HttpContext.Current.GetOwinContext().Authentication))
-                .RegisterType
-                <Microsoft.AspNet.Identity.IUserStore<User>, Microsoft.AspNet.Identity.EntityFramework.UserStore<User>>(
-                    new HierarchicalLifetimeManager());
-            //.RegisterType<IMenuForWeekService, MenuForWeekService>(new HierarchicalLifetimeManager())
-            //.RegisterType<IRepositoryAsync<MenuForWeek>, Repository<MenuForWeek>>(new HierarchicalLifetimeManager())
-            //.RegisterType<IOrderMenuService, OrderMenuService>(new HierarchicalLifetimeManager())
-            //.RegisterType<IRepositoryAsync<OrderMenu>, Repository<OrderMenu>>(new HierarchicalLifetimeManager())
-            //.RegisterType<IGetExcelService, GetExcelService>(new HierarchicalLifetimeManager())
+                .RegisterType<IAuthenticationManager>(new InjectionFactory(o => HttpContext.Current.GetOwinContext().Authentication))
+                .RegisterType<IUserStore<User>, UserStore<User>>(new TransientLifetimeManager(), new InjectionConstructor(new ApplicationDbContext()))
+                .RegisterType<IRoleStore<UserRole, string>>(new TransientLifetimeManager())
+            //.RegisterType<DbContext>(new InjectionFactory(o => new ApplicationDbContext()))
+            //.RegisterType<DbContext, ApplicationDbContext>(new HierarchicalLifetimeManager())
+            //.RegisterType<DbContext>(new InjectionFactory(o=>UnitOfWork.GetContext()))
+            //.RegisterType<IAuthenticationManager>(
+            //    new InjectionFactory(o => HttpContext.Current.GetOwinContext().Authentication))
+            //.RegisterType
+            //<Microsoft.AspNet.Identity.IUserStore<User>, Microsoft.AspNet.Identity.EntityFramework.UserStore<User>>(
+            //    new HierarchicalLifetimeManager());
+            .RegisterType<IMenuForWeekService, MenuForWeekService>(new HierarchicalLifetimeManager())
+            .RegisterType<IRepositoryAsync<MenuForWeek>, Repository<MenuForWeek>>(new HierarchicalLifetimeManager())
+            .RegisterType<IOrderMenuService, OrderMenuService>(new HierarchicalLifetimeManager())
+            .RegisterType<IRepositoryAsync<OrderMenu>, Repository<OrderMenu>>(new HierarchicalLifetimeManager())
+            .RegisterType<IGetExcelService, GetExcelService>(new HierarchicalLifetimeManager())
             //.RegisterType<IUserAccountService, UserAccountService>(new HierarchicalLifetimeManager())
-            //.RegisterType<IRepositoryAsync<User>, Repository<User>>(new HierarchicalLifetimeManager())
-            //.RegisterType<IWorkDaysService, WorkDaysService>(new HierarchicalLifetimeManager())
-            //.RegisterType<IRepositoryAsync<WorkingWeek>, Repository<WorkingWeek>>(new HierarchicalLifetimeManager())
-            //.RegisterType<IDishService, DishService>(new HierarchicalLifetimeManager())
-            //.RegisterType<IRepositoryAsync<Dish>, Repository<Dish>>(new HierarchicalLifetimeManager());
+            .RegisterType<IRepositoryAsync<User>, Repository<User>>(new HierarchicalLifetimeManager())
+            .RegisterType<IWorkDaysService, WorkDaysService>(new HierarchicalLifetimeManager())
+            .RegisterType<IRepositoryAsync<WorkingWeek>, Repository<WorkingWeek>>(new HierarchicalLifetimeManager())
+            .RegisterType<IDishService, DishService>(new HierarchicalLifetimeManager())
+            .RegisterType<IRepositoryAsync<Dish>, Repository<Dish>>(new HierarchicalLifetimeManager());
         }
     }
 }

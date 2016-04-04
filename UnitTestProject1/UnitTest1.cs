@@ -43,7 +43,7 @@ namespace UnitTestProject1
         {
             dataContext = new ApplicationDbContext();
             //_unitOfWork = new UnitOfWork();
-            _unitOfWork = new UnitOfWork(dataContext);
+            _unitOfWork = new UnitOfWork();
             _dishtypeRepository = _unitOfWork.RepositoryAsync<DishType>();
             _weekmenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();
             _yearRepository = _unitOfWork.RepositoryAsync<Year>();

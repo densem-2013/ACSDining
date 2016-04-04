@@ -26,7 +26,7 @@ namespace UnitTestProject1
         {
             //_dbcontext = new DataContext();
             //_owincontext = new OwinContext();
-            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
+            _unitOfWork = new UnitOfWork();
             _weekMenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();
             _menuForWeekService = new MenuForWeekService(_weekMenuRepository);
             IRepositoryAsync<MenuForDay> mfdrepo = _unitOfWork.RepositoryAsync<MenuForDay>();

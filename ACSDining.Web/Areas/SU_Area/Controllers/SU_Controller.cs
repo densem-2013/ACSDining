@@ -59,10 +59,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return View();
         }
 
-        private async void AddInfoToViewData()
+        private void AddInfoToViewData()
         {
             Core.Domains.User user =
-                await UserManager.FindByNameAsync(User.Identity.Name);
+                UserManager.FindByNameAsync(User.Identity.Name).Result;
             user.LastLoginTime = DateTime.UtcNow;
             ViewBag.Fname = user.FirstName;
             ViewData["Lname"] = user.LastName;

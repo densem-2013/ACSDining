@@ -213,6 +213,7 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.Web.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Razor.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Razor.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Deployment.xml
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\UnitTestProject1.dll.config
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\UnitTestProject1.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\UnitTestProject1.pdb
@@ -289,6 +290,5 @@ C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\office.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Razor.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Razor.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Deployment.xml
-C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.pdb

@@ -22,9 +22,9 @@ namespace ACSDining.Infrastructure.DAL
 
         #endregion Private Fields
 
-        public Repository(ApplicationDbContext context, IUnitOfWorkAsync unitOfWork)
+        public Repository(IUnitOfWorkAsync unitOfWork)
         {
-            _context = context;
+            _context =((UnitOfWork) unitOfWork).GetContext();
             _unitOfWork = unitOfWork;
 
             // Temporarily for FakeDbContext, Unit Test and Fakes

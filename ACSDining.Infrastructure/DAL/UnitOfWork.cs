@@ -22,7 +22,7 @@ namespace ACSDining.Infrastructure.DAL
     {
         #region Private Fields
         
-        private static ApplicationDbContext _dataContext;
+        private ApplicationDbContext _dataContext;
         private bool _disposed;
         private ObjectContext _objectContext;
         private DbTransaction _transaction;
@@ -32,12 +32,16 @@ namespace ACSDining.Infrastructure.DAL
 
         #region Constuctor/Dispose
 
-        public UnitOfWork(ApplicationDbContext dataContext)
+        public UnitOfWork()
         {
-            _dataContext = dataContext;
+            _dataContext = new ApplicationDbContext();
             _repositories = new Dictionary<string, dynamic>();
         }
 
+        public ApplicationDbContext GetContext()
+        {
+            return _dataContext;
+        }
         public void Dispose()
         {
             Dispose(true);

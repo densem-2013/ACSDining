@@ -559,6 +559,7 @@ E:\GitProjects\ACSDining\ACSDining.Web\bin\zh-Hant\System.Spatial.resources.dll
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.dll
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll.config
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.pdb
@@ -683,6 +684,5 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ko\System.Spatial.resources.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ru\System.Spatial.resources.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\zh-Hans\System.Spatial.resources.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\zh-Hant\System.Spatial.resources.dll
-C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb

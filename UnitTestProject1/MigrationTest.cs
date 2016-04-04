@@ -24,7 +24,7 @@ namespace UnitTestProject1
         public MigrationTest()
         {
             dataContext = new ApplicationDbContext();
-            _unitOfWork = new UnitOfWork(dataContext);
+            _unitOfWork = new UnitOfWork();
             IRepositoryAsync<WorkingWeek> workRepo = _unitOfWork.RepositoryAsync<WorkingWeek>();
             _workDaysService = new WorkDaysService(workRepo);
             _userManager = new ApplicationUserManager(new UserStore<User>(dataContext));
