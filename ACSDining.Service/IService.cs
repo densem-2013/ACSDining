@@ -4,12 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 
 namespace ACSDining.Service
 {
-    public interface IService<TEntity> where TEntity : class, IObjectState
+    public interface IService<TEntity> where TEntity : class
     {
         TEntity Find(params object[] keyValues);
         IQueryable<TEntity> SelectQuery(string query, params object[] parameters);

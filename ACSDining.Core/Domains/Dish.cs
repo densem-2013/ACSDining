@@ -15,7 +15,7 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class Dish : Entity
+    public partial class Dish 
     {
         public Dish()
         {

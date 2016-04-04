@@ -15,7 +15,7 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class OrderMenu : Entity
+    public partial class OrderMenu 
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]

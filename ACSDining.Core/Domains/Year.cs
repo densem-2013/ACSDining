@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class Year : Entity
+    public class Year 
     {
         public Year()
         {

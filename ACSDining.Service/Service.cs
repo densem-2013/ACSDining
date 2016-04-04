@@ -4,12 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 
 namespace ACSDining.Service
 {
-    public abstract class Service<TEntity> : IService<TEntity> where TEntity : class, IObjectState
+    public abstract class Service<TEntity> : IService<TEntity> where TEntity : class
     {
         #region Private Fields
         private readonly IRepositoryAsync<TEntity> _repository;

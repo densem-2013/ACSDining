@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 
 namespace ACSDining.Core.UnitOfWork
@@ -9,12 +8,9 @@ namespace ACSDining.Core.UnitOfWork
     {
         int SaveChanges();
         void Dispose(bool disposing);
-        IRepository<TEntity> Repository<TEntity>() where TEntity : class, IObjectState;
+        IRepository<TEntity> Repository<TEntity>() where TEntity : class;
         void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified);
         bool Commit();
         void Rollback();
-        //double[] GetUserWeekOrderDishes(int orderid);
-        //double[] GetUserWeekOrderPaiments(int orderid);
-        //double[] GetUnitWeekPrices(int menuforweekid);
     }
 }

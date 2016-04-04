@@ -10,6 +10,7 @@ using ACSDining.Web.Models.ViewModels;
 using ACSDining.Core.Domains;
 using NLog;
 using System.DirectoryServices.AccountManagement;
+using ACSDining.Core.UnitOfWork;
 
 namespace ACSDining.Web.Controllers
 {
@@ -20,14 +21,14 @@ namespace ACSDining.Web.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private readonly PrincipalContext _ad;
-        //private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWorkAsync _unitOfWork;
         //private readonly IRepositoryAsync<User> _useRepositoryAsync; 
         //private readonly IRepository<User> _userRepository;
         //private readonly IRepository<UserRole> _roleRepository;
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public AccountController(IUnitOfWorkAsync unitOfWork, ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
-            //_unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
             //_useRepositoryAsync = unitOfWork.RepositoryAsync<User>();
             //_accountService = new UserAccountService(_useRepositoryAsync);
             //UserStore<User> store = new UserStore<User>(UnitOfWork.GetContext());
@@ -573,6 +574,7 @@ namespace ACSDining.Web.Controllers
                     _signInManager.Dispose();
                     _signInManager = null;
                 }
+                _unitOfWork.Dispose();
             }
 
             base.Dispose(disposing);

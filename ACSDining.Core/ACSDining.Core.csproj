@@ -83,8 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataContext\IDataContext.cs" />
-    <Compile Include="DataContext\IDataContextAsync.cs" />
     <Compile Include="Domains\DayOfWeek.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -92,7 +90,6 @@
     <Compile Include="Domains\DishDetail.cs" />
     <Compile Include="Domains\DishQuantityRelations.cs" />
     <Compile Include="Domains\DishType.cs" />
-    <Compile Include="Domains\Entity.cs" />
     <Compile Include="Domains\Food.cs" />
     <Compile Include="Domains\FoodCategory.cs" />
     <Compile Include="Domains\FoodQuantity.cs" />
@@ -107,8 +104,6 @@
     <Compile Include="Domains\WorkingDay.cs" />
     <Compile Include="Domains\WorkingWeek.cs" />
     <Compile Include="Domains\Year.cs" />
-    <Compile Include="Infrastructure\IObjectState.cs" />
-    <Compile Include="Infrastructure\ObjectState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="Repositories\IQueryFluent.cs" />

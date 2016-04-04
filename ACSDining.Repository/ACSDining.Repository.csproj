@@ -63,7 +63,6 @@
     <Compile Include="Repositories\GetExcelRepository.cs" />
     <Compile Include="Repositories\MenuForWeekRepository.cs" />
     <Compile Include="Repositories\OrderMenuRepository.cs" />
-    <Compile Include="Repositories\UserAccountRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />

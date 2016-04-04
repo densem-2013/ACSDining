@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using ACSDining.Core.Domains;
-using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
@@ -20,10 +18,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         public OrdersController(IUnitOfWorkAsync unitOfWorkAsync, IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
         {
-            //IRepositoryAsync<MenuForWeek> weekRepo = unitOfWorkAsync.RepositoryAsync<MenuForWeek>();
-            //_weekMenuService = new MenuForWeekService(weekRepo);
-            //IRepositoryAsync<OrderMenu> orderRepo = unitOfWorkAsync.RepositoryAsync<OrderMenu>();
-            //_orderMenuService = new OrderMenuService(orderRepo);
             _unitOfWork = unitOfWorkAsync;
             _weekMenuService = weekMenuService;
             _orderMenuService = orderMenuService;

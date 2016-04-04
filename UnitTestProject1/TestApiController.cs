@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data.Entity;
-//using ACSDining.Core.DataContext;
+﻿////using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DAL;
@@ -8,7 +6,6 @@ using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 using ACSDining.Web.Areas.SU_Area.Controllers;
-using Microsoft.Owin;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTestProject1

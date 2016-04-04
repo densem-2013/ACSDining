@@ -25,7 +25,7 @@ namespace ACSDining.Infrastructure.Identity
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options,
             IOwinContext context)
         {
-            UserStore<User> store = new UserStore<User>(/*UnitOfWork.GetContext()*/context.Get<ApplicationDbContext>());
+            UserStore<User> store = new UserStore<User>(context.Get<ApplicationDbContext>());
 
             var manager = new ApplicationUserManager(store);
             // Configure validation logic for usernames

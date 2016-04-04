@@ -1,10 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ACSDining.Core.Infrastructure;
 
 namespace ACSDining.Core.Repositories
 {
-    public interface IRepositoryAsync<TEntity> : IRepository<TEntity> where TEntity : class, IObjectState
+    public interface IRepositoryAsync<TEntity> : IRepository<TEntity> where TEntity : class
     {
         Task<TEntity> FindAsync(params object[] keyValues);
         Task<TEntity> FindAsync(CancellationToken cancellationToken, params object[] keyValues);

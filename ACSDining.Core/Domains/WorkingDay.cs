@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class WorkingDay : Entity
+    public class WorkingDay 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

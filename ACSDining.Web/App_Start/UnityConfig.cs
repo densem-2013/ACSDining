@@ -1,14 +1,11 @@
 using System;
 using System.Data.Entity;
 using System.Web;
-//using ACSDining.Core.DataContext;
+////using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Service;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using Microsoft.Practices.Unity;
 
@@ -46,8 +43,8 @@ namespace ACSDining.Web
             // container.LoadConfiguration();
             // TODO: Register your types here
             container
-                //.RegisterType<DbContext>(new InjectionFactory(o => UnitOfWork.GetContext()))
-                .RegisterType<DbContext, ApplicationDbContext>(new HierarchicalLifetimeManager())
+                .RegisterType<DbContext>(new InjectionFactory(o => new ApplicationDbContext()))
+                //.RegisterType<DbContext, ApplicationDbContext>(new HierarchicalLifetimeManager())
                 .RegisterType<IUnitOfWorkAsync, UnitOfWork>(new HierarchicalLifetimeManager())
                 //.RegisterType<DbContext>(new InjectionFactory(o=>UnitOfWork.GetContext()))
                 .RegisterType<IAuthenticationManager>(

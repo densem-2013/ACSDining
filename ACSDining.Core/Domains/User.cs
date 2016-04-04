@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using ACSDining.Core.Infrastructure;
+//using ACSDining.Core.Infrastructure;
 
 namespace ACSDining.Core.Domains
 {
@@ -21,17 +21,14 @@ namespace ACSDining.Core.Domains
     using System.Security.Claims;
     using System.Threading.Tasks;
 
-    public partial class User : IdentityUser, IObjectState
+    public partial class User : IdentityUser
     {
         public User():base()
         {
             OrderMenus = new List<OrderMenu>();
             PlannedOrderMenus = new List<PlannedOrderMenu>();
         }
-
-        [NotMapped]
-        public ObjectState ObjectState { get; set; }
-
+        
         [Required]
         public virtual string FirstName { get; set; }
 

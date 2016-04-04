@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class PlannedOrderMenu : Entity
+    public class PlannedOrderMenu 
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]

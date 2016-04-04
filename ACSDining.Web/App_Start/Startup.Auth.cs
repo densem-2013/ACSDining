@@ -1,6 +1,4 @@
-﻿using System.Web.Http;
-using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.Identity;
+﻿using ACSDining.Infrastructure.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;

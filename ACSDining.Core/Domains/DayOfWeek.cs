@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class DayOfWeek : Entity
+    public class DayOfWeek
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

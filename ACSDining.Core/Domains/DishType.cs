@@ -15,7 +15,7 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class DishType : Entity
+    public partial class DishType 
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]

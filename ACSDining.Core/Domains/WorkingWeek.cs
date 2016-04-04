@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class WorkingWeek : Entity
+    public class WorkingWeek 
     {
         public WorkingWeek()
         {

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class DishDetail : Entity
+    public class DishDetail 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

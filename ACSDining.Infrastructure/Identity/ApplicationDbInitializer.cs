@@ -6,7 +6,6 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Xml.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Infrastructure;
 using ACSDining.Infrastructure.DAL;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -14,7 +13,7 @@ using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Infrastructure.Identity
 {
-    public class ApplicationDbInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
+    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
 
         private static Random rand = new Random();
@@ -28,7 +27,8 @@ namespace ACSDining.Infrastructure.Identity
             string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
                                       @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            InitializeIdentityForEF(context, _path); var dishes = GetDishesFromXML(context, _path);
+            InitializeIdentityForEF(context, _path); 
+            var dishes = GetDishesFromXML(context, _path);
             CreateWorkingDays(context);
             CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
@@ -37,9 +37,9 @@ namespace ACSDining.Infrastructure.Identity
             base.Seed(context);
         }
 
-        public static void AddUser(ApplicationDbContext context)
+        public static void AddUser(ApplicationUserManager userManager,ApplicationDbContext context)
         {
-            var userManager = new ApplicationUserManager(new UserStore<User>(context));
+            //var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
             //IdentityRole adminrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Administrator")) ??
             //                        new UserRole
@@ -67,6 +67,16 @@ namespace ACSDining.Infrastructure.Identity
             //    UserId = useradmin.Id,
             //    ObjectState = ObjectState.Added
             //});
+
+            if (!roleManager.RoleExists("Administrator"))
+            {
+                roleManager.Create(new UserRole
+                {
+                    Name = "Administrator",
+                    Description = "All Rights in Application"
+                });
+            }
+
             User useradmin = userManager.FindByName("admin");
             if (useradmin == null)
             {
@@ -76,10 +86,8 @@ namespace ACSDining.Infrastructure.Identity
                     Email = "test@test.com",
                     FirstName = "Admin",
                     LastName = "User",
-                    // IsDiningRoomClient = true,
                     LastLoginTime = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow,
-                    ObjectState = ObjectState.Added
+                    RegistrationDate = DateTime.UtcNow
                 };
                 var adminresult = userManager.Create(useradmin, "777123");
                 if (adminresult.Succeeded)
@@ -87,143 +95,105 @@ namespace ACSDining.Infrastructure.Identity
                     userManager.AddToRole(useradmin.Id, "Administrator");
                 }
             }
-            context.Users.Add(useradmin);
+            //context.Users.Add(useradmin);
+            
+
+            //context.SaveChanges();
+
+        }
+
+        public static void InitializeIdentityForEF(ApplicationDbContext context, string path)
+        {
+
+            context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
+                new DishQuantity {Quantity = 0.0},
+                new DishQuantity {Quantity = 0.5},
+                new DishQuantity {Quantity = 1.0},
+                new DishQuantity {Quantity = 2.0},
+                new DishQuantity {Quantity = 3.0},
+                new DishQuantity {Quantity = 4.0},
+                new DishQuantity {Quantity = 5.0}
+                );
+
+
+            context.DishTypes.AddOrUpdate(dt => dt.Category,
+                new DishType {Category = "Первое блюдо"},
+                new DishType {Category = "Второе блюдо"},
+                new DishType {Category = "Салат"},
+                new DishType {Category = "Напиток"}
+                );
+
+            context.Days.AddOrUpdate(d => d.Name,
+                new DayOfWeek {Name = "Понедельник"},
+                new DayOfWeek {Name = "Вторник"},
+                new DayOfWeek {Name = "Среда"},
+                new DayOfWeek {Name = "Четверг"},
+                new DayOfWeek {Name = "Пятница"},
+                new DayOfWeek {Name = "Суббота"},
+                new DayOfWeek {Name = "Воскресенье"}
+                );
+
+            var userManager = new ApplicationUserManager(new UserStore<User>(context));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+
             if (!roleManager.RoleExists("Administrator"))
             {
                 roleManager.Create(new UserRole
                 {
                     Name = "Administrator",
-                    Description = "All Rights in Application",
-                    ObjectState = ObjectState.Added
+                    Description = "All Rights in Application"
                 });
             }
 
-            context.SaveChanges();
-
-        }
-        public static void InitializeIdentityForEF(ApplicationDbContext context,string path)
-        {
-            //string path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
-
-            context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
-                new DishQuantity { Quantity = 0.0 ,ObjectState = ObjectState.Added},
-                new DishQuantity { Quantity = 0.5, ObjectState = ObjectState.Added },
-                new DishQuantity { Quantity = 1.0, ObjectState = ObjectState.Added },
-                new DishQuantity { Quantity = 2.0, ObjectState = ObjectState.Added },
-                new DishQuantity { Quantity = 3.0, ObjectState = ObjectState.Added },
-                new DishQuantity { Quantity = 4.0, ObjectState = ObjectState.Added },
-                new DishQuantity { Quantity = 5.0, ObjectState = ObjectState.Added }
-                );
-
-
-            context.DishTypes.AddOrUpdate(dt => dt.Category,
-                new DishType { Category = "Первое блюдо", ObjectState = ObjectState.Added },
-                new DishType { Category = "Второе блюдо", ObjectState = ObjectState.Added },
-                new DishType { Category = "Салат", ObjectState = ObjectState.Added },
-                new DishType { Category = "Напиток", ObjectState = ObjectState.Added }
-                );
-
-            context.Days.AddOrUpdate(d => d.Name,
-                new DayOfWeek { Name = "Понедельник", ObjectState = ObjectState.Added },
-                new DayOfWeek { Name = "Вторник", ObjectState = ObjectState.Added },
-                new DayOfWeek { Name = "Среда", ObjectState = ObjectState.Added },
-                new DayOfWeek { Name = "Четверг", ObjectState = ObjectState.Added },
-                new DayOfWeek { Name = "Пятница", ObjectState = ObjectState.Added },
-                new DayOfWeek { Name = "Суббота", ObjectState = ObjectState.Added },
-                new DayOfWeek { Name = "Воскресенье", ObjectState = ObjectState.Added }
-                );
-
-            //var userManager = new ApplicationUserManager(new UserStore<User>(context));
-            //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-
-            IdentityRole adminrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Administrator")) ??
-                                     new UserRole
-                                     {
-                                         Name = "Administrator",
-                                         Description = "All Rights in Application",
-                                         ObjectState = ObjectState.Added
-                                     };
-            IdentityRole surole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "SuperUser")) ??
-                                  new UserRole
-                                  {
-                                      Name = "SuperUser",
-                                      Description = "Can Update List Employee and DiningEmployee",
-                                      ObjectState = ObjectState.Added
-                                  };
-            IdentityRole dinemprole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "DiningEmployee")) ??
-                                  new UserRole
-                                  {
-                                      Name = "DiningEmployee",
-                                      Description = "Сan edit the list of dishes in the dining room",
-                                      ObjectState = ObjectState.Added
-                                  };
-            IdentityRole emploeerole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee")) ??
-                                      new UserRole
-                                      {
-                                          Name = "Employee",
-                                          Description = "Сan order food in the dining room",
-                                          ObjectState = ObjectState.Added
-                                      };
-            //if (!roleManager.RoleExists("Administrator"))
-            //{
-            //    roleManager.Create(new UserRole
-            //    {
-            //        Name = "Administrator",
-            //        Description = "All Rights in Application",
-            //        ObjectState = ObjectState.Added
-            //    });
-            //}
-
-            //if (!roleManager.RoleExists("SuperUser"))
-            //{
-            //    roleManager.Create(new UserRole
-            //    {
-            //        Name = "SuperUser",
-            //        Description = "Can Update List Employee and DiningEmployee",
-            //        ObjectState = ObjectState.Added
-            //    });
-            //}
-            //User useradmin = userManager.FindByName("admin");
-            //if (useradmin == null)
-            //{
-            //    useradmin = new User
-            //    {
-            //        UserName = "admin",
-            //        Email = "test@test.com",
-            //        FirstName = "Admin",
-            //        LastName = "User",
-            //        // IsDiningRoomClient = true,
-            //        LastLoginTime = DateTime.UtcNow,
-            //        RegistrationDate = DateTime.UtcNow,
-            //        ObjectState = ObjectState.Added
-            //    };
-            //    var adminresult = userManager.Create(useradmin, "777123");
-            //    if (adminresult.Succeeded)
-            //    {
-            //        userManager.AddToRole(useradmin.Id, "Administrator");
-            //    }
-            //}
-            PasswordHasher hasher=new PasswordHasher();
-            User useradmin = new User
+            if (!roleManager.RoleExists("SuperUser"))
             {
-                UserName = "admin",
-                Email = "test@test.com",
-                FirstName = "Admin",
-                LastName = "User",
-                LastLoginTime = DateTime.UtcNow,
-                RegistrationDate = DateTime.UtcNow,
-                PasswordHash = hasher.HashPassword("777123"),
-                ObjectState = ObjectState.Added
-            };
-            useradmin.Roles.Add(new IdentityUserRole
+                roleManager.Create(new UserRole
+                {
+                    Name = "SuperUser",
+                    Description = "Can Update List Employee and DiningEmployee"
+                });
+            }
+            if (!roleManager.RoleExists("DiningEmployee"))
             {
-                RoleId = adminrole.Id,
-                UserId = useradmin.Id,
-                ObjectState = ObjectState.Added
-            });
-            context.Users.Add(useradmin);
+                roleManager.Create(new UserRole
+                {
+                    Name = "DiningEmployee",
+                    Description = "Сan edit the list of dishes in the dining room"
+                });
+            }
+            if (!roleManager.RoleExists("Employee"))
+            {
+                roleManager.Create(new UserRole
+                {
+                    Name = "Employee",
+                    Description = "Сan order food in the dining room"
+                });
+            }
 
-            User usersu = usersu = new User
+            User useradmin = userManager.FindByName("admin");
+            if (useradmin == null)
+            {
+                useradmin = new User
+                {
+                    UserName = "admin",
+                    Email = "test@test.com",
+                    FirstName = "Admin",
+                    LastName = "User",
+                    LastLoginTime = DateTime.UtcNow,
+                    RegistrationDate = DateTime.UtcNow,
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                };
+                var adminresult = userManager.Create(useradmin, "777123");
+                if (adminresult.Succeeded)
+                {
+                    userManager.AddToRole(useradmin.Id, "Administrator");
+                }
+            }
+
+            User usersu = userManager.FindByName("su");
+            if (usersu == null)
+            {
+                usersu = new User
                 {
                     UserName = "su",
                     Email = "test@test.com",
@@ -231,41 +201,57 @@ namespace ACSDining.Infrastructure.Identity
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = hasher.HashPassword("777123"),
-                    ObjectState = ObjectState.Added
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
                 };
-            usersu.Roles.Add(new IdentityUserRole { RoleId = surole.Id, UserId = usersu.Id });
-           // context.Users.Add(usersu);
 
-            User userdinEmpl = new User
+                var suresult = userManager.Create(usersu, "777123");
+
+                if (suresult.Succeeded)
+                {
+                    userManager.AddToRole(usersu.Id, "SuperUser");
+                }
+                ;
+            }
+
+            User userdinEmpl = userManager.FindByName("diningemployee");
+            if (userdinEmpl == null)
             {
-                UserName = "diningemployee",
-                Email = "test@test.com",
-                FirstName = "DiningEmployee",
-                LastName = "User",
-                LastLoginTime = DateTime.UtcNow,
-                RegistrationDate = DateTime.UtcNow,
-                PasswordHash = hasher.HashPassword("777123"),
-                ObjectState = ObjectState.Added
-            };
-            userdinEmpl.Roles.Add(new IdentityUserRole { RoleId = dinemprole.Id, UserId = userdinEmpl.Id });
-           // context.Users.Add(userdinEmpl);
+                userdinEmpl = new User
+                {
+                    UserName = "diningemployee",
+                    Email = "test@test.com",
+                    FirstName = "DiningEmployee",
+                    LastName = "User",
+                    LastLoginTime = DateTime.UtcNow,
+                    RegistrationDate = DateTime.UtcNow,
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                };
+                var deresult = userManager.Create(userdinEmpl, "777123");
+                if (deresult.Succeeded)
+                {
+                    userManager.AddToRole(userdinEmpl.Id, "DiningEmployee");
+                }
+            }
 
-            User userEmpl = new User
+            User userEmpl = userManager.FindByName("employee");
+            if (userEmpl == null)
             {
-                UserName = "employee",
-                Email = "test@test.com",
-                FirstName = "Employee",
-                LastName = "User",
-                LastLoginTime = DateTime.UtcNow,
-                RegistrationDate = DateTime.UtcNow,
-                PasswordHash = hasher.HashPassword("777123"),
-                ObjectState = ObjectState.Added
-            };
-            userEmpl.Roles.Add(new IdentityUserRole { RoleId = emploeerole.Id, UserId = userEmpl.Id });
-           // context.Users.Add(userEmpl);
-
-            context.SaveChanges();
+                userEmpl = new User
+                {
+                    UserName = "employee",
+                    Email = "test@test.com",
+                    FirstName = "Employee",
+                    LastName = "User",
+                    LastLoginTime = DateTime.UtcNow,
+                    RegistrationDate = DateTime.UtcNow,
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                };
+                var empresult = userManager.Create(userEmpl, "777123");
+                if (empresult.Succeeded)
+                {
+                    userManager.AddToRole(userEmpl.Id, "Employee");
+                }
+            }
         }
 
         public static Dish[] GetDishesFromXML(ApplicationDbContext context, string userspath)
@@ -305,8 +291,7 @@ namespace ACSDining.Infrastructure.Identity
                                          Title = el.Attribute("title").Value,
                                          Foods = el.Element("foods").Value,
                                          Recept = el.Element("recept").Value
-                                     },
-                                     ObjectState = ObjectState.Added
+                                     }
                                  }).ToArray();
 
                 context.Dishes.AddOrUpdate(c => c.Title, dishes);
@@ -326,8 +311,7 @@ namespace ACSDining.Infrastructure.Identity
                 Year newyear = new Year
                 {
                     YearNumber = DateTime.Now.Year - i,
-                    WorkingWeeks = new List<WorkingWeek>(),
-                    ObjectState = ObjectState.Added
+                    WorkingWeeks = new List<WorkingWeek>()
                 };
                 context.Years.Add(newyear);
                 context.SaveChanges();
@@ -335,7 +319,7 @@ namespace ACSDining.Infrastructure.Identity
             foreach (Year year in context.Years.ToList())
             {
                 int weekcount = UnitOfWork.YearWeekCount(year.YearNumber);
-                //List<WorkingWeek> workweeks = new List<WorkingWeek>();
+
                 for (int i = 0; i < weekcount; i++)
                 {
                     WorkingWeek workingWeek = new WorkingWeek
@@ -344,7 +328,6 @@ namespace ACSDining.Infrastructure.Identity
                         Year = year,
                         WorkingDays = new List<WorkingDay>()
                     };
-                   // List<WorkingDay> workdays = new List<WorkingDay>();
                     for (int j = 0; j < 7; j++)
                     {
                         WorkingDay workday = new WorkingDay
@@ -353,17 +336,12 @@ namespace ACSDining.Infrastructure.Identity
                             DayOfWeek = context.Days.FirstOrDefault(d => d.ID == j + 1)
                             
                         };
-                       // workdays.Add(workday);
-                        workday.ObjectState=ObjectState.Added;
                         workingWeek.WorkingDays.Add(workday);
                     }
 
-                    //context.WorkingDays.AddRange(workdays);
-                    workingWeek.ObjectState=ObjectState.Added;
                     year.WorkingWeeks.Add(workingWeek);
                 }
-                //context.WorkingWeeks.AddRange(workweeks);
-                year.ObjectState=ObjectState.Modified;
+                
             }
             context.SaveChanges();
         }
@@ -404,7 +382,7 @@ namespace ACSDining.Infrastructure.Identity
                 }
                 List<MenuForDay> mfdays = new List<MenuForDay>();
                 WorkingWeek workweek =
-                    context.WorkingWeeks.Include("WorkingWeek.Year").ToList().FirstOrDefault(
+                    context.WorkingWeeks.Include("Year").ToList().FirstOrDefault(
                         w => year != null && (w.WeekNumber == UnitOfWork.CurrentWeek() - week + correct_week &&
                                               w.Year.YearNumber == year.YearNumber));
                 for (int i = 1; i <= 7; i++)
@@ -421,9 +399,8 @@ namespace ACSDining.Infrastructure.Identity
                             Dishes = dishes,
                             WorkingDay = workday,
                             WorkingWeek = workweek,
-                            TotalPrice = dishes.Select(d => d.Price).Sum(),
-                            ObjectState = ObjectState.Added
-                        };
+                            TotalPrice = dishes.Select(d => d.Price).Sum()
+                         };
 
                         mfdays.Add(dayMenu);
 
@@ -433,15 +410,8 @@ namespace ACSDining.Infrastructure.Identity
                 {
                     MenuForDay = mfdays,
                     WorkingWeek = workweek,
-                    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum(),
-                    ObjectState = ObjectState.Added
+                    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
                 });
-                //context.MenuForWeeks.AddOrUpdate(m => m.WorkingWeek, new MenuForWeek
-                //{
-                //    MenuForDay = mfdays,
-                //    WorkingWeek = workweek,
-                //    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
-                //});
             }
             context.MenuForWeeks.AddRange(weekmenus);
             context.SaveChanges();
@@ -475,15 +445,14 @@ namespace ACSDining.Infrastructure.Identity
                                     EmailConfirmed = true,
                                     SecurityStamp = Guid.NewGuid().ToString(),
                                     RegistrationDate = DateTime.UtcNow,
-                                    LastLoginTime = DateTime.UtcNow,
-                                    ObjectState = ObjectState.Added
+                                    LastLoginTime = DateTime.UtcNow
                                 };
                         }
                         return null;
                     }).ToArray();
                     foreach (User user in users)
                     {
-                        if (role != null) user.Roles.Add(new UserRoleRelation { RoleId = role.Id, UserId = user.Id });
+                        if (role != null) user.Roles.Add(new IdentityUserRole { RoleId = role.Id, UserId = user.Id });
                         context.Users.Add(user);
                     }
                     context.SaveChanges();
@@ -536,8 +505,7 @@ namespace ACSDining.Infrastructure.Identity
                     PlannedOrderMenu planorder = new PlannedOrderMenu
                     {
                         User = user,
-                        MenuForWeek = mfw,
-                        ObjectState = ObjectState.Added
+                        MenuForWeek = mfw
                     };
 
                     context.PlannedOrderMenus.Add(planorder);
@@ -547,8 +515,7 @@ namespace ACSDining.Infrastructure.Identity
                         User = user,
                         MenuForWeek = mfw,
                         SummaryPrice = 0.0,
-                        PlannedOrderMenu = planorder,
-                        ObjectState = ObjectState.Added
+                        PlannedOrderMenu = planorder
                     };
                     context.OrderMenus.Add(order);
 
@@ -580,8 +547,7 @@ namespace ACSDining.Infrastructure.Identity
                                     WorkDay = daymenu.WorkingDay,
                                     PlannedOrderMenu = planorder,
                                     MenuForWeek = mfw,
-                                    OrderMenu = order,
-                                    ObjectState = ObjectState.Added
+                                    OrderMenu = order
                                 };
                                 order.SummaryPrice += dqu.Quantity * dish.Price;
                                 dquaList.Add(dqrs);

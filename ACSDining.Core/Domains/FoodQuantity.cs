@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class FoodQuantity : Entity
+    public class FoodQuantity 
     {
         public FoodQuantity()
         {

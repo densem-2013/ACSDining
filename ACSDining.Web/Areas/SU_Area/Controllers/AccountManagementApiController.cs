@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Infrastructure;
-using ACSDining.Core.Repositories;
-using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
-using ACSDining.Service;
+using ACSDining.Infrastructure.Identity;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -16,50 +17,46 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Account")]
     public class AccountManagementApiController : ApiController
     {
-        private readonly IUnitOfWorkAsync _unitOfWorkAsync;
-        private readonly IUserAccountService _userAccountService;
+        private ApplicationUserManager _userManager;
 
-        public AccountManagementApiController(IUnitOfWorkAsync unitOfWorkAsync, IUserAccountService userAccountService)
+        public AccountManagementApiController(ApplicationUserManager userManager)
         {
-            //IRepositoryAsync<User> userRepo = unitOfWorkAsync.RepositoryAsync<User>();
-            //_userAccountService = userAccountService;
-            _unitOfWorkAsync = unitOfWorkAsync;
-            _userAccountService = userAccountService;
+            _userManager = userManager;
+        }
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
         }
         [HttpGet]
         [Route("All")]
         [ResponseType(typeof (List<AccountDto>))]
         public async Task<List<AccountDto>> GetAccounts()
         {
-            return await _userAccountService.AllAccountsDtoAsync();
+            return await Task.FromResult(UserManager.Users.Select(AccountDto.MapDto).ToList());
         }
 
         // DELETE api/Dishes/5
         [HttpDelete]
         [Route("delete/{id}")]
-        public async Task<IHttpActionResult> DeleteAccount(int id)
+        public async Task<IHttpActionResult> DeleteAccount(string id)
         {
-            User user = _userAccountService.GetUserById(id);
+            User user = await UserManager.FindByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            user.ObjectState = ObjectState.Deleted;
+           var res= UserManager.Delete(user);
 
-             _userAccountService.Delete(user);
-            await _unitOfWorkAsync.SaveChangesAsync();
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return res.Succeeded ? StatusCode(HttpStatusCode.NoContent) : StatusCode(HttpStatusCode.BadRequest);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _unitOfWorkAsync.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

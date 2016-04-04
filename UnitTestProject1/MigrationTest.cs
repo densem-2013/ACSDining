@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTestProject1
@@ -18,7 +19,7 @@ namespace UnitTestProject1
         private readonly ApplicationDbContext dataContext;
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IWorkDaysService _workDaysService;
-        private readonly IUserAccountService _userService;
+        private ApplicationUserManager _userManager;
 
         public MigrationTest()
         {
@@ -26,8 +27,7 @@ namespace UnitTestProject1
             _unitOfWork = new UnitOfWork(dataContext);
             IRepositoryAsync<WorkingWeek> workRepo = _unitOfWork.RepositoryAsync<WorkingWeek>();
             _workDaysService = new WorkDaysService(workRepo);
-            IRepositoryAsync<User> userRepo = _unitOfWork.RepositoryAsync<User>();
-            _userService = new UserAccountService(userRepo);
+            _userManager = new ApplicationUserManager(new UserStore<User>(dataContext));
         }
 
         [TestMethod]
@@ -35,9 +35,22 @@ namespace UnitTestProject1
         {
             string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
                            @"ACSDining.Core\DBinitial\DishDetails.xml";
-            //ApplicationDbContext context = new ApplicationDbContext();
+
             ApplicationDbInitializer.InitializeIdentityForEF(dataContext, _path);
-            Assert.IsNotNull(dataContext.DishQuantities);
+
+            ApplicationDbInitializer.CreateWorkingDays(dataContext);
+
+            var dishes = ApplicationDbInitializer.GetDishesFromXML(dataContext, _path);
+
+            ApplicationDbInitializer.CreateMenuForWeek(dataContext, dishes);
+
+            _path = _path.Replace(@"DishDetails", "Employeers");
+
+            ApplicationDbInitializer.GetUsersFromXml(dataContext, _path);
+            ApplicationDbInitializer.CreateOrders(dataContext);
+
+            List<DishQuantity> dqualist = dataContext.DishQuantities.ToList();
+            Assert.IsTrue(dqualist.Count > 0);
         }
 
         [TestMethod]
@@ -52,8 +65,10 @@ namespace UnitTestProject1
         [TestMethod]
         public void CreateAdminUsers()
         {
-            ApplicationDbInitializer.AddUser(dataContext);
-            List<User> users = _userService.Queryable().ToList();
+            ApplicationDbInitializer.AddUser(_userManager,dataContext);
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(dataContext));
+            IdentityRole admrole = roleManager.FindByName("Administrator");
+            List<User> users = _userManager.Users.Where(u=>u.Roles.Any(r=>r.RoleId==admrole.Id)).ToList();
             Assert.IsTrue(users.Count > 0);
 
         }

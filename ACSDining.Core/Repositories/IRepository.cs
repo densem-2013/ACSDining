@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using ACSDining.Core.Infrastructure;
-using ACSDining.Core.UnitOfWork;
 
 namespace ACSDining.Core.Repositories
 {
-    public interface IRepository<TEntity> where TEntity : class, IObjectState
+    public interface IRepository<TEntity> where TEntity : class
     {
         TEntity Find(params object[] keyValues);
         IQueryable<TEntity> SelectQuery(string query, params object[] parameters);
@@ -22,6 +20,6 @@ namespace ACSDining.Core.Repositories
         IQueryFluent<TEntity> Query(Expression<Func<TEntity, bool>> query);
         IQueryFluent<TEntity> Query();
         IQueryable<TEntity> Queryable();
-        IRepository<T> GetRepository<T>() where T : class, IObjectState;
+        IRepository<T> GetRepository<T>() where T : class; 
     }
 }

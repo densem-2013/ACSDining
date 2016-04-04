@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using ACSDining.Core.Infrastructure;
 
 namespace ACSDining.Core.Domains
 {
@@ -17,11 +16,8 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class UserRole : IdentityRole, IObjectState
+    public partial class UserRole : IdentityRole
     {
-        [NotMapped]
-        public ObjectState ObjectState { get; set; }
-
         public UserRole() : base() { }
         public UserRole(string name) : base(name) { }
         public UserRole(string name, string descr)

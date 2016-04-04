@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Infrastructure;
-using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
@@ -20,8 +18,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         public WorkDayApiController(IUnitOfWorkAsync unitOfWorkAsync, IWorkDaysService workDayService)
         {
-            //IRepositoryAsync<WorkingWeek> workweekRepo = unitOfWorkAsync.RepositoryAsync<WorkingWeek>();
-            //_workDayService = new WorkDaysService(workweekRepo);
             _workDayService = workDayService;
             _unitOfWork = unitOfWorkAsync;
         }
@@ -47,7 +43,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            workweek.ObjectState = ObjectState.Modified;
 
             _workDayService.UpdateWorkDays(weekModel);
 

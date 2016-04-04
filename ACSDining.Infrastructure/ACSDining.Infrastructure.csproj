@@ -96,12 +96,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DAL\FakeDbContext.cs" />
-    <Compile Include="DAL\FakeDbSet.cs" />
     <Compile Include="DAL\QueryFluent.cs" />
     <Compile Include="DAL\QueryObject.cs" />
     <Compile Include="DAL\Repository.cs" />
-    <Compile Include="DAL\StateHelper.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
     <Compile Include="DTO\Employee\EmployeeOrderDTO.cs" />
     <Compile Include="DTO\SuperUser\AccountDto.cs" />
@@ -118,9 +115,9 @@
     <Compile Include="Identity\ApplicationDbContext.cs" />
     <Compile Include="Identity\ApplicationDbInitializer.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201603311354201_Initial.cs" />
-    <Compile Include="Migrations\201603311354201_Initial.Designer.cs">
-      <DependentUpon>201603311354201_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201604010919322_Initial.cs" />
+    <Compile Include="Migrations\201604010919322_Initial.Designer.cs">
+      <DependentUpon>201604010919322_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -138,8 +135,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201603311354201_Initial.resx">
-      <DependentUpon>201603311354201_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604010919322_Initial.resx">
+      <DependentUpon>201604010919322_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

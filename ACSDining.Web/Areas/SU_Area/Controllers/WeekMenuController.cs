@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Infrastructure;
-using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
@@ -29,8 +27,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public WeekMenuController(IUnitOfWorkAsync unitOfWork, IMenuForWeekService weekmenuService,
             IDishService dishService, IMenuforDayService daymenuRepository)
         {
-            //IRepositoryAsync<MenuForWeek> _menuRepositoryAsync = unitOfWork.RepositoryAsync<MenuForWeek>();
-            //_weekmenuService = new MenuForWeekService(_menuRepositoryAsync);
             _unitOfWork = unitOfWork;
             _weekmenuService = weekmenuService;
             _dishService = dishService;
@@ -131,16 +127,17 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             menuFd.Dishes = dishes;
             menuFd.TotalPrice = menuforday.TotalPrice;
 
-            menuFd.ObjectState = ObjectState.Modified;
             _daymenuRepository.Update(menuFd);
 
 
             MenuForWeek mfwModel = _weekmenuService.GetAll().ToList().FirstOrDefault(mfw => mfw.MenuForDay.Any(mfd => mfd.ID == menuforday.ID));
 
-            mfwModel.SummaryPrice = mfwModel.MenuForDay.Sum(mfd => mfd.TotalPrice);
+            if (mfwModel != null)
+            {
+                mfwModel.SummaryPrice = mfwModel.MenuForDay.Sum(mfd => mfd.TotalPrice);
 
-            mfwModel.ObjectState = ObjectState.Modified;
-            _weekmenuService.Update(mfwModel);
+                _weekmenuService.Update(mfwModel);
+            }
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -158,7 +155,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return null;
             }
 
-            nextWeek.ObjectState = ObjectState.Added;
 
             try
             {
@@ -187,7 +183,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            mfw.ObjectState = ObjectState.Deleted;
             _weekmenuService.Delete(mfw);
 
             await _unitOfWork.SaveChangesAsync();

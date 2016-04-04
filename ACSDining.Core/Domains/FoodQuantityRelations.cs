@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class FoodQuantityRelations : Entity
+    public class FoodQuantityRelations 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

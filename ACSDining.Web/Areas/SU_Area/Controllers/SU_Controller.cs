@@ -1,36 +1,31 @@
 ﻿using System;
+using System.Web;
 using System.Web.Mvc;
-using ACSDining.Core.UnitOfWork;
-using ACSDining.Service;
+using ACSDining.Infrastructure.Identity;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
     [System.Web.Http.Authorize(Roles = "SuperUser")]
     public class SU_Controller : Controller
     {
-        private IUserAccountService _accountService;
-        private readonly IUnitOfWorkAsync _unitOfWork;
-        //private ApplicationUserManager _userManager;
-        //public ApplicationUserManager UserManager
-        //{
-        //    get
-        //    {
-        //        return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-        //    }
-        //    private set
-        //    {
-        //        _userManager = value;
-        //    }
-        //}
+        private ApplicationUserManager _userManager;
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
 
         // GET: /SU_Area/SU_/
-        public SU_Controller(IUnitOfWorkAsync unitOfWork, IUserAccountService accountService)
+        public SU_Controller( ApplicationUserManager userManager)
         {
-            //_unitOfWork = unitOfWork;
-            //IRepositoryAsync<User> useRepositoryAsync = _unitOfWork.RepositoryAsync<User>();
-            //_accountService = new UserAccountService(useRepositoryAsync);
-            _unitOfWork = unitOfWork;
-            _accountService = accountService;
+            _userManager = userManager;
         }
         public ActionResult WeekMenu()
         {
@@ -64,23 +59,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return View();
         }
 
-        private void AddInfoToViewData()
+        private async void AddInfoToViewData()
         {
             Core.Domains.User user =
-                _accountService.GetUserByName(User.Identity.Name);
+                await UserManager.FindByNameAsync(User.Identity.Name);
             user.LastLoginTime = DateTime.UtcNow;
             ViewBag.Fname = user.FirstName;
             ViewData["Lname"] = user.LastName;
             ViewData["LastLoginDate"] = user.LastLoginTime;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _unitOfWork.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

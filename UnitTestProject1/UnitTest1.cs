@@ -5,9 +5,8 @@ using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
-//using ACSDining.Core.DataContext;
+////using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Infrastructure;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
@@ -15,7 +14,6 @@ using ACSDining.Infrastructure.Identity;
 using ACSDining.Repository.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
@@ -24,6 +22,7 @@ namespace UnitTestProject1
     [TestClass]
     public class UnitTest1
     {
+        private readonly ApplicationDbContext dataContext;
         private readonly UnitOfWork _unitOfWork;
         //public readonly IOwinContext _owincontext=new OwinContext();
         //private readonly IDataContextAsync dbcontext=ApplicationDbContext.Create();
@@ -35,14 +34,16 @@ namespace UnitTestProject1
         private readonly IRepositoryAsync<OrderMenu> _orderRepository;
         private readonly IRepositoryAsync<WorkingWeek> _workingWeekRepository;
         private readonly IRepositoryAsync<WorkingDay> _workingDayRepository;
-        private readonly IRepositoryAsync<UserRole> _userRoleRepository;
-        private readonly IRepositoryAsync<User> _userRepository; 
+       // private readonly IRepositoryAsync<UserRole> _userRoleRepository;
+        //private readonly IRepositoryAsync<User> _userRepository; 
+        private ApplicationUserManager _userManager;
+        private RoleManager<IdentityRole> roleManager;
 
         public UnitTest1()
         {
-
+            dataContext = new ApplicationDbContext();
             //_unitOfWork = new UnitOfWork();
-            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
+            _unitOfWork = new UnitOfWork(dataContext);
             _dishtypeRepository = _unitOfWork.RepositoryAsync<DishType>();
             _weekmenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();
             _yearRepository = _unitOfWork.RepositoryAsync<Year>();
@@ -51,8 +52,10 @@ namespace UnitTestProject1
             _orderRepository = _unitOfWork.RepositoryAsync<OrderMenu>();
             _workingWeekRepository = _unitOfWork.RepositoryAsync<WorkingWeek>();
             _workingDayRepository = _unitOfWork.RepositoryAsync<WorkingDay>();
-            _userRoleRepository = _unitOfWork.RepositoryAsync<UserRole>();
-            _userRepository = _unitOfWork.RepositoryAsync<User>();
+            // _userRoleRepository = _unitOfWork.RepositoryAsync<UserRole>();
+            //_userRepository = _unitOfWork.RepositoryAsync<User>();
+            _userManager = new ApplicationUserManager(new UserStore<User>(dataContext));
+            roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(dataContext));
         }
 
         [TestMethod]
@@ -276,7 +279,7 @@ namespace UnitTestProject1
                 try
                 {
                     var hasher = new PasswordHasher();
-                    IdentityRole role = _userRoleRepository.Queryable().FirstOrDefault(r => string.Equals(r.Name, "Employee"));
+                    IdentityRole role = roleManager.FindByNameAsync("Employee").Result;
                     User[] users = collection.AsEnumerable().Select(el =>
                     {
                         XElement xElement = el.Element("FirstName");
@@ -303,15 +306,15 @@ namespace UnitTestProject1
                     foreach (User user in users)
                     {
                         if (role != null)
-                            user.Roles.Add(new UserRoleRelation
+                            user.Roles.Add(new IdentityUserRole
                             {
                                 RoleId = role.Id,
-                                UserId = user.Id,
-                                ObjectState = ObjectState.Added
+                                UserId = user.Id//,
+                               // ObjectState = ObjectState.Added
                             });
-                        _userRepository.Insert(user);
+                        _userManager.Create(user);
                     }
-                    Assert.IsTrue(_userRepository.Queryable().Any());
+                    Assert.IsTrue(_userManager.Users.Any());
                     //_db.SaveChanges();
                 }
                 catch (DbEntityValidationException e)
