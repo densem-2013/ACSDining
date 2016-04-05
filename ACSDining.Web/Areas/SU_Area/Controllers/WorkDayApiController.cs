@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Core.HelpClasses;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -26,7 +26,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("{numweek}/{year}")]
         public async Task<WorkWeekDto> GetWorkWeek([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            int week = numweek ?? UnitOfWork.CurrentWeek();
+            int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
             return
                 await

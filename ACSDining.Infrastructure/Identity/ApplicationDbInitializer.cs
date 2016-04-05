@@ -6,6 +6,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Xml.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Core.HelpClasses;
 using ACSDining.Infrastructure.DAL;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -318,7 +319,7 @@ namespace ACSDining.Infrastructure.Identity
             }
             foreach (Year year in context.Years.ToList())
             {
-                int weekcount = UnitOfWork.YearWeekCount(year.YearNumber);
+                int weekcount = YearWeekHelp.YearWeekCount(year.YearNumber);
 
                 for (int i = 0; i < weekcount; i++)
                 {
@@ -374,16 +375,16 @@ namespace ACSDining.Infrastructure.Identity
             List<MenuForWeek> weekmenus=new List<MenuForWeek>();
             for (int week = 0; week < 25; week++)
             {
-                var weekLessZero = UnitOfWork.CurrentWeek() - week <= 0;
+                var weekLessZero = YearWeekHelp.CurrentWeek() - week <= 0;
                 if (weekLessZero)
                 {
                     year = correct_year;
-                    correct_week = UnitOfWork.YearWeekCount(DateTime.Now.Year - 1);
+                    correct_week = YearWeekHelp.YearWeekCount(DateTime.Now.Year - 1);
                 }
                 List<MenuForDay> mfdays = new List<MenuForDay>();
                 WorkingWeek workweek =
                     context.WorkingWeeks.Include("Year").ToList().FirstOrDefault(
-                        w => year != null && (w.WeekNumber == UnitOfWork.CurrentWeek() - week + correct_week &&
+                        w => year != null && (w.WeekNumber == YearWeekHelp.CurrentWeek() - week + correct_week &&
                                               w.Year.YearNumber == year.YearNumber));
                 for (int i = 1; i <= 7; i++)
                 {

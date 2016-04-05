@@ -18,14 +18,14 @@ namespace ACSDining.Infrastructure.DAL
 
         private readonly ApplicationDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        //private readonly IUnitOfWorkAsync _unitOfWork;
 
         #endregion Private Fields
 
-        public Repository(IUnitOfWorkAsync unitOfWork)
+        public Repository(ApplicationDbContext context)
         {
-            _context =((UnitOfWork) unitOfWork).GetContext();
-            _unitOfWork = unitOfWork;
+            _context = context;//((UnitOfWork)unitOfWork).GetContext();
+            //_unitOfWork = unitOfWork;
 
             // Temporarily for FakeDbContext, Unit Test and Fakes
             var dbContext = _context ;
@@ -100,10 +100,10 @@ namespace ACSDining.Infrastructure.DAL
             return _dbSet;
         }
 
-        public IRepository<T> GetRepository<T>() where T : class
-        {
-            return _unitOfWork.Repository<T>();
-        }
+        //public IRepository<T> GetRepository<T>() where T : class
+        //{
+        //    return _unitOfWork.Repository<T>();
+        //}
 
         public virtual async Task<TEntity> FindAsync(params object[] keyValues)
         {

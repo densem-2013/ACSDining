@@ -1,6 +1,6 @@
 ﻿using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service

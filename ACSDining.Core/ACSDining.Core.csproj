@@ -107,6 +107,19 @@
     <Compile Include="Domains\WorkingDay.cs" />
     <Compile Include="Domains\WorkingWeek.cs" />
     <Compile Include="Domains\Year.cs" />
+    <Compile Include="DTO\Employee\EmployeeOrderDTO.cs" />
+    <Compile Include="DTO\SuperUser\AccountDto.cs" />
+    <Compile Include="DTO\SuperUser\DishModelDto.cs" />
+    <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />
+    <Compile Include="DTO\SuperUser\OrdersDTO.cs" />
+    <Compile Include="DTO\SuperUser\PaimentsDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserOrdersDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserPaimentDTO.cs" />
+    <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
+    <Compile Include="DTO\SuperUser\WeekYearDTO.cs" />
+    <Compile Include="DTO\SuperUser\WorkDayDto.cs" />
+    <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />
+    <Compile Include="HelpClasses\YearWeekHelp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="Repositories\IQueryFluent.cs" />
@@ -114,7 +127,7 @@
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\IRepositoryAsync.cs" />
     <Compile Include="UnitOfWork\IUnitOfWork.cs" />
-    <Compile Include="IUnitOfWorkAsync.cs">
+    <Compile Include="UnitOfWork\IUnitOfWorkAsync.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

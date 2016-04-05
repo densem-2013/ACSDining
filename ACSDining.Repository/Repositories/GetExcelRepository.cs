@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using Microsoft.Office.Interop.Excel;
 
 namespace ACSDining.Repository.Repositories

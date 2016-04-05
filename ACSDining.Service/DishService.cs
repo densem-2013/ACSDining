@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
@@ -13,7 +13,7 @@ namespace ACSDining.Service
         List<DishModelDto> GetAllDishModelDto();
         List<DishModelDto> GetDishModelDtoByCategory(string category);
         void UpdateDishByDishModel(DishModelDto dmodel);
-        void InsertDishByDishModel(DishModelDto dmodel);
+        //void InsertDishByDishModel(DishModelDto dmodel);
         List<Dish> AllDish();
         Dish GetDishById(int id);
         Task<bool> DeleteDishById(int id);
@@ -48,10 +48,10 @@ namespace ACSDining.Service
             _repository.UpdateDish(dmodel);
         }
 
-        public void InsertDishByDishModel(DishModelDto dmodel)
-        {
-            _repository.InsertDish(dmodel);
-        }
+        //public void InsertDishByDishModel(DishModelDto dmodel)
+        //{
+        //    _repository.InsertDish(dmodel);
+        //}
 
         public Dish GetDishById(int id)
         {

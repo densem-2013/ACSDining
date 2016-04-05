@@ -2,7 +2,7 @@
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 using ACSDining.Web.Areas.SU_Area.Controllers;

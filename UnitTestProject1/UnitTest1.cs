@@ -9,7 +9,8 @@ using System.Xml.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Core.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Repository.Repositories;
 using Microsoft.AspNet.Identity;
@@ -153,10 +154,10 @@ namespace UnitTestProject1
                 WorkingWeek workingWeek = null;
                 while (workingWeek != null&&i<10)
                 {
-                    WeekYearDTO nextweekDto = UnitOfWork.GetNextWeekYear(new WeekYearDTO
+                    WeekYearDTO nextweekDto = YearWeekHelp.GetNextWeekYear(new WeekYearDTO
                     {
-                        Week = UnitOfWork.CurrentWeek() + i,
-                        Year = (UnitOfWork.CurrentWeek() + i > UnitOfWork.YearWeekCount(DateTime.Now.Year)) ? DateTime.Now.Year + 1 : DateTime.Now.Year
+                        Week = YearWeekHelp.CurrentWeek() + i,
+                        Year = (YearWeekHelp.CurrentWeek() + i > YearWeekHelp.YearWeekCount(DateTime.Now.Year)) ? DateTime.Now.Year + 1 : DateTime.Now.Year
                     });
                     workingWeek =
                 _workingWeekRepository.Queryable().FirstOrDefault(
@@ -235,7 +236,7 @@ namespace UnitTestProject1
             {
                 foreach (Year year in years)
                 {
-                    int weekcount = UnitOfWork.YearWeekCount(year.YearNumber);
+                    int weekcount = YearWeekHelp.YearWeekCount(year.YearNumber);
                     List<WorkingWeek> workweeks = new List<WorkingWeek>();
                     for (int i = 0; i < weekcount; i++)
                     {
@@ -341,7 +342,7 @@ namespace UnitTestProject1
         public void CreateWeekMenu()
         {
             Random rand = new Random();
-            Dish[] dishArray = GetDishesFromXML();
+            Dish[] dishArray = GetDishesFromXml();
             string[] categories = _dishtypeRepository.Queryable().OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
 
             Func<string, IEnumerable<Dish>, int> countDish = (str, list) =>
@@ -372,12 +373,12 @@ namespace UnitTestProject1
             List<WorkingWeek> workweeks = _workingWeekRepository.Queryable().Include("WorkingDays").ToList();
             for (int week = 0; week < 25; week++)
             {
-                int curweek = UnitOfWork.CurrentWeek() - week + correct_week;
-                weekLessZero = UnitOfWork.CurrentWeek() - week <= 0;
+                int curweek = YearWeekHelp.CurrentWeek() - week + correct_week;
+                weekLessZero = YearWeekHelp.CurrentWeek() - week <= 0;
                 if (weekLessZero)
                 {
                     year = correct_year;
-                    correct_week = UnitOfWork.YearWeekCount(DateTime.Now.Year - 1);
+                    correct_week = YearWeekHelp.YearWeekCount(DateTime.Now.Year - 1);
                 }
                 List<MenuForDay> mfdays = new List<MenuForDay>();
                 WorkingWeek workweek = _workingWeekRepository.Queryable().FirstOrDefault(
@@ -419,54 +420,49 @@ namespace UnitTestProject1
             Assert.IsTrue(menus.Count == 25);
         }
 
-        private Dish[] GetDishesFromXML()
+        private Dish[] GetDishesFromXml()
         {
             string userspath = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") + @"ACSDining.Core\DBinitial\DishDetails.xml";
             var xml = XDocument.Load(userspath);
-            var collection = xml.Root.Descendants("dish");
+            if (xml.Root != null)
+            {
+                var collection = xml.Root.Descendants("dish");
 
-            List<DishType> dtList = _dishtypeRepository.Queryable().ToList();
+                List<DishType> dtList = _dishtypeRepository.Queryable().ToList();
 
-            Func<string, DishType> getDishType =
-                el1 =>
+                Func<string, DishType> getDishType =
+                    el1 =>
+                    {
+                        DishType dtype = dtList.FirstOrDefault(dt => string.Equals(el1, dt.Category));
+
+                        return dtype;
+                    };
+
+                Func<string, double> parseDouble = str =>
                 {
-                    DishType dtype = dtList.FirstOrDefault(dt => string.Equals(el1, dt.Category));
-
-                    return dtype;
+                    double num = Double.Parse(str);
+                    return num;
                 };
-
-            Func<string, double> parseDouble = str =>
-            {
-                double num = Double.Parse(str);
-                return num;
-            };
-            try
-            {
-
                 Dish[] dishes = (from el in collection.AsEnumerable()
-                                 select new Dish
-                                 {
-                                     DishType = getDishType(el.Attribute("dishtype").Value),
-                                     Title = el.Attribute("title").Value,
-                                     Description = el.Element("description").Value,
-                                     ProductImage = el.Attribute("image").Value,
-                                     Price = parseDouble(el.Element("cost").Value),
-                                     DishDetail = new DishDetail
-                                     {
-                                         Title = el.Attribute("title").Value,
-                                         Foods = el.Element("foods").Value,
-                                         Recept = el.Element("recept").Value
-                                     }
-                                 }).ToArray();
+                    select new Dish
+                    {
+                        DishType = getDishType(el.Attribute("dishtype").Value),
+                        Title = el.Attribute("title").Value,
+                        Description = el.Element("description").Value,
+                        ProductImage = el.Attribute("image").Value,
+                        Price = parseDouble(el.Element("cost").Value),
+                        DishDetail = new DishDetail
+                        {
+                            Title = el.Attribute("title").Value,
+                            Foods = el.Element("foods").Value,
+                            Recept = el.Element("recept").Value
+                        }
+                    }).ToArray();
 
                 //context.Dishes.AddOrUpdate(c => c.Title, dishes);
                 return dishes;
             }
-            catch (NullReferenceException ex)
-            {
-                throw;
-            }
-
+            return null;
         }
     }
 }

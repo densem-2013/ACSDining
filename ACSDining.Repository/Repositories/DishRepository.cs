@@ -2,7 +2,7 @@
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 
 namespace ACSDining.Repository.Repositories
 {
@@ -28,7 +28,7 @@ namespace ACSDining.Repository.Repositories
             if (!string.Equals(dmodel.Foods, string.Empty))
             {
                 DishDetail dishDetail = new DishDetail {Foods = dmodel.Foods};
-                repository.GetRepository<DishDetail>().Insert(dishDetail);
+                //repository.GetRepository<DishDetail>().Insert(dishDetail);
                 target.DishDetail.Foods = dmodel.Foods;
                 target.DishDetail = dishDetail;
             }
@@ -37,23 +37,23 @@ namespace ACSDining.Repository.Repositories
             repository.Update(target);
         }
 
-        public static void InsertDish(this IRepositoryAsync<Dish> repository, DishModelDto dmodel)
-        {
-            Dish newdish = new Dish
-            {
-                Title = dmodel.Title,
-                Price = dmodel.Price,
-                ProductImage = dmodel.ProductImage,
-                DishType =
-                    repository.GetRepository<DishType>()
-                        .Queryable()
-                        .FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
-                DishDetail = new DishDetail
-                {
-                    Foods = dmodel.Foods
-                }
-            };
-            repository.Insert(newdish);
-        }
+        //public static void InsertDish(this IRepositoryAsync<Dish> repository, DishModelDto dmodel)
+        //{
+        //    Dish newdish = new Dish
+        //    {
+        //        Title = dmodel.Title,
+        //        Price = dmodel.Price,
+        //        ProductImage = dmodel.ProductImage,
+        //        DishType =
+        //            repository.GetRepository<DishType>()
+        //                .Queryable()
+        //                .FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
+        //        DishDetail = new DishDetail
+        //        {
+        //            Foods = dmodel.Foods
+        //        }
+        //    };
+        //    repository.Insert(newdish);
+        //}
     }
 }

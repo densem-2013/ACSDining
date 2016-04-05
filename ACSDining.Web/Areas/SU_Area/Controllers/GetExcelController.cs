@@ -2,7 +2,7 @@
 using System.Web.Http.Description;
 using System.Web.Mvc;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers

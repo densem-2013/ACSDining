@@ -8,8 +8,9 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
+using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Core.HelpClasses;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -20,17 +21,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class WeekMenuController : ApiController
     {
         private readonly IMenuForWeekService _weekmenuService;
-        private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly UnitOfWork _unitOfWork;
         private readonly IDishService _dishService;
         private readonly IMenuforDayService _daymenuRepository; 
 
-        public WeekMenuController(IUnitOfWorkAsync unitOfWork, IMenuForWeekService weekmenuService,
-            IDishService dishService, IMenuforDayService daymenuRepository)
+        public WeekMenuController(IUnitOfWorkAsync unitOfWork)
         {
-            _unitOfWork = unitOfWork;
-            _weekmenuService = weekmenuService;
-            _dishService = dishService;
-            _daymenuRepository = daymenuRepository;
+            _unitOfWork = (UnitOfWork)unitOfWork;
+            _weekmenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
+            _dishService = new DishService( _unitOfWork.RepositoryAsync<Dish>());
+            _daymenuRepository = new MenuForDayService(_unitOfWork.RepositoryAsync<MenuForDay>());
         }
 
 
@@ -43,7 +43,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (WeekMenuDto))]
         public async Task<WeekMenuDto> GetWeekMenu([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            int week = numweek ?? UnitOfWork.CurrentWeek();
+            int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
 
             var dto = _weekmenuService.WeekMenuDtoByWeekYear(week, yearnum);
@@ -55,7 +55,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("nwMenuExist")]
         public Task<bool> IsNexWeekMenuExist(WeekYearDTO weekyear)
         {
-            WeekYearDTO nextweeknumber = UnitOfWork.GetNextWeekYear(weekyear);
+            WeekYearDTO nextweeknumber = YearWeekHelp.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
                 _weekmenuService.GetWeekMenuByWeekYear(nextweeknumber.Week, nextweeknumber.Year);
 
@@ -74,7 +74,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (WeekYearDTO))]
         public Task<WeekYearDTO> GetNextWeekYear([FromBody] WeekYearDTO weekyear)
         {
-            return Task.FromResult(UnitOfWork.GetNextWeekYear(weekyear));
+            return Task.FromResult(YearWeekHelp.GetNextWeekYear(weekyear));
         }
 
         [HttpPut]
@@ -82,7 +82,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (WeekYearDTO))]
         public Task<WeekYearDTO> GetPrevWeekYear([FromBody] WeekYearDTO weekyear)
         {
-            return Task.FromResult(UnitOfWork.GetPrevWeekYear(weekyear));
+            return Task.FromResult(YearWeekHelp.GetPrevWeekYear(weekyear));
         }
 
         [HttpGet]
@@ -90,7 +90,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (Int32))]
         public async Task<Int32> CurrentWeekNumber()
         {
-            return await Task.FromResult(UnitOfWork.CurrentWeek());
+            return await Task.FromResult(YearWeekHelp.CurrentWeek());
         }
 
         [HttpGet]
@@ -98,7 +98,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (string[]))]
         public async Task<string[]> GetCategories()
         {
-            return await _weekmenuService.GetCategories().ToArrayAsync();
+            return
+                await
+                    _unitOfWork.Repository<DishType>()
+                        .Queryable()
+                        .ToList()
+                        .OrderBy(d => d.Id)
+                        .Select(dt => dt.Category)
+                        .AsQueryable()
+                        .ToArrayAsync();
         }
 
         [HttpGet]

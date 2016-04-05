@@ -3,21 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Core.HelpClasses;
 
 namespace ACSDining.Repository.Repositories
 {
     public static class MenuForWeekRepository
     {
 
-        public static double[] GetUnitWeekPrices(this IRepositoryAsync<MenuForWeek> repository, int menuforweekid)
+        public static double[] GetUnitWeekPrices(this IRepositoryAsync<MenuForWeek> repository, int menuforweekid, string[] categories)
         {
 
             double[] unitprices = new double[20];
 
-            string[] categories =
-                repository.GetRepository<DishType>().Queryable().OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
             MenuForWeek mfw = repository.Find(menuforweekid);
             for (int i = 0; i < 5; i++)
             {
@@ -151,7 +149,7 @@ namespace ACSDining.Repository.Repositories
 
         public static WeekMenuDto GetNextWeekMenuByCurrentWekYear(this IRepositoryAsync<MenuForWeek> repository,WeekYearDTO weekyear)
         {
-            WeekYearDTO nextweeknumber = UnitOfWork.GetNextWeekYear(weekyear);
+            WeekYearDTO nextweeknumber = YearWeekHelp.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
                 repository.Queryable().FirstOrDefault(
                         mfw => mfw.WorkingWeek.WeekNumber == nextweeknumber.Week && mfw.WorkingWeek.Year.YearNumber == nextweeknumber.Year);
@@ -200,7 +198,7 @@ namespace ACSDining.Repository.Repositories
 
         public static MenuForWeek CreateNextWeekMenu(this IRepositoryAsync<MenuForWeek> repository, WeekYearDTO weekyear)
         {
-            WeekYearDTO nextweekDto = UnitOfWork.GetNextWeekYear(weekyear);
+            WeekYearDTO nextweekDto = YearWeekHelp.GetNextWeekYear(weekyear);
             Year nextYear =
                 repository.GetRepository<Year>().Queryable().FirstOrDefault(y => y.YearNumber == nextweekDto.Year) ??
                 new Year

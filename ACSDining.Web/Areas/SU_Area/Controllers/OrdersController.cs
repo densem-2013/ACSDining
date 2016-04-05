@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Core.HelpClasses;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -16,11 +17,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IOrderMenuService _orderMenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public OrdersController(IUnitOfWorkAsync unitOfWorkAsync, IMenuForWeekService weekMenuService, IOrderMenuService orderMenuService)
+        public OrdersController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
-            _weekMenuService = weekMenuService;
-            _orderMenuService = orderMenuService;
+            _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
+            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
         }
 
 
@@ -30,7 +31,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("{numweek}/{year}")]
         public async Task<OrdersDTO> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
-            int week = numweek ?? UnitOfWork.CurrentWeek();
+            int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
 
             return await Task.FromResult(_orderMenuService.OrdersDtoByWeekYear(week, yearnum));
@@ -42,7 +43,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public async Task<double> GetSummaryPrice([FromBody] UserOrdersDTO usorder, [FromUri] int? numweek = null,
             [FromUri] int? year = null)
         {
-            int week = numweek ?? UnitOfWork.CurrentWeek();
+            int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
 
             return await Task.FromResult(_weekMenuService.SummaryPrice(usorder, week, yearnum));

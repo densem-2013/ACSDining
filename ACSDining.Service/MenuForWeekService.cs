@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
 {
     public interface IMenuForWeekService: IService<MenuForWeek>
     {
-        double[] UnitWeekPrices(int menuforweekid);
+        double[] UnitWeekPrices(int menuforweekid, string[] categories);
 
         WeekMenuDto MapWeekMenuDto(MenuForWeek wmenu, bool emptyDishes = false);
 
@@ -27,7 +27,7 @@ namespace ACSDining.Service
 
         WeekMenuDto GetNextWeekMenu(WeekYearDTO weekyear);
 
-        IQueryable<string> GetCategories();
+        //IQueryable<string> GetCategories();
 
         void UpdateMenuForDay(MenuForDayDto menuforday);
 
@@ -46,9 +46,9 @@ namespace ACSDining.Service
             _repository = repository;
         }
 
-        public double[] UnitWeekPrices(int menuforweekid)
+        public double[] UnitWeekPrices(int menuforweekid,string[] categories)
         {
-            return _repository.GetUnitWeekPrices(menuforweekid);
+            return _repository.GetUnitWeekPrices(menuforweekid,categories);
         }
 
         public WeekMenuDto MapWeekMenuDto(MenuForWeek wmenu, bool emptyDishes = false)
@@ -97,17 +97,17 @@ namespace ACSDining.Service
             return _repository.GetNextWeekMenuByCurrentWekYear(weekyear);
         }
 
-        public IQueryable<string> GetCategories()
-        {
-            try
-            {
-                return _repository.GetRepository<DishType>().Queryable().ToList().OrderBy(d => d.Id).Select(dt => dt.Category).AsQueryable();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+        //public IQueryable<string> GetCategories()
+        //{
+        //    try
+        //    {
+        //        return _repository.GetRepository<DishType>().Queryable().ToList().OrderBy(d => d.Id).Select(dt => dt.Category).AsQueryable();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
 
         public void UpdateMenuForDay(MenuForDayDto menuforday)
         {

@@ -1,6 +1,6 @@
 ﻿using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using Newtonsoft.Json;
 
 namespace ACSDining.Web.Areas.SU_Area.Models

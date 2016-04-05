@@ -7,7 +7,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -82,7 +82,23 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             try
             {
-                _dishService.InsertDishByDishModel(dmodel);
+                Dish newdish = new Dish
+                {
+                    Title = dmodel.Title,
+                    Price = dmodel.Price,
+                    ProductImage = dmodel.ProductImage,
+                    DishType =
+                        _unitOfWork.Repository<DishType>()
+                            .Queryable()
+                            .FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
+                    DishDetail = new DishDetail
+                    {
+                        Foods = dmodel.Foods
+                    }
+                };
+
+                _dishService.Insert(newdish);
+               await  _unitOfWork.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {

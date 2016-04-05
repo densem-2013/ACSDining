@@ -73,10 +73,6 @@
       <Project>{B4D50F6A-DE92-4007-9B71-F855A3831E91}</Project>
       <Name>ACSDining.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ACSDining.Infrastructure\ACSDining.Infrastructure.csproj">
-      <Project>{F3D62C6D-8A65-48C5-A9D0-E5D4088E8800}</Project>
-      <Name>ACSDining.Infrastructure</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

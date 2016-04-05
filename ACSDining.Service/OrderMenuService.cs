@@ -1,20 +1,19 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DTO.Employee;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
 {
     public interface IOrderMenuService: IService<OrderMenu>
     {
-        OrdersDTO OrdersDtoByWeekYear(int week, int year);
-        OrderMenu GetOrderMenuByWeekYear(int week, int year);
-        double SummaryPriceUserByWeekYear(UserOrdersDTO usorder, int numweek, int year);
-        double[] UserWeekOrderDishes(int orderid);
-        double[] UserWeekOrderPaiments(int orderid);
-        EmployeeOrderDto EmployeeOrderByWeekYear(WeekMenuDto weekmodel, string userid, int numweek, int year);
+        //OrdersDTO OrdersDtoByWeekYear(int week, int year);
+        //OrderMenu GetOrderMenuByWeekYear(int week, int year);
+        //double SummaryPriceUserByWeekMenu(UserOrdersDTO usorder, MenuForWeek weekmenu);
+        double[] UserWeekOrderDishes( List<DishQuantityRelations> quaList, string[] categories, MenuForWeek mfw);
+        double[] UserWeekOrderPaiments(List<DishQuantityRelations> quaList, string[] categories, MenuForWeek mfw);
+        //EmployeeOrderDto EmployeeOrderByWeekYear(WeekMenuDto weekmodel, string userid, int numweek, int year);
         IQueryable<OrderMenu> GetAllByWeekYear(int numweek, int year);
         void UpdateOrderMenu(OrderMenu order);
         OrderMenu Find(int orderid);
@@ -30,35 +29,35 @@ namespace ACSDining.Service
             _repository = repository;
         }
 
-        public OrdersDTO OrdersDtoByWeekYear(int week, int year)
+        //public OrdersDTO OrdersDtoByWeekYear(int week, int year)
+        //{
+        //    return _repository.GetOrdersDtoByWeekYear(week, year);
+        //}
+
+        //public OrderMenu GetOrderMenuByWeekYear(int week, int year)
+        //{
+        //    return _repository.OrderMenuByWeekYear(week, year);
+        //}
+
+        //public double SummaryPriceUserByWeekMenu(UserOrdersDTO usorder, MenuForWeek weekmenu)
+        //{
+        //    return _repository.GetSummaryPriceUserByWeekMenu(usorder, weekmenu);
+        //}
+
+        public double[] UserWeekOrderDishes(List<DishQuantityRelations> quaList, string[] categories, MenuForWeek mfw)
         {
-            return _repository.GetOrdersDtoByWeekYear(week, year);
+            return _repository.GetUserWeekOrderDishes(quaList,categories,mfw);
         }
 
-        public OrderMenu GetOrderMenuByWeekYear(int week, int year)
+        public double[] UserWeekOrderPaiments(List<DishQuantityRelations> quaList, string[] categories, MenuForWeek mfw)
         {
-            return _repository.OrderMenuByWeekYear(week, year);
-        }
-
-        public double SummaryPriceUserByWeekYear(UserOrdersDTO usorder, int numweek, int year)
-        {
-            return _repository.GetSummaryPriceUserByWeekYear(usorder, numweek, year);
-        }
-
-        public double[] UserWeekOrderDishes(int orderid)
-        {
-            return _repository.GetUserWeekOrderDishes(orderid);
-        }
-
-        public double[] UserWeekOrderPaiments(int orderid)
-        {
-            return _repository.GetUserWeekOrderPaiments(orderid);
+            return _repository.GetUserWeekOrderPaiments(quaList, categories, mfw);
         }
         
-        public EmployeeOrderDto EmployeeOrderByWeekYear(WeekMenuDto weekmodel, string userid, int numweek, int year)
-        {
-            return _repository.EmployeeOrderByWeekYear(weekmodel, userid, numweek, year);
-        }
+        //public EmployeeOrderDto EmployeeOrderByWeekYear(WeekMenuDto weekmodel, string userid, int numweek, int year)
+        //{
+        //    return _repository.EmployeeOrderByWeekYear(weekmodel, userid, numweek, year);
+        //}
 
         public IQueryable<OrderMenu> GetAllByWeekYear(int numweek, int year)
         {
