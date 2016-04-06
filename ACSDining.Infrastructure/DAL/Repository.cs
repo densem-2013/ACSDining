@@ -24,10 +24,8 @@ namespace ACSDining.Infrastructure.DAL
 
         public Repository(ApplicationDbContext context)
         {
-            _context = context;//((UnitOfWork)unitOfWork).GetContext();
-            //_unitOfWork = unitOfWork;
+            _context = context;
 
-            // Temporarily for FakeDbContext, Unit Test and Fakes
             var dbContext = _context ;
 
             if (dbContext != null)
@@ -99,12 +97,7 @@ namespace ACSDining.Infrastructure.DAL
         {
             return _dbSet;
         }
-
-        //public IRepository<T> GetRepository<T>() where T : class
-        //{
-        //    return _unitOfWork.Repository<T>();
-        //}
-
+        
         public virtual async Task<TEntity> FindAsync(params object[] keyValues)
         {
             return await _dbSet.FindAsync(keyValues);

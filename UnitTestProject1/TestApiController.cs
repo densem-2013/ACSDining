@@ -38,8 +38,7 @@ namespace UnitTestProject1
         [TestMethod]
         public  void WeekMenuTestApi()
         {
-            WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork, _menuForWeekService, _dishService,
-                _menuForDayService);
+            WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork);
             WeekMenuDto wmDto = weekMenuApi.GetWeekMenu(12, 2016).Result;
             Assert.IsNotNull(wmDto);
         }

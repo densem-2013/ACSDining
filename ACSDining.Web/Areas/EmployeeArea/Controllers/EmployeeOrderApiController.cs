@@ -10,6 +10,7 @@ using ACSDining.Core.DTO.Employee;
 using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Core.HelpClasses;
 using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.DAL;
 using ACSDining.Service;
 using Microsoft.AspNet.Identity;
 
@@ -40,8 +41,9 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             string userid = RequestContext.Principal.Identity.GetUserId();
             int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnumber = year ?? DateTime.Now.Year;
-           
-            WeekMenuDto weekmodel = _weekMenuService.WeekMenuDtoByWeekYear(week, yearnumber);
+
+            WeekMenuDto weekmodel = WeekMenuDto.MapDto(_unitOfWork as UnitOfWork,
+                _weekMenuService.GetWeekMenuByWeekYear(week, yearnumber));
 
             if (weekmodel == null) return Content(HttpStatusCode.BadRequest, "not created");
 

@@ -7,6 +7,5 @@
         public double[] Dishquantities { get; set; }
         public double SummaryPrice { get; set; }
         public double WeekPaid { get; set; }
-
     }
 }

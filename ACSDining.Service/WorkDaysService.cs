@@ -8,7 +8,8 @@ namespace ACSDining.Service
 {
     public interface IWorkDaysService:IService<WorkingWeek>
     {
-        WorkWeekDto GetWorkWeekByWeekYear(int week, int year);
+        WorkWeekDto GetWorkWeekDtoByWeekYear(int week, int year);
+        WorkingWeek GetWorkWeekByWeekYear(int week, int year);
         int UpdateWorkDays(WorkWeekDto weekModel);
     }
 
@@ -22,11 +23,17 @@ namespace ACSDining.Service
             _repository = repository;
         }
 
-        public WorkWeekDto GetWorkWeekByWeekYear(int week, int year)
+        public WorkWeekDto GetWorkWeekDtoByWeekYear(int week, int year)
         {
             return
                 WorkWeekDto.MapWorkWeekDto(
                     _repository.Queryable().FirstOrDefault(ww => ww.WeekNumber == week && ww.Year.YearNumber == year));
+        }
+
+        public WorkingWeek GetWorkWeekByWeekYear(int week, int year)
+        {
+            return 
+                    _repository.Queryable().FirstOrDefault(ww => ww.WeekNumber == week && ww.Year.YearNumber == year);
         }
 
         public int UpdateWorkDays(WorkWeekDto weekModel)

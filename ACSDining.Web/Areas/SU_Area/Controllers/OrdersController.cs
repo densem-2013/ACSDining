@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -33,8 +35,38 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
+            string[] categories =
+                    _unitOfWork.Repository<DishType>()
+                        .Queryable()
+                        .ToList()
+                        .OrderBy(d => d.Id)
+                        .Select(dt => dt.Category)
+                        .AsQueryable()
+                        .ToArray();
 
-            return await Task.FromResult(_orderMenuService.OrdersDtoByWeekYear(week, yearnum));
+            List<OrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(week, yearnum);
+            OrdersDTO OrderDTO = new OrdersDTO
+            {
+                WeekNumber = week,
+                YearNumber = yearnum,
+                UserOrders = orderList.Select(om =>
+                {
+                    List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
+                            .Queryable()
+                            .Where(dqr => dqr.OrderMenuID == om.Id && dqr.MenuForWeekID == om.MenuForWeek.ID)
+                            .ToList();
+                    MenuForWeek mfw = _weekMenuService.Find(om.MenuForWeek.ID);
+                    return new UserOrdersDTO
+                    {
+                        UserId = om.User.Id,
+                        UserName = om.User.UserName,
+                        Dishquantities = _orderMenuService.UserWeekOrderDishes(quaList,categories,mfw)
+                    };
+                }).ToList()
+            };
+
+
+            return await Task.FromResult(OrderDTO);
         }
 
         [HttpPut]
@@ -57,5 +89,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             base.Dispose(disposing);
         }
+
     }
 }

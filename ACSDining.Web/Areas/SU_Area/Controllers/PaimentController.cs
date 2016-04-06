@@ -54,10 +54,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            //OrderMenu order = repository.Find(orderid);
-
-            //string[] categories =_unitOfWork.Repository<DishType>().Queryable().OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            //MenuForWeek mfw = repository.GetRepository<MenuForWeek>().Find(menuforweekid);
             PaimentsDTO model = new PaimentsDTO
             {
                 WeekNumber = week,
@@ -93,6 +89,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             double[] paiments = new double[21];
             MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(numweek,year);
+
             string[] categories = 
                     _unitOfWork.Repository<DishType>()
                         .Queryable()
@@ -106,11 +103,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 double[] weekprices = _weekMenuService.UnitWeekPrices(weekmenu.ID, categories);
 
-               // OrderMenu order = repository.Find(orderid);
+                OrderMenu[] orderMenus = _orderMenuService.GetAllByWeekYear(numweek,year).ToArray();
 
-
-                OrderMenu[] orderMenus = _orderMenuService.GetAllByWeekYear(numweek,year)
-                    .ToArray();
                 for (int i = 0; i < orderMenus.Length; i++)
                 {
                     OrderMenu order = orderMenus[i];

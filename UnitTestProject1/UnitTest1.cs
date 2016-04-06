@@ -5,7 +5,6 @@ using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
-////using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DAL;
@@ -25,8 +24,6 @@ namespace UnitTestProject1
     {
         private readonly ApplicationDbContext dataContext;
         private readonly UnitOfWork _unitOfWork;
-        //public readonly IOwinContext _owincontext=new OwinContext();
-        //private readonly IDataContextAsync dbcontext=ApplicationDbContext.Create();
         private readonly IRepositoryAsync<DishType> _dishtypeRepository;
         private readonly IRepositoryAsync<MenuForWeek> _weekmenuRepository;
         private readonly IRepositoryAsync<Year> _yearRepository;
@@ -35,15 +32,12 @@ namespace UnitTestProject1
         private readonly IRepositoryAsync<OrderMenu> _orderRepository;
         private readonly IRepositoryAsync<WorkingWeek> _workingWeekRepository;
         private readonly IRepositoryAsync<WorkingDay> _workingDayRepository;
-       // private readonly IRepositoryAsync<UserRole> _userRoleRepository;
-        //private readonly IRepositoryAsync<User> _userRepository; 
         private ApplicationUserManager _userManager;
         private RoleManager<IdentityRole> roleManager;
 
         public UnitTest1()
         {
             dataContext = new ApplicationDbContext();
-            //_unitOfWork = new UnitOfWork();
             _unitOfWork = new UnitOfWork();
             _dishtypeRepository = _unitOfWork.RepositoryAsync<DishType>();
             _weekmenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();
@@ -53,8 +47,6 @@ namespace UnitTestProject1
             _orderRepository = _unitOfWork.RepositoryAsync<OrderMenu>();
             _workingWeekRepository = _unitOfWork.RepositoryAsync<WorkingWeek>();
             _workingDayRepository = _unitOfWork.RepositoryAsync<WorkingDay>();
-            // _userRoleRepository = _unitOfWork.RepositoryAsync<UserRole>();
-            //_userRepository = _unitOfWork.RepositoryAsync<User>();
             _userManager = new ApplicationUserManager(new UserStore<User>(dataContext));
             roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(dataContext));
         }
@@ -194,17 +186,33 @@ namespace UnitTestProject1
        
         private double[] PaimentsByDishes(int numweek, int year)
         {
-            double[] paiments = new double[21];
+            string[] categories =
+                    _unitOfWork.Repository<DishType>()
+                        .Queryable()
+                        .ToList()
+                        .OrderBy(d => d.Id)
+                        .Select(dt => dt.Category)
+                        .AsQueryable()
+                        .ToArray();
+
             MenuForWeek weekmenu = _weekmenuRepository.Queryable().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
-            double[] weekprices = _weekmenuRepository.GetUnitWeekPrices(weekmenu.ID);
+           
+
+            double[] paiments = new double[21];
+            double[] weekprices = _weekmenuRepository.GetUnitWeekPrices(weekmenu.ID, categories);
 
 
-            OrderMenu[] orderMenus = _orderRepository.Queryable().Where(
+            OrderMenu[] orderMenus = _orderRepository.Query().Include(or=>or.MenuForWeek.WorkingWeek.Year).Select().Where(
                         om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
             {
-                double[] dishquantities = _orderRepository.GetUserWeekOrderDishes(orderMenus[i].Id);
+                int menuforweekid = orderMenus[i].MenuForWeek.ID;
+                List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
+                        .Queryable()
+                        .Where(dqr => dqr.OrderMenuID == orderMenus[i].Id && dqr.MenuForWeekID == menuforweekid)
+                        .ToList();
+                double[] dishquantities = _orderRepository.GetUserWeekOrderDishes(quaList, categories, orderMenus[i].MenuForWeek);
                 for (int j = 0; j < 20; j++)
                 {
                     paiments[j] += weekprices[j] * dishquantities[j];
@@ -310,13 +318,11 @@ namespace UnitTestProject1
                             user.Roles.Add(new IdentityUserRole
                             {
                                 RoleId = role.Id,
-                                UserId = user.Id//,
-                               // ObjectState = ObjectState.Added
+                                UserId = user.Id
                             });
                         _userManager.Create(user);
                     }
                     Assert.IsTrue(_userManager.Users.Any());
-                    //_db.SaveChanges();
                 }
                 catch (DbEntityValidationException e)
                 {
@@ -368,7 +374,6 @@ namespace UnitTestProject1
             Year correct_year = _yearRepository.Queryable().FirstOrDefault(y => y.YearNumber == DateTime.Now.Year - 1);
             int correct_week = 0;
             List<MenuForWeek> menus = new List<MenuForWeek>();
-            //_db.Set(typeof (WorkingDay)).Include("DayOfWeek").Include("WorkingWeek").Load();
             List<WorkingDay> workdays = _workingDayRepository.Queryable().Include("DayOfWeek").Include("WorkingWeek").ToList();
             List<WorkingWeek> workweeks = _workingWeekRepository.Queryable().Include("WorkingDays").ToList();
             for (int week = 0; week < 25; week++)
@@ -410,12 +415,6 @@ namespace UnitTestProject1
                     WorkingWeek = workweek,
                     SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
                 });
-                //context.MenuForWeeks.AddOrUpdate(m => m.WorkingWeek, new MenuForWeek
-                //{
-                //    MenuForDay = mfdays,
-                //    WorkingWeek = workweek,
-                //    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
-                //});
             }
             Assert.IsTrue(menus.Count == 25);
         }
@@ -459,7 +458,6 @@ namespace UnitTestProject1
                         }
                     }).ToArray();
 
-                //context.Dishes.AddOrUpdate(c => c.Title, dishes);
                 return dishes;
             }
             return null;

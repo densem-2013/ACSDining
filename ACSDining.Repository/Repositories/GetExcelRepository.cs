@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ACSDining.Core.Domains;
@@ -12,7 +11,8 @@ namespace ACSDining.Repository.Repositories
 {
     public static class GetExcelRepository
     {
-        public static string GetExcelFileFromPaimentsModel(this IRepositoryAsync<OrderMenu> repository, PaimentsDTO model)
+        public static string GetExcelFileFromPaimentsModel(this IRepositoryAsync<OrderMenu> repository,
+            PaimentsDTO model, WorkingWeek workingWeek, List<DishType> dishTypes)
         {
             // Load Excel application
             Application excel = new Application();
@@ -35,12 +35,6 @@ namespace ACSDining.Repository.Repositories
                 workSheet.Range["A1:A4"].Merge();
                 workSheet.Cells[1, "B"] = "Ф.И.О.";
                 workSheet.Range["B1:B4"].Merge();
-                var workingWeek =
-                    repository.GetRepository<WorkingWeek>()
-                        .Queryable()
-                        .Include("WorkingDays")
-                        .FirstOrDefault(
-                            ww => ww.WeekNumber == model.WeekNumber && ww.Year.YearNumber == model.YearNumber);
                 if (workingWeek != null)
                 {
                     int count = workingWeek.WorkingDays.Count();
@@ -48,17 +42,17 @@ namespace ACSDining.Repository.Repositories
                     string str;
                     string colname;
                     string colname_2;
-                    for (int[] j = { 0 }; j[0] < count; j[0]++)
+                    for (int[] j = {0}; j[0] < count; j[0]++)
                     {
-                        colname = GetExcelColumnName(j[0] * 4 + 3);
-                        colname_2 = GetExcelColumnName(j[0] * 4 + 6);
-                        var elementAtOrDefault = workingWeek.WorkingDays.ElementAtOrDefault( j[0] + 1);
+                        colname = GetExcelColumnName(j[0]*4 + 3);
+                        colname_2 = GetExcelColumnName(j[0]*4 + 6);
+                        var elementAtOrDefault = workingWeek.WorkingDays.ElementAtOrDefault(j[0] + 1);
                         if (elementAtOrDefault != null)
                             workSheet.Cells[1, colname] = elementAtOrDefault.DayOfWeek.Name;
                         str = String.Format("{0}1:{1}1", colname, colname_2);
                         workSheet.Range[str].Merge();
                     }
-                    i += count * 4 + 3;
+                    i += count*4 + 3;
                     colname = GetExcelColumnName(i);
                     workSheet.Cells[1, colname] = "Сумма за неделю";
                     str = String.Format("{0}1:{1}4", colname, colname);
@@ -82,13 +76,13 @@ namespace ACSDining.Repository.Repositories
                     str = String.Format("{0}1:{1}4", colname, colname);
                     workSheet.Range[str].Merge();
                     workSheet.Range[str].Orientation = 90;
-                    List<DishType> dishTypes = repository.GetRepository<DishType>().Queryable().ToList();
+
                     i = 3;
                     for (int j = 0; j < 5; j++)
                     {
                         for (int k = 0; k < 4; k++)
                         {
-                            colname = GetExcelColumnName(i + j * 4 + k);
+                            colname = GetExcelColumnName(i + j*4 + k);
                             workSheet.Cells[2, colname] = dishTypes.ElementAt(k).Category;
                             workSheet.Range[colname + "2"].Orientation = 90;
                         }
@@ -98,23 +92,23 @@ namespace ACSDining.Repository.Repositories
                     str = String.Format("C3:{0}3", colname);
                     workSheet.Range[str].Merge();
                     workSheet.Range[str].HorizontalAlignment = XlHAlign.xlHAlignCenter;
-                    int orderid = repository.OrderMenuByWeekYear(model.WeekNumber, model.YearNumber).Id;
                     double[] dishprices = model.UnitPrices;
                     for (int j = 0; j < 20; j++)
                     {
                         colname = GetExcelColumnName(i + j);
                         workSheet.Cells[4, colname] = dishprices[j];
                     }
-                    i = 5; //i==row;
+                    i = 5; 
                     for (int j = 0; j < model.UserPaiments.Count; j++)
                     {
+                        UserPaimentDTO userpai = model.UserPaiments.ElementAt(j);
                         workSheet.Cells[i + j, "A"] = j + 1;
-                        workSheet.Cells[i + j, "B"] = model.UserPaiments.ElementAt(j).UserName;
-                        double[] userpais = repository.GetUserWeekOrderPaiments(orderid);
+                        workSheet.Cells[i + j, "B"] = userpai.UserName;
+
                         for (int k = 0; k < 20; k++)
                         {
                             colname = GetExcelColumnName(k + 3);
-                            workSheet.Cells[i + j, colname] = userpais[k];
+                            workSheet.Cells[i + j, colname] = userpai.Paiments[k];
                         }
                         colname = GetExcelColumnName(23);
                         workSheet.Cells[i + j, colname] = model.UserPaiments.ElementAt(j).SummaryPrice;
@@ -181,6 +175,7 @@ namespace ACSDining.Repository.Repositories
             }
 
         }
+
         private static string GetExcelColumnName(int columnNumber)
         {
             int dividend = columnNumber;
@@ -188,9 +183,9 @@ namespace ACSDining.Repository.Repositories
 
             while (dividend > 0)
             {
-                var modulo = (dividend - 1) % 26;
+                var modulo = (dividend - 1)%26;
                 columnName = Convert.ToChar(65 + modulo) + columnName;
-                dividend = (dividend - modulo) / 26;
+                dividend = (dividend - modulo)/26;
             }
 
             return columnName;

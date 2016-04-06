@@ -1,6 +1,9 @@
-﻿using System.Web.Http;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Mvc;
+using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Service;
@@ -12,13 +15,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class GetExcelController : ApiController
     {
 
-        private readonly IGetExcelService _getExcelService;
         private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IGetExcelService _getExcelService;
+        private readonly IWorkDaysService _workDaysService;
 
-        public GetExcelController(IUnitOfWorkAsync unitOfWork,IGetExcelService getExcelService)
+        public GetExcelController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _getExcelService = getExcelService;
+            _getExcelService = new GetExcelService(_unitOfWork.RepositoryAsync<OrderMenu>());
+            _workDaysService=new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
         }
 
 
@@ -27,7 +32,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(double))]
         public FilePathResult GetExelFromPaimentDto([FromBody] PaimentsDTO paimodel)
         {
-            string filename = _getExcelService.PaimentsDtoToExcelFile(paimodel);
+            WorkingWeek workweek = _workDaysService.GetWorkWeekByWeekYear(paimodel.WeekNumber, paimodel.YearNumber);
+            List<DishType> dtypes = _unitOfWork.RepositoryAsync<DishType>().Queryable().ToList();
+
+            string filename = _getExcelService.PaimentsDtoToExcelFile(paimodel, workweek,dtypes);
+
             return new FilePathResult(filename, "multipart/form-data");
         }
 
@@ -37,6 +46,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 _unitOfWork.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

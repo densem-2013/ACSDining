@@ -30,7 +30,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             int yearnum = year ?? DateTime.Now.Year;
             return
                 await
-                    Task.FromResult(_workDayService.GetWorkWeekByWeekYear(week, yearnum));
+                    Task.FromResult(_workDayService.GetWorkWeekDtoByWeekYear(week, yearnum));
         }
 
         [HttpPut]

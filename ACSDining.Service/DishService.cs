@@ -13,7 +13,6 @@ namespace ACSDining.Service
         List<DishModelDto> GetAllDishModelDto();
         List<DishModelDto> GetDishModelDtoByCategory(string category);
         void UpdateDishByDishModel(DishModelDto dmodel);
-        //void InsertDishByDishModel(DishModelDto dmodel);
         List<Dish> AllDish();
         Dish GetDishById(int id);
         Task<bool> DeleteDishById(int id);
@@ -47,12 +46,7 @@ namespace ACSDining.Service
         {
             _repository.UpdateDish(dmodel);
         }
-
-        //public void InsertDishByDishModel(DishModelDto dmodel)
-        //{
-        //    _repository.InsertDish(dmodel);
-        //}
-
+        
         public Dish GetDishById(int id)
         {
             return _repository.Find(id);
