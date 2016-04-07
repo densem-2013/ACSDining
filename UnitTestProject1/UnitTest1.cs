@@ -1,54 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Core.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Repository.Repositories;
+using ACSDining.Service;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace UnitTestProject1
 {
     [TestClass]
     public class UnitTest1
     {
-        private readonly ApplicationDbContext dataContext;
         private readonly UnitOfWork _unitOfWork;
-        private readonly IRepositoryAsync<DishType> _dishtypeRepository;
-        private readonly IRepositoryAsync<MenuForWeek> _weekmenuRepository;
-        private readonly IRepositoryAsync<Year> _yearRepository;
-        private readonly IRepositoryAsync<Dish> _dishRepository;
-        private readonly IRepositoryAsync<DayOfWeek> _dayRepository;
-        private readonly IRepositoryAsync<OrderMenu> _orderRepository;
-        private readonly IRepositoryAsync<WorkingWeek> _workingWeekRepository;
-        private readonly IRepositoryAsync<WorkingDay> _workingDayRepository;
-        private ApplicationUserManager _userManager;
-        private RoleManager<IdentityRole> roleManager;
+        private readonly ApplicationUserManager _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IDishService _dishService;
+        private readonly IWorkDaysService _workDaysService;
+        private readonly IMenuForWeekService _menuForWeekService;
+        private readonly IOrderMenuService _orderMenuService;
 
         public UnitTest1()
         {
-            dataContext = new ApplicationDbContext();
             _unitOfWork = new UnitOfWork();
-            _dishtypeRepository = _unitOfWork.RepositoryAsync<DishType>();
-            _weekmenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();
-            _yearRepository = _unitOfWork.RepositoryAsync<Year>();
-            _dishRepository = _unitOfWork.RepositoryAsync<Dish>();
-            _dayRepository = _unitOfWork.RepositoryAsync<DayOfWeek>();
-            _orderRepository = _unitOfWork.RepositoryAsync<OrderMenu>();
-            _workingWeekRepository = _unitOfWork.RepositoryAsync<WorkingWeek>();
-            _workingDayRepository = _unitOfWork.RepositoryAsync<WorkingDay>();
-            _userManager = new ApplicationUserManager(new UserStore<User>(dataContext));
-            roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(dataContext));
+            _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
+            _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_unitOfWork.GetContext()));
+            _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
+            _workDaysService = new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
+            _menuForWeekService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
+            _orderMenuService=new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
         }
 
         [TestMethod]
@@ -61,7 +48,7 @@ namespace UnitTestProject1
             {
                 var collection = xml.Root.Descendants("dish");
 
-                List<DishType> dtList = _dishtypeRepository.Queryable().ToList();
+                List<DishType> dtList = _unitOfWork.RepositoryAsync<DishType>().Queryable().ToList();
 
                 Func<string, DishType> getDishType =
                     el1 =>
@@ -126,13 +113,13 @@ namespace UnitTestProject1
         {
             Random rand = new Random(); 
             string[] categories = { "Первое блюдо", "Второе блюдо", "Салат", "Напиток" };
-            Dictionary<string, int> catCount = categories.ToDictionary(cat => cat, count => _dishRepository.Queryable().Count(d => string.Equals(d.DishType.Category, count)));
+            Dictionary<string, int> catCount = categories.ToDictionary(cat => cat, count => _dishService.Queryable().Count(d => string.Equals(d.DishType.Category, count)));
             Func<List<Dish>> getDishes = () =>
             {
                 List<Dish> ds = new List<Dish>();
                 foreach (KeyValuePair<string, int> pair in catCount)
                 {
-                    ds.Add(_dishRepository.Queryable().Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(rand.Next(pair.Value)));
+                    ds.Add(_dishService.Queryable().Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(rand.Next(pair.Value)));
                 }
                 return ds;
             };
@@ -144,15 +131,15 @@ namespace UnitTestProject1
             {
                 int i = 0;
                 WorkingWeek workingWeek = null;
-                while (workingWeek != null&&i<10)
+                while (i<10)
                 {
-                    WeekYearDTO nextweekDto = YearWeekHelp.GetNextWeekYear(new WeekYearDTO
+                    WeekYearDto nextweekDto = YearWeekHelp.GetNextWeekYear(new WeekYearDto
                     {
                         Week = YearWeekHelp.CurrentWeek() + i,
                         Year = (YearWeekHelp.CurrentWeek() + i > YearWeekHelp.YearWeekCount(DateTime.Now.Year)) ? DateTime.Now.Year + 1 : DateTime.Now.Year
                     });
                     workingWeek =
-                _workingWeekRepository.Queryable().FirstOrDefault(
+                _workDaysService.Queryable().FirstOrDefault(
                     w => w.WeekNumber == (nextweekDto.Week) && w.Year.YearNumber == nextweekDto.Year);
                     i++;
                 }
@@ -175,12 +162,12 @@ namespace UnitTestProject1
                 };
                 mfdays.Add(dayMenu);
             }
-            _weekmenuRepository.Insert(new MenuForWeek
+            _menuForWeekService.Insert(new MenuForWeek
             {
                 MenuForDay = mfdays,
                 WorkingWeek = week
             });
-            Assert.IsTrue(_weekmenuRepository.Queryable().Select(w => w.MenuForDay.Where(m => m.TotalPrice > 0)).Any());
+            Assert.IsTrue(_menuForWeekService.Queryable().Select(w => w.MenuForDay.Where(m => m.TotalPrice > 0)).Any());
         }
 
        
@@ -195,14 +182,14 @@ namespace UnitTestProject1
                         .AsQueryable()
                         .ToArray();
 
-            MenuForWeek weekmenu = _weekmenuRepository.Queryable().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
+            MenuForWeek weekmenu = _menuForWeekService.Queryable().FirstOrDefault(m => m.WorkingWeek.WeekNumber == numweek && m.WorkingWeek.Year.YearNumber == year);
            
 
             double[] paiments = new double[21];
-            double[] weekprices = _weekmenuRepository.GetUnitWeekPrices(weekmenu.ID, categories);
+            double[] weekprices = _menuForWeekService.UnitWeekPrices(weekmenu.ID, categories);
 
 
-            OrderMenu[] orderMenus = _orderRepository.Query().Include(or=>or.MenuForWeek.WorkingWeek.Year).Select().Where(
+            OrderMenu[] orderMenus = _orderMenuService.Query().Include(or => or.MenuForWeek.WorkingWeek.Year).Select().Where(
                         om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToArray();
             for (int i = 0; i < orderMenus.Length; i++)
@@ -212,7 +199,7 @@ namespace UnitTestProject1
                         .Queryable()
                         .Where(dqr => dqr.OrderMenuID == orderMenus[i].Id && dqr.MenuForWeekID == menuforweekid)
                         .ToList();
-                double[] dishquantities = _orderRepository.GetUserWeekOrderDishes(quaList, categories, orderMenus[i].MenuForWeek);
+                double[] dishquantities = _orderMenuService.UserWeekOrderDishes(quaList, categories, orderMenus[i].MenuForWeek);
                 for (int j = 0; j < 20; j++)
                 {
                     paiments[j] += weekprices[j] * dishquantities[j];
@@ -225,21 +212,30 @@ namespace UnitTestProject1
         [TestMethod]
         public void CreateWorkingDays()
         {
-            IEnumerable<Year> startyears = _yearRepository.Queryable();
+            IEnumerable<Year> startyears = _unitOfWork.RepositoryAsync<Year>().Queryable();
             if (!startyears.Any())
             {
-                _yearRepository.Insert(new Year
+                _unitOfWork.RepositoryAsync<Year>().Insert(new Year
                 {
                     YearNumber = DateTime.Now.Year
                 });
-                _yearRepository.Insert(new Year
+                _unitOfWork.RepositoryAsync<Year>().Insert(new Year
                 {
                     YearNumber = DateTime.Now.Year - 1
                 });
 
             }
-            List<Year> years = _yearRepository.Queryable().ToList();
-            IEnumerable<WorkingDay> startWorkingDays = _workingDayRepository.Queryable();
+            _unitOfWork.SaveChanges();
+
+            List<Year> years = _unitOfWork.RepositoryAsync<Year>().Queryable().ToList();
+
+            IEnumerable<WorkingDay> startWorkingDays =
+                _workDaysService.Query()
+                    .Include(ww => ww.WorkingDays.Select(w => w.DayOfWeek))
+                    .Select()
+                    .SelectMany(ww => ww.WorkingDays)
+                    .ToList();
+
             if (!startWorkingDays.Any())
             {
                 foreach (Year year in years)
@@ -257,24 +253,29 @@ namespace UnitTestProject1
                         List<WorkingDay> workdays = new List<WorkingDay>();
                         for (int j = 0; j < 7; j++)
                         {
-                            WorkingDay workday = new WorkingDay
+                            var firstOrDefault = startWorkingDays.FirstOrDefault(wd=>wd.DayOfWeek.ID==j + 1);
+                            if (firstOrDefault != null)
                             {
-                                IsWorking = j < 5,
-                                DayOfWeek = _dayRepository.Find(j + 1)
-                            };
-                            workdays.Add(workday);
-                            workingWeek.WorkingDays.Add(workday);
+                                WorkingDay workday = new WorkingDay
+                                {
+                                    IsWorking = j < 5,
+                                    DayOfWeek = firstOrDefault.DayOfWeek
+                                };
+                                workdays.Add(workday);
+                                workingWeek.WorkingDays.Add(workday);
+                            }
                         }
 
-                        _workingDayRepository.InsertRange(workdays);
-
+                        _unitOfWork.RepositoryAsync<WorkingDay>().InsertRange(workdays);
+                        _unitOfWork.SaveChanges();
                         year.WorkingWeeks.Add(workingWeek);
-                        _yearRepository.Update(year);
+                        _unitOfWork.RepositoryAsync<Year>().Update(year);
                     }
-                    _workingWeekRepository.InsertRange(workweeks);
+                    _workDaysService.InsertRange(workweeks);
+                    _unitOfWork.SaveChanges();
                 }
             }
-            Assert.IsTrue(_workingDayRepository.Queryable().Any());
+            Assert.IsTrue(_workDaysService.Queryable().Any());
         }
 
         [TestMethod]
@@ -288,7 +289,7 @@ namespace UnitTestProject1
                 try
                 {
                     var hasher = new PasswordHasher();
-                    IdentityRole role = roleManager.FindByNameAsync("Employee").Result;
+                    IdentityRole role = _roleManager.FindByNameAsync("Employee").Result;
                     User[] users = collection.AsEnumerable().Select(el =>
                     {
                         XElement xElement = el.Element("FirstName");
@@ -324,19 +325,7 @@ namespace UnitTestProject1
                     }
                     Assert.IsTrue(_userManager.Users.Any());
                 }
-                catch (DbEntityValidationException e)
-                {
-                    foreach (var eve in e.EntityValidationErrors)
-                    {
-                        System.Diagnostics.Debug.Print("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                        foreach (var ve in eve.ValidationErrors)
-                        {
-                            System.Diagnostics.Debug.Write(ve.ErrorMessage, ve.PropertyName);
-                        }
-                    }
-                    throw;
-                }
+                
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.Write(ex.InnerException, ex.Message);
@@ -349,7 +338,11 @@ namespace UnitTestProject1
         {
             Random rand = new Random();
             Dish[] dishArray = GetDishesFromXml();
-            string[] categories = _dishtypeRepository.Queryable().OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
+            string[] categories =
+                _dishService.Queryable()
+                    .OrderBy(t => t.DishID)
+                    .Select(dt => dt.DishType.Category)
+                    .ToArray();
 
             Func<string, IEnumerable<Dish>, int> countDish = (str, list) =>
             {
@@ -369,13 +362,13 @@ namespace UnitTestProject1
                 return ds;
             };
 
-            Year year = _yearRepository.Queryable().FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
+            Year year = _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
             bool weekLessZero = false;
-            Year correct_year = _yearRepository.Queryable().FirstOrDefault(y => y.YearNumber == DateTime.Now.Year - 1);
+            Year correct_year = _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y => y.YearNumber == DateTime.Now.Year - 1);
             int correct_week = 0;
             List<MenuForWeek> menus = new List<MenuForWeek>();
-            List<WorkingDay> workdays = _workingDayRepository.Queryable().Include("DayOfWeek").Include("WorkingWeek").ToList();
-            List<WorkingWeek> workweeks = _workingWeekRepository.Queryable().Include("WorkingDays").ToList();
+            List<WorkingDay> workdays = _unitOfWork.RepositoryAsync<WorkingDay>().Queryable().Include("DayOfWeek").Include("WorkingWeek").ToList();
+            List<WorkingWeek> workweeks = _workDaysService.Queryable().Include("WorkingDays").ToList();
             for (int week = 0; week < 25; week++)
             {
                 int curweek = YearWeekHelp.CurrentWeek() - week + correct_week;
@@ -386,7 +379,7 @@ namespace UnitTestProject1
                     correct_week = YearWeekHelp.YearWeekCount(DateTime.Now.Year - 1);
                 }
                 List<MenuForDay> mfdays = new List<MenuForDay>();
-                WorkingWeek workweek = _workingWeekRepository.Queryable().FirstOrDefault(
+                WorkingWeek workweek = _workDaysService.Queryable().FirstOrDefault(
                     w => w.WeekNumber == curweek);
                 for (int i = 1; i <= 7; i++)
                 {
@@ -427,7 +420,7 @@ namespace UnitTestProject1
             {
                 var collection = xml.Root.Descendants("dish");
 
-                List<DishType> dtList = _dishtypeRepository.Queryable().ToList();
+                List<DishType> dtList = _unitOfWork.RepositoryAsync<DishType>().Queryable().ToList();
 
                 Func<string, DishType> getDishType =
                     el1 =>
@@ -443,18 +436,26 @@ namespace UnitTestProject1
                     return num;
                 };
                 Dish[] dishes = (from el in collection.AsEnumerable()
+                    let xElement = el.Element("description")
+                    where xElement != null
+                    let element = el.Element("cost")
+                    where element != null
+                    let xElement1 = el.Element("foods")
+                    where xElement1 != null
+                    let element1 = el.Element("recept")
+                    where element1 != null
                     select new Dish
                     {
                         DishType = getDishType(el.Attribute("dishtype").Value),
                         Title = el.Attribute("title").Value,
-                        Description = el.Element("description").Value,
+                        Description = xElement.Value,
                         ProductImage = el.Attribute("image").Value,
-                        Price = parseDouble(el.Element("cost").Value),
+                        Price = parseDouble(element.Value),
                         DishDetail = new DishDetail
                         {
                             Title = el.Attribute("title").Value,
-                            Foods = el.Element("foods").Value,
-                            Recept = el.Element("recept").Value
+                            Foods = xElement1.Value,
+                            Recept = element1.Value
                         }
                     }).ToArray();
 

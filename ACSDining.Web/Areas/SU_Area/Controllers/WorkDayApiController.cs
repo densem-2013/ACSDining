@@ -16,10 +16,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IWorkDaysService _workDayService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public WorkDayApiController(IUnitOfWorkAsync unitOfWorkAsync, IWorkDaysService workDayService)
+        public WorkDayApiController(IUnitOfWorkAsync unitOfWorkAsync)
         {
-            _workDayService = workDayService;
             _unitOfWork = unitOfWorkAsync;
+            _workDayService = new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
         }
 
         [HttpGet]

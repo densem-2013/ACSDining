@@ -68,7 +68,7 @@
 
         self.UserId = ko.observable(item.userId);
         self.UserName = ko.observable(item.userName);
-        self.SummaryPrice = ko.observable(item.summaryPrice.toFixed(2));
+        self.SummaryPrice = ko.observable(item.orderSummaryPrice.toFixed(2));
         self.WeekIsPaid = ko.observable(item.weekIsPaid);
 
         self.Dishquantities = ko.observableArray(ko.utils.arrayMap(item.dishquantities, function(value) {

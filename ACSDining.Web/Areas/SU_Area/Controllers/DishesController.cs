@@ -19,11 +19,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IDishService _dishService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public DishesController(IUnitOfWorkAsync unitOfWork, IDishService dishService)
+        public DishesController(IUnitOfWorkAsync unitOfWork)
         {
-           // IRepositoryAsync<Dish> _dishRepo = unitOfWork.RepositoryAsync<Dish>();
             _unitOfWork = unitOfWork;
-            _dishService = dishService;
+            _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
         }
 
 

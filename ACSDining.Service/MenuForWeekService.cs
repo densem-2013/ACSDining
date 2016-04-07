@@ -17,7 +17,7 @@ namespace ACSDining.Service
 
         List<int> WeekNumbers();
 
-        double SummaryPrice(UserOrdersDTO usorder, int numweek, int year);
+        double SummaryPrice(UserOrdersDto usorder, int numweek, int year);
 
         IQueryable<MenuForWeek> GetAll();
         
@@ -39,11 +39,6 @@ namespace ACSDining.Service
             return _repository.GetUnitWeekPrices(menuforweekid,categories);
         }
 
-        //public MenuForWeek WeekMenuByWeekYear(int week, int year)
-        //{
-        //    return _repository.GetWeekMenuByWeekYear(week, year);
-        //}
-
         public List<int> WeekNumbers()
         {
             try
@@ -57,7 +52,7 @@ namespace ACSDining.Service
             }
         }
 
-        public double SummaryPrice(UserOrdersDTO usorder, int numweek, int year)
+        public double SummaryPrice(UserOrdersDto usorder, int numweek, int year)
         {
             return _repository.GetSummaryPrice(usorder, numweek, year);
         }

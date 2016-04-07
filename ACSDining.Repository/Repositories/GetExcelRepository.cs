@@ -12,7 +12,7 @@ namespace ACSDining.Repository.Repositories
     public static class GetExcelRepository
     {
         public static string GetExcelFileFromPaimentsModel(this IRepositoryAsync<OrderMenu> repository,
-            PaimentsDTO model, WorkingWeek workingWeek, List<DishType> dishTypes)
+            PaimentsDto model, WorkingWeek workingWeek, List<DishType> dishTypes)
         {
             // Load Excel application
             Application excel = new Application();
@@ -101,7 +101,7 @@ namespace ACSDining.Repository.Repositories
                     i = 5; 
                     for (int j = 0; j < model.UserPaiments.Count; j++)
                     {
-                        UserPaimentDTO userpai = model.UserPaiments.ElementAt(j);
+                        UserPaimentDto userpai = model.UserPaiments.ElementAt(j);
                         workSheet.Cells[i + j, "A"] = j + 1;
                         workSheet.Cells[i + j, "B"] = userpai.UserName;
 

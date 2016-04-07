@@ -36,9 +36,9 @@ namespace ACSDining.Core.HelpClasses
         };
 
 
-        public static WeekYearDTO GetNextWeekYear(WeekYearDTO wyDto)
+        public static WeekYearDto GetNextWeekYear(WeekYearDto wyDto)
         {
-            WeekYearDTO result = new WeekYearDTO();
+            WeekYearDto result = new WeekYearDto();
             if (wyDto.Week >= 52)
             {
                 DateTime lastDay = new DateTime(wyDto.Year, 12, 31);
@@ -56,9 +56,10 @@ namespace ACSDining.Core.HelpClasses
 
             return result;
         }
-        public static WeekYearDTO GetPrevWeekYear(WeekYearDTO wyDto)
+
+        public static WeekYearDto GetPrevWeekYear(WeekYearDto wyDto)
         {
-            WeekYearDTO result = new WeekYearDTO();
+            WeekYearDto result = new WeekYearDto();
             if (wyDto.Week == 1)
             {
                 result.Week = YearWeekCount(wyDto.Year);
@@ -77,15 +78,23 @@ namespace ACSDining.Core.HelpClasses
 
         public static bool WeekDaysCanBeChanged(WorkingWeek workweek)
         {
-            WeekYearDTO curDto = new WeekYearDTO
+            WeekYearDto curDto = new WeekYearDto
             {
                 Week = CurrentWeek(),
                 Year = DateTime.Now.Year
             };
-            WeekYearDTO nextDto = GetNextWeekYear(curDto);
+            WeekYearDto nextDto = GetNextWeekYear(curDto);
             return (workweek.WeekNumber == curDto.Week && workweek.Year.YearNumber == curDto.Year) ||
                    (workweek.WeekNumber == nextDto.Week && workweek.Year.YearNumber == nextDto.Year);
         }
+
+        public static bool WeekIsCurrentOrNext(WeekYearDto wyDto)
+        {
+            WeekYearDto nextWeekYearDto = GetNextWeekYear(wyDto);
+            return (wyDto.Week == CurrentWeek() && wyDto.Year == DateTime.Now.Year) ||
+                   (wyDto.Week == nextWeekYearDto.Week && wyDto.Year == nextWeekYearDto.Year);
+        }
+
         #endregion
     }
 }

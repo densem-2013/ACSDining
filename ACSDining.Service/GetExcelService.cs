@@ -8,7 +8,7 @@ namespace ACSDining.Service
 {
     public interface IGetExcelService: IService<OrderMenu>
     {
-        string PaimentsDtoToExcelFile(PaimentsDTO paimodel, WorkingWeek workweek, List<DishType> dishtypes);
+        string PaimentsDtoToExcelFile(PaimentsDto paimodel, WorkingWeek workweek, List<DishType> dishtypes);
     }
     public class GetExcelService : Service<OrderMenu>, IGetExcelService
     {
@@ -20,7 +20,7 @@ namespace ACSDining.Service
             _repository = repository;
         }
 
-        public string PaimentsDtoToExcelFile(PaimentsDTO paimodel, WorkingWeek workweek, List<DishType> dishtypes)
+        public string PaimentsDtoToExcelFile(PaimentsDto paimodel, WorkingWeek workweek, List<DishType> dishtypes)
         {
             return _repository.GetExcelFileFromPaimentsModel(paimodel, workweek, dishtypes);
         }

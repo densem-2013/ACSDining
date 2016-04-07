@@ -59,7 +59,13 @@ namespace ACSDining.Repository.Repositories
 
         public static List<OrderMenu> OrdersMenuByWeekYear(this IRepositoryAsync<OrderMenu> repository, int week, int year)
         {
-            return repository.Queryable().Where(
+            return repository.Query()
+                    .Include(om => om.MenuForWeek.MenuForDay.Select(dm => dm.Dishes.Select(d => d.DishType)))
+                    .Include(om => om.User)
+                    .Include(om => om.PlannedOrderMenu)
+                    .Include(om => om.MenuForWeek.WorkingWeek.Year)
+                    .Include(wm => wm.MenuForWeek.WorkingWeek.WorkingDays.Select(d => d.DayOfWeek))
+                    .Select().Where(
                 om =>
                     om.MenuForWeek.WorkingWeek.WeekNumber == week && om.MenuForWeek.WorkingWeek.Year.YearNumber == year).ToList();
         }

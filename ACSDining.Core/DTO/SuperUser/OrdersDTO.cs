@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using ACSDining.Core.Domains;
 
 namespace ACSDining.Core.DTO.SuperUser
 {
-    public class OrdersDTO
+    public class OrdersDto
     {
         public int WeekNumber { get; set; }
-        public List<UserOrdersDTO> UserOrders { get; set; }
+        public List<UserOrdersDto> UserOrders { get; set; }
         public int YearNumber { get; set; }
 
     }

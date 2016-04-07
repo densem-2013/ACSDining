@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
 using ACSDining.Core.DTO.SuperUser;
@@ -11,6 +12,7 @@ namespace ACSDining.Service
         WorkWeekDto GetWorkWeekDtoByWeekYear(int week, int year);
         WorkingWeek GetWorkWeekByWeekYear(int week, int year);
         int UpdateWorkDays(WorkWeekDto weekModel);
+        //List<WorkingDay> GetWorkingDaysByWeekYear(int week, int year);
     }
 
     public class WorkDaysService : Service<WorkingWeek>, IWorkDaysService
@@ -32,8 +34,12 @@ namespace ACSDining.Service
 
         public WorkingWeek GetWorkWeekByWeekYear(int week, int year)
         {
-            return 
-                    _repository.Queryable().FirstOrDefault(ww => ww.WeekNumber == week && ww.Year.YearNumber == year);
+            return
+                _repository.Query()
+                    .Include(ww => ww.WorkingDays.Select(wd => wd.DayOfWeek))
+                    .Include(ww => ww.Year)
+                    .Select()
+                    .FirstOrDefault(ww => ww.WeekNumber == week && ww.Year.YearNumber == year);
         }
 
         public int UpdateWorkDays(WorkWeekDto weekModel)
@@ -48,5 +54,10 @@ namespace ACSDining.Service
             });
             return weekModel.WorkWeekId;
         }
+
+        //public List<WorkingDay> GetWorkingDaysByWeekYear(int week, int year)
+        //{
+            
+        //}
     }
 }

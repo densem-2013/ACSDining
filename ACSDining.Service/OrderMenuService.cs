@@ -15,6 +15,7 @@ namespace ACSDining.Service
         IQueryable<OrderMenu> GetAllByWeekYear(int numweek, int year);
         void UpdateOrderMenu(OrderMenu order);
         OrderMenu Find(int orderid);
+        OrderMenu FindByUserIdWeekYear(string userid, int week, int year);
         List<OrderMenu> GetOrderMenuByWeekYear(int week, int year);
     }
 
@@ -41,10 +42,10 @@ namespace ACSDining.Service
 
         public IQueryable<OrderMenu> GetAllByWeekYear(int numweek, int year)
         {
-            return _repository.Queryable().Where(
+            return _repository.Query().Include(om => om.MenuForWeek.WorkingWeek.Year).Select().Where(
                 om =>
                     om.MenuForWeek.WorkingWeek.WeekNumber == numweek &&
-                    om.MenuForWeek.WorkingWeek.Year.YearNumber == year);
+                    om.MenuForWeek.WorkingWeek.Year.YearNumber == year).AsQueryable();
         }
 
         public void UpdateOrderMenu(OrderMenu order)
@@ -62,5 +63,17 @@ namespace ACSDining.Service
             return _repository.OrdersMenuByWeekYear(week, year);
         }
 
+        public OrderMenu FindByUserIdWeekYear(string userid, int week, int year)
+        {
+            return _repository.Query()
+                .Include(om => om.MenuForWeek.WorkingWeek.Year)
+                .Include(om => om.User)
+                .Select()
+                .FirstOrDefault(
+                    om =>
+                        string.Equals(om.User.Id, userid) &&
+                        om.MenuForWeek.WorkingWeek.WeekNumber == week &&
+                        om.MenuForWeek.WorkingWeek.Year.YearNumber == year);
+        }
     }
 }

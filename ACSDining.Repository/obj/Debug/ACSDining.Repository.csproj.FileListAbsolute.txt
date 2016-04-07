@@ -30,8 +30,3 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Owin.Secu
 C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.AspNet.Identity.Owin.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Owin.Security.Cookies.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\ACSDining.Infrastructure.pdb
-C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\LinqKit.pdb
-C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\LinqKit.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
-C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Practices.ServiceLocation.xml

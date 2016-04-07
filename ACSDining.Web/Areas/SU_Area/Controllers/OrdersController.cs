@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -31,32 +32,31 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("")]
         [Route("{numweek}")]
         [Route("{numweek}/{year}")]
-        public async Task<OrdersDTO> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
+        public async Task<OrdersDto> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
             int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
-            string[] categories =
-                    _unitOfWork.Repository<DishType>()
-                        .Queryable()
-                        .ToList()
-                        .OrderBy(d => d.Id)
-                        .Select(dt => dt.Category)
-                        .AsQueryable()
-                        .ToArray();
+
+            var cats = _unitOfWork.RepositoryAsync<DishType>();
+            await cats.Queryable().LoadAsync();
+            string[] categories = await cats.Queryable()
+                  .Select(dt => dt.Category)
+                  .AsQueryable()
+                  .ToArrayAsync();
 
             List<OrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(week, yearnum);
-            OrdersDTO OrderDTO = new OrdersDTO
+            OrdersDto OrderDTO = new OrdersDto
             {
                 WeekNumber = week,
                 YearNumber = yearnum,
                 UserOrders = orderList.Select(om =>
                 {
                     List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
-                            .Queryable()
+                            .Query().Include(dq=>dq.DishQuantity).Select()
                             .Where(dqr => dqr.OrderMenuID == om.Id && dqr.MenuForWeekID == om.MenuForWeek.ID)
                             .ToList();
                     MenuForWeek mfw = _weekMenuService.Find(om.MenuForWeek.ID);
-                    return new UserOrdersDTO
+                    return new UserOrdersDto
                     {
                         UserId = om.User.Id,
                         UserName = om.User.UserName,
@@ -72,7 +72,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPut]
         [Route("summary/{numweek}/{year}")]
         [ResponseType(typeof (double))]
-        public async Task<double> GetSummaryPrice([FromBody] UserOrdersDTO usorder, [FromUri] int? numweek = null,
+        public async Task<double> GetSummaryPrice([FromBody] UserOrdersDto usorder, [FromUri] int? numweek = null,
             [FromUri] int? year = null)
         {
             int week = numweek ?? YearWeekHelp.CurrentWeek();

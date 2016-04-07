@@ -515,7 +515,7 @@ namespace ACSDining.Infrastructure.Identity
                     {
                         User = user,
                         MenuForWeek = mfw,
-                        SummaryPrice = 0.0,
+                        OrderSummaryPrice = 0.0,
                         PlannedOrderMenu = planorder
                     };
                     context.OrderMenus.Add(order);
@@ -550,7 +550,7 @@ namespace ACSDining.Infrastructure.Identity
                                     MenuForWeek = mfw,
                                     OrderMenu = order
                                 };
-                                order.SummaryPrice += dqu.Quantity * dish.Price;
+                                order.OrderSummaryPrice += dqu.Quantity * dish.Price;
                                 dquaList.Add(dqrs);
                             }
 

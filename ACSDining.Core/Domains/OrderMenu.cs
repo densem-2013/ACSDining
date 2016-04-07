@@ -23,7 +23,7 @@ namespace ACSDining.Core.Domains
 
         public double WeekPaid { get; set; }
         public double Balance { get; set; }
-        public double SummaryPrice { get; set; }
+        public double OrderSummaryPrice { get; set; }
         public string Note { get; set; }
 
         [JsonIgnore]

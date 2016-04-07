@@ -1,12 +1,15 @@
 ﻿/// <reference path="../jquery-2.1.3.min.js" />
 /// <reference path="../knockout-3.2.0.js" />
-
-
+/// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
+/// <reference path="~/Scripts/knockout-3.2.0.js" />
+/// <reference path="~/Scripts/bootstrap.js" />
+/// <reference path="~/Scripts/knockout-3.3.0.debug.js" />
+/// <reference path="~/Scripts/knockout.mapping-latest.debug.js" />
 (function () {
 
     $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
 
-    var DishInfo = function (dinfo) {
+    var dishInfo = function (dinfo) {
 
         var self = this;
 
@@ -25,7 +28,7 @@
         };
     }
 
-    var MenuForDayInfo = function (object,categs) {
+    var menuForDayInfo = function (object,categs) {
 
         var self = this;
 
@@ -41,7 +44,7 @@
                 return element.category === item;
             });
             if (first != null) {
-                return new DishInfo(first);
+                return new dishInfo(first);
             }
             var dish= {
                 dishID: '0',
@@ -50,14 +53,11 @@
                 price: 0.0,
                 category: categs[ind++]
             }
-            return new DishInfo(dish);
+            return new dishInfo(dish);
         }));
         self.Editing = ko.observable(false);
         self.TotalPrice = ko.observable();
-
-        self._Undo ;
-
-
+        var undo = self._Undo;
         self.Dishes.subscribe = ko.computed(function () {
             var sum = 0;
             var valsum;
@@ -91,7 +91,9 @@
         self.myDate = ko.observable(new Date());
 
         self.DishesByCategory = ko.observableArray([]);
+
         self.Category = ko.observable();
+
         self.Categories = ko.observableArray();
 
         self.SelectedDish = ko.observable();
@@ -113,6 +115,7 @@
             });
             self.IsNextWeekMenuExist(result);
         });
+
         self.IsNextWeekMenu = ko.observable(false);
 
         self.IsNextWeekMenu.subscribe = ko.computed(function() {
@@ -189,6 +192,16 @@
             self.pageIndex(index);
         };
 
+        function commitChanges(item) {
+            item.Editing(false);
+            self.BeenChanged(false);
+        }
+
+        function revertChanges(item) {
+            item.Editing(false);
+            self.BeenChanged(false);
+        }
+
         self.save = function(item) {
 
             app.su_Service.UpdateWeekMenu(item).then(
@@ -208,15 +221,6 @@
         };
 
 
-        function commitChanges(item) {
-            item.Editing(false);
-            self.BeenChanged(false);
-        }
-
-        function revertChanges(item) {
-            item.Editing(false);
-            self.BeenChanged(false);
-        }
 
         self.cancel = function(item) {
             item = ko.mapping.fromJS(item._Undo, {}, item);
@@ -242,9 +246,9 @@
 
                 for (var i = 0; i < resp.length; i++) {
 
-                    self.DishesByCategory.push(new DishInfo(resp[i]));
+                    self.DishesByCategory.push(new dishInfo(resp[i]));
 
-                    if (resp[i].dishID == dish.DishId()) {
+                    if (resp[i].dishID === dish.DishId()) {
                         self.SelectedDish(resp[i].dishID);
                     };
                 };
@@ -285,7 +289,7 @@
                 self.Year(resp.yearNumber);
                 ko.utils.arrayForEach(resp.mfD_models, function (object) {
 
-                    self.MFD_models.push(new MenuForDayInfo(object, self.Categories()));
+                    self.MFD_models.push(new menuForDayInfo(object, self.Categories()));
 
                 });
 
@@ -314,8 +318,8 @@
             }, onError);
 
         }
-        self.CreateNextWeekMenu = function() {
-            app.su_Service.CreateNextWeekMenu().then(function () {
+        self.GetNextWeekMenu = function() {
+            app.su_Service.GetNextWeekMenu().then(function () {
                 self.loadWeekNumbers();
                 self.SetMyDateByWeek(self.CurrentWeekNumber());
             });
@@ -378,9 +382,9 @@
 
             var sum = 0;
 
-            for (ind = 0; ind < self.MFD_models().length; ind++) {
-                sum += parseFloat(self.MFD_models()[ind].TotalPrice());
+            for (var ind = 0; ind < self.MFD_models().length; ind++) {
 
+                sum += parseFloat(self.MFD_models()[ind].TotalPrice());
             }
 
             this.SummaryPrice(sum.toFixed(2));

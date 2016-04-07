@@ -34,6 +34,3 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Securit
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.Owin.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Security.Cookies.xml
-C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Infrastructure.pdb
-C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
-C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.xml

@@ -1,6 +1,6 @@
 ﻿namespace ACSDining.Core.DTO.SuperUser
 {
-    public class UserPaimentDTO
+    public class UserPaimentDto
     {
         public string UserId { get; set; }
         public int OrderId { get; set; }

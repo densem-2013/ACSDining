@@ -43,16 +43,6 @@ namespace ACSDining.Repository.Repositories
             return mfw;
         }
 
-        //public static MenuForWeek WeekMenuByWeekYear(this IRepositoryAsync<MenuForWeek> repository, int numweek,
-        //    int year)
-        //{
-        //    MenuForWeek mfw =
-        //        repository.Query().Include(menu => menu.WorkingWeek.Year).Select().ToList()
-        //            .FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
-
-        //    return mfw;
-        //}
-
         public static List<int> GetWeekNumbers(this IRepositoryAsync<MenuForWeek> repository)
         {
             List<MenuForWeek> list = repository.Query().Include(mfw => mfw.WorkingWeek.Year).Select().ToList();
@@ -73,7 +63,7 @@ namespace ACSDining.Repository.Repositories
             return repository.Query().Include(m=>m.WorkingWeek).Select(wm => wm.WorkingWeek.WeekNumber).Reverse().ToList();
         }
 
-        public static double GetSummaryPrice(this IRepositoryAsync<MenuForWeek> repository, UserOrdersDTO usorder, int numweek, int year)
+        public static double GetSummaryPrice(this IRepositoryAsync<MenuForWeek> repository, UserOrdersDto usorder, int numweek, int year)
         {
             MenuForWeek weekNeeded = repository.Queryable().FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
             double summary = 0;

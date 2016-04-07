@@ -12,7 +12,7 @@ namespace ACSDining.Core.DTO.SuperUser
         public double SummaryPrice { get; set; }
         public List<MenuForDayDto> MFD_models { get; set; }
 
-        public static WeekMenuDto MapDto(Infrastructure.DAL.UnitOfWork _unitOfWork, MenuForWeek wmenu,
+        public static WeekMenuDto MapDto(Infrastructure.DAL.UnitOfWork unitOfWork, MenuForWeek wmenu,
             bool emptyDishes = false)
         {
             if (wmenu == null) return null;
@@ -25,7 +25,7 @@ namespace ACSDining.Core.DTO.SuperUser
             };
             if (emptyDishes)
             {
-                List<DishType> dtypes = _unitOfWork.Repository<DishType>().Queryable().ToList();
+                List<DishType> dtypes = unitOfWork.Repository<DishType>().Queryable().ToList();
                 dtoModel.MFD_models = new List<MenuForDayDto>();
                 foreach (MenuForDay mfd in wmenu.MenuForDay)
                 {

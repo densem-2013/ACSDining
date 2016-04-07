@@ -30,7 +30,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route("paiments")]
         [ResponseType(typeof(double))]
-        public FilePathResult GetExelFromPaimentDto([FromBody] PaimentsDTO paimodel)
+        public FilePathResult GetExelFromPaimentDto([FromBody] PaimentsDto paimodel)
         {
             WorkingWeek workweek = _workDaysService.GetWorkWeekByWeekYear(paimodel.WeekNumber, paimodel.YearNumber);
             List<DishType> dtypes = _unitOfWork.RepositoryAsync<DishType>().Queryable().ToList();

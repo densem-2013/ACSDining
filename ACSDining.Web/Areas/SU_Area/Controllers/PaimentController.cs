@@ -31,20 +31,18 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("")]
         [Route("{numweek}")]
         [Route("{numweek}/{year}")]
-        [ResponseType(typeof (PaimentsDTO))]
+        [ResponseType(typeof (PaimentsDto))]
         public async Task<IHttpActionResult> GetWeekPaiments([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
             int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
 
-            string[] categories= await
-                    _unitOfWork.Repository<DishType>()
-                        .Queryable()
-                        .ToList()
-                        .OrderBy(d => d.Id)
-                        .Select(dt => dt.Category)
-                        .AsQueryable()
-                        .ToArrayAsync();
+            var cats = _unitOfWork.RepositoryAsync<DishType>();
+            await cats.Queryable().LoadAsync();
+            string[] categories = await cats.Queryable()
+                  .Select(dt => dt.Category)
+                  .AsQueryable()
+                  .ToArrayAsync();
 
             List<OrderMenu> orderMenus = _orderMenuService.GetAllByWeekYear(week,yearnum).ToList();
 
@@ -54,7 +52,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            PaimentsDTO model = new PaimentsDTO
+            PaimentsDto model = new PaimentsDto
             {
                 WeekNumber = week,
                 YearNumber = yearnum,
@@ -64,15 +62,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         int menuforweekid = order.MenuForWeek.ID;
                         MenuForWeek weekmenu = order.MenuForWeek;
                         List<DishQuantityRelations> quaList = _unitOfWork.Repository<DishQuantityRelations>()
-                            .Queryable().Where(dqr => dqr.OrderMenuID == order.Id && dqr.MenuForWeekID == menuforweekid)
+                            .Query().Include(dq=>dq.DishQuantity).Select().Where(dqr => dqr.OrderMenuID == order.Id && dqr.MenuForWeekID == menuforweekid)
                             .ToList();
-                        return new UserPaimentDTO
+                        return new UserPaimentDto
                         {
                             UserId = order.User.Id,
                             OrderId = order.Id,
                             UserName = order.User.UserName,
                             Paiments = _orderMenuService.UserWeekOrderPaiments(quaList, categories, weekmenu),
-                            SummaryPrice = order.SummaryPrice,
+                            SummaryPrice = order.OrderSummaryPrice,
                             WeekPaid = order.WeekPaid,
                             Balance = order.Balance,
                             Note = order.Note
@@ -90,14 +88,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             double[] paiments = new double[21];
             MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(numweek,year);
 
-            string[] categories = 
-                    _unitOfWork.Repository<DishType>()
-                        .Queryable()
-                        .ToList()
-                        .OrderBy(d => d.Id)
-                        .Select(dt => dt.Category)
-                        .AsQueryable()
-                        .ToArray();
+            var cats = _unitOfWork.RepositoryAsync<DishType>();
+            cats.Queryable().LoadAsync().RunSynchronously();
+            string[] categories = cats.Queryable()
+                  .Select(dt => dt.Category)
+                  .AsQueryable()
+                  .ToArrayAsync().Result;
 
             if (weekmenu != null)
             {
@@ -112,7 +108,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     int menuforweekid = mfw.ID;
                     int ordid = order.Id;
                     List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
-                            .Queryable()
+                            .Query().Include(dq => dq.DishQuantity).Select()
                             .Where(dqr => dqr.OrderMenuID == ordid && dqr.MenuForWeekID == menuforweekid)
                             .ToList();
                     double[] dishquantities = _orderMenuService.UserWeekOrderDishes( quaList, categories, mfw);

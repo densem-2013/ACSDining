@@ -92,8 +92,8 @@ window.app.su_Service = (function() {
         weekNumbers: function() { return baseWeekMenuUri + 'WeekNumbers'; },
         currentweek: function() { return baseWeekMenuUri + 'curWeekNumber'; },
         categories: function() { return baseWeekMenuUri + 'categories' },
-        create: function() { return baseWeekMenuUri + 'create' },
-        nextWeekMenu: function() { return baseWeekMenuUri + 'nextWeekMenu' },
+        //create: function() { return baseWeekMenuUri + 'create' },
+        //nextWeekMenu: function() { return baseWeekMenuUri + 'nextWeekMenu' },
         nextWeekYear: function() { return baseWeekMenuUri + 'nextWeekYear' },
         prevWeekYear: function() { return baseWeekMenuUri + 'prevWeekYear' },
         deleteWeekMenu: function (menuid) { return baseWeekMenuUri + 'delete/' + menuid }
@@ -172,12 +172,12 @@ window.app.su_Service = (function() {
         DeleteNextWeekMenu: function(menuid) {
             return ajaxRequest('delete', serviceWeekMenuUrls.deleteWeekMenu(menuid));
         },
-        GetNextWeekMenu: function() {
-            return ajaxRequest('get', serviceWeekMenuUrls.nextWeekMenu());
-        },
-        CreateNextWeekMenu: function() {
-            return ajaxRequest('post', serviceWeekMenuUrls.create());
-        },
+        //GetNextWeekMenu: function() {
+        //    return ajaxRequest('get', serviceWeekMenuUrls.nextWeekMenu());
+        //},
+        //CreateNextWeekMenu: function() {
+        //    return ajaxRequest('post', serviceWeekMenuUrls.create());
+        //},
         GetCategories: function() {
             return ajaxRequest('get', serviceWeekMenuUrls.categories());
         },
