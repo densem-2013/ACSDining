@@ -1,11 +1,11 @@
 ﻿/// <reference path="../jquery-2.1.3.min.js" />
 /// <reference path="../knockout-3.2.0.js" />
-
-
+/// <reference path="~/Scripts/jquery-ui-i18n.min.js" />
+/// <reference path="~/Areas/AdminArea/Content/scripts/app.service.js" />
 (function() {
 
 
-    var QuantValueModel = function(value) {
+    var quantValueModel = function(value) {
 
         var self = this;
         self.isEditMode = ko.observable(false);
@@ -22,7 +22,7 @@
         };
     }
 
-    OrdersViewModel = {
+    var ordersViewModel = {
         UserOrders: ko.observableArray([]),
         WeekNumber: ko.observable(),
         NumbersOfWeek: ko.observableArray([]),
@@ -34,13 +34,13 @@
         BeenChanged: ko.observable(false),
         Year:ko.observable(),
         Categories :ko.observableArray([])
-    }
+    };
     // Callback for error responses from the server.
     function onError(error) {
-        OrdersViewModel.Message('Error: ' + error.status + ' ' + error.statusText);
+        ordersViewModel.Message('Error: ' + error.status + ' ' + error.statusText);
     }
 
-    OrdersViewModel.CalcSummary = function(item) {
+    ordersViewModel.CalcSummary = function(item) {
         var source = {
             UserId: item.UserId(),
             UserName: item.UserName(),
@@ -50,7 +50,7 @@
                 return value.Quantity;
             })
         };
-        app.su_Service.GetOrderSummary(OrdersViewModel.WeekNumber(), OrdersViewModel.Year(), source).then(
+        app.su_Service.GetOrderSummary(ordersViewModel.WeekNumber(), ordersViewModel.Year(), source).then(
             function(data) {
                 item.SummaryPrice(data.toFixed(2));
             },
@@ -58,11 +58,11 @@
                 onError(error);
             });
 
-    }.bind(OrdersViewModel);
+    }.bind(ordersViewModel);
 
         
     
-    var UserWeekOrder = function(item) {
+    var userWeekOrder = function(item) {
 
         var self = this;
 
@@ -72,72 +72,72 @@
         self.WeekIsPaid = ko.observable(item.weekIsPaid);
 
         self.Dishquantities = ko.observableArray(ko.utils.arrayMap(item.dishquantities, function(value) {
-            return new QuantValueModel(value);
+            return new quantValueModel(value);
         }));
 
 
     }
 
-    OrdersViewModel.DaysOfWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"];
+    ordersViewModel.DaysOfWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"];
 
-    OrdersViewModel.pageSize = ko.observable(10);
+    ordersViewModel.pageSize = ko.observable(10);
 
-    OrdersViewModel.pageIndex = ko.observable(0);
+    ordersViewModel.pageIndex = ko.observable(0);
 
-    OrdersViewModel.pagedList = ko.dependentObservable(function() {
-        var size = OrdersViewModel.pageSize();
-        var start = OrdersViewModel.pageIndex() * size;
-        return OrdersViewModel.UserOrders.slice(start, start + size);
+    ordersViewModel.pagedList = ko.dependentObservable(function() {
+        var size = ordersViewModel.pageSize();
+        var start = ordersViewModel.pageIndex() * size;
+        return ordersViewModel.UserOrders.slice(start, start + size);
     });
 
-    OrdersViewModel.maxPageIndex = ko.dependentObservable(function() {
-        return Math.ceil(OrdersViewModel.UserOrders().length / OrdersViewModel.pageSize()) - 1;
+    ordersViewModel.maxPageIndex = ko.dependentObservable(function() {
+        return Math.ceil(ordersViewModel.UserOrders().length / ordersViewModel.pageSize()) - 1;
     });
 
-    OrdersViewModel.previousPage = function() {
-        if (OrdersViewModel.pageIndex() > 0) {
-            OrdersViewModel.pageIndex(OrdersViewModel.pageIndex() - 1);
+    ordersViewModel.previousPage = function() {
+        if (ordersViewModel.pageIndex() > 0) {
+            ordersViewModel.pageIndex(ordersViewModel.pageIndex() - 1);
         }
     };
 
-    OrdersViewModel.nextPage = function() {
-        if (OrdersViewModel.pageIndex() < OrdersViewModel.maxPageIndex()) {
-            OrdersViewModel.pageIndex(OrdersViewModel.pageIndex() + 1);
+    ordersViewModel.nextPage = function() {
+        if (ordersViewModel.pageIndex() < ordersViewModel.maxPageIndex()) {
+            ordersViewModel.pageIndex(ordersViewModel.pageIndex() + 1);
         }
     };
 
-    OrdersViewModel.allPages = ko.dependentObservable(function() {
+    ordersViewModel.allPages = ko.dependentObservable(function() {
         var pages = [];
-        for (i = 0; i <= OrdersViewModel.maxPageIndex(); i++) {
+        for (var i = 0; i <= ordersViewModel.maxPageIndex(); i++) {
             pages.push({ pageNumber: (i + 1) });
         }
         return pages;
     });
 
-    OrdersViewModel.moveToPage = function(index) {
-        OrdersViewModel.pageIndex(index);
+    ordersViewModel.moveToPage = function(index) {
+        ordersViewModel.pageIndex(index);
     };
 
-    OrdersViewModel.loadWeekNumbers = function () {
+    ordersViewModel.loadWeekNumbers = function () {
         app.su_Service.LoadWeekNumbers().then(function (resp) {
 
-            OrdersViewModel.NumbersOfWeek.pushAll(resp);
+            ordersViewModel.NumbersOfWeek.pushAll(resp);
 
         }, onError);
     };
 
 
-    OrdersViewModel.LoadOrders = function () {
+    ordersViewModel.LoadOrders = function () {
 
-        app.su_Service.LoadWeekOrders(OrdersViewModel.WeekNumber(), OrdersViewModel.Year()).then(
+        app.su_Service.LoadWeekOrders(ordersViewModel.WeekNumber(), ordersViewModel.Year()).then(
            function (resp) {
-               OrdersViewModel.UserOrders([]);
-               OrdersViewModel.WeekNumber(resp.weekNumber);
-               OrdersViewModel.Year(resp.yearNumber);
+               ordersViewModel.UserOrders([]);
+               ordersViewModel.WeekNumber(resp.weekNumber);
+               ordersViewModel.Year(resp.yearNumber);
 
                ko.utils.arrayForEach(resp.userOrders, function (object) {
 
-                   OrdersViewModel.UserOrders.push(new UserWeekOrder(object));
+                   ordersViewModel.UserOrders.push(new userWeekOrder(object));
 
                });
            },
@@ -146,29 +146,29 @@
            });
     }
 
-    OrdersViewModel.GetCurrentWeekNumber = function () {
+    ordersViewModel.GetCurrentWeekYear = function () {
 
-        app.su_Service.GetCurrentWeekNumber().then(function (resp) {
-            OrdersViewModel.CurrentWeekNumber(resp);
+        app.su_Service.GetCurrentWeekYear().then(function (resp) {
+            ordersViewModel.CurrentWeekNumber(resp);
 
         }, onError);
     }
 
-    OrdersViewModel.IsCurrentWeek = ko.computed(function() {
-        return OrdersViewModel.CurrentWeekNumber() == OrdersViewModel.WeekNumber();
-    }.bind(OrdersViewModel));
+    ordersViewModel.IsCurrentWeek = ko.computed(function() {
+        return ordersViewModel.CurrentWeekNumber() === ordersViewModel.WeekNumber();
+    }.bind(ordersViewModel));
 
 
     app.su_Service.GetCategories().then(function (resp) {
-        OrdersViewModel.Categories.pushAll(resp);
+        ordersViewModel.Categories.pushAll(resp);
     }, onError);
 
-    OrdersViewModel.LoadOrders();
-    OrdersViewModel.loadWeekNumbers();
-    OrdersViewModel.GetCurrentWeekNumber();
+    ordersViewModel.LoadOrders();
+    ordersViewModel.loadWeekNumbers();
+    ordersViewModel.GetCurrentWeekYear();
 
  
-    ko.applyBindings(OrdersViewModel);
+    ko.applyBindings(ordersViewModel);
     
 
 })();

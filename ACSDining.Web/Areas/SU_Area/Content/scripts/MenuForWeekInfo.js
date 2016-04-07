@@ -7,7 +7,7 @@
 /// <reference path="~/Scripts/knockout.mapping-latest.debug.js" />
 (function () {
 
-    $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
+    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" });
 
     var dishInfo = function (dinfo) {
 
@@ -47,9 +47,9 @@
                 return new dishInfo(first);
             }
             var dish= {
-                dishID: '0',
-                title: ':',
-                productImage: '',
+                dishID: "0",
+                title: ":",
+                productImage: "",
                 price: 0.0,
                 category: categs[ind++]
             }
@@ -57,7 +57,6 @@
         }));
         self.Editing = ko.observable(false);
         self.TotalPrice = ko.observable();
-        var undo = self._Undo;
         self.Dishes.subscribe = ko.computed(function () {
             var sum = 0;
             var valsum;
@@ -132,7 +131,7 @@
 
         // Callback for error responses from the server.
         function onError(error) {
-            self.Message('Error: ' + error.status + ' ' + error.statusText);
+            self.Message("Error: " + error.status + " " + error.statusText);
         }
 
         self.WeekTitle = ko.computed(function() {
@@ -182,7 +181,7 @@
 
         self.allPages = ko.dependentObservable(function() {
             var pages = [];
-            for (i = 0; i <= self.maxPageIndex(); i++) {
+            for (var i = 0; i <= self.maxPageIndex(); i++) {
                 pages.push({ pageNumber: (i + 1) });
             }
             return pages;
@@ -318,10 +317,13 @@
             }, onError);
 
         }
-        self.GetNextWeekMenu = function() {
-            app.su_Service.GetNextWeekMenu().then(function () {
+        self.GoToNextWeekMenu = function () {
+
+            var curWeekYear = new WeekYearModel(self.CurrentWeekNumber(), self.Year());
+
+            app.su_Service.GetNextWeekYear(curWeekYear).then(function (nextWeekYear) {
                 self.loadWeekNumbers();
-                self.SetMyDateByWeek(self.CurrentWeekNumber());
+                self.SetMyDateByWeek(nextWeekYear.week, nextWeekYear.year);
             });
         };
 
@@ -333,16 +335,18 @@
             }
         }, self);
 
-        self.GetCurrentWeekNumber = function () {
+        self.GetCurrentWeekYear = function() {
 
-            app.su_Service.GetCurrentWeekNumber().then(function (resp) {
-                self.CurrentWeekNumber(resp);
+            app.su_Service.GetCurrentWeekYear().then(function (resp) {
+
+                self.CurrentWeekNumber(resp.week);
+                self.Year(resp.year);
 
             }, onError);
         }
 
         self.IsCurrentWeek = ko.computed(function () {
-            return self.CurrentWeekNumber() == self.WeekNumber();
+            return self.CurrentWeekNumber() === self.WeekNumber();
         }.bind(self));
 
 
@@ -352,6 +356,7 @@
             var catIndex = $.map(self.Categories(), function (n, i) {
                 if (self.Category() === n)
                     return i;
+                return i;
             });
 
 
@@ -375,9 +380,10 @@
             app.su_Service.DeleteNextWeekMenu(menuid).then(function () {
                 self.LoadWeekMenu();
                 self.loadWeekNumbers();
-                self.SetMyDateByWeek(self.CurrentWeekNumber());
+                self.SetMyDateByWeek(self.CurrentWeekNumber(), self.Year());
             }, onError);
         }
+
         self.CalcTotal = function () {
 
             var sum = 0;
@@ -399,7 +405,7 @@
             }, onError);
 
             self.loadWeekNumbers();
-            self.GetCurrentWeekNumber();
+            self.GetCurrentWeekYear();
             self.LoadWeekMenu();
         }
         self.init();

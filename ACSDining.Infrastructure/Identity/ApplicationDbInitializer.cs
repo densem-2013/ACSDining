@@ -17,7 +17,7 @@ namespace ACSDining.Infrastructure.Identity
     public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
 
-        private static Random rand = new Random();
+        private static readonly Random Rand = new Random();
 
         protected override void Seed(ApplicationDbContext context)
         {
@@ -29,7 +29,7 @@ namespace ACSDining.Infrastructure.Identity
                                       @"ACSDining.Core\DBinitial\DishDetails.xml";
 
             InitializeIdentityForEF(context, _path); 
-            var dishes = GetDishesFromXML(context, _path);
+            var dishes = GetDishesFromXml(context, _path);
             CreateWorkingDays(context);
             CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
@@ -42,32 +42,6 @@ namespace ACSDining.Infrastructure.Identity
         {
             //var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-            //IdentityRole adminrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Administrator")) ??
-            //                        new UserRole
-            //                        {
-            //                            Name = "Administrator",
-            //                            Description = "All Rights in Application",
-            //                            ObjectState = ObjectState.Added
-            //                        };
-            //PasswordHasher hasher = new PasswordHasher();
-            //User useradmin = new User
-            //{
-            //    UserName = "admin",
-            //    Email = "test@test.com",
-            //    FirstName = "Admin",
-            //    LastName = "User",
-            //    LastLoginTime = DateTime.UtcNow,
-            //    RegistrationDate = DateTime.UtcNow,
-            //    PasswordHash = hasher.HashPassword("777123"),
-            //    ObjectState = ObjectState.Added
-            //};
-
-            //useradmin.Roles.Add(new UserRoleRelation
-            //{
-            //    RoleId = adminrole.Id,
-            //    UserId = useradmin.Id,
-            //    ObjectState = ObjectState.Added
-            //});
 
             if (!roleManager.RoleExists("Administrator"))
             {
@@ -96,10 +70,6 @@ namespace ACSDining.Infrastructure.Identity
                     userManager.AddToRole(useradmin.Id, "Administrator");
                 }
             }
-            //context.Users.Add(useradmin);
-            
-
-            //context.SaveChanges();
 
         }
 
@@ -255,7 +225,7 @@ namespace ACSDining.Infrastructure.Identity
             }
         }
 
-        public static Dish[] GetDishesFromXML(ApplicationDbContext context, string userspath)
+        public static Dish[] GetDishesFromXml(ApplicationDbContext context, string userspath)
         {
 
             var xml = XDocument.Load(userspath);
@@ -364,7 +334,7 @@ namespace ACSDining.Infrastructure.Identity
                 {
                     ds.Add(
                         dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key))
-                            .ElementAt(rand.Next(pair.Value)));
+                            .ElementAt(Rand.Next(pair.Value)));
                 }
                 return ds;
             };
@@ -537,7 +507,7 @@ namespace ACSDining.Infrastructure.Identity
                             {
                                 int catindex = first.Id - 1;
 
-                                rnd = rand.Next(numsForCourses[catindex]);
+                                rnd = Rand.Next(numsForCourses[catindex]);
                                 DishQuantity dqu =
                                     context.DishQuantities.ToList().FirstOrDefault(
                                         dq => dq.Quantity == coursesnums[catindex][rnd]);

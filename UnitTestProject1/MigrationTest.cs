@@ -19,7 +19,7 @@ namespace UnitTestProject1
         private readonly ApplicationDbContext dataContext;
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IWorkDaysService _workDaysService;
-        private ApplicationUserManager _userManager;
+        private readonly ApplicationUserManager _userManager;
 
         public MigrationTest()
         {
@@ -40,7 +40,7 @@ namespace UnitTestProject1
 
             ApplicationDbInitializer.CreateWorkingDays(dataContext);
 
-            var dishes = ApplicationDbInitializer.GetDishesFromXML(dataContext, _path);
+            var dishes = ApplicationDbInitializer.GetDishesFromXml(dataContext, _path);
 
             ApplicationDbInitializer.CreateMenuForWeek(dataContext, dishes);
 

@@ -90,9 +90,22 @@ namespace ACSDining.Core.HelpClasses
 
         public static bool WeekIsCurrentOrNext(WeekYearDto wyDto)
         {
-            WeekYearDto nextWeekYearDto = GetNextWeekYear(wyDto);
+            WeekYearDto nextWeekYearDto = GetNextWeekYear(new WeekYearDto
+            {
+                Week = CurrentWeek(),
+                Year = DateTime.Now.Year
+            });
             return (wyDto.Week == CurrentWeek() && wyDto.Year == DateTime.Now.Year) ||
                    (wyDto.Week == nextWeekYearDto.Week && wyDto.Year == nextWeekYearDto.Year);
+        }
+
+        public static WeekYearDto GetCurrentWeekYearDto()
+        {
+            return new WeekYearDto
+            {
+                Week = CurrentWeek(),
+                Year = DateTime.Now.Year
+            };
         }
 
         #endregion

@@ -211,3 +211,12 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Infrastructure.
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\LinqKit.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Infrastructure.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\LinqKit.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Infrastructure.pdb
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\LinqKit.pdb
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\LinqKit.xml
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache

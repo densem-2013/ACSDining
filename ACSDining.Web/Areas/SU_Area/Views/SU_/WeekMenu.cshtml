@@ -9,28 +9,6 @@
                 <input type="text" class="form-control" data-provide="datepicker" data-bind="datepicker: myDate" />
             </div>
         </div>
-        @*<div class="col-md-6">
-            <nav class="navbar">
-                <div class="container-fluid">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="active ">
-                            <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
-                        </li>
-
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
-                        </li>
-
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
-                        </li>
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>*@
     </div>
 </div>
     <div class="panel panel-default" id="mfwPanel">
@@ -45,7 +23,7 @@
                     <td class="col-md-5  " style="float: right">
                         <div>
                             <!--ko ifnot: IsNextWeekMenuExist -->
-                                <input type="button" id="btnaddmenu" class="btn" value="Создать меню на следующую неделю" data-bind="click:CreateNextWeekMenu"/> 
+                            <input type="button" id="btnaddmenu" class="btn" value="Создать меню на следующую неделю" data-bind="click:GoToNextWeekMenu" /> 
                             <!--/ko--> 
                             <!--ko if: IsNextWeekMenu-->
                             <input type="button" id="btnDel" class="btn btn-danger" value="Удалить меню на следующую неделю" data-bind="click:DeleteNextWeekMenu" />

@@ -1,9 +1,9 @@
 ﻿(function() {
 
-    $("#infoTitle span").attr({ 'data-bind': 'text: WeekTitle' });
+    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" });
 
 
-    var NoteValueModel = function (value) {
+    var noteValueModel = function (value) {
 
         var self = this;
         self.isEditMode = ko.observable(false);
@@ -20,7 +20,7 @@
         };
     }
 
-    var PaimValueModel = function (value) {
+    var paimValueModel = function (value) {
 
         var self = this;
         self.isEditMode = ko.observable(false);
@@ -37,20 +37,20 @@
         };
     }
 
-    var UserPaimentModel = function(item) {
+    var userPaimentModel = function(item) {
 
         var self = this;
 
-        self.Paiment = ko.observable(new PaimValueModel(item.weekPaid.toFixed(2)));
+        self.Paiment = ko.observable(new paimValueModel(item.weekPaid.toFixed(2)));
         self.DishPaiments = ko.observableArray(item.paiments);
         self.Balance = ko.observable(item.balance.toFixed(2));
         self.UserName = ko.observable(item.userName);
         self.Summary = ko.observable(item.summaryPrice.toFixed(2));
-        self.Note = ko.observable(new NoteValueModel(item.note));
+        self.Note = ko.observable(new noteValueModel(item.note));
         self.IsDinningRoomClient = ko.observable(item.isDinningRoomClient);
 
     }
-    var PaimentViewModel = function() {
+    var paimentViewModel = function() {
         var self = this;
 
         self.UserPaiments = ko.observableArray([]);
@@ -68,7 +68,7 @@
         self.TotalBalance = ko.observable();
         // Callback for error responses from the server.
         function onError(error) {
-            self.Message('Error: ' + error.status + ' ' + error.statusText);
+            self.Message("Error: " + error.status + " " + error.statusText);
         }
 
         self.DaysOfWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"];
@@ -101,7 +101,7 @@
 
         self.allPages = ko.dependentObservable(function() {
             var pages = [];
-            for (i = 0; i <= self.maxPageIndex(); i++) {
+            for (var i = 0; i <= self.maxPageIndex(); i++) {
                 pages.push({ pageNumber: (i + 1) });
             }
             return pages;
@@ -118,9 +118,9 @@
 
             }, onError);
         };
-        self.GetCurrentWeekNumber = function() {
+        self.GetCurrentWeekYear = function() {
 
-            app.su_Service.GetCurrentWeekNumber().then(function(resp) {
+            app.su_Service.GetCurrentWeekYear().then(function(resp) {
                 self.CurrentWeekNumber(resp);
 
             }, onError);
@@ -148,7 +148,7 @@
 
                         ko.utils.arrayForEach(resp.userPaiments, function (object) {
 
-                            self.UserPaiments.push(new UserPaimentModel(object));
+                            self.UserPaiments.push(new userPaimentModel(object));
 
                         });
                     }
@@ -184,7 +184,7 @@
             }, onError);
 
             self.loadWeekNumbers();
-            self.GetCurrentWeekNumber();
+            self.GetCurrentWeekYear();
 
         }
 
@@ -210,6 +210,6 @@
         self.init();
     }
 
-    ko.applyBindings(new PaimentViewModel());
+    ko.applyBindings(new paimentViewModel());
 
 }());

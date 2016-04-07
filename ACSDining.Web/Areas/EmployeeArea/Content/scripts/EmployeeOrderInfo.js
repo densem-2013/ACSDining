@@ -54,6 +54,11 @@
             Year: ko.observable()
         
         };
+    // Callback for error responses from the server.
+        function onError(error) {
+            self.Message("Error: " + error.status + " " + error.statusText);
+        }
+
         viewModel.WeekTitle = ko.computed(function () {
             var options = {
                 weekday: "short", year: "numeric", month: "short",
@@ -103,15 +108,14 @@
                 WeekNumber: viewModel.WeekNumber(),
                 MFD_models: this.MFD_models(),
                 SummaryPrice: this.SummaryPrice()
-
             }
 
             var objToServer = ko.toJSON(source);
             $.ajax({
-                url: '/api/WeekMenu/' + this.WeekNumber(),
-                type: 'put',
+                url: "/api/WeekMenu/" + this.WeekNumber(),
+                type: "put",
                 data: objToServer,
-                contentType: 'application/json'
+                contentType: "application/json"
             }).done(function () {
 
                 viewModel.BeenChanged(false);
@@ -119,9 +123,7 @@
                 ko.utils.arrayForEach(viewModel.MFD_models(), function (item) {
                     item.UnEditable();
                 });
-            }).error(function (err) {
-                viewModel.Message("Error! " + err.status);
-            });
+            },onError);
         };
 
         viewModel.loadWeekNumbers = function () {
@@ -136,17 +138,15 @@
 
                 };
 
-            }).error(function (err) {
-                viewModel.Message("Error! " + err.status);
-            });
+            }, onError);
         };
 
 
 
         viewModel.LoadOrder = function (id,numweek, year) {
 
-            numweek = numweek == undefined ? '' : "/" + numweek;
-            year = year == undefined ? '' : "/" + year;
+            numweek = numweek == undefined ? "" : "/" + numweek;
+            year = year == undefined ? "" : "/" + year;
             $.ajax({
                 url: "/api/Employee/" + id + numweek + year,
                 type: "GET"
@@ -161,15 +161,13 @@
 
                 });
 
-            }).error(function (err) {
-                OrdersViewModel.Message("Error! " + err.status);
-            });
+            }, onError);
         }
 
         viewModel.LoadWeekMenu = function (numweek, year) {
 
-            numweek = numweek == undefined ? '' : numweek;
-            year = year == undefined ? '' : "/" + year;
+            numweek = numweek == undefined ? "" : numweek;
+            year = year == undefined ? "" : "/" + year;
             $.ajax({
                 url: "/api/Employee/" + numweek + year,
                 type: "GET"
@@ -220,14 +218,12 @@
                 viewModel.Message("Error! " + err.status);
             });
         }
-        viewModel.GetCurrentWeekNumber = function () {
+        viewModel.GetCurrentWeekYear = function () {
 
-            $.ajax({
-                url: "/api/Employee/CurrentWeek",
-                type: "GET"
-            }).done(function (resp) {
-                viewModel.CurrentWeekNumber(resp);
-            });
+            app.su_Service.GetCurrentWeekYear().then(function(resp) {
+                viewModel.CurrentWeekNumber(resp.week);
+                viewModel.Year(resp.year);
+            },onError);
         }
 
         viewModel.IsCurrentWeek = ko.computed(function () {
@@ -276,7 +272,7 @@
 
         viewModel.LoadWeekMenu();
         viewModel.loadWeekNumbers();
-        viewModel.GetCurrentWeekNumber();
+        viewModel.GetCurrentWeekYear();
 
         ko.applyBindings(viewModel);
 

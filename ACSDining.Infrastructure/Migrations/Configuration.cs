@@ -26,7 +26,7 @@ namespace ACSDining.Web.Migrations
 
             //
             ApplicationDbInitializer.InitializeIdentityForEF(context, _path);
-            var dishes = ApplicationDbInitializer.GetDishesFromXML(context, _path);
+            var dishes = ApplicationDbInitializer.GetDishesFromXml(context, _path);
             ApplicationDbInitializer.CreateWorkingDays(context);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");

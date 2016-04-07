@@ -180,7 +180,6 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Web.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Net.Http.Formatting.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Mvc.dll
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.ServiceLocation.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Optimization.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebActivatorEx.dll
@@ -188,8 +187,6 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.WebHost.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.Owin.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.dll
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.Net4.dll
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.Web.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\PerpetuumSoft.Knockout.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Razor.dll
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Razor.dll
@@ -198,8 +195,6 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Web.pdb
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Net.Http.Formatting.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Mvc.xml
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.pdb
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Optimization.xml
@@ -207,9 +202,6 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.WebHost.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.Owin.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.xml
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.Net4.pdb
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.Web.pdb
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\StructureMap.Web.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Razor.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Razor.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Deployment.xml
@@ -292,3 +284,16 @@ C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Raz
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Deployment.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.pdb
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Repository.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Service.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\LinqKit.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.Mvc.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Repository.pdb
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Service.pdb
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\LinqKit.pdb
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\LinqKit.xml
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.xml
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.Mvc.xml
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.xml

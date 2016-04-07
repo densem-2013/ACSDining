@@ -58,23 +58,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             return Task.FromResult(nextWeek != null);
         }
-        //получить 
-        //[HttpGet]
-        //[Route("nextWeekMenu")]
-        //public async Task<WeekMenuDto> GetNextWeekMenu(WeekYearDto weekyear)
-        //{
-        //    WeekYearDto nextweeknumber = YearWeekHelp.GetNextWeekYear(weekyear);
-
-        //    MenuForWeek nextWeek = _weekmenuService.GetWeekMenuByWeekYear(nextweeknumber.Week, nextweeknumber.Year);
-
-        //    WeekMenuDto weekmenudto = null;
-        //    if (nextWeek != null)
-        //    {
-        //        weekmenudto = WeekMenuDto.MapDto(_unitOfWork, nextWeek);
-        //    }
-
-        //    return await Task.FromResult(weekmenudto);
-        //}
 
         [HttpPut]
         [Route("nextWeekYear")]
@@ -93,11 +76,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpGet]
-        [Route("curWeekNumber")]
+        [Route("curWeekYear")]
         [ResponseType(typeof (Int32))]
-        public async Task<Int32> CurrentWeekNumber()
+        public async Task<WeekYearDto> CurrentWeekYear()
         {
-            return await Task.FromResult(YearWeekHelp.CurrentWeek());
+            return await Task.FromResult(YearWeekHelp.GetCurrentWeekYearDto());
         }
 
         [HttpGet]
@@ -203,39 +186,45 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 var dto = WeekMenuDto.MapDto(_unitOfWork, weekmenu);
                 return dto;
             }
-            if (YearWeekHelp.WeekIsCurrentOrNext(weekyear))
+            if (!YearWeekHelp.WeekIsCurrentOrNext(weekyear)) return null;
+
+            List<WorkingDay> workdays = new List<WorkingDay>();
+            for (var i = 0; i < 7; i++)
             {
-                List<WorkingDay> workdays = new List<WorkingDay>();
-                for (int i = 0; i < 7; i++)
+                workdays.Add(new WorkingDay
                 {
-                    workdays.Add(new WorkingDay
-                    {
-                        DayOfWeek = _unitOfWork.RepositoryAsync<ACSDining.Core.Domains.DayOfWeek>().FindAsync(i + 1).Result,
-                        IsWorking = i < 5
-                    });
-                }
-                WorkingWeek workingWeek = new WorkingWeek
+                    DayOfWeek = _unitOfWork.RepositoryAsync<ACSDining.Core.Domains.DayOfWeek>().FindAsync(i + 1).Result,
+                    IsWorking = i < 5
+                });
+            }
+            WorkingWeek workingWeek = new WorkingWeek
+            {
+                WeekNumber = weekyear.Week,
+                Year = _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y=>y.YearNumber==weekyear.Year),
+                WorkingDays = workdays
+            };
+            weekmenu = new MenuForWeek
+            {
+                WorkingWeek = workingWeek,
+                MenuForDay = workdays.Select(wd => new MenuForDay
                 {
-                    WeekNumber = weekyear.Week,
-                    Year = _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y=>y.YearNumber==weekyear.Year),
-                    WorkingDays = workdays
-                };
-                weekmenu = new MenuForWeek
-                {
-                    WorkingWeek = workingWeek,
-                    MenuForDay = workdays.Select(wd => new MenuForDay
-                    {
-                        WorkingDay = wd,
-                        WorkingWeek = workingWeek
-                    }).ToList()
+                    WorkingDay = wd,
+                    WorkingWeek = workingWeek
+                }).ToList()
 
-                };
-
+            };
+            try
+            {
                 _weekmenuService.Insert(weekmenu);
                 _unitOfWork.SaveChanges();
-
-                weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear.Week, weekyear.Year);
             }
+            catch (Exception)
+            {
+                        
+                throw;
+            }
+
+            weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear.Week, weekyear.Year);
             return WeekMenuDto.MapDto(_unitOfWork, weekmenu, true);
         }
     }
