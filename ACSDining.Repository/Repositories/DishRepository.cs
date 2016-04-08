@@ -22,38 +22,21 @@ namespace ACSDining.Repository.Repositories
                     .ToList();
         }
 
-        public static void UpdateDish(this IRepositoryAsync<Dish> repository, DishModelDto dmodel)
+        public static Dish UpdateDish(this IRepositoryAsync<Dish> repository, DishModelDto dmodel)
         {
             Dish target = repository.Find(dmodel.DishID);
             if (!string.Equals(dmodel.Foods, string.Empty))
             {
                 DishDetail dishDetail = new DishDetail {Foods = dmodel.Foods};
-                //repository.GetRepository<DishDetail>().Insert(dishDetail);
                 target.DishDetail.Foods = dmodel.Foods;
                 target.DishDetail = dishDetail;
             }
             target.Price = dmodel.Price;
             target.Title = dmodel.Title;
-            repository.Update(target);
+
+            return target;
+            //repository.Update(target);
         }
 
-        //public static void InsertDish(this IRepositoryAsync<Dish> repository, DishModelDto dmodel)
-        //{
-        //    Dish newdish = new Dish
-        //    {
-        //        Title = dmodel.Title,
-        //        Price = dmodel.Price,
-        //        ProductImage = dmodel.ProductImage,
-        //        DishType =
-        //            repository.GetRepository<DishType>()
-        //                .Queryable()
-        //                .FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
-        //        DishDetail = new DishDetail
-        //        {
-        //            Foods = dmodel.Foods
-        //        }
-        //    };
-        //    repository.Insert(newdish);
-        //}
     }
 }

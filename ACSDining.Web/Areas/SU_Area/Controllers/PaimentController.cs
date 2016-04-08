@@ -9,6 +9,8 @@ using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Core.HelpClasses;
+using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -17,6 +19,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {
+        private ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
@@ -24,6 +27,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public PaimentController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
+            _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
         }
@@ -136,7 +140,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             order.WeekPaid = pai;
             order.Balance -= order.WeekPaid;
 
-            _orderMenuService.Update(order);
+            _db.OrderMenus.Remove(order);
+            _db.OrderMenus.Add(order);
+
+            //_orderMenuService.Update(order);
             await _unitOfWork.SaveChangesAsync();
 
             return Ok(order.Balance);

@@ -11,8 +11,7 @@ namespace ACSDining.Service
     {
         WorkWeekDto GetWorkWeekDtoByWeekYear(int week, int year);
         WorkingWeek GetWorkWeekByWeekYear(int week, int year);
-        int UpdateWorkDays(WorkWeekDto weekModel);
-        //List<WorkingDay> GetWorkingDaysByWeekYear(int week, int year);
+        WorkingWeek UpdateWorkDays(WorkWeekDto weekModel);
     }
 
     public class WorkDaysService : Service<WorkingWeek>, IWorkDaysService
@@ -42,7 +41,7 @@ namespace ACSDining.Service
                     .FirstOrDefault(ww => ww.WeekNumber == week && ww.Year.YearNumber == year);
         }
 
-        public int UpdateWorkDays(WorkWeekDto weekModel)
+        public WorkingWeek UpdateWorkDays(WorkWeekDto weekModel)
         {
             WorkingWeek week = _repository.Find(weekModel.WorkWeekId);
 
@@ -52,12 +51,8 @@ namespace ACSDining.Service
                 var isWorking = firstOrDefault != null && firstOrDefault.IsWorking;
                 x.IsWorking = isWorking;
             });
-            return weekModel.WorkWeekId;
+            return week;
         }
 
-        //public List<WorkingDay> GetWorkingDaysByWeekYear(int week, int year)
-        //{
-            
-        //}
     }
 }

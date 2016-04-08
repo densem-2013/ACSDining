@@ -11,6 +11,7 @@ using ACSDining.Core.UnitOfWork;
 using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Core.HelpClasses;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -20,6 +21,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     //[EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
     public class WeekMenuController : ApiController
     {
+        private ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekmenuService;
         private readonly UnitOfWork _unitOfWork;
         private readonly IDishService _dishService;
@@ -27,6 +29,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public WeekMenuController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = (UnitOfWork) unitOfWork;
+            _db = _unitOfWork.GetContext();
             _weekmenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
         }
@@ -126,7 +129,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             menuFd.Dishes = dishes;
             menuFd.TotalPrice = menuforday.TotalPrice;
 
-            _unitOfWork.RepositoryAsync<MenuForDay>().Update(menuFd);
+            _db.MenuForDays.Remove(menuFd);
+            _db.MenuForDays.Add(menuFd);
+
             _unitOfWork.SaveChanges();
 
 
@@ -139,7 +144,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 mfwModel.SummaryPrice = mfwModel.MenuForDay.Sum(mfd => mfd.TotalPrice);
 
-                _weekmenuService.Update(mfwModel);
+                _db.MenuForWeeks.Remove(mfwModel);
+                _db.MenuForWeeks.Add(mfwModel);
+                //_weekmenuService.Update(mfwModel);
             }
 
             await _unitOfWork.SaveChangesAsync();
@@ -159,7 +166,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            _weekmenuService.Delete(mfw);
+            _db.MenuForWeeks.Remove(mfw);
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -186,41 +193,93 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 var dto = WeekMenuDto.MapDto(_unitOfWork, weekmenu);
                 return dto;
             }
-            if (!YearWeekHelp.WeekIsCurrentOrNext(weekyear)) return null;
+           // if (!YearWeekHelp.WeekIsCurrentOrNext(weekyear)) return null;
 
             List<WorkingDay> workdays = new List<WorkingDay>();
+
+            Year year =
+                _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y => y.YearNumber == weekyear.Year) ??
+                new Year {YearNumber = weekyear.Year};
+
+            List<WorkingDay> wdays=new List<WorkingDay>();
+            for (int i = 0; i < 7; i++)
+            {
+                WorkingDay wday = new WorkingDay
+                {
+                    DayOfWeek =
+                        _unitOfWork.RepositoryAsync<ACSDining.Core.Domains.DayOfWeek>().FindAsync(i + 1).Result,
+                    IsWorking = i < 5
+                };
+            }
+
+            WorkingWeek workWeek =
+                _unitOfWork.RepositoryAsync<WorkingWeek>()
+                    .Query()
+                    .Include(ww => ww.Year)
+                    .Include(ww => ww.WorkingDays.Select(wd => wd.DayOfWeek))
+                    .Select()
+                    .FirstOrDefault(ww => ww.Year.YearNumber == year.YearNumber && ww.WeekNumber == weekyear.Week);
+            if (workWeek == null)
+            {
+                workWeek = new WorkingWeek
+                {
+                    WeekNumber = weekyear.Week,
+                    Year = year,
+                    WorkingDays = wdays
+                };
+                _db.WorkingWeeks.Add(workWeek);
+                _unitOfWork.SaveChanges();
+                workWeek=
+                _unitOfWork.RepositoryAsync<WorkingWeek>()
+                    .Query()
+                    .Include(ww => ww.Year)
+                    .Include(ww => ww.WorkingDays.Select(wd => wd.DayOfWeek))
+                    .Select()
+                    .FirstOrDefault(ww => ww.Year.YearNumber == year.YearNumber && ww.WeekNumber == weekyear.Week);
+            }
+
+
+            if (year.WorkingWeeks.FirstOrDefault(ww => ww.WeekNumber == workWeek.WeekNumber) == null)
+            {
+                year.WorkingWeeks.Add(workWeek);
+            } 
+
+            List<MenuForDay> mfdays = new List<MenuForDay>();
+
             for (var i = 0; i < 7; i++)
             {
-                workdays.Add(new WorkingDay
+                if (workWeek != null)
                 {
-                    DayOfWeek = _unitOfWork.RepositoryAsync<ACSDining.Core.Domains.DayOfWeek>().FindAsync(i + 1).Result,
-                    IsWorking = i < 5
-                });
+                    WorkingDay wday = workWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.ID == i + 1) ;
+                    MenuForDay mfd = new MenuForDay
+                    {
+                        WorkingWeek = workWeek,
+                        WorkingDay = wday
+                    };
+                    _db.MenuForDays.Add(mfd);
+                    _unitOfWork.SaveChanges();
+                }
             }
-            WorkingWeek workingWeek = new WorkingWeek
-            {
-                WeekNumber = weekyear.Week,
-                Year = _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y=>y.YearNumber==weekyear.Year),
-                WorkingDays = workdays
-            };
+            mfdays =
+                _unitOfWork.RepositoryAsync<MenuForDay>()
+                    .Query()
+                    .Include(mfd => mfd.WorkingWeek)
+                    .Select()
+                    .Where(mfd => workWeek != null && mfd.WorkingWeek.ID == workWeek.ID)
+                    .ToList();
             weekmenu = new MenuForWeek
             {
-                WorkingWeek = workingWeek,
-                MenuForDay = workdays.Select(wd => new MenuForDay
-                {
-                    WorkingDay = wd,
-                    WorkingWeek = workingWeek
-                }).ToList()
-
+                WorkingWeek = workWeek,
+                MenuForDay = mfdays
             };
+
             try
             {
-                _weekmenuService.Insert(weekmenu);
+                _db.MenuForWeeks.Add(weekmenu);
                 _unitOfWork.SaveChanges();
             }
             catch (Exception)
             {
-                        
                 throw;
             }
 

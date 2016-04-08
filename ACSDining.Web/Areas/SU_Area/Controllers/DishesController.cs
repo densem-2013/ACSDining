@@ -8,6 +8,8 @@ using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Core.DTO.SuperUser;
+using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -16,12 +18,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Dishes")]
     public class DishesController : ApiController
     {
+        private ApplicationDbContext _db;
         private readonly IDishService _dishService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
         public DishesController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
+            _db = ((UnitOfWork)_unitOfWork).GetContext();
             _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
         }
 
@@ -54,7 +58,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             try
             {
-                _dishService.UpdateDishByDishModel(dish);
+               Dish updish= _dishService.UpdateDishByDishModel(dish);
+                _db.Dishes.Remove(updish);
+                _db.Dishes.Add(updish);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -96,7 +102,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     }
                 };
 
-                _dishService.Insert(newdish);
+                _db.Dishes.Add(newdish);
+               // _dishService.Insert(newdish);
                await  _unitOfWork.SaveChangesAsync();
             }
             catch (DbUpdateException)
@@ -113,11 +120,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         // DELETE api/Dishes/5
         [Route("delete/{id}")]
-        [ResponseType(typeof(Dish))]
+        [ResponseType(typeof (Dish))]
         public async Task<bool> DeleteDish(int id)
         {
-
-            return await _dishService.DeleteDishById(id);
+            Dish dish = _dishService.Find(id);
+            _db.Dishes.Remove(dish);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
         private bool DishExists(int id)

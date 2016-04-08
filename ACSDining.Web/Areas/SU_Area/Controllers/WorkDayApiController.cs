@@ -5,6 +5,8 @@ using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Core.HelpClasses;
+using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -13,12 +15,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/WorkDays")]
     public class WorkDayApiController : ApiController
     {
+        private ApplicationDbContext _db;
         private readonly IWorkDaysService _workDayService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
         public WorkDayApiController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
+            _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
             _workDayService = new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
         }
 
@@ -44,7 +48,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
 
 
-            _workDayService.UpdateWorkDays(weekModel);
+            WorkingWeek wweek=_workDayService.UpdateWorkDays(weekModel);
+
+            _db.WorkingWeeks.Remove(wweek);
+            _db.WorkingWeeks.Add(wweek);
 
             await _unitOfWork.SaveChangesAsync();
 

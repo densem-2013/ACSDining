@@ -64,3 +64,8 @@ E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Owin.Security.
 E:\GitProjects\ACSDining\ACSDining.Repository\obj\Debug\ACSDining.Repository.csprojResolveAssemblyReference.cache
 E:\GitProjects\ACSDining\ACSDining.Repository\obj\Debug\ACSDining.Repository.dll
 E:\GitProjects\ACSDining\ACSDining.Repository\obj\Debug\ACSDining.Repository.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\ACSDining.Infrastructure.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\LinqKit.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\LinqKit.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Practices.ServiceLocation.xml

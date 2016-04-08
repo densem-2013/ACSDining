@@ -41,15 +41,7 @@ namespace ACSDining.Service
 
         public List<int> WeekNumbers()
         {
-            try
-            {
-                return _repository.GetWeekNumbers();
-            }
-            catch (Exception)
-            {
-                
-                throw;
-            }
+            return _repository.GetWeekNumbers();
         }
 
         public double SummaryPrice(UserOrdersDto usorder, int numweek, int year)

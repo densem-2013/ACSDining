@@ -12,7 +12,7 @@ namespace ACSDining.Service
     {
         List<DishModelDto> GetAllDishModelDto();
         List<DishModelDto> GetDishModelDtoByCategory(string category);
-        void UpdateDishByDishModel(DishModelDto dmodel);
+        Dish UpdateDishByDishModel(DishModelDto dmodel);
         List<Dish> AllDish();
         Dish GetDishById(int id);
         Task<bool> DeleteDishById(int id);
@@ -42,9 +42,9 @@ namespace ACSDining.Service
             return _repository.Queryable().ToList();
         }
 
-        public void UpdateDishByDishModel(DishModelDto dmodel)
+        public Dish UpdateDishByDishModel(DishModelDto dmodel)
         {
-            _repository.UpdateDish(dmodel);
+            return _repository.UpdateDish(dmodel);
         }
         
         public Dish GetDishById(int id)

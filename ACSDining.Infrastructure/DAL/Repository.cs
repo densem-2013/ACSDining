@@ -46,7 +46,15 @@ namespace ACSDining.Infrastructure.DAL
 
         public virtual void Insert(TEntity entity)
         {
-            _dbSet.Attach(entity);
+            try
+            {
+                _dbSet.Attach(entity);
+            }
+            catch (Exception)
+            {
+                    
+                throw;
+            }
         }
 
         public virtual void InsertRange(IEnumerable<TEntity> entities)

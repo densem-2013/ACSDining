@@ -24,6 +24,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
     [RoutePrefix("api/Employee")]
     public class EmployeeOrderApiController : ApiController
     {
+        private ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
@@ -32,6 +33,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         public EmployeeOrderApiController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
+            _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
         }
@@ -122,7 +124,8 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                     MenuForWeek = weekmenu,
                     PlannedOrderMenu = planmenu
                 };
-                _orderMenuService.Insert(ordmenu);
+                _db.OrderMenus.Add(ordmenu);
+                //_orderMenuService.Insert(ordmenu);
                 await _unitOfWork.SaveChangesAsync();
 
                 ordmenu = _orderMenuService.FindByUserIdWeekYear(user.Id, week, yearnumber);

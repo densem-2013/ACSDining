@@ -363,7 +363,7 @@ namespace ACSDining.Infrastructure.Identity
                         context.WorkingDays.Include("WorkingWeek").ToList().FirstOrDefault(
                             wd => workweek != null && (wd.WorkingWeek.ID == workweek.ID && wd.DayOfWeek.ID == i));
 
-                    if (workday != null && workday.IsWorking)
+                    if (workday != null /*&& workday.IsWorking*/)
                     {
                         MenuForDay dayMenu = new MenuForDay
                         {
