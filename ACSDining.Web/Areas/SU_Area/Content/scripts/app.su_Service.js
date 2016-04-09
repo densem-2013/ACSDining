@@ -23,7 +23,7 @@ ko.bindingHandlers.datepicker = {
             $.datepicker.regional["ru"],
             {
                 beforeShowDay: $.datepicker.noWeekends,
-                dateFormat: 'dd/mm/yy',
+                dateFormat: "dd/mm/yy",
                 showButtonPanel: true,
                 gotoCurrent: true,
                 showOtherMonths: true,
@@ -82,55 +82,61 @@ ko.bindingHandlers.datepicker = {
 
 window.app.su_Service = (function() {
 
-    var baseWeekMenuUri = '/api/WeekMenu/';
+    var baseWeekMenuUri = "/api/WeekMenu/";
     var serviceWeekMenuUrls = {
         weekMenu: function(numweek, year) {
-            numweek = numweek == undefined ? '' : numweek;
-            year = year == undefined ? '' : "/" + year;
+            numweek = numweek == undefined ? "" : numweek;
+            year = year == undefined ? "" : "/" + year;
             return baseWeekMenuUri + numweek + year;
         },
-        weekNumbers: function() { return baseWeekMenuUri + 'WeekNumbers'; },
-        currentweek: function() { return baseWeekMenuUri + 'curWeekYear'; },
-        categories: function() { return baseWeekMenuUri + 'categories' },
-        nextWeekYear: function() { return baseWeekMenuUri + 'nextWeekYear' },
-        prevWeekYear: function() { return baseWeekMenuUri + 'prevWeekYear' },
-        deleteWeekMenu: function (menuid) { return baseWeekMenuUri + 'delete/' + menuid }
+        weekNumbers: function() { return baseWeekMenuUri + "WeekNumbers"; },
+        currentweek: function() { return baseWeekMenuUri + "curWeekYear"; },
+        categories: function() { return baseWeekMenuUri + "categories" },
+        nextWeekYear: function() { return baseWeekMenuUri + "nextWeekYear" },
+        prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
+        deleteWeekMenu: function (menuid) { return baseWeekMenuUri + "delete/" + menuid }
     }
 
-    var baseOrdersUri = '/api/Orders/';
+    var baseOrdersUri = "/api/Orders/";
     var serviceOrdersUrls = {
         ordersParams: function(numweek, year) {
-            numweek = numweek == undefined ? '' : numweek;
-            year = year == undefined ? '' : "/" + year;
+            numweek = numweek == undefined ? "" : numweek;
+            year = year == undefined ? "" : "/" + year;
             return numweek + year;
         },
-        updateOrder: function(week, year) { return baseOrdersUri + 'update' + serviceOrdersUrls.ordersParams(week, year) },
-        createOrder: function(week, year) { return baseOrdersUri + 'create' + serviceOrdersUrls.ordersParams(week, year) },
-        calcsummary: function(week, year) { return baseOrdersUri + 'summary/' + serviceOrdersUrls.ordersParams(week, year) }
+        updateOrder: function(week, year) { return baseOrdersUri + "update" + serviceOrdersUrls.ordersParams(week, year) },
+        createOrder: function(week, year) { return baseOrdersUri + "create" + serviceOrdersUrls.ordersParams(week, year) },
+        calcsummary: function(week, year) { return baseOrdersUri + "summary/" + serviceOrdersUrls.ordersParams(week, year) }
     }
-    var baseDishesUri = '/api/Dishes/';
+    var baseDishesUri = "/api/Dishes/";
     var serviceDishesUrls = {
-        byCategory: function(category) { return baseDishesUri + 'byCategory/' + category },
-        update: function() { return baseDishesUri + 'update' },
-        deleteDish: function(dishID) { return baseDishesUri + 'delete/' + dishID },
-        create: function() { return baseDishesUri + 'create' }
+        byCategory: function(category) { return baseDishesUri + "byCategory/" + category },
+        update: function() { return baseDishesUri + "update" },
+        deleteDish: function(dishID) { return baseDishesUri + "delete/" + dishID },
+        create: function() { return baseDishesUri + "create" }
     }
 
-    var basePaimentsUri = '/api/Paiment/';
+    var basePaimentsUri = "/api/Paiment/";
     var servicePaimentsUrls = {
         paiments: function(week, year) { return basePaimentsUri + serviceOrdersUrls.ordersParams(week, year) },
-        updatePaiment: function(orderid) { return basePaimentsUri + 'updatePaiment/' + orderid },
-        totalPaimentsbyDish: function(week, year) { return basePaimentsUri + 'paimentsByDish/' + serviceOrdersUrls.ordersParams(week, year) }
+        updatePaiment: function(orderid) { return basePaimentsUri + "updatePaiment/" + orderid },
+        totalPaimentsbyDish: function(week, year) { return basePaimentsUri + "paimentsByDish/" + serviceOrdersUrls.ordersParams(week, year) }
     }
-    var baseAccountsUri = '/api/Account/';
-    var serviseAccountsUrls = {
-        accounts: function() { return baseAccountsUri + 'All' },
-        deleteAccount: function(id) { return baseAccountsUri + 'delete/' + id }
+    var baseAccountsUri = "/api/Account/";
+    var serviceAccountsUrls = {
+        accounts: function() { return baseAccountsUri + "All" },
+        deleteAccount: function(id) { return baseAccountsUri + "delete/" + id }
     }
-    var baseWorkDaysUri = '/api/WorkDays/';
-    var serviseWorkDaysUrls = {
+    var baseWorkDaysUri = "/api/WorkDays/";
+    var serviceWorkDaysUrls = {
         workDays: function(week, year) { return baseWorkDaysUri + serviceOrdersUrls.ordersParams(week, year) },
-        updateWorkDays: function () { return baseWorkDaysUri + 'update'  }
+        updateWorkDays: function () { return baseWorkDaysUri + "update"  }
+    }
+
+    var baseUserWeekOrder = "/api/Employee/";
+    var serviceUserWeekOrders= {
+        weekorder: function(week, year) { return baseUserWeekOrder + serviceOrdersUrls.ordersParams(week, year) },
+        canCreateOrderOnNextWeek: function () { return baseUserWeekOrder + "canCreateOrderOnNextWeek" }
     }
 
     function ajaxRequest(type, url, data) {
@@ -150,70 +156,76 @@ window.app.su_Service = (function() {
 
     return {
         LoadWeekMenu: function(numweek, year) {
-            return ajaxRequest('get', serviceWeekMenuUrls.weekMenu(numweek, year));
+            return ajaxRequest("get", serviceWeekMenuUrls.weekMenu(numweek, year));
         },
         GetNextWeekYear: function(item) {
-            return ajaxRequest('put', serviceWeekMenuUrls.nextWeekYear(), item);
+            return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(), item);
         },
         GetPrevWeekYear: function(item) {
-            return ajaxRequest('put', serviceWeekMenuUrls.prevWeekYear(), item);
+            return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), item);
         },
         GetCurrentWeekYear: function() {
-            return ajaxRequest('get', serviceWeekMenuUrls.currentweek());
+            return ajaxRequest("get", serviceWeekMenuUrls.currentweek());
         },
         LoadWeekNumbers: function() {
-            return ajaxRequest('get', serviceWeekMenuUrls.weekNumbers());
+            return ajaxRequest("get", serviceWeekMenuUrls.weekNumbers());
         },
         UpdateWeekMenu: function(item) {
-            return ajaxRequest('put', baseWeekMenuUri + 'update', item);
+            return ajaxRequest("put", baseWeekMenuUri + "update", item);
         },
         DeleteNextWeekMenu: function(menuid) {
-            return ajaxRequest('delete', serviceWeekMenuUrls.deleteWeekMenu(menuid));
+            return ajaxRequest("delete", serviceWeekMenuUrls.deleteWeekMenu(menuid));
         },
         GetCategories: function() {
-            return ajaxRequest('get', serviceWeekMenuUrls.categories());
+            return ajaxRequest("get", serviceWeekMenuUrls.categories());
         },
         CreateDish: function(dish) {
-            return ajaxRequest('post', serviceDishesUrls.create(), dish);
+            return ajaxRequest("post", serviceDishesUrls.create(), dish);
         },
         DishesByCategory: function(category) {
-            return ajaxRequest('get', serviceDishesUrls.byCategory(category));
+            return ajaxRequest("get", serviceDishesUrls.byCategory(category));
         },
         UpdateDish: function(dish) {
-            return ajaxRequest('put', serviceDishesUrls.update(), dish);
+            return ajaxRequest("put", serviceDishesUrls.update(), dish);
         },
         DeleteDish: function(dishID) {
-            return ajaxRequest('delete', serviceDishesUrls.deleteDish(dishID));
+            return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishID));
         },
         LoadWeekOrders: function(numweek, year) {
-            return ajaxRequest('get', baseOrdersUri + serviceOrdersUrls.ordersParams(numweek, year));
+            return ajaxRequest("get", baseOrdersUri + serviceOrdersUrls.ordersParams(numweek, year));
         },
         GetOrderSummary: function(week, year, item) {
-            return ajaxRequest('put', serviceOrdersUrls.calcsummary(week, year), item);
+            return ajaxRequest("put", serviceOrdersUrls.calcsummary(week, year), item);
         },
         UpdateOrder: function(week, year, item) {
-            return ajaxRequest('put', serviceOrdersUrls.updateOrder(week, year), item);
+            return ajaxRequest("put", serviceOrdersUrls.updateOrder(week, year), item);
         },
         CreateOrdersNextweek: function(week, year) {
-            return ajaxRequest('post', serviceOrdersUrls.createOrder(week, year));
+            return ajaxRequest("post", serviceOrdersUrls.createOrder(week, year));
         },
         GetPaiments: function(week, year) {
-            return ajaxRequest('get', servicePaimentsUrls.paiments(week, year));
+            return ajaxRequest("get", servicePaimentsUrls.paiments(week, year));
         },
         UpdatePaiment: function(orderid, pai) {
-            return ajaxRequest('put', servicePaimentsUrls.updatePaiment(orderid), pai);
+            return ajaxRequest("put", servicePaimentsUrls.updatePaiment(orderid), pai);
         },
         GetAccounts: function() {
-             return ajaxRequest('get', serviseAccountsUrls.accounts());
+             return ajaxRequest("get", serviceAccountsUrls.accounts());
         },
         DeleteAccount: function (accountId) {
-            return ajaxRequest('delete', serviseAccountsUrls.deleteAccount(accountId));
+            return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));
         },
         GetWorkDays: function (week,year) {
-            return ajaxRequest('get', serviseWorkDaysUrls.workDays(week, year));
+            return ajaxRequest("get", serviceWorkDaysUrls.workDays(week, year));
         },
         UpdateWorkDays: function (weekinfo) {
-            return ajaxRequest('put', serviseWorkDaysUrls.updateWorkDays(),weekinfo);
+            return ajaxRequest("put", serviceWorkDaysUrls.updateWorkDays(),weekinfo);
+        },
+        LoadUserWeekOrder: function(week, year) {
+            return ajaxRequest("get", serviceUserWeekOrders.weekorder(week,year));
+        },
+        CanCreateOrderOnNextWeek: function () {
+            return ajaxRequest("get", serviceUserWeekOrders, canCreateOrderOnNextWeek());
         }
     };
 

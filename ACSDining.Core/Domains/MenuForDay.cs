@@ -22,6 +22,7 @@ namespace ACSDining.Core.Domains
         public MenuForDay()
         {
             Dishes = new List<Dish>();
+            OrderCanBeChanged = true;
         }
 
         [Key]
@@ -29,7 +30,10 @@ namespace ACSDining.Core.Domains
         public int ID { get; set; }
 
         public double TotalPrice { get; set; }
-
+        //Заказ на этот день может быть изменён
+        public bool OrderCanBeChanged { get; set; }
+        //Меню может быть изменено
+        public bool DayMenuCanBeChanged { get; set; }
         [JsonIgnore]
         public virtual ICollection<Dish> Dishes { get; set; }
 

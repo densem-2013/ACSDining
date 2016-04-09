@@ -13,12 +13,12 @@
                 <tr style="background: #565659;">
                     <td class="col-md-3">
                         <div>
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ $root.LoadWeekMenu($root.CurrentWeekNumber())},css:{disabled: $root.IsCurrentWeek()}" />
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ LoadUserWeekOrder(CurrentWeekNumber(),Year());} , css:{disabled: IsCurrentWeek()}" />
                         </div>
                     </td>
                     <td class="col-md-7">
                         <div class="col-sm-offset-5">
-                            <input type="button" id="btnaddmenu" class="btn" value="Добавить меню на следующую неделю" />
+                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: function(){return IsNextWeekMenuExist()? 'Перейти на следующую неделю':'Создать заказ на следующую неделю';}" />
                         </div>
                     </td>
                 </tr>
@@ -55,7 +55,7 @@
                     <!--ko foreach: Dishes-->
                     <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
                         <!--ko ifnot: isEditMode() -->
-                        <span data-bind="text: Quantity"></span>
+                        <span data-bind="text: $data.Quantity"></span>
                         <!--/ko-->
                         <!-- ko if: isEditMode -->
                         <!-- ko if: (Category() == "Первое блюдо") -->
@@ -81,7 +81,7 @@
             <!--/ko--> 
             </tbody>
             <tfoot>
-                <tr>
+                @*<tr>
                     <td style="border-bottom: 1px solid;  border-right: 0" colspan="2"><span class="changesaved" data-bind="visible: ChangeSaved"> Изменения сохранены </span></td>
                     <td style="border-bottom: 1px solid; align-content: stretch; border-left: 0" colspan="2">
                         <input type="button" class="btn btn-success btn-lg" value="Сохранить изменения" data-bind="click: SaveToServer , visible: BeenChanged" />
@@ -108,7 +108,7 @@
                             </ul>
                         </div>
                     </td>
-                </tr>
+                </tr>*@
             </tfoot>
         </table>
     </div>

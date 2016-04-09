@@ -113,7 +113,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("update")]
         public async Task<IHttpActionResult> UpdateMenuForDay([FromBody] MenuForDayDto menuforday)
         {
-            MenuForDay menuFd = _unitOfWork.RepositoryAsync<MenuForDay>().Find(menuforday.ID);
+            MenuForDay menuFd = _unitOfWork.RepositoryAsync<MenuForDay>().Find(menuforday.Id);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -138,7 +138,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             MenuForWeek mfwModel =
                 _weekmenuService.GetAll()
                     .ToList()
-                    .FirstOrDefault(mfw => mfw.MenuForDay.Any(mfd => mfd.ID == menuforday.ID));
+                    .FirstOrDefault(mfw => mfw.MenuForDay.Any(mfd => mfd.ID == menuforday.Id));
 
             if (mfwModel != null)
             {

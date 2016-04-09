@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DAL;
 
 namespace ACSDining.Core.DTO.SuperUser
 {
     public class WeekMenuDto
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public int YearNumber { get; set; }
         public int WeekNumber { get; set; }
         public double SummaryPrice { get; set; }
@@ -18,7 +19,7 @@ namespace ACSDining.Core.DTO.SuperUser
             if (wmenu == null) return null;
             WeekMenuDto dtoModel = new WeekMenuDto
             {
-                ID = wmenu.ID,
+                Id = wmenu.ID,
                 WeekNumber = wmenu.WorkingWeek.WeekNumber,
                 SummaryPrice = wmenu.SummaryPrice,
                 YearNumber = wmenu.WorkingWeek.Year.YearNumber
@@ -46,7 +47,7 @@ namespace ACSDining.Core.DTO.SuperUser
 
                     dtoModel.MFD_models.Add(new MenuForDayDto
                     {
-                        ID = mfd.ID,
+                        Id = mfd.ID,
                         DayOfWeek = mfd.WorkingDay.DayOfWeek.Name,
                         TotalPrice = mfd.TotalPrice,
                         Dishes = dmodels

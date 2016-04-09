@@ -24,7 +24,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
     [RoutePrefix("api/Employee")]
     public class EmployeeOrderApiController : ApiController
     {
-        private ApplicationDbContext _db;
+        private readonly ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
@@ -79,17 +79,15 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             EmployeeOrderDto model = null;
 
-            OrderMenu ordmenu = null;
-            ordmenu =
-                _orderMenuService.GetAllByWeekYear(week, yearnumber)
-                    .FirstOrDefault(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == weekmodel.ID);
+            OrderMenu ordmenu = _orderMenuService.GetAllByWeekYear(week, yearnumber)
+                .FirstOrDefault(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == weekmodel.Id);
 
             if (ordmenu != null)
             {
                 List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
                     .Query().Include(dq => dq.DishQuantity).Select()
                     .Where(
-                        dqr => ordmenu != null && (dqr.OrderMenuID == ordmenu.Id && dqr.MenuForWeekID == weekmodel.ID))
+                        dqr => ordmenu != null && (dqr.OrderMenuID == ordmenu.Id && dqr.MenuForWeekID == weekmodel.Id))
                     .ToList();
 
                 
@@ -97,7 +95,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 model = new EmployeeOrderDto
                 {
                     UserId = userid,
-                    MenuId = weekmodel.ID,
+                    MenuId = weekmodel.Id,
                     SummaryPrice = ordmenu.OrderSummaryPrice,
                     WeekPaid = ordmenu.WeekPaid,
                     MfdModels = weekmodel.MFD_models,
@@ -133,7 +131,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 model = new EmployeeOrderDto
                 {
                     UserId = userid,
-                    MenuId = weekmodel.ID,
+                    MenuId = weekmodel.Id,
                     SummaryPrice = ordmenu.OrderSummaryPrice,
                     WeekPaid = ordmenu.WeekPaid,
                     MfdModels = weekmodel.MFD_models,
@@ -156,14 +154,15 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             return await Task.FromResult(YearWeekHelp.CurrentWeek());
         }
 
-        [HttpGet]
-        [Route("WeekNumbers")]
-        [ResponseType(typeof(List<int>))]
-        public async Task<IHttpActionResult> GetWeekNumbers()
-        {
-            List<int> numweeks = _weekMenuService.WeekNumbers();
+        //[HttpGet]
+        //[Route("orderWeekNumbers")]
+        //[ResponseType(typeof(List<int>))]
+        //public async Task<IHttpActionResult> GetWeekNumbers()
+        //{
+        //    string userid = RequestContext.Principal.Identity.GetUserId();
+        //    List<int> numweeks = _orderMenuService.Query().Include(om => om.MenuForWeek.WorkingWeek.Year).Include(om => om.User).Select().Where(om => string.Equals(userid, om.User.Id)).GroupBy(om => om.MenuForWeek.WorkingWeek.Year.Id).SelectMany(om=>om.);
 
-            return Ok(numweeks);
-        }
+        //    return Ok(numweeks);
+        //}
     }
 }

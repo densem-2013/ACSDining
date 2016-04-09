@@ -24,6 +24,8 @@ namespace ACSDining.Core.Domains
             MenuForDay = new List<MenuForDay>();
             Orders = new List<OrderMenu>();
             PlannedOrderMenus = new List<PlannedOrderMenu>();
+            OrderCanBeCreated = false;
+            MenuCanBeChanged = true;
         }
 
         [Key]
@@ -31,7 +33,10 @@ namespace ACSDining.Core.Domains
         public int ID { get; set; }
 
         public double SummaryPrice { get; set; }
-
+        //На меню можно создать заказ
+        public bool OrderCanBeCreated { get; set; }
+        //Меню может быть изменено
+        public bool MenuCanBeChanged { get; set; }
         [Required]
         public virtual WorkingWeek WorkingWeek { get; set; }
 

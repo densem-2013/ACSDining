@@ -7,6 +7,7 @@ using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Service;
+using ACSDining.Web.Areas.EmployeeArea.Controllers;
 using ACSDining.Web.Areas.SU_Area.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -83,6 +84,12 @@ namespace UnitTestProject1
 
             Assert.IsNull(weekmenu);
 
+        }
+
+        [TestMethod]
+        public void EmployeDtoGetTest()
+        {
+            EmployeeOrderApiController emplorderapi=new EmployeeOrderApiController(_unitOfWork);
         }
     }
 }

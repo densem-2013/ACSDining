@@ -381,7 +381,8 @@ namespace ACSDining.Infrastructure.Identity
                 {
                     MenuForDay = mfdays,
                     WorkingWeek = workweek,
-                    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum()
+                    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum(),
+                    OrderCanBeCreated = true
                 });
             }
             context.MenuForWeeks.AddRange(weekmenus);

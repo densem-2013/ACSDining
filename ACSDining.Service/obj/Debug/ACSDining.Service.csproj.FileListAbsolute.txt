@@ -59,11 +59,8 @@ E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\LinqKit.pdb
 E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\LinqKit.xml
 E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.Core.xml
 E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.EntityFramework.xml
-E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Infrastructure.pdb
 E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Newtonsoft.Json.xml
 E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.AspNet.Identity.Owin.xml
-E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
-E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Owin.Security.Cookies.xml
 E:\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.csprojResolveAssemblyReference.cache

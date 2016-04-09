@@ -10,8 +10,7 @@ namespace ACSDining.Web
 
 
             bundles.Add(new ScriptBundle("~/bundles/ViewModel").Include(
-                        "~/Areas/SU_Area/Content/scripts/app.su_Service.js"//,
-                       // "~/Areas/SU_Area/Content/scripts/AppSUviewModel.js"
+                        "~/Areas/SU_Area/Content/scripts/app.su_Service.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/MenuForWeek").Include(
@@ -27,8 +26,8 @@ namespace ACSDining.Web
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/EmployeeInfo").Include(
-                        "~/Areas/EmployeeArea/Content/scripts/EmployeeOrderInfo.js"
-                        ));
+                "~/Areas/EmployeeArea/Content/scripts/EmployeeOrderInfo.js"
+                ));
 
             bundles.Add(new ScriptBundle("~/bundles/AccountsInfo").Include(
                         "~/Areas/AdminArea/Content/scripts/AccountsInfo.js"

@@ -52,13 +52,8 @@ E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\EntityFramework.xml
 E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\EntityFramework.SqlServer.xml
 E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.AspNet.Identity.Core.xml
 E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.AspNet.Identity.EntityFramework.xml
-E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\ACSDining.Infrastructure.pdb
 E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Newtonsoft.Json.xml
 E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.AspNet.Identity.Owin.xml
-E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\LinqKit.pdb
-E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\LinqKit.xml
-E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
-E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 E:\GitProjects\ACSDining\ACSDining.Repository\bin\Debug\Microsoft.Owin.Security.Cookies.xml
 E:\GitProjects\ACSDining\ACSDining.Repository\obj\Debug\ACSDining.Repository.csprojResolveAssemblyReference.cache

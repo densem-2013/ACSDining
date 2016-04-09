@@ -8,7 +8,7 @@ namespace ACSDining.Core.Domains
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-
+        public System.DayOfWeek SysDayOfWeek { get; set; }
         [Required]
         public string Name { get; set; }
     }
