@@ -17,11 +17,12 @@ namespace ACSDining.Core.Domains
     using System.Data.Entity;
     using System.Threading.Tasks;
 
-    public partial class MenuForDay 
+    public partial class MenuForDay
     {
         public MenuForDay()
         {
             Dishes = new List<Dish>();
+            PlannedDayOrderMenus = new List<PlannedDayOrderMenu>();
             OrderCanBeChanged = true;
         }
 
@@ -34,13 +35,13 @@ namespace ACSDining.Core.Domains
         public bool OrderCanBeChanged { get; set; }
         //Меню может быть изменено
         public bool DayMenuCanBeChanged { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<Dish> Dishes { get; set; }
 
         [JsonIgnore]
         public virtual WorkingDay WorkingDay { get; set; }
 
-        [JsonIgnore]
-        public virtual WorkingWeek WorkingWeek { get; set; }
+        public ICollection<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; }
     }
 }

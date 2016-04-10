@@ -2,7 +2,6 @@
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Core.DTO.SuperUser;
 using LinqKit;
 
 namespace ACSDining.Service
@@ -47,7 +46,7 @@ namespace ACSDining.Service
 
             week.WorkingDays.ForEach(x =>
             {
-                var firstOrDefault = weekModel.WorkDays.FirstOrDefault(wd => wd.WorkdayId == x.ID);
+                var firstOrDefault = weekModel.WorkDays.FirstOrDefault(wd => wd.WorkdayId == x.Id);
                 var isWorking = firstOrDefault != null && firstOrDefault.IsWorking;
                 x.IsWorking = isWorking;
             });

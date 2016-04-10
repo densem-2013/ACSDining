@@ -71,10 +71,6 @@
       <Project>{b4d50f6a-de92-4007-9b71-f855a3831e91}</Project>
       <Name>ACSDining.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ACSDining.Repository\ACSDining.Repository.csproj">
-      <Project>{D01D1860-A8AF-40F9-A0B1-90A2DE5BCC85}</Project>
-      <Name>ACSDining.Repository</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

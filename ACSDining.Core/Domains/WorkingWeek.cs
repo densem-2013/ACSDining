@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class WorkingWeek 
+    public sealed class WorkingWeek 
     {
         public WorkingWeek()
         {
@@ -16,7 +16,7 @@ namespace ACSDining.Core.Domains
         public int ID { get; set; }
 
         public int WeekNumber { get; set; }
-        public virtual ICollection<WorkingDay> WorkingDays { get; set; }
-        public virtual Year Year { get; set; }
+        public ICollection<WorkingDay> WorkingDays { get; set; }
+        public Year Year { get; set; }
     }
 }

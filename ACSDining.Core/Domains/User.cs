@@ -25,8 +25,8 @@ namespace ACSDining.Core.Domains
     {
         public User():base()
         {
-            OrderMenus = new List<OrderMenu>();
-            PlannedOrderMenus = new List<PlannedOrderMenu>();
+            OrderMenus = new List<WeekOrderMenu>();
+            PlannedOrderMenus = new List<PlannedWeekOrderMenu>();
         }
         
         [Required]
@@ -44,10 +44,10 @@ namespace ACSDining.Core.Domains
         public virtual DateTime RegistrationDate { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<OrderMenu> OrderMenus { get; set; }
+        public virtual ICollection<WeekOrderMenu> OrderMenus { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<PlannedOrderMenu> PlannedOrderMenus { get; set; }
+        public virtual ICollection<PlannedWeekOrderMenu> PlannedOrderMenus { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, string> manager)
         {

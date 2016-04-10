@@ -6,8 +6,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Xml.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.HelpClasses;
-using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.HelpClasses;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
@@ -28,7 +27,7 @@ namespace ACSDining.Infrastructure.Identity
             string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
                                       @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            InitializeIdentityForEF(context, _path); 
+            InitializeIdentityForEf(context, _path); 
             var dishes = GetDishesFromXml(context, _path);
             CreateWorkingDays(context);
             CreateMenuForWeek(context, dishes);
@@ -73,7 +72,7 @@ namespace ACSDining.Infrastructure.Identity
 
         }
 
-        public static void InitializeIdentityForEF(ApplicationDbContext context, string path)
+        public static void InitializeIdentityForEf(ApplicationDbContext context, string path)
         {
 
             context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
@@ -369,7 +368,7 @@ namespace ACSDining.Infrastructure.Identity
                         {
                             Dishes = dishes,
                             WorkingDay = workday,
-                            WorkingWeek = workweek,
+                            //WorkingWeek = workweek,
                             TotalPrice = dishes.Select(d => d.Price).Sum()
                          };
 
@@ -474,25 +473,33 @@ namespace ACSDining.Infrastructure.Identity
                 foreach (MenuForWeek mfw in weekmenus)
                 {
 
-                    PlannedOrderMenu planorder = new PlannedOrderMenu
+                    PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu
                     {
                         User = user,
                         MenuForWeek = mfw
                     };
 
-                    context.PlannedOrderMenus.Add(planorder);
+                    context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
 
-                    OrderMenu order = new OrderMenu
+                    WeekOrderMenu weekOrder = new WeekOrderMenu
                     {
                         User = user,
                         MenuForWeek = mfw,
-                        OrderSummaryPrice = 0.0,
-                        PlannedOrderMenu = planorder
+                        WeekOrderSummaryPrice = 0.0,
+                        PlannedWeekOrderMenu = plannedWeekOrderMenu
                     };
-                    context.OrderMenus.Add(order);
+                    context.WeekOrderMenus.Add(weekOrder);
+
+                    List<DayOrderMenu> dayOrderMenus=new List<DayOrderMenu>();
 
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
                     {
+                        PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu();
+                        DayOrderMenu dayOrderMenu = new DayOrderMenu
+                        {
+                            MenuForDay = daymenu
+                        };
+                        dayOrderMenus.Add(dayOrderMenu);
                         foreach (Dish dish in daymenu.Dishes)
                         {
                             DishType first = null;
@@ -516,17 +523,21 @@ namespace ACSDining.Infrastructure.Identity
                                 {
                                     DishQuantity = dqu,
                                     DishType = first,
-                                    WorkDay = daymenu.WorkingDay,
-                                    PlannedOrderMenu = planorder,
+                                    MenuForDay = daymenu,
+                                    DayOrderMenu = dayOrderMenu,
+                                    PlannedDayOrderMenu = plannedDayOrderMenu,
                                     MenuForWeek = mfw,
-                                    OrderMenu = order
+                                    WeekOrderMenu = weekOrder,
+                                    PlannedWeekOrderMenu = plannedWeekOrderMenu
                                 };
-                                order.OrderSummaryPrice += dqu.Quantity * dish.Price;
+                                if (dqu != null) dayOrderMenu.DayOrderSummaryPrice += dqu.Quantity * dish.Price;
                                 dquaList.Add(dqrs);
                             }
 
                         }
+                        weekOrder.WeekOrderSummaryPrice += dayOrderMenu.DayOrderSummaryPrice;
                     }
+                    weekOrder.DayOrderMenus = dayOrderMenus;
                 }
             }
             context.DQRelations.AddRange(dquaList);

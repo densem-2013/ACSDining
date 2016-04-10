@@ -5,7 +5,6 @@ using System.Web.Http.Description;
 using System.Web.Mvc;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -22,7 +21,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public GetExcelController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _getExcelService = new GetExcelService(_unitOfWork.RepositoryAsync<OrderMenu>());
+            _getExcelService = new GetExcelService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _workDaysService=new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
         }
 

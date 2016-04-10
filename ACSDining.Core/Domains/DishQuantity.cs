@@ -19,7 +19,7 @@ namespace ACSDining.Core.Domains
     {
         public DishQuantity()
         {
-            Relations = new List<DishQuantityRelations>();
+            DishQuantityRelations = new List<DishQuantityRelations>();
         }
 
         [Key]
@@ -32,6 +32,6 @@ namespace ACSDining.Core.Domains
         public int DishQuantityRelationsID { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<DishQuantityRelations> Relations { get; set; }
+        public virtual ICollection<DishQuantityRelations> DishQuantityRelations { get; set; }
     }
 }

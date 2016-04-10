@@ -7,9 +7,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Core.DTO.SuperUser;
-using ACSDining.Core.HelpClasses;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 
@@ -29,7 +28,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _unitOfWork = unitOfWorkAsync;
             _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
-            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
+            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
 
         [Route("")]
@@ -48,7 +47,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                   .AsQueryable()
                   .ToArrayAsync();
 
-            List<OrderMenu> orderMenus = _orderMenuService.GetAllByWeekYear(week,yearnum).ToList();
+            List<WeekOrderMenu> orderMenus = _orderMenuService.GetAllByWeekYear(week,yearnum).ToList();
 
             MenuForWeek mfw = _weekMenuService.GetWeekMenuByWeekYear(week, yearnum);
             if (mfw == null)
@@ -66,7 +65,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         int menuforweekid = order.MenuForWeek.ID;
                         MenuForWeek weekmenu = order.MenuForWeek;
                         List<DishQuantityRelations> quaList = _unitOfWork.Repository<DishQuantityRelations>()
-                            .Query().Include(dq=>dq.DishQuantity).Select().Where(dqr => dqr.OrderMenuID == order.Id && dqr.MenuForWeekID == menuforweekid)
+                            .Query().Include(dq=>dq.DishQuantity).Select().Where(dqr => dqr.OrderMenuId == order.Id && dqr.MenuForWeekId == menuforweekid)
                             .ToList();
                         return new UserPaimentDto
                         {
@@ -74,7 +73,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                             OrderId = order.Id,
                             UserName = order.User.UserName,
                             Paiments = _orderMenuService.UserWeekOrderPaiments(quaList, categories, weekmenu),
-                            SummaryPrice = order.OrderSummaryPrice,
+                            SummaryPrice = order.WeekOrderSummaryPrice,
                             WeekPaid = order.WeekPaid,
                             Balance = order.Balance,
                             Note = order.Note
@@ -103,17 +102,17 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 double[] weekprices = _weekMenuService.UnitWeekPrices(weekmenu.ID, categories);
 
-                OrderMenu[] orderMenus = _orderMenuService.GetAllByWeekYear(numweek,year).ToArray();
+                WeekOrderMenu[] weekOrderMenus = _orderMenuService.GetAllByWeekYear(numweek,year).ToArray();
 
-                for (int i = 0; i < orderMenus.Length; i++)
+                for (int i = 0; i < weekOrderMenus.Length; i++)
                 {
-                    OrderMenu order = orderMenus[i];
-                    MenuForWeek mfw = order.MenuForWeek;
+                    WeekOrderMenu weekOrder = weekOrderMenus[i];
+                    MenuForWeek mfw = weekOrder.MenuForWeek;
                     int menuforweekid = mfw.ID;
-                    int ordid = order.Id;
+                    int ordid = weekOrder.Id;
                     List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
                             .Query().Include(dq => dq.DishQuantity).Select()
-                            .Where(dqr => dqr.OrderMenuID == ordid && dqr.MenuForWeekID == menuforweekid)
+                            .Where(dqr => dqr.OrderMenuId == ordid && dqr.MenuForWeekId == menuforweekid)
                             .ToList();
                     double[] dishquantities = _orderMenuService.UserWeekOrderDishes( quaList, categories, mfw);
                     for (int j = 0; j < 20; j++)
@@ -131,22 +130,22 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(double))]
         public async Task<IHttpActionResult> UpdatePaiment( int orderid, double pai)
         {
-            OrderMenu order = _orderMenuService.Find(orderid);
-            if (order == null)
+            WeekOrderMenu weekOrder = _orderMenuService.Find(orderid);
+            if (weekOrder == null)
             {
                 return NotFound();
             }
-            order.Balance += order.WeekPaid;
-            order.WeekPaid = pai;
-            order.Balance -= order.WeekPaid;
+            weekOrder.Balance += weekOrder.WeekPaid;
+            weekOrder.WeekPaid = pai;
+            weekOrder.Balance -= weekOrder.WeekPaid;
 
-            _db.OrderMenus.Remove(order);
-            _db.OrderMenus.Add(order);
+            _db.WeekOrderMenus.Remove(weekOrder);
+            _db.WeekOrderMenus.Add(weekOrder);
 
-            //_orderMenuService.Update(order);
+            //_orderMenuService.Update(weekOrder);
             await _unitOfWork.SaveChangesAsync();
 
-            return Ok(order.Balance);
+            return Ok(weekOrder.Balance);
         }
 
         protected override void Dispose(bool disposing)

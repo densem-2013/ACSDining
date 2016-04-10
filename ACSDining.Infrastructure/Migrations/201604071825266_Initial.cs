@@ -135,7 +135,7 @@ namespace ACSDining.Web.Migrations
                 .ForeignKey("dbo.DishType", t => t.DishTypeID, cascadeDelete: true)
                 .ForeignKey("dbo.MenuForWeek", t => t.MenuForWeekID, cascadeDelete: true)
                 .ForeignKey("dbo.OrderMenu", t => t.OrderMenuID, cascadeDelete: true)
-                .ForeignKey("dbo.PlannedOrderMenu", t => t.PlannedOrderMenuID, cascadeDelete: true)
+                .ForeignKey("dbo.PlannedWeekOrderMenu", t => t.PlannedOrderMenuID, cascadeDelete: true)
                 .ForeignKey("dbo.WorkingDay", t => t.WorkDayID, cascadeDelete: true)
                 .Index(t => t.DishQuantityID)
                 .Index(t => t.PlannedOrderMenuID)
@@ -172,13 +172,13 @@ namespace ACSDining.Web.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.MenuForWeek", t => t.MenuForWeek_ID)
                 .ForeignKey("dbo.AspNetUsers", t => t.User_Id)
-                .ForeignKey("dbo.PlannedOrderMenu", t => t.PlannedOrderMenu_Id)
+                .ForeignKey("dbo.PlannedWeekOrderMenu", t => t.PlannedOrderMenu_Id)
                 .Index(t => t.MenuForWeek_ID)
                 .Index(t => t.User_Id)
                 .Index(t => t.PlannedOrderMenu_Id);
             
             CreateTable(
-                "dbo.PlannedOrderMenu",
+                "dbo.PlannedWeekOrderMenu",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
@@ -336,17 +336,17 @@ namespace ACSDining.Web.Migrations
             DropForeignKey("dbo.FoodQuantityRelations", "DishID", "dbo.Dish");
             DropForeignKey("dbo.Food", "Category_Id", "dbo.FoodCategory");
             DropForeignKey("dbo.DishQuantityRelations", "WorkDayID", "dbo.WorkingDay");
-            DropForeignKey("dbo.DishQuantityRelations", "PlannedOrderMenuID", "dbo.PlannedOrderMenu");
+            DropForeignKey("dbo.DishQuantityRelations", "PlannedOrderMenuID", "dbo.PlannedWeekOrderMenu");
             DropForeignKey("dbo.DishQuantityRelations", "OrderMenuID", "dbo.OrderMenu");
             DropForeignKey("dbo.DishQuantityRelations", "MenuForWeekID", "dbo.MenuForWeek");
             DropForeignKey("dbo.MenuForWeek", "WorkingWeek_ID", "dbo.WorkingWeek");
-            DropForeignKey("dbo.OrderMenu", "PlannedOrderMenu_Id", "dbo.PlannedOrderMenu");
+            DropForeignKey("dbo.OrderMenu", "PlannedOrderMenu_Id", "dbo.PlannedWeekOrderMenu");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.PlannedOrderMenu", "User_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.PlannedWeekOrderMenu", "User_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.OrderMenu", "User_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.PlannedOrderMenu", "MenuForWeek_ID", "dbo.MenuForWeek");
+            DropForeignKey("dbo.PlannedWeekOrderMenu", "MenuForWeek_ID", "dbo.MenuForWeek");
             DropForeignKey("dbo.OrderMenu", "MenuForWeek_ID", "dbo.MenuForWeek");
             DropForeignKey("dbo.MenuForDay", "MenuForWeek_ID", "dbo.MenuForWeek");
             DropForeignKey("dbo.DishQuantityRelations", "DishTypeID", "dbo.DishType");
@@ -372,8 +372,8 @@ namespace ACSDining.Web.Migrations
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
-            DropIndex("dbo.PlannedOrderMenu", new[] { "User_Id" });
-            DropIndex("dbo.PlannedOrderMenu", new[] { "MenuForWeek_ID" });
+            DropIndex("dbo.PlannedWeekOrderMenu", new[] { "User_Id" });
+            DropIndex("dbo.PlannedWeekOrderMenu", new[] { "MenuForWeek_ID" });
             DropIndex("dbo.OrderMenu", new[] { "PlannedOrderMenu_Id" });
             DropIndex("dbo.OrderMenu", new[] { "User_Id" });
             DropIndex("dbo.OrderMenu", new[] { "MenuForWeek_ID" });
@@ -402,7 +402,7 @@ namespace ACSDining.Web.Migrations
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
-            DropTable("dbo.PlannedOrderMenu");
+            DropTable("dbo.PlannedWeekOrderMenu");
             DropTable("dbo.OrderMenu");
             DropTable("dbo.MenuForWeek");
             DropTable("dbo.DishQuantityRelations");

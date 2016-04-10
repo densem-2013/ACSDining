@@ -5,9 +5,9 @@ using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Core.DTO.SuperUser;
-using ACSDining.Core.HelpClasses;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 using Microsoft.AspNet.Identity;
@@ -35,7 +35,7 @@ namespace UnitTestProject1
             _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
             _workDaysService = new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
             _menuForWeekService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
-            _orderMenuService=new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
+            _orderMenuService=new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@ namespace UnitTestProject1
 
             for (int i = 1; i <= 7; i++)
             {
-                WorkingDay day = week.WorkingDays.FirstOrDefault(wd => wd.ID == i);
+                WorkingDay day = week.WorkingDays.FirstOrDefault(wd => wd.Id == i);
                 List<Dish> dishes = getDishes();
                 MenuForDay dayMenu = new MenuForDay
                 {
@@ -189,17 +189,17 @@ namespace UnitTestProject1
             double[] weekprices = _menuForWeekService.UnitWeekPrices(weekmenu.ID, categories);
 
 
-            OrderMenu[] orderMenus = _orderMenuService.Query().Include(or => or.MenuForWeek.WorkingWeek.Year).Select().Where(
+            WeekOrderMenu[] weekOrderMenus = _orderMenuService.Query().Include(or => or.MenuForWeek.WorkingWeek.Year).Select().Where(
                         om => om.MenuForWeek.WorkingWeek.WeekNumber == numweek && om.MenuForWeek.WorkingWeek.Year.YearNumber == year)
                         .ToArray();
-            for (int i = 0; i < orderMenus.Length; i++)
+            for (int i = 0; i < weekOrderMenus.Length; i++)
             {
-                int menuforweekid = orderMenus[i].MenuForWeek.ID;
+                int menuforweekid = weekOrderMenus[i].MenuForWeek.ID;
                 List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
                         .Queryable()
-                        .Where(dqr => dqr.OrderMenuID == orderMenus[i].Id && dqr.MenuForWeekID == menuforweekid)
+                        .Where(dqr => dqr.OrderMenuId == weekOrderMenus[i].Id && dqr.MenuForWeekId == menuforweekid)
                         .ToList();
-                double[] dishquantities = _orderMenuService.UserWeekOrderDishes(quaList, categories, orderMenus[i].MenuForWeek);
+                double[] dishquantities = _orderMenuService.UserWeekOrderDishes(quaList, categories, weekOrderMenus[i].MenuForWeek);
                 for (int j = 0; j < 20; j++)
                 {
                     paiments[j] += weekprices[j] * dishquantities[j];

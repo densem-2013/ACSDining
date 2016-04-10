@@ -63,8 +63,8 @@ namespace ACSDining.Infrastructure.Identity
         public virtual DbSet<DishType> DishTypes { get; set; }
         public virtual DbSet<MenuForDay> MenuForDays { get; set; }
         public virtual DbSet<MenuForWeek> MenuForWeeks { get; set; }
-        public virtual DbSet<OrderMenu> OrderMenus { get; set; }
-        public virtual DbSet<PlannedOrderMenu> PlannedOrderMenus { get; set; }
+        public virtual DbSet<WeekOrderMenu> WeekOrderMenus { get; set; }
+        public virtual DbSet<PlannedWeekOrderMenu> PlannedWeekOrderMenus { get; set; }
         public virtual DbSet<DishQuantity> DishQuantities { get; set; }
         public virtual DbSet<DishDetail> DishDetails { get; set; }
         public virtual DbSet<ACSDining.Core.Domains.DayOfWeek> Days { get; set; }
@@ -76,5 +76,7 @@ namespace ACSDining.Infrastructure.Identity
         public virtual DbSet<FoodQuantity> FoodQuantities { get; set; }
         public virtual DbSet<WorkingWeek> WorkingWeeks { get; set; }
         public virtual DbSet<WorkingDay> WorkingDays { get; set; }
+        public virtual DbSet<DayOrderMenu> DayOrderMenus { get; set; }
+        public virtual DbSet<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; } 
     }
 }

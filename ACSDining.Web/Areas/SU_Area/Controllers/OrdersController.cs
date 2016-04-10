@@ -7,10 +7,10 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Core.DTO.SuperUser;
-using ACSDining.Core.HelpClasses;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -28,15 +28,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _unitOfWork = unitOfWorkAsync;
             _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
-            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
+            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
 
 
+        //Получить все фактические заявки на неделю
         [HttpGet]
-        [Route("")]
-        [Route("{numweek}")]
-        [Route("{numweek}/{year}")]
-        public async Task<OrdersDto> GetMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
+        [Route("fact")]
+        [Route("fact/{numweek}")]
+        [Route("fact/{numweek}/{year}")]
+        public async Task<List<UserWeekOrderDto>> GetFactMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
         {
             int week = numweek ?? YearWeekHelp.CurrentWeek();
             int yearnum = year ?? DateTime.Now.Year;
@@ -47,32 +48,44 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                   .Select(dt => dt.Category)
                   .AsQueryable()
                   .ToArrayAsync();
+            int catLength = categories.Length;
 
-            List<OrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(week, yearnum);
-            OrdersDto OrderDTO = new OrdersDto
-            {
-                WeekNumber = week,
-                YearNumber = yearnum,
-                UserOrders = orderList.Select(om =>
-                {
-                    List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
-                            .Query().Include(dq=>dq.DishQuantity).Select()
-                            .Where(dqr => dqr.OrderMenuID == om.Id && dqr.MenuForWeekID == om.MenuForWeek.ID)
-                            .ToList();
-                    MenuForWeek mfw = _weekMenuService.Find(om.MenuForWeek.ID);
-                    return new UserOrdersDto
-                    {
-                        UserId = om.User.Id,
-                        UserName = om.User.UserName,
-                        Dishquantities = _orderMenuService.UserWeekOrderDishes(quaList,categories,mfw)
-                    };
-                }).ToList()
-            };
+            List<WeekOrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(week, yearnum);
 
+            List<UserWeekOrderDto> userWeekOrderDtos =
+                orderList.Select(uwo => UserWeekOrderDto.MapDto(_unitOfWork, uwo, catLength)).ToList();
 
-            return await Task.FromResult(OrderDTO);
+            return await Task.FromResult(userWeekOrderDtos);
         }
 
+        //Получить все плановые заявки заявки на неделю
+        [HttpGet]
+        [Route("plan")]
+        [Route("plan/{numweek}")]
+        [Route("plan/{numweek}/{year}")]
+        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromUri] int? numweek = null, [FromUri] int? year = null)
+        {
+            int week = numweek ?? YearWeekHelp.CurrentWeek();
+            int yearnum = year ?? DateTime.Now.Year;
+
+            var cats = _unitOfWork.RepositoryAsync<DishType>();
+            await cats.Queryable().LoadAsync();
+            string[] categories = await cats.Queryable()
+                  .Select(dt => dt.Category)
+                  .AsQueryable()
+                  .ToArrayAsync();
+            int catLength = categories.Length;
+
+            List<PlannedWeekOrderMenu> planOrderList =
+                _orderMenuService.GetOrderMenuByWeekYear(week, yearnum).Select(uwo => uwo.PlannedWeekOrderMenu).ToList();
+
+            List<PlanUserWeekOrderDto> planUserWeekOrderDtos =
+                planOrderList.Select(planuwo => PlanUserWeekOrderDto.MapDto(_unitOfWork, planuwo, catLength)).ToList();
+
+            return await Task.FromResult(planUserWeekOrderDtos);
+        }
+
+        //Получить стоимость плановой заявки указанного пользователя за указанную неделю
         [HttpPut]
         [Route("summary/{numweek}/{year}")]
         [ResponseType(typeof (double))]

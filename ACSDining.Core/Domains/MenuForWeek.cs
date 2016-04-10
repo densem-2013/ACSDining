@@ -22,8 +22,8 @@ namespace ACSDining.Core.Domains
         public MenuForWeek()
         {
             MenuForDay = new List<MenuForDay>();
-            Orders = new List<OrderMenu>();
-            PlannedOrderMenus = new List<PlannedOrderMenu>();
+            Orders = new List<WeekOrderMenu>();
+            PlannedOrderMenus = new List<PlannedWeekOrderMenu>();
             OrderCanBeCreated = false;
             MenuCanBeChanged = true;
         }
@@ -44,9 +44,9 @@ namespace ACSDining.Core.Domains
         public virtual ICollection<MenuForDay> MenuForDay { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<OrderMenu> Orders { get; set; }
+        public virtual ICollection<WeekOrderMenu> Orders { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<PlannedOrderMenu> PlannedOrderMenus { get; set; }
+        public virtual ICollection<PlannedWeekOrderMenu> PlannedOrderMenus { get; set; }
     }
 }

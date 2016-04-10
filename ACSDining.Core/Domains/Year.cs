@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class Year 
+    public sealed class Year 
     {
         public Year()
         {
@@ -18,6 +18,6 @@ namespace ACSDining.Core.Domains
         [Required]
         public int YearNumber { get; set; }
 
-        public virtual ICollection<WorkingWeek> WorkingWeeks { get; set; }
+        public ICollection<WorkingWeek> WorkingWeeks { get; set; }
     }
 }

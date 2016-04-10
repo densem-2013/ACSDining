@@ -57,6 +57,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
@@ -100,6 +105,23 @@
     <Compile Include="DAL\QueryObject.cs" />
     <Compile Include="DAL\Repository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="DTO\Employee\EmployeeOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\AccountDto.cs" />
+    <Compile Include="DTO\SuperUser\DishModelDto.cs" />
+    <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />
+    <Compile Include="DTO\SuperUser\OrdersDTO.cs" />
+    <Compile Include="DTO\SuperUser\PaimentsDTO.cs" />
+    <Compile Include="DTO\SuperUser\PlanUserDayOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\PlanUserWeekOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\UserDayOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\UserOrdersDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserPaimentDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserWeekOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
+    <Compile Include="DTO\SuperUser\WorkDayDto.cs" />
+    <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />
+    <Compile Include="HelpClasses\MapHelper.cs" />
+    <Compile Include="HelpClasses\YearWeekHelp.cs" />
     <Compile Include="Identity\ApplicationDbContext.cs" />
     <Compile Include="Identity\ApplicationDbInitializer.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
@@ -109,7 +131,11 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TimerHandler\TimerHandler.cs" />
+    <Compile Include="Repositories\DishRepository.cs" />
+    <Compile Include="Repositories\GetExcelRepository.cs" />
+    <Compile Include="Repositories\MenuForWeekRepository.cs" />
+    <Compile Include="Repositories\OrderMenuRepository.cs" />
+    <Compile Include="HelpClasses\TimerHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

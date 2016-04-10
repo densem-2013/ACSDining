@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service
 {
-    public interface IGetExcelService: IService<OrderMenu>
+    public interface IGetExcelService: IService<WeekOrderMenu>
     {
         string PaimentsDtoToExcelFile(PaimentsDto paimodel, WorkingWeek workweek, List<DishType> dishtypes);
     }
-    public class GetExcelService : Service<OrderMenu>, IGetExcelService
+    public class GetExcelService : Service<WeekOrderMenu>, IGetExcelService
     {
-        private readonly IRepositoryAsync<OrderMenu> _repository;
+        private readonly IRepositoryAsync<WeekOrderMenu> _repository;
 
-        public GetExcelService(IRepositoryAsync<OrderMenu> repository)
+        public GetExcelService(IRepositoryAsync<WeekOrderMenu> repository)
             : base(repository)
         {
             _repository = repository;

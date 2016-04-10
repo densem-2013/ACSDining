@@ -7,7 +7,7 @@ namespace ACSDining.Core.Domains
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         public bool IsWorking { get; set; }
         public virtual DayOfWeek DayOfWeek { get; set; }

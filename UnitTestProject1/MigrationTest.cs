@@ -36,7 +36,7 @@ namespace UnitTestProject1
             string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
                            @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            ApplicationDbInitializer.InitializeIdentityForEF(dataContext, _path);
+            ApplicationDbInitializer.InitializeIdentityForEf(dataContext, _path);
 
             ApplicationDbInitializer.CreateWorkingDays(dataContext);
 

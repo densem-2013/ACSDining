@@ -10,12 +10,16 @@ namespace ACSDining.Core.Domains
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public int DishQuantityID { get; set; }
-        public int PlannedOrderMenuID { get; set; }
-        public int DishTypeID { get; set; }
-        public int WorkDayID { get; set; }
-        public int OrderMenuID { get; set; }
-        public int MenuForWeekID { get; set; }
+        public int DishQuantityId { get; set; }
+        public int DishTypeId { get; set; }
+
+        public int MenuForDayId { get; set; }
+        public int DayOrderMenuId { get; set; }
+        public int PlannedDayOrderMenuId { get; set; }
+
+        //public int MenuForWeekId { get; set; }
+        //public int WeekOrderMenuId { get; set; }
+        //public int PlannedWeekOrderMenuId { get; set; }
 
         [JsonIgnore]
         public virtual DishQuantity DishQuantity { get; set; }
@@ -24,15 +28,19 @@ namespace ACSDining.Core.Domains
         public virtual DishType DishType { get; set; }
 
         [JsonIgnore]
-        public virtual WorkingDay WorkDay { get; set; }
-
+        public virtual MenuForDay MenuForDay { get; set; }
         [JsonIgnore]
-        public virtual MenuForWeek MenuForWeek { get; set; }
-
+        public virtual DayOrderMenu DayOrderMenu { get; set; }
         [JsonIgnore]
-        public virtual OrderMenu OrderMenu { get; set; }
+        public virtual PlannedDayOrderMenu PlannedDayOrderMenu { get; set; }
 
-        [JsonIgnore]
-        public virtual PlannedOrderMenu PlannedOrderMenu { get; set; }
+        //[JsonIgnore]
+        //public virtual MenuForWeek MenuForWeek { get; set; }
+
+        //[JsonIgnore]
+        //public virtual WeekOrderMenu WeekOrderMenu { get; set; }
+
+        //[JsonIgnore]
+        //public virtual PlannedWeekOrderMenu PlannedWeekOrderMenu { get; set; }
     }
 }

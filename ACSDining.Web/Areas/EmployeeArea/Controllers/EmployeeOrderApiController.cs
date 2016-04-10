@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 using System.Web;
 using ACSDining.Core.Domains;
 using ACSDining.Core.DTO.Employee;
-using ACSDining.Core.DTO.SuperUser;
-using ACSDining.Core.HelpClasses;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 using Microsoft.AspNet.Identity;
@@ -35,7 +34,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             _unitOfWork = unitOfWorkAsync;
             _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
-            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<OrderMenu>());
+            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
 
         public ApplicationUserManager UserManager
@@ -79,7 +78,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             EmployeeOrderDto model = null;
 
-            OrderMenu ordmenu = _orderMenuService.GetAllByWeekYear(week, yearnumber)
+            WeekOrderMenu ordmenu = _orderMenuService.GetAllByWeekYear(week, yearnumber)
                 .FirstOrDefault(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == weekmodel.Id);
 
             if (ordmenu != null)
@@ -87,7 +86,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
                     .Query().Include(dq => dq.DishQuantity).Select()
                     .Where(
-                        dqr => ordmenu != null && (dqr.OrderMenuID == ordmenu.Id && dqr.MenuForWeekID == weekmodel.Id))
+                        dqr => ordmenu != null && (dqr.OrderMenuId == ordmenu.Id && dqr.MenuForWeekId == weekmodel.Id))
                     .ToList();
 
                 
@@ -96,7 +95,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 {
                     UserId = userid,
                     MenuId = weekmodel.Id,
-                    SummaryPrice = ordmenu.OrderSummaryPrice,
+                    SummaryPrice = ordmenu.WeekOrderSummaryPrice,
                     WeekPaid = ordmenu.WeekPaid,
                     MfdModels = weekmodel.MFD_models,
                     Year = yearnumber,
@@ -111,18 +110,18 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 User user =
                     await UserManager.FindByNameAsync(ControllerContext.RequestContext.Principal.Identity.GetUserName());
                 MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(week, yearnumber);
-                PlannedOrderMenu planmenu = new PlannedOrderMenu
+                PlannedWeekOrderMenu planmenu = new PlannedWeekOrderMenu
                 {
                     User = user,
                     MenuForWeek = weekmenu
                 };
-                ordmenu = new OrderMenu
+                ordmenu = new WeekOrderMenu
                 {
                     User = user,
                     MenuForWeek = weekmenu,
-                    PlannedOrderMenu = planmenu
+                    PlannedWeekOrderMenu = planmenu
                 };
-                _db.OrderMenus.Add(ordmenu);
+                _db.WeekOrderMenus.Add(ordmenu);
                 //_orderMenuService.Insert(ordmenu);
                 await _unitOfWork.SaveChangesAsync();
 
@@ -132,7 +131,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 {
                     UserId = userid,
                     MenuId = weekmodel.Id,
-                    SummaryPrice = ordmenu.OrderSummaryPrice,
+                    SummaryPrice = ordmenu.WeekOrderSummaryPrice,
                     WeekPaid = ordmenu.WeekPaid,
                     MfdModels = weekmodel.MFD_models,
                     Year = yearnumber,

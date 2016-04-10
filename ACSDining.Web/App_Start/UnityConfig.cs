@@ -64,7 +64,7 @@ namespace ACSDining.Web
             //.RegisterType<IMenuForWeekService, MenuForWeekService>(new HierarchicalLifetimeManager())
             //.RegisterType<IRepositoryAsync<MenuForWeek>, Repository<MenuForWeek>>(new HierarchicalLifetimeManager())
             //.RegisterType<IOrderMenuService, OrderMenuService>(new HierarchicalLifetimeManager())
-            //.RegisterType<IRepositoryAsync<OrderMenu>, Repository<OrderMenu>>(new HierarchicalLifetimeManager())
+            //.RegisterType<IRepositoryAsync<WeekOrderMenu>, Repository<WeekOrderMenu>>(new HierarchicalLifetimeManager())
             //.RegisterType<IGetExcelService, GetExcelService>(new HierarchicalLifetimeManager())
             ////.RegisterType<IUserAccountService, UserAccountService>(new HierarchicalLifetimeManager())
             //.RegisterType<IRepositoryAsync<User>, Repository<User>>(new HierarchicalLifetimeManager())

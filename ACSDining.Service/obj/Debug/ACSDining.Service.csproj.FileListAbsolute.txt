@@ -69,3 +69,6 @@ E:\GitProjects\ACSDining\ACSDining.Service\obj\Debug\ACSDining.Service.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Infrastructure.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\ACSDining.Infrastructure.pdb
+E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+E:\GitProjects\ACSDining\ACSDining.Service\bin\Debug\Microsoft.Practices.ServiceLocation.xml

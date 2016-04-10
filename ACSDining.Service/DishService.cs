@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Core.Repositories;
-using ACSDining.Core.DTO.SuperUser;
 using ACSDining.Repository.Repositories;
 
 namespace ACSDining.Service

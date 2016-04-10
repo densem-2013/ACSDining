@@ -25,7 +25,7 @@ namespace ACSDining.Web.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
 
             //
-            ApplicationDbInitializer.InitializeIdentityForEF(context, _path);
+            ApplicationDbInitializer.InitializeIdentityForEf(context, _path);
             var dishes = ApplicationDbInitializer.GetDishesFromXml(context, _path);
             ApplicationDbInitializer.CreateWorkingDays(context);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);

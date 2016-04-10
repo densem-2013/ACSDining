@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ACSDining.Core.Repositories;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Infrastructure.Identity;
 using LinqKit;
 
 namespace ACSDining.Infrastructure.DAL
@@ -16,22 +15,27 @@ namespace ACSDining.Infrastructure.DAL
     {
         #region Private Fields
 
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
-        //private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly IUnitOfWorkAsync _unitOfWork;
 
         #endregion Private Fields
 
-        public Repository(ApplicationDbContext context)
+        public Repository(IUnitOfWorkAsync unitOfWork)
         {
-            _context = context;
+            //_context = context;
+            _unitOfWork = unitOfWork;
+            //var dbContext = _context ;
 
-            var dbContext = _context ;
-
-            if (dbContext != null)
+            if (_unitOfWork != null)
             {
-                _dbSet = dbContext.Set<TEntity>();
+                _dbSet = ((UnitOfWork)_unitOfWork).GetContext().Set<TEntity>();
             }
+        }
+
+        public virtual IRepository<T> GetRepository<T>() where T : class
+        {
+            return _unitOfWork.RepositoryAsync<T>();
         }
 
         public virtual TEntity Find(params object[] keyValues)
