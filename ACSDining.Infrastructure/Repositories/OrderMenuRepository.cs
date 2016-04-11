@@ -9,42 +9,42 @@ namespace ACSDining.Infrastructure.Repositories
 {
     public static class OrderMenuRepository
     {
-        public static List<UserWeekOrderDto> GetUserWeekOrderDtos(this IRepositoryAsync<WeekOrderMenu> repository, int week, int yearnum)
-        {
+        //public static List<UserWeekOrderDto> GetUserWeekOrderDtos(this IRepositoryAsync<WeekOrderMenu> repository, int week, int yearnum)
+        //{
 
-            var cats = repository.GetRepository<DishType>();
-            cats.Queryable().LoadAsync().RunSynchronously();
-            int catlength = cats.Queryable()
-                  .Select(dt => dt.Category)
-                  .AsQueryable()
-                  .ToArrayAsync().Result.Length;
+        //    var cats = repository.GetRepository<DishType>();
+        //    cats.Queryable().LoadAsync().RunSynchronously();
+        //    int catlength = cats.Queryable()
+        //          .Select(dt => dt.Category)
+        //          .AsQueryable()
+        //          .ToArrayAsync().Result.Length;
 
-            List<WeekOrderMenu> orderList = repository.OrdersMenuByWeekYear(week, yearnum);
-            List<UserWeekOrderDto> usersWeekOrderDtos=orderList.Select(uwo=>UserWeekOrderDto.MapDto())
-            OrdersDto OrderDTO = new OrdersDto
-            {
-                WeekNumber = week,
-                YearNumber = yearnum,
-                UserWeekOrderDtos =  orderList.Select(om =>
-                {
-                    List<DishQuantityRelations> quaList = repository.GetRepository<DishQuantityRelations>()
-                        .Query()
-                        .Include(dq => dq.DishQuantity)
-                        .Include(dq => dq.MenuForDay.WorkingDay.DayOfWeek)
-                        .Select()
-                        .Where(dqr => dqr.WeekOrderMenuId == om.Id && dqr.MenuForWeekId == om.MenuForWeek.ID)
-                        .ToList();
-                    MenuForWeek mfw = repository.GetRepository<MenuForWeek>().Find(om.MenuForWeek.ID);
-                    return new UserWeekOrderDto
-                    {
-                        UserId = om.User.Id,
-                        UserName = om.User.UserName,
-                        Dishquantities = repository.GetUserWeekOrderDishes(quaList, categories, mfw)
-                    };
-                }).ToList()
-            };
-                return null;
-        }
+        //    List<WeekOrderMenu> orderList = repository.OrdersMenuByWeekYear(week, yearnum);
+        //    List<UserWeekOrderDto> usersWeekOrderDtos=orderList.Select(uwo=>UserWeekOrderDto.MapDto())
+        //    OrdersDto OrderDTO = new OrdersDto
+        //    {
+        //        WeekNumber = week,
+        //        YearNumber = yearnum,
+        //        UserWeekOrderDtos =  orderList.Select(om =>
+        //        {
+        //            List<DishQuantityRelations> quaList = repository.GetRepository<DishQuantityRelations>()
+        //                .Query()
+        //                .Include(dq => dq.DishQuantity)
+        //                .Include(dq => dq.MenuForDay.WorkingDay.DayOfWeek)
+        //                .Select()
+        //                .Where(dqr => dqr.WeekOrderMenuId == om.Id && dqr.MenuForWeekId == om.MenuForWeek.ID)
+        //                .ToList();
+        //            MenuForWeek mfw = repository.GetRepository<MenuForWeek>().Find(om.MenuForWeek.ID);
+        //            return new UserWeekOrderDto
+        //            {
+        //                UserId = om.User.Id,
+        //                UserName = om.User.UserName,
+        //                Dishquantities = repository.GetUserWeekOrderDishes(quaList, categories, mfw)
+        //            };
+        //        }).ToList()
+        //    };
+        //        return null;
+        //}
         public static double[] GetUserWeekOrderDishes(this IRepositoryAsync<WeekOrderMenu> repository,
             List<DishQuantityRelations> quaList, string[] categories, MenuForWeek mfw)
         {

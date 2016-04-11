@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DishQuantityRelationsService.cs" />
     <Compile Include="DishService.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="MenuForWeekService.cs" />

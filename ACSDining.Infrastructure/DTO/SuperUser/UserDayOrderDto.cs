@@ -8,9 +8,12 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     //Заказ пользователя на день
     public class UserDayOrderDto
     {
+        public int DayOrderId { get; set; }
+        public int MenuForDayId { get; set; }
         public WorkDayDto WorkDayDto { get; set; }
         public double[] DishQuantities { get; set; }
         public double DayOrderSummary { get; set; }
+        public bool OrderCanBeChanged { get; set; }
 
         /// <summary>
         /// Получает представление фактической заявки
@@ -19,7 +22,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         /// <param name="dayOrderMenu"></param>
         /// <param name="catlength"></param>
         /// <returns></returns>
-        public static UserDayOrderDto MapUserDayOrderDto(IUnitOfWorkAsync unitOfWork, DayOrderMenu dayOrderMenu, int catlength)
+        public static UserDayOrderDto MapUserDayOrderDto(IUnitOfWorkAsync unitOfWork, DayOrderMenu dayOrderMenu,
+            int catlength)
         {
             WorkingDay workday = dayOrderMenu.MenuForDay.WorkingDay;
 
@@ -43,9 +47,12 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             }
             return new UserDayOrderDto
             {
+                DayOrderId = dayOrderMenu.Id,
+                MenuForDayId=dayOrderMenu.MenuForDay.ID,
                 WorkDayDto = WorkDayDto.MapDto(workday),
                 DishQuantities = dquantities,
-                DayOrderSummary = dayOrderMenu.DayOrderSummaryPrice
+                DayOrderSummary = dayOrderMenu.DayOrderSummaryPrice,
+                OrderCanBeChanged = dayOrderMenu.OrderCanBeChanged
             };
         }
 

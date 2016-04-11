@@ -10,6 +10,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
 {
     public class PlanUserDayOrderDto
     {
+        public int PlanDayOrderId { get; set; }
         public WorkDayDto WorkDayDto { get; set; }
         public double[] DishQuantities { get; set; }
         public double DayOrderSummary { get; set; }
@@ -46,6 +47,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             }
             return new PlanUserDayOrderDto
             {
+                PlanDayOrderId = planDayOrderMenu.Id,
                 WorkDayDto = WorkDayDto.MapDto(workday),
                 DishQuantities = dquantities,
                 DayOrderSummary = planDayOrderMenu.DayOrderMenu.DayOrderSummaryPrice

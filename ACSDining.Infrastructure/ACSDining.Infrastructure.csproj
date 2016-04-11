@@ -109,14 +109,12 @@
     <Compile Include="DTO\SuperUser\AccountDto.cs" />
     <Compile Include="DTO\SuperUser\DishModelDto.cs" />
     <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />
-    <Compile Include="DTO\SuperUser\OrdersDTO.cs" />
-    <Compile Include="DTO\SuperUser\PaimentsDTO.cs" />
     <Compile Include="DTO\SuperUser\PlanUserDayOrderDto.cs" />
     <Compile Include="DTO\SuperUser\PlanUserWeekOrderDto.cs" />
     <Compile Include="DTO\SuperUser\UserDayOrderDto.cs" />
-    <Compile Include="DTO\SuperUser\UserOrdersDTO.cs" />
-    <Compile Include="DTO\SuperUser\UserPaimentDTO.cs" />
+    <Compile Include="DTO\SuperUser\UserDayPaiment.cs" />
     <Compile Include="DTO\SuperUser\UserWeekOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\UserWeekPaiment.cs" />
     <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
     <Compile Include="DTO\SuperUser\WorkDayDto.cs" />
     <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />

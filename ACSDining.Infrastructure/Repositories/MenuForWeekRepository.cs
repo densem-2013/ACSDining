@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DTO.SuperUser;
 
@@ -26,8 +27,7 @@ namespace ACSDining.Infrastructure.Repositories
             return unitprices;
         }
         
-        public static MenuForWeek GetWeekMenuByWeekYear(this IRepositoryAsync<MenuForWeek> repository, int numweek,
-            int year)
+        public static MenuForWeek GetWeekMenuByWeekYear(this IRepositoryAsync<MenuForWeek> repository, WeekYearDto wyDto)
         {
             MenuForWeek mfw =
                 repository.Query()
@@ -38,7 +38,7 @@ namespace ACSDining.Infrastructure.Repositories
                     .Include(wm => wm.WorkingWeek.Year)
                     .Include(wm => wm.WorkingWeek.WorkingDays.Select(d=>d.DayOfWeek))
                     .Select()
-                    .FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
+                    .FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == wyDto.Week && wm.WorkingWeek.Year.YearNumber == wyDto.Year);
 
             return mfw;
         }
@@ -63,7 +63,7 @@ namespace ACSDining.Infrastructure.Repositories
             return repository.Query().Include(m=>m.WorkingWeek).Select(wm => wm.WorkingWeek.WeekNumber).Reverse().ToList();
         }
 
-        public static double GetSummaryPrice(this IRepositoryAsync<MenuForWeek> repository, UserOrdersDto usorder, int numweek, int year)
+        public static double GetSummaryPrice(this IRepositoryAsync<MenuForWeek> repository, UserWeekOrderDto usorder, int numweek, int year)
         {
             MenuForWeek weekNeeded = repository.Queryable().FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
             double summary = 0;

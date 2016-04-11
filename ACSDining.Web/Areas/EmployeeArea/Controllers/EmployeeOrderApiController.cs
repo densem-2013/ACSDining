@@ -8,14 +8,16 @@ using System.Web.Http.Description;
 using System.Threading.Tasks;
 using System.Web;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO.Employee;
+using ACSDining.Core.DTO;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using WebGrease.Css.Extensions;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 {
@@ -26,6 +28,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
+        private readonly IDishQuantityRelationsService _dishQuantityService;
         private readonly IUnitOfWorkAsync _unitOfWork;
         private ApplicationUserManager _userManager;
 
@@ -35,6 +38,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
+            _dishQuantityService = new DishQuantityRelationsService(_unitOfWork.RepositoryAsync<DishQuantityRelations>());
         }
 
         public ApplicationUserManager UserManager
@@ -47,12 +51,18 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить представление фактической заявки  запрашивающего пользователя за заданную неделю в году
+        /// </summary>
+        /// <param name="numweek">Номер недели в году</param>
+        /// <param name="year">Год</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("")]
         [Route("{numweek}")]
         [Route("{numweek}/{year}")]
-        [ResponseType(typeof (EmployeeOrderDto))]
-        public async Task<IHttpActionResult> GetEmployeeOrderDto([FromUri] int? numweek = null,
+        [ResponseType(typeof (UserWeekOrderDto))]
+        public async Task<IHttpActionResult> GetUserWeekOrderDto([FromUri] int? numweek = null,
             [FromUri] int? year = null)
         {
             string userid = RequestContext.Principal.Identity.GetUserId();
@@ -75,34 +85,15 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 .Select(dt => dt.Category)
                 .AsQueryable()
                 .ToArrayAsync();
+            int catLength = categories.Length;
 
-            EmployeeOrderDto model = null;
+            UserWeekOrderDto model = null;
 
-            WeekOrderMenu ordmenu = _orderMenuService.GetAllByWeekYear(week, yearnumber)
-                .FirstOrDefault(ord => string.Equals(ord.User.Id, userid) && ord.MenuForWeek.ID == weekmodel.Id);
+            WeekOrderMenu ordmenu = _orderMenuService.FindByUserIdWeekYear(userid, week, yearnumber);
 
             if (ordmenu != null)
             {
-                List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
-                    .Query().Include(dq => dq.DishQuantity).Select()
-                    .Where(
-                        dqr => ordmenu != null && (dqr.OrderMenuId == ordmenu.Id && dqr.MenuForWeekId == weekmodel.Id))
-                    .ToList();
-
-                
-                MenuForWeek mfw = ordmenu.MenuForWeek;
-                model = new EmployeeOrderDto
-                {
-                    UserId = userid,
-                    MenuId = weekmodel.Id,
-                    SummaryPrice = ordmenu.WeekOrderSummaryPrice,
-                    WeekPaid = ordmenu.WeekPaid,
-                    MfdModels = weekmodel.MFD_models,
-                    Year = yearnumber,
-                    WeekNumber = week,
-                    OrderId = ordmenu.Id,
-                    Dishquantities = _orderMenuService.UserWeekOrderDishes(quaList, categories, mfw)
-                };
+                model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu, catLength);
 
             }
             else
@@ -110,35 +101,23 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 User user =
                     await UserManager.FindByNameAsync(ControllerContext.RequestContext.Principal.Identity.GetUserName());
                 MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(week, yearnumber);
-                PlannedWeekOrderMenu planmenu = new PlannedWeekOrderMenu
+                ordmenu = new WeekOrderMenu
                 {
                     User = user,
                     MenuForWeek = weekmenu
                 };
-                ordmenu = new WeekOrderMenu
+
+                PlannedWeekOrderMenu planmenu = new PlannedWeekOrderMenu
                 {
-                    User = user,
-                    MenuForWeek = weekmenu,
-                    PlannedWeekOrderMenu = planmenu
+                    WeekOrderMenu = ordmenu
                 };
                 _db.WeekOrderMenus.Add(ordmenu);
-                //_orderMenuService.Insert(ordmenu);
+
                 await _unitOfWork.SaveChangesAsync();
 
                 ordmenu = _orderMenuService.FindByUserIdWeekYear(user.Id, week, yearnumber);
 
-                model = new EmployeeOrderDto
-                {
-                    UserId = userid,
-                    MenuId = weekmodel.Id,
-                    SummaryPrice = ordmenu.WeekOrderSummaryPrice,
-                    WeekPaid = ordmenu.WeekPaid,
-                    MfdModels = weekmodel.MFD_models,
-                    Year = yearnumber,
-                    WeekNumber = week,
-                    OrderId = ordmenu.Id,
-                    Dishquantities = new double[20]
-                };
+                model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu, catLength);
             }
 
             return Ok(model);
@@ -146,22 +125,100 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
 
         [HttpGet]
-        [Route("CurrentWeek")]
-        [ResponseType(typeof(Int32))]
-        public  async Task<Int32> CurrentWeekNumber()
+        [Route("CurrentWeekYear")]
+        [ResponseType(typeof(WeekYearDto))]
+        public  async Task<WeekYearDto> CurrentWeekNumber()
         {
-            return await Task.FromResult(YearWeekHelp.CurrentWeek());
+            return await Task.FromResult(YearWeekHelp.GetCurrentWeekYearDto());
         }
 
-        //[HttpGet]
-        //[Route("orderWeekNumbers")]
-        //[ResponseType(typeof(List<int>))]
-        //public async Task<IHttpActionResult> GetWeekNumbers()
-        //{
-        //    string userid = RequestContext.Principal.Identity.GetUserId();
-        //    List<int> numweeks = _orderMenuService.Query().Include(om => om.MenuForWeek.WorkingWeek.Year).Include(om => om.User).Select().Where(om => string.Equals(userid, om.User.Id)).GroupBy(om => om.MenuForWeek.WorkingWeek.Year.Id).SelectMany(om=>om.);
+        /// <summary>
+        /// Обновляем пользовательскую заявку на неделю
+        /// </summary>
+        /// <param name="userWeekOrderDto"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("update")]
+        [ResponseType(typeof(int))]
+        public async Task<IHttpActionResult> UpdateUserWeekOrder([FromBody] UserWeekOrderDto userWeekOrderDto)
+        {
+            if (userWeekOrderDto == null)
+            {
+                return BadRequest("Bad Request Object");
+            }
+            WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.UserId);
+            if (forUpdateOrder == null)
+            {
+                return NotFound();
+            }
 
-        //    return Ok(numweeks);
-        //}
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+
+            forUpdateOrder.DayOrderMenus.ForEach(x =>
+            {
+                foreach (UserDayOrderDto udoDto in userWeekOrderDto.DayOrderDtos.ToList())
+                {
+                    if (udoDto.DayOrderId == x.Id)
+                    {
+                        if (x.OrderCanBeChanged)
+                        {
+                            List<DishQuantityRelations> dqaList =
+                                _dishQuantityService.GetByDayOrderMenuForDay(udoDto.DayOrderId, udoDto.MenuForDayId);
+
+                            for (int j = 1; j <= catLength; j++)
+                            {
+                                //Находим связь, указывающую на текущее значение фактической дневной заявки на блюдо
+                                var firstOrDefault = dqaList.FirstOrDefault(
+                                    q => q.DayOrderMenuId == x.Id && q.DishTypeId == j);
+                                if (firstOrDefault != null)
+                                {
+                                    double curQuantity = firstOrDefault.DishQuantity.Quantity;
+                                    //если заказанное количество изменилось
+                                    if (Math.Abs(curQuantity - udoDto.DishQuantities[j - 1]) > 0.001)
+                                    {
+                                        var dishQuantityRelations = _dishQuantityService.Query()
+                                            .Include(dq => dq.DishQuantity)
+                                            .Include(dq => dq.MenuForDay)
+                                            .Include(dq => dq.DayOrderMenu)
+                                            .Select()
+                                            .FirstOrDefault(
+                                                dq =>
+                                                    Math.Abs(dq.DishQuantity.Quantity - udoDto.DishQuantities[j - 1]) <
+                                                    0.001);
+                                        if (dishQuantityRelations != null)
+                                        {
+                                            //переустанавливаем связь на найденную сущность, содержащую необходимое количество
+                                            firstOrDefault.DishQuantity = dishQuantityRelations.DishQuantity;
+                                            _dishQuantityService.Update(firstOrDefault);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            int res = await _unitOfWork.SaveChangesAsync();
+
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// Возвращает уведомление о созданном меню на следующую неделю
+        /// Это уведомление позволяет или запрещает создание заказа на следующую неделю
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("nextWeekMenuCanOrder")]
+        [ResponseType(typeof(bool))]
+        public async Task<IHttpActionResult> CanCreateOrderOnNextWeek()
+        {
+            WeekYearDto curWeekYearDto = YearWeekHelp.GetCurrentWeekYearDto();
+            WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
+            MenuForWeek nextWeekMenu = _weekMenuService.GetWeekMenuByWeekYear(nextWeekYearDto.Week, nextWeekYearDto.Year);
+
+            return Ok(nextWeekMenu != null && nextWeekMenu.OrderCanBeCreated);
+        }
     }
 }

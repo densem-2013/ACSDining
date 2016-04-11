@@ -10,6 +10,7 @@ using ACSDining.Core.Domains;
 using ACSDining.Core.DTO;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
@@ -182,12 +183,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             base.Dispose(disposing);
         }
 
-        //Запрашивает объект MenuForWeek из базы
-        //Если объект не существует, проверяет является ли запрашиваемый объект меню на следующую неделю или на текущую неделю в системе
-        //Если является то создаётся новое меню (пустое), сохраняет его в базе и отправляет его DTO клиенту
+        /// <summary>
+        /// Запрашивает объект MenuForWeek из базы
+        /// Если объект не существует, проверяет является ли запрашиваемый объект меню на следующую неделю или на текущую неделю в системе
+        /// Если является то создаётся новое меню (пустое), сохраняет его в базе и отправляет его DTO клиенту
+        /// Если запрашивается меню на новую рабочую неделю, которой ещё нет в базе, создаётся новая рабочая неделя с рабочими 
+        /// днями Понедельник - Пятница
+        /// Если год не существует в базе, создаётся новый
+        /// </summary>
+        /// <param name="weekyear"></param>
+        /// <returns></returns>
         private WeekMenuDto WeekMenuDtoByWeekYear(WeekYearDto weekyear)
         {
-            MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear.Week, weekyear.Year);
+            MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear);
             if (weekmenu != null)
             {
                 var dto = WeekMenuDto.MapDto(_unitOfWork, weekmenu);

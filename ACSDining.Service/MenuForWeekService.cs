@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO;
 using ACSDining.Core.Repositories;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Repositories;
@@ -12,11 +13,11 @@ namespace ACSDining.Service
     {
         double[] UnitWeekPrices(int menuforweekid, string[] categories);
         
-        MenuForWeek GetWeekMenuByWeekYear(int week, int year);
+        MenuForWeek GetWeekMenuByWeekYear(WeekYearDto wyDto);
 
         List<int> WeekNumbers();
 
-        double SummaryPrice(UserOrdersDto usorder, int numweek, int year);
+        double SummaryPrice(UserWeekOrderDto usorder, int numweek, int year);
 
         IQueryable<MenuForWeek> GetAll();
         
@@ -43,7 +44,7 @@ namespace ACSDining.Service
             return _repository.GetWeekNumbers();
         }
 
-        public double SummaryPrice(UserOrdersDto usorder, int numweek, int year)
+        public double SummaryPrice(UserWeekOrderDto usorder, int numweek, int year)
         {
             return _repository.GetSummaryPrice(usorder, numweek, year);
         }
@@ -58,9 +59,9 @@ namespace ACSDining.Service
             return await _repository.DeleteAsync(menuid);
         }
 
-        public MenuForWeek GetWeekMenuByWeekYear(int week, int year)
+        public MenuForWeek GetWeekMenuByWeekYear(WeekYearDto wyDto)
         {
-            return _repository.GetWeekMenuByWeekYear(week, year);
+            return _repository.GetWeekMenuByWeekYear(wyDto);
         }
     }
 }

@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Core.UnitOfWork;
-using ACSDining.Infrastructure.DTO.SuperUser;
 
 namespace ACSDining.Infrastructure.HelpClasses
 {
     public static class MapHelper
     {
-        public static UserWeekOrderDto MapUserWeekOrderDto(IUnitOfWorkAsync unitOfWorkAsync, WeekOrderMenu dordMenu)
+        /// <summary>
+        /// Получить количество категорий блюд
+        /// </summary>
+        /// <param name="unitOfWorkAsync"></param>
+        /// <returns></returns>
+        public static int GetDishCategoriesCount(IUnitOfWorkAsync unitOfWorkAsync)
         {
-            return new UserWeekOrderDto
-            {
-                WeekPaid = dordMenu.WeekPaid,
-                UserId = dordMenu.User.Id,
-                UserName = dordMenu.User.UserName,
-                DayOrderDtos = dordMenu.DayOrderMenus.ToList().Select(dom =>
-                {
-                    return new UserDayOrderDto
-                    {
-                        DayOrderSummary = dom.DayOrderSummaryPrice,
-                        DayId = dom.MenuForDay.WorkingDay.DayOfWeek.ID,
-                        DayName = dom.MenuForDay.WorkingDay.DayOfWeek.Name
-                    };
-                }).ToList()
-            };
+            var cats = unitOfWorkAsync.RepositoryAsync<DishType>();
+            cats.Queryable().LoadAsync().RunSynchronously();
+            string[] categories = cats.Queryable()
+                .Select(dt => dt.Category)
+                .AsQueryable()
+                .ToArrayAsync().Result;
+            return categories.Length;
         }
     }
 }

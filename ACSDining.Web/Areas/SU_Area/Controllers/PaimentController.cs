@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO;
 using ACSDining.Core.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Service;
@@ -18,7 +18,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {
-        private ApplicationDbContext _db;
+        private readonly ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
@@ -31,97 +31,76 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
 
-        [Route("")]
-        [Route("{numweek}")]
-        [Route("{numweek}/{year}")]
-        [ResponseType(typeof (PaimentsDto))]
-        public async Task<IHttpActionResult> GetWeekPaiments([FromUri] int? numweek = null, [FromUri] int? year = null)
+        /// <summary>
+        /// Получить все оплаты за неделю
+        /// </summary>
+        /// <param name="wyDto">Объект, инкапсулирующий запрашиваемую неделю в году</param>
+        /// <returns></returns>
+        [Route("weekPaiments")]
+        [ResponseType(typeof (List<UserWeekPaiment>))]
+        public async Task<List<UserWeekPaiment>> GetWeekPaiments([FromBody] WeekYearDto wyDto = null)
         {
-            int week = numweek ?? YearWeekHelp.CurrentWeek();
-            int yearnum = year ?? DateTime.Now.Year;
-
-            var cats = _unitOfWork.RepositoryAsync<DishType>();
-            await cats.Queryable().LoadAsync();
-            string[] categories = await cats.Queryable()
-                  .Select(dt => dt.Category)
-                  .AsQueryable()
-                  .ToArrayAsync();
-
-            List<WeekOrderMenu> orderMenus = _orderMenuService.GetAllByWeekYear(week,yearnum).ToList();
-
-            MenuForWeek mfw = _weekMenuService.GetWeekMenuByWeekYear(week, yearnum);
-            if (mfw == null)
+            if (wyDto==null)
             {
-                return NotFound();
+                wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
-            PaimentsDto model = new PaimentsDto
-            {
-                WeekNumber = week,
-                YearNumber = yearnum,
-                UserPaiments = orderMenus
-                    .Select(order =>
-                    {
-                        int menuforweekid = order.MenuForWeek.ID;
-                        MenuForWeek weekmenu = order.MenuForWeek;
-                        List<DishQuantityRelations> quaList = _unitOfWork.Repository<DishQuantityRelations>()
-                            .Query().Include(dq=>dq.DishQuantity).Select().Where(dqr => dqr.OrderMenuId == order.Id && dqr.MenuForWeekId == menuforweekid)
-                            .ToList();
-                        return new UserPaimentDto
-                        {
-                            UserId = order.User.Id,
-                            OrderId = order.Id,
-                            UserName = order.User.UserName,
-                            Paiments = _orderMenuService.UserWeekOrderPaiments(quaList, categories, weekmenu),
-                            SummaryPrice = order.WeekOrderSummaryPrice,
-                            WeekPaid = order.WeekPaid,
-                            Balance = order.Balance,
-                            Note = order.Note
-                        };
-                    }).OrderBy(uo => uo.UserName).ToList(),
-                UnitPrices = _weekMenuService.UnitWeekPrices(mfw.ID, categories),
-                UnitPricesTotal = PaimentsByDishes(week, yearnum)
-            };
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-            return Ok(model);
+            List<WeekOrderMenu> orderMenus = _orderMenuService.GetAllByWeekYear(wyDto).ToList();
+
+            MenuForWeek mfw = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
+            if (mfw == null)
+            {
+                return null;
+            }
+            List<UserWeekPaiment> userWeekPaiments =
+                orderMenus.Select(om => UserWeekPaiment.MapDto(_unitOfWork, om, catLength)).ToList();
+
+            return await Task.FromResult(userWeekPaiments);
         }
 
-        private double[] PaimentsByDishes(int numweek, int year )
+        /// <summary>
+        /// Получает массив, содержащий суммы заказов по каждому блюду на каждый рабочий день
+        /// </summary>
+        /// <param name="wyDto"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("paimentsByDish")]
+        [ResponseType(typeof(double[]))]
+        public async Task<double[]> PaimentsByDishes([FromBody]WeekYearDto wyDto)
         {
-            double[] paiments = new double[21];
-            MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(numweek,year);
-
-            var cats = _unitOfWork.RepositoryAsync<DishType>();
-            cats.Queryable().LoadAsync().RunSynchronously();
-            string[] categories = cats.Queryable()
-                  .Select(dt => dt.Category)
-                  .AsQueryable()
-                  .ToArrayAsync().Result;
-
-            if (weekmenu != null)
+            MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
+            if (weekmenu == null)
             {
-                double[] weekprices = _weekMenuService.UnitWeekPrices(weekmenu.ID, categories);
+                return null;
+            }
+            int workDayCount = weekmenu.WorkingWeek.WorkingDays.Count;
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-                WeekOrderMenu[] weekOrderMenus = _orderMenuService.GetAllByWeekYear(numweek,year).ToArray();
+            //Выделяем память для искомых данных ( +1 для хранения суммы всех ожидаемых проплат)
+            double[] paiments = new double[workDayCount*catLength + 1];
 
-                for (int i = 0; i < weekOrderMenus.Length; i++)
+            WeekOrderMenu[] weekOrderMenus = _orderMenuService.GetAllByWeekYear(wyDto).ToArray();
+
+            List<UserWeekPaiment> userWeekPaiments =
+                weekOrderMenus.Select(om => UserWeekPaiment.MapDto(_unitOfWork, om, catLength)).ToList();
+
+            {
+
+                for (int i = 0; i < userWeekPaiments.Count; i++)
                 {
-                    WeekOrderMenu weekOrder = weekOrderMenus[i];
-                    MenuForWeek mfw = weekOrder.MenuForWeek;
-                    int menuforweekid = mfw.ID;
-                    int ordid = weekOrder.Id;
-                    List<DishQuantityRelations> quaList = _unitOfWork.RepositoryAsync<DishQuantityRelations>()
-                            .Query().Include(dq => dq.DishQuantity).Select()
-                            .Where(dqr => dqr.OrderMenuId == ordid && dqr.MenuForWeekId == menuforweekid)
-                            .ToList();
-                    double[] dishquantities = _orderMenuService.UserWeekOrderDishes( quaList, categories, mfw);
-                    for (int j = 0; j < 20; j++)
+                    UserWeekPaiment uwp = userWeekPaiments[i];
+
+                    double[] userweekpaiments = uwp.UserDayPaiments.SelectMany(udp=>udp.Paiments).ToArray();
+                    for (int j = 0; j < workDayCount*catLength; j++)
                     {
-                        paiments[j] += weekprices[j]*dishquantities[j];
+                        paiments[j] += userweekpaiments[j];
                     }
                 }
             }
-            paiments[20] = paiments.Sum();
+            paiments[workDayCount*catLength + 1] = paiments.Sum();
+
             return paiments;
         }
 
@@ -142,7 +121,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _db.WeekOrderMenus.Remove(weekOrder);
             _db.WeekOrderMenus.Add(weekOrder);
 
-            //_orderMenuService.Update(weekOrder);
             await _unitOfWork.SaveChangesAsync();
 
             return Ok(weekOrder.Balance);

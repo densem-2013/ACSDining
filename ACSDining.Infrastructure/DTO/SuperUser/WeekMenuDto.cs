@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO;
 using ACSDining.Core.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
@@ -8,10 +9,9 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     public class WeekMenuDto
     {
         public int Id { get; set; }
-        public int YearNumber { get; set; }
-        public int WeekNumber { get; set; }
+        public WeekYearDto WeekYear { get; set; }
         public double SummaryPrice { get; set; }
-        public List<MenuForDayDto> MFD_models { get; set; }
+        public List<MenuForDayDto> MfdModels { get; set; }
 
         public static WeekMenuDto MapDto(IUnitOfWork unitOfWork, MenuForWeek wmenu,
             bool emptyDishes = false)
@@ -20,14 +20,13 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             WeekMenuDto dtoModel = new WeekMenuDto
             {
                 Id = wmenu.ID,
-                WeekNumber = wmenu.WorkingWeek.WeekNumber,
-                SummaryPrice = wmenu.SummaryPrice,
-                YearNumber = wmenu.WorkingWeek.Year.YearNumber
+                WeekYear = WeekYearDto.MapDto(wmenu.WorkingWeek),
+                SummaryPrice = wmenu.SummaryPrice
             };
             if (emptyDishes)
             {
                 List<DishType> dtypes = unitOfWork.Repository<DishType>().Queryable().ToList();
-                dtoModel.MFD_models = new List<MenuForDayDto>();
+                dtoModel.MfdModels = new List<MenuForDayDto>();
                 foreach (MenuForDay mfd in wmenu.MenuForDay)
                 {
                     var dmodels = new List<DishModelDto>();
@@ -45,7 +44,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                             });
                     }
 
-                    dtoModel.MFD_models.Add(new MenuForDayDto
+                    dtoModel.MfdModels.Add(new MenuForDayDto
                     {
                         Id = mfd.ID,
                         DayOfWeek = mfd.WorkingDay.DayOfWeek.Name,
@@ -56,7 +55,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             }
             else
             {
-                dtoModel.MFD_models = wmenu.MenuForDay.ToList().Select(MenuForDayDto.MapDto).ToList();
+                dtoModel.MfdModels = wmenu.MenuForDay.ToList().Select(MenuForDayDto.MapDto).ToList();
             }
             return dtoModel;
         }
