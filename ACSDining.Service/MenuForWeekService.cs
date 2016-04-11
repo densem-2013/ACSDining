@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Core.DTO;
 using ACSDining.Core.Repositories;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Repositories;
 
 namespace ACSDining.Service
@@ -17,7 +16,7 @@ namespace ACSDining.Service
 
         List<int> WeekNumbers();
 
-        double SummaryPrice(UserWeekOrderDto usorder, int numweek, int year);
+        //double SummaryPrice(UserWeekOrderDto usorder, int numweek, int year);
 
         IQueryable<MenuForWeek> GetAll();
         
@@ -44,10 +43,10 @@ namespace ACSDining.Service
             return _repository.GetWeekNumbers();
         }
 
-        public double SummaryPrice(UserWeekOrderDto usorder, int numweek, int year)
-        {
-            return _repository.GetSummaryPrice(usorder, numweek, year);
-        }
+        //public double SummaryPrice(UserWeekOrderDto usorder, int numweek, int year)
+        //{
+        //    return _repository.GetSummaryPrice(usorder, numweek, year);
+        //}
 
         public IQueryable<MenuForWeek> GetAll()
         {

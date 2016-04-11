@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO;
 using ACSDining.Core.Repositories;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using LinqKit;
 
 namespace ACSDining.Service
 {
     public interface IWorkDaysService:IService<WorkingWeek>
     {
-        WorkWeekDto GetWorkWeekDtoByWeekYear(int week, int year);
-        WorkingWeek GetWorkWeekByWeekYear(int week, int year);
+        WorkWeekDto GetWorkWeekDtoByWeekYear(WeekYearDto wyDto);
+        WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto);
         WorkingWeek UpdateWorkDays(WorkWeekDto weekModel);
     }
 
@@ -23,21 +25,21 @@ namespace ACSDining.Service
             _repository = repository;
         }
 
-        public WorkWeekDto GetWorkWeekDtoByWeekYear(int week, int year)
+        public WorkWeekDto GetWorkWeekDtoByWeekYear(WeekYearDto wyDto)
         {
             return
                 WorkWeekDto.MapWorkWeekDto(
-                    _repository.Queryable().FirstOrDefault(ww => ww.WeekNumber == week && ww.Year.YearNumber == year));
+                    _repository.Queryable().FirstOrDefault(ww => ww.WeekNumber == wyDto.Week && ww.Year.YearNumber == wyDto.Year));
         }
 
-        public WorkingWeek GetWorkWeekByWeekYear(int week, int year)
+        public WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto)
         {
             return
                 _repository.Query()
                     .Include(ww => ww.WorkingDays.Select(wd => wd.DayOfWeek))
                     .Include(ww => ww.Year)
                     .Select()
-                    .FirstOrDefault(ww => ww.WeekNumber == week && ww.Year.YearNumber == year);
+                    .FirstOrDefault(ww => ww.WeekNumber == wyDto.Week && ww.Year.YearNumber == wyDto.Year);
         }
 
         public WorkingWeek UpdateWorkDays(WorkWeekDto weekModel)

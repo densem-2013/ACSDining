@@ -63,23 +63,23 @@ namespace ACSDining.Infrastructure.Repositories
             return repository.Query().Include(m=>m.WorkingWeek).Select(wm => wm.WorkingWeek.WeekNumber).Reverse().ToList();
         }
 
-        public static double GetSummaryPrice(this IRepositoryAsync<MenuForWeek> repository, UserWeekOrderDto usorder, int numweek, int year)
-        {
-            MenuForWeek weekNeeded = repository.Queryable().FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
-            double summary = 0;
-            if (weekNeeded != null)
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    for (int j = 0; j < 4; j++)
-                    {
-                        summary += weekNeeded.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price *
-                                   usorder.Dishquantities[4 * i + j];
-                    }
-                }
-            }
-            return summary;
-        }
+        //public static double GetSummaryPrice(this IRepositoryAsync<MenuForWeek> repository, UserWeekOrderDto usorder, int numweek, int year)
+        //{
+        //    MenuForWeek weekNeeded = repository.Queryable().FirstOrDefault(wm => wm.WorkingWeek.WeekNumber == numweek && wm.WorkingWeek.Year.YearNumber == year);
+        //    double summary = 0;
+        //    if (weekNeeded != null)
+        //    {
+        //        for (int i = 0; i < 5; i++)
+        //        {
+        //            for (int j = 0; j < 4; j++)
+        //            {
+        //                summary += weekNeeded.MenuForDay.ElementAt(i).Dishes.ElementAt(j).Price *
+        //                           usorder.Dishquantities[4 * i + j];
+        //            }
+        //        }
+        //    }
+        //    return summary;
+        //}
 
     }
 }

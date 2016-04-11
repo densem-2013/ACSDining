@@ -33,7 +33,7 @@ namespace ACSDining.Infrastructure.DAL
             }
         }
 
-        public virtual IRepository<T> GetRepository<T>() where T : class
+        public virtual IRepositoryAsync<T> GetRepository<T>() where T : class
         {
             return _unitOfWork.RepositoryAsync<T>();
         }

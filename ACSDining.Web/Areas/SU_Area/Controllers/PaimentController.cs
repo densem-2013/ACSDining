@@ -37,8 +37,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         /// <param name="wyDto">Объект, инкапсулирующий запрашиваемую неделю в году</param>
         /// <returns></returns>
         [Route("weekPaiments")]
-        [ResponseType(typeof (List<UserWeekPaiment>))]
-        public async Task<List<UserWeekPaiment>> GetWeekPaiments([FromBody] WeekYearDto wyDto = null)
+        [ResponseType(typeof (List<UserWeekPaimentDto>))]
+        public async Task<List<UserWeekPaimentDto>> GetWeekPaiments([FromBody] WeekYearDto wyDto = null)
         {
             if (wyDto==null)
             {
@@ -54,8 +54,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return null;
             }
-            List<UserWeekPaiment> userWeekPaiments =
-                orderMenus.Select(om => UserWeekPaiment.MapDto(_unitOfWork, om, catLength)).ToList();
+            List<UserWeekPaimentDto> userWeekPaiments =
+                orderMenus.Select(om => UserWeekPaimentDto.MapDto(_unitOfWork, om, catLength)).ToList();
 
             return await Task.FromResult(userWeekPaiments);
         }
@@ -83,14 +83,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             WeekOrderMenu[] weekOrderMenus = _orderMenuService.GetAllByWeekYear(wyDto).ToArray();
 
-            List<UserWeekPaiment> userWeekPaiments =
-                weekOrderMenus.Select(om => UserWeekPaiment.MapDto(_unitOfWork, om, catLength)).ToList();
+            List<UserWeekPaimentDto> userWeekPaiments =
+                weekOrderMenus.Select(om => UserWeekPaimentDto.MapDto(_unitOfWork, om, catLength)).ToList();
 
             {
 
                 for (int i = 0; i < userWeekPaiments.Count; i++)
                 {
-                    UserWeekPaiment uwp = userWeekPaiments[i];
+                    UserWeekPaimentDto uwp = userWeekPaiments[i];
 
                     double[] userweekpaiments = uwp.UserDayPaiments.SelectMany(udp=>udp.Paiments).ToArray();
                     for (int j = 0; j < workDayCount*catLength; j++)

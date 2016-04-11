@@ -4,7 +4,10 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Mvc;
 using ACSDining.Core.Domains;
+using ACSDining.Core.DTO;
 using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Service;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -29,12 +32,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route("paiments")]
         [ResponseType(typeof(double))]
-        public FilePathResult GetExelFromPaimentDto([FromBody] PaimentsDto paimodel)
+        public FilePathResult GetExelFromWeekPaimentstDto([FromBody] List<UserWeekPaimentDto> paimentList)
         {
-            WorkingWeek workweek = _workDaysService.GetWorkWeekByWeekYear(paimodel.WeekNumber, paimodel.YearNumber);
-            List<DishType> dtypes = _unitOfWork.RepositoryAsync<DishType>().Queryable().ToList();
+            UserWeekPaimentDto first = paimentList.FirstOrDefault();
+            WeekYearDto wyDto = first != null ? first.WeekYear : null;
+            WorkingWeek workweek = _workDaysService.GetWorkWeekByWeekYear(wyDto);
 
-            string filename = _getExcelService.PaimentsDtoToExcelFile(paimodel, workweek,dtypes);
+            string[] dishCategories = MapHelper.GetCategories(_unitOfWork);
+
+            string filename = _getExcelService.GetExcelFileFromPaimentsModel(paimentList, dishCategories, workweek);
 
             return new FilePathResult(filename, "multipart/form-data");
         }

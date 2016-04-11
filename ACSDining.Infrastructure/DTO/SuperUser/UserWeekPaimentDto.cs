@@ -6,7 +6,7 @@ using ACSDining.Core.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
 {
-    public class UserWeekPaiment
+    public class UserWeekPaimentDto
     {
         public WeekYearDto WeekYear { get; set; }
         public string UserId { get; set; }
@@ -27,12 +27,12 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         /// <param name="weekOrderMenu"></param>
         /// <param name="catLength">Количество категорий блюд</param>
         /// <returns></returns>
-        public static UserWeekPaiment MapDto(IUnitOfWorkAsync unitOfWork, WeekOrderMenu weekOrderMenu, int catLength)
+        public static UserWeekPaimentDto MapDto(IUnitOfWorkAsync unitOfWork, WeekOrderMenu weekOrderMenu, int catLength)
         {
             List<UserDayPaiment> daypaiments = weekOrderMenu.DayOrderMenus.Select(
                 dord => UserDayPaiment.MapDto(unitOfWork, dord, catLength)).ToList();
 
-            return new UserWeekPaiment
+            return new UserWeekPaimentDto
             {
                 WeekPaid = weekOrderMenu.WeekPaid,
                 UserId = weekOrderMenu.User.Id,

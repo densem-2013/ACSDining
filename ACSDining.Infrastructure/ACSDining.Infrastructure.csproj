@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ACSDining.Infrastructure">
+      <HintPath>..\ACSDining.Core\bin\Debug\ACSDining.Infrastructure.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -114,7 +117,7 @@
     <Compile Include="DTO\SuperUser\UserDayOrderDto.cs" />
     <Compile Include="DTO\SuperUser\UserDayPaiment.cs" />
     <Compile Include="DTO\SuperUser\UserWeekOrderDto.cs" />
-    <Compile Include="DTO\SuperUser\UserWeekPaiment.cs" />
+    <Compile Include="DTO\SuperUser\UserWeekPaimentDto.cs" />
     <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
     <Compile Include="DTO\SuperUser\WorkDayDto.cs" />
     <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />
