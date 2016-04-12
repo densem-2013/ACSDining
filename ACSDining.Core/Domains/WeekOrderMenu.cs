@@ -15,7 +15,7 @@ namespace ACSDining.Core.Domains
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class WeekOrderMenu 
+    public class WeekOrderMenu 
     {
         public WeekOrderMenu()
         {
@@ -38,7 +38,7 @@ namespace ACSDining.Core.Domains
         public virtual MenuForWeek MenuForWeek { get; set; }
         [JsonIgnore]
         public virtual ICollection<DayOrderMenu> DayOrderMenus { get; set; }
-        [JsonIgnore]
-        public virtual PlannedWeekOrderMenu PlannedWeekOrderMenu { get; set; }
+        //[JsonIgnore]
+        //public virtual PlannedWeekOrderMenu PlannedWeekOrderMenu { get; set; }
     }
 }

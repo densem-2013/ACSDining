@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
 {

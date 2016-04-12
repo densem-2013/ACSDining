@@ -1,12 +1,14 @@
 ﻿////using ACSDining.Core.DataContext;
 
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Service;
+using ACSDining.Infrastructure.DTO;
+using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.EmployeeArea.Controllers;
 using ACSDining.Web.Areas.SU_Area.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,7 +33,12 @@ namespace UnitTestProject1
         public void WeekMenuTestApi()
         {
             WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork);
-            WeekMenuDto wmDto = weekMenuApi.GetWeekMenu(12, 2016).Result;
+            WeekYearDto wyDto = new WeekYearDto
+            {
+                Week = 12,
+                Year = 2016
+            };
+            WeekMenuDto wmDto = weekMenuApi.GetWeekMenu(wyDto).Result;
             Assert.IsNotNull(wmDto);
         }
 
@@ -48,9 +55,14 @@ namespace UnitTestProject1
         public void GetOrders()
         {
             OrdersController ord = new OrdersController(_unitOfWork);
-            OrdersDto ordermenus = ord.GetMenuOrders(15, 2016).Result;
+            WeekYearDto wyDto = new WeekYearDto
+            {
+                Week = 15,
+                Year = 2016
+            };
+            List<UserWeekOrderDto> uwoDtos = ord.GetFactMenuOrders(wyDto).Result;
 
-            Assert.IsNotNull(ordermenus);
+            Assert.IsNotNull(uwoDtos);
 
         }
 
@@ -58,7 +70,12 @@ namespace UnitTestProject1
         public void GetNextWeekMenu()
         {
             WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork);
-            WeekMenuDto dto = weekMenuApi.GetWeekMenu(18, 2016).Result;
+            WeekYearDto wyDto = new WeekYearDto
+            {
+                Week = 18,
+                Year = 2016
+            };
+            WeekMenuDto dto = weekMenuApi.GetWeekMenu(wyDto).Result;
 
             Assert.IsNotNull(dto);
 
@@ -73,14 +90,14 @@ namespace UnitTestProject1
                 Week = 18,
                 Year = 2016
             };
-            MenuForWeek weekmenu = _menuForWeekService.GetWeekMenuByWeekYear(wyDto.Week, wyDto.Year);
+            MenuForWeek weekmenu = _menuForWeekService.GetWeekMenuByWeekYear(wyDto);
             if (weekmenu == null)
             {
-                WeekMenuDto dto = weekMenuApi.GetWeekMenu(18, 2016).Result;
-                weekmenu = _menuForWeekService.GetWeekMenuByWeekYear(wyDto.Week, wyDto.Year);
+                WeekMenuDto dto = weekMenuApi.GetWeekMenu(wyDto).Result;
+                weekmenu = _menuForWeekService.GetWeekMenuByWeekYear(wyDto);
             }
             var res = weekMenuApi.DeleteMenuForWeek(weekmenu.ID).Result;
-            weekmenu = _menuForWeekService.GetWeekMenuByWeekYear(wyDto.Week, wyDto.Year);
+            weekmenu = _menuForWeekService.GetWeekMenuByWeekYear(wyDto);
 
             Assert.IsNull(weekmenu);
 

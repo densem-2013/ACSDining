@@ -121,22 +121,37 @@
     <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
     <Compile Include="DTO\SuperUser\WorkDayDto.cs" />
     <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />
+    <Compile Include="DTO\WeekYearDTO.cs" />
     <Compile Include="HelpClasses\MapHelper.cs" />
     <Compile Include="HelpClasses\YearWeekHelp.cs" />
     <Compile Include="Identity\ApplicationDbContext.cs" />
     <Compile Include="Identity\ApplicationDbInitializer.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201604071825266_Initial.cs" />
-    <Compile Include="Migrations\201604071825266_Initial.Designer.cs">
-      <DependentUpon>201604071825266_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201604121154204_Initial.cs" />
+    <Compile Include="Migrations\201604121154204_Initial.Designer.cs">
+      <DependentUpon>201604121154204_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\DishRepository.cs" />
     <Compile Include="Repositories\GetExcelRepository.cs" />
+    <Compile Include="Repositories\IQueryFluent.cs" />
+    <Compile Include="Repositories\IQueryObject.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\IRepositoryAsync.cs" />
     <Compile Include="Repositories\MenuForWeekRepository.cs" />
     <Compile Include="Repositories\OrderMenuRepository.cs" />
     <Compile Include="HelpClasses\TimerHandler.cs" />
+    <Compile Include="Services\DishQuantityRelationsService.cs" />
+    <Compile Include="Services\DishService.cs" />
+    <Compile Include="Services\GetExcelService.cs" />
+    <Compile Include="Services\IService.cs" />
+    <Compile Include="Services\MenuForWeekService.cs" />
+    <Compile Include="Services\OrderMenuService.cs" />
+    <Compile Include="Services\Service.cs" />
+    <Compile Include="Services\WorkDaysService.cs" />
+    <Compile Include="UnitOfWork\IUnitOfWork.cs" />
+    <Compile Include="UnitOfWork\IUnitOfWorkAsync.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -151,8 +166,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201604071825266_Initial.resx">
-      <DependentUpon>201604071825266_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604121154204_Initial.resx">
+      <DependentUpon>201604121154204_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

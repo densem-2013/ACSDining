@@ -37,7 +37,7 @@ namespace ACSDining.Infrastructure.Identity
             base.Seed(context);
         }
 
-        public static void AddUser(ApplicationUserManager userManager,ApplicationDbContext context)
+        public static void AddUser(ApplicationUserManager userManager, ApplicationDbContext context)
         {
             //var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
@@ -222,6 +222,25 @@ namespace ACSDining.Infrastructure.Identity
                     userManager.AddToRole(userEmpl.Id, "Employee");
                 }
             }
+            User userEmplown = userManager.FindByName("denis_semiletov");
+            if (userEmplown == null)
+            {
+                userEmplown = new User
+                {
+                    UserName = "Семилетов Денис",
+                    Email = "densem-2013@yandex.ua",
+                    FirstName = "Денис",
+                    LastName = "Семилетов",
+                    LastLoginTime = DateTime.UtcNow,
+                    RegistrationDate = DateTime.UtcNow,
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777A123$x")
+                };
+                var empownresult = userManager.Create(userEmplown, "777A123$x");
+                if (empownresult.Succeeded)
+                {
+                    userManager.AddToRole(userEmplown.Id, "Employee");
+                }
+            }
         }
 
         public static Dish[] GetDishesFromXml(ApplicationDbContext context, string userspath)
@@ -303,7 +322,7 @@ namespace ACSDining.Infrastructure.Identity
                         WorkingDay workday = new WorkingDay
                         {
                             IsWorking = j < 5,
-                            DayOfWeek = context.Days.FirstOrDefault(d => d.ID == j + 1)
+                            DayOfWeek = context.Days.FirstOrDefault(d => d.Id == j + 1)
                             
                         };
                         workingWeek.WorkingDays.Add(workday);
@@ -360,7 +379,7 @@ namespace ACSDining.Infrastructure.Identity
                     List<Dish> dishes = getDishes();
                     WorkingDay workday =
                         context.WorkingDays.Include("WorkingWeek").ToList().FirstOrDefault(
-                            wd => workweek != null && (wd.WorkingWeek.ID == workweek.ID && wd.DayOfWeek.ID == i));
+                            wd => workweek != null && (wd.WorkingWeek.ID == workweek.ID && wd.DayOfWeek.Id == i));
 
                     if (workday != null /*&& workday.IsWorking*/)
                     {
@@ -473,32 +492,29 @@ namespace ACSDining.Infrastructure.Identity
                 foreach (MenuForWeek mfw in weekmenus)
                 {
 
-                    PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu
-                    {
-                        User = user,
-                        MenuForWeek = mfw
-                    };
 
-                    context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
+                    //context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
 
                     WeekOrderMenu weekOrder = new WeekOrderMenu
                     {
                         User = user,
                         MenuForWeek = mfw,
                         WeekOrderSummaryPrice = 0.0,
-                        PlannedWeekOrderMenu = plannedWeekOrderMenu
+                       // PlannedWeekOrderMenu = plannedWeekOrderMenu
                     };
-                    context.WeekOrderMenus.Add(weekOrder);
+                    PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu { WeekOrderMenu = weekOrder };
+                    context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
 
                     List<DayOrderMenu> dayOrderMenus=new List<DayOrderMenu>();
 
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
                     {
-                        PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu();
                         DayOrderMenu dayOrderMenu = new DayOrderMenu
                         {
-                            MenuForDay = daymenu
+                            MenuForDay = daymenu//,
+                           // PlannedDayOrderMenu = plannedDayOrderMenu
                         };
+                        PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu{DayOrderMenu = dayOrderMenu};
                         dayOrderMenus.Add(dayOrderMenu);
                         foreach (Dish dish in daymenu.Dishes)
                         {
@@ -525,10 +541,7 @@ namespace ACSDining.Infrastructure.Identity
                                     DishType = first,
                                     MenuForDay = daymenu,
                                     DayOrderMenu = dayOrderMenu,
-                                    PlannedDayOrderMenu = plannedDayOrderMenu,
-                                    MenuForWeek = mfw,
-                                    WeekOrderMenu = weekOrder,
-                                    PlannedWeekOrderMenu = plannedWeekOrderMenu
+                                    PlannedDayOrderMenu = plannedDayOrderMenu
                                 };
                                 if (dqu != null) dayOrderMenu.DayOrderSummaryPrice += dqu.Quantity * dish.Price;
                                 dquaList.Add(dqrs);

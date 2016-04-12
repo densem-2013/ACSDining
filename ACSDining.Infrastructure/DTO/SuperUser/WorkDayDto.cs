@@ -15,7 +15,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             {
                 WorkdayId = workday.Id,
                 IsWorking = workday.IsWorking,
-                DayNumber = workday.DayOfWeek.ID,
+                DayNumber = workday.DayOfWeek.Id,
                 DayName = workday.DayOfWeek.Name
             };
         }

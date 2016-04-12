@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
 using ACSDining.Infrastructure.HelpClasses;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser

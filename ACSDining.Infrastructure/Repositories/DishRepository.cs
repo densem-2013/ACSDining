@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Repositories;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.DTO.SuperUser;
 
 namespace ACSDining.Infrastructure.Repositories

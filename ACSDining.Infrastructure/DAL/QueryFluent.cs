@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using ACSDining.Core.Repositories;
+using ACSDining.Infrastructure.Repositories;
 
 namespace ACSDining.Infrastructure.DAL
 {

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
-using ACSDining.Core.Repositories;
+using ACSDining.Infrastructure.DTO;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using Microsoft.Office.Interop.Excel;
 
@@ -23,7 +23,7 @@ namespace ACSDining.Infrastructure.Repositories
             if (userWeekPaimentDto != null) wyDto = userWeekPaimentDto.WeekYear;
             //Цены за  каждое блюдо в меню на рабочей неделе
             double[] unitPrices =
-                repository.GetRepository<MenuForWeek>()
+                repository.GetRepositoryAsync<MenuForWeek>()
                     .GetWeekMenuByWeekYear(wyDto)
                     .MenuForDay.SelectMany(mfd => mfd.Dishes.Select(d => d.Price))
                     .ToArray();

@@ -8,13 +8,13 @@ using System.Web.Http.Description;
 using System.Threading.Tasks;
 using System.Web;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Service;
+using ACSDining.Infrastructure.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using WebGrease.Css.Extensions;
@@ -35,7 +35,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         public EmployeeOrderApiController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
-            _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
+            _db = ((UnitOfWork) unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _dishQuantityService = new DishQuantityRelationsService(_unitOfWork.RepositoryAsync<DishQuantityRelations>());
@@ -62,21 +62,21 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         [Route("{numweek}")]
         [Route("{numweek}/{year}")]
         [ResponseType(typeof (UserWeekOrderDto))]
-        public async Task<IHttpActionResult> GetUserWeekOrderDto([FromUri] int? numweek = null,
-            [FromUri] int? year = null)
+        public async Task<IHttpActionResult> GetUserWeekOrderDto([FromBody] WeekYearDto wyDto)
         {
             string userid = RequestContext.Principal.Identity.GetUserId();
-            int week = numweek ?? YearWeekHelp.CurrentWeek();
-            int yearnumber = year ?? DateTime.Now.Year;
-
+            if (wyDto == null)
+            {
+                wyDto = YearWeekHelp.GetCurrentWeekYearDto();
+            }
             WeekMenuDto weekmodel = WeekMenuDto.MapDto(_unitOfWork as UnitOfWork,
-                _weekMenuService.GetWeekMenuByWeekYear(week, yearnumber));
+                _weekMenuService.GetWeekMenuByWeekYear(wyDto));
 
             //Меню на запрашиваемую неделю не было создано
             if (weekmodel == null)
             {
                 return Content(HttpStatusCode.BadRequest,
-                    string.Format(" menu on week {0} year {1} not created", week, yearnumber));
+                    string.Format(" menu on week {0} year {1} not created", wyDto.Week, wyDto.Year));
             }
 
             var cats = _unitOfWork.RepositoryAsync<DishType>();
@@ -89,7 +89,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             UserWeekOrderDto model = null;
 
-            WeekOrderMenu ordmenu = _orderMenuService.FindByUserIdWeekYear(userid, week, yearnumber);
+            WeekOrderMenu ordmenu = _orderMenuService.FindByUserIdWeekYear(userid, wyDto);
 
             if (ordmenu != null)
             {
@@ -100,7 +100,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             {
                 User user =
                     await UserManager.FindByNameAsync(ControllerContext.RequestContext.Principal.Identity.GetUserName());
-                MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(week, yearnumber);
+                MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
                 ordmenu = new WeekOrderMenu
                 {
                     User = user,
@@ -115,7 +115,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
                 await _unitOfWork.SaveChangesAsync();
 
-                ordmenu = _orderMenuService.FindByUserIdWeekYear(user.Id, week, yearnumber);
+                ordmenu = _orderMenuService.FindByUserIdWeekYear(user.Id, wyDto);
 
                 model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu, catLength);
             }
@@ -126,8 +126,8 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
         [HttpGet]
         [Route("CurrentWeekYear")]
-        [ResponseType(typeof(WeekYearDto))]
-        public  async Task<WeekYearDto> CurrentWeekNumber()
+        [ResponseType(typeof (WeekYearDto))]
+        public async Task<WeekYearDto> CurrentWeekNumber()
         {
             return await Task.FromResult(YearWeekHelp.GetCurrentWeekYearDto());
         }
@@ -139,7 +139,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("update")]
-        [ResponseType(typeof(int))]
+        [ResponseType(typeof (int))]
         public async Task<IHttpActionResult> UpdateUserWeekOrder([FromBody] UserWeekOrderDto userWeekOrderDto)
         {
             if (userWeekOrderDto == null)
@@ -211,14 +211,31 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("nextWeekMenuCanOrder")]
-        [ResponseType(typeof(bool))]
+        [ResponseType(typeof (bool))]
         public async Task<IHttpActionResult> CanCreateOrderOnNextWeek()
         {
             WeekYearDto curWeekYearDto = YearWeekHelp.GetCurrentWeekYearDto();
             WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
-            MenuForWeek nextWeekMenu = _weekMenuService.GetWeekMenuByWeekYear(nextWeekYearDto.Week, nextWeekYearDto.Year);
+            MenuForWeek nextWeekMenu = _weekMenuService.GetWeekMenuByWeekYear(nextWeekYearDto);
 
             return Ok(nextWeekMenu != null && nextWeekMenu.OrderCanBeCreated);
+        }
+
+        /// <summary>
+        /// Возвращает уведомление о созданном меню на следующую неделю
+        /// Это уведомление позволяет или запрещает создание заказа на следующую неделю
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("isNextWeekYear")]
+        [ResponseType(typeof (bool))]
+        public async Task<IHttpActionResult> IsNextWeek(WeekYearDto wyDto)
+        {
+            WeekYearDto curWeekYearDto = YearWeekHelp.GetCurrentWeekYearDto();
+            WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
+            //MenuForWeek nextWeekMenu = _weekMenuService.GetWeekMenuByWeekYear(nextWeekYearDto);
+
+            return Ok(wyDto.Week == nextWeekYearDto.Week && wyDto.Year == nextWeekYearDto.Year);
         }
     }
 }

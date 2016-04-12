@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Repositories;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.Repositories;
+using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Service;
+using ACSDining.Infrastructure.Services;
+using ACSDining.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
+using ACSDining.Infrastructure.DTO;
 using DayOfWeek = System.DayOfWeek;
 
 namespace ACSDining.Infrastructure.HelpClasses

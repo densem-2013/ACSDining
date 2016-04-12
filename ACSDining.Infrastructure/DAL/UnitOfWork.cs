@@ -6,8 +6,8 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Threading;
 using System.Threading.Tasks;
-using ACSDining.Core.Repositories;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.Repositories;
+using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.Identity;
 using Microsoft.Practices.ServiceLocation;
 
@@ -126,7 +126,7 @@ namespace ACSDining.Infrastructure.DAL
 
             var repositoryType = typeof(Repository<>);
 
-            _repositories.Add(type, Activator.CreateInstance(repositoryType.MakeGenericType(typeof(TEntity)), _dataContext));
+            _repositories.Add(type, Activator.CreateInstance(repositoryType.MakeGenericType(typeof(TEntity)), this));
 
             return _repositories[type];
         }

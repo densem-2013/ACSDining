@@ -17,7 +17,7 @@ namespace ACSDining.Core.Domains
     using System.Data.Entity;
     using System.Threading.Tasks;
 
-    public partial class MenuForDay
+    public  class MenuForDay
     {
         public MenuForDay()
         {

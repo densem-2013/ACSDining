@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
 {

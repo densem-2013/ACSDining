@@ -106,10 +106,6 @@
       <Project>{f3d62c6d-8a65-48c5-a9d0-e5d4088e8800}</Project>
       <Name>ACSDining.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ACSDining.Service\ACSDining.Service.csproj">
-      <Project>{34ACDAEA-E5DB-4D41-8FC0-6EF8DD520200}</Project>
-      <Name>ACSDining.Service</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ACSDining.Web\ACSDining.Web.csproj">
       <Project>{bf626bbd-916d-41f6-8090-49a71dff1fd9}</Project>
       <Name>ACSDining.Web</Name>

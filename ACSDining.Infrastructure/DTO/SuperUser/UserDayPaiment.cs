@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
 {
@@ -30,7 +30,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             for (int j = 1; j <= catLength; j++)
             {
                 var firstOrDefault = quaList.FirstOrDefault(
-                    q => q.MenuForDay.WorkingDay.DayOfWeek.ID == workday.Id && q.DishTypeId == j);
+                    q => q.MenuForDay.WorkingDay.DayOfWeek.Id == workday.Id && q.DishTypeId == j);
                 if (firstOrDefault != null)
                     paiments[j - 1] = firstOrDefault.DishQuantity.Quantity*mfd.Dishes.ElementAt(j - 1).Price;
             }

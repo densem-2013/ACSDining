@@ -1,11 +1,9 @@
-using ACSDining.Infrastructure.DAL;
+using System;
+using System.Data.Entity.Migrations;
 using ACSDining.Infrastructure.Identity;
 
-namespace ACSDining.Web.Migrations
+namespace ACSDining.Infrastructure.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
-
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
         private string _path =
@@ -30,7 +28,7 @@ namespace ACSDining.Web.Migrations
             ApplicationDbInitializer.CreateWorkingDays(context);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
-            ApplicationDbInitializer.GetUsersFromXml(context, _path);
+           // ApplicationDbInitializer.GetUsersFromXml(context, _path);
             ApplicationDbInitializer.CreateOrders(context);
 
         }

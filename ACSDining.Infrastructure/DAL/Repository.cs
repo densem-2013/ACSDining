@@ -5,8 +5,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using ACSDining.Core.Repositories;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.Repositories;
+using ACSDining.Infrastructure.UnitOfWork;
 using LinqKit;
 
 namespace ACSDining.Infrastructure.DAL
@@ -33,7 +33,12 @@ namespace ACSDining.Infrastructure.DAL
             }
         }
 
-        public virtual IRepositoryAsync<T> GetRepository<T>() where T : class
+        //public virtual IRepository<T> GetRepository<T>() where T : class
+        //{
+        //    return _unitOfWork.Repository<T>();
+        //}
+
+        public virtual IRepositoryAsync<T> GetRepositoryAsync<T>() where T : class
         {
             return _unitOfWork.RepositoryAsync<T>();
         }

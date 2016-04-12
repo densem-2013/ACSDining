@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
+using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.Identity;
 
 namespace ACSDining.Infrastructure.HelpClasses
@@ -34,7 +34,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                             mfd =>
                                 mfd.WorkingDay.WorkingWeek.Year.YearNumber == wyDto.Year &&
                                 mfd.WorkingDay.WorkingWeek.WeekNumber == wyDto.Week &&
-                                mfd.WorkingDay.DayOfWeek.ID == (int) DateTime.Now.DayOfWeek);
+                                mfd.WorkingDay.DayOfWeek.Id == (int) DateTime.Now.DayOfWeek);
 
                     if (dayMenu != null)
                     {

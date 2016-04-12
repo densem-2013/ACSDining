@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.DTO;
+using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
-using ACSDining.Service;
+using ACSDining.Infrastructure.Services;
 using Microsoft.Ajax.Utilities;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -31,13 +32,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //Получить все фактические заявки на неделю
         [HttpGet]
         [Route("fact")]
-        [Route("fact/{numweek}")]
-        [Route("fact/{numweek}/{year}")]
-        public async Task<List<UserWeekOrderDto>> GetFactMenuOrders([FromUri] int? numweek = null,
-            [FromUri] int? year = null)
+        public async Task<List<UserWeekOrderDto>> GetFactMenuOrders([FromBody] WeekYearDto wyDto = null)
         {
-            int week = numweek ?? YearWeekHelp.CurrentWeek();
-            int yearnum = year ?? DateTime.Now.Year;
+            if (wyDto==null)
+            {
+                wyDto = YearWeekHelp.GetCurrentWeekYearDto();
+            }
 
             var cats = _unitOfWork.RepositoryAsync<DishType>();
             await cats.Queryable().LoadAsync();
@@ -47,7 +47,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 .ToArrayAsync();
             int catLength = categories.Length;
 
-            List<WeekOrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(week, yearnum);
+            List<WeekOrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(wyDto);
 
             List<UserWeekOrderDto> userWeekOrderDtos =
                 orderList.Select(uwo => UserWeekOrderDto.MapDto(_unitOfWork, uwo, catLength)).ToList();
@@ -60,22 +60,27 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("plan")]
         [Route("plan/{numweek}")]
         [Route("plan/{numweek}/{year}")]
-        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromUri] int? numweek = null,
-            [FromUri] int? year = null)
+        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromBody] WeekYearDto wyDto = null)
         {
-            int week = numweek ?? YearWeekHelp.CurrentWeek();
-            int yearnum = year ?? DateTime.Now.Year;
+            if (wyDto == null)
+            {
+                wyDto = YearWeekHelp.GetCurrentWeekYearDto();
+            }
 
-            var cats = _unitOfWork.RepositoryAsync<DishType>();
-            await cats.Queryable().LoadAsync();
-            string[] categories = await cats.Queryable()
-                .Select(dt => dt.Category)
-                .AsQueryable()
-                .ToArrayAsync();
-            int catLength = categories.Length;
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-            List<PlannedWeekOrderMenu> planOrderList =
-                _orderMenuService.GetOrderMenuByWeekYear(week, yearnum).Select(uwo => uwo.PlannedWeekOrderMenu).ToList();
+            List<WeekOrderMenu> weekOrderMenus = _orderMenuService.GetOrderMenuByWeekYear(wyDto);
+
+            int[] womIds = weekOrderMenus.OrderBy(wom=>wom.User.FirstName).Select(wom => wom.Id).ToArray();
+
+            List<PlannedWeekOrderMenu> planOrderList = _unitOfWork.RepositoryAsync<PlannedWeekOrderMenu>()
+                .Query()
+                .Include(pom => pom.WeekOrderMenu)
+                .Include(
+                    pom =>
+                        pom.PlannedDayOrderMenus.Select(pdo => pdo.DayOrderMenu)
+                            .Where(pdo => womIds.Contains(pdo.WeekOrderMenu.Id)))
+                .Select().ToList();
 
             List<PlanUserWeekOrderDto> planUserWeekOrderDtos =
                 planOrderList.Select(planuwo => PlanUserWeekOrderDto.MapDto(_unitOfWork, planuwo, catLength)).ToList();

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using ACSDining.Core.Repositories;
+using ACSDining.Infrastructure.Repositories;
 using LinqKit;
 
 namespace ACSDining.Infrastructure.DAL

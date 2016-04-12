@@ -1,8 +1,8 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Core.Repositories;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.Repositories;
+using ACSDining.Infrastructure.UnitOfWork;
 using NLog.LayoutRenderers.Wrappers;
 
 namespace ACSDining.Infrastructure.HelpClasses

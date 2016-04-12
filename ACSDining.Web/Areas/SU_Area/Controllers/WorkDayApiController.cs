@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using ACSDining.Core.Domains;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Service;
+using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -27,13 +29,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         [HttpGet]
         [Route("{numweek}/{year}")]
-        public async Task<WorkWeekDto> GetWorkWeek([FromUri] int? numweek = null, [FromUri] int? year = null)
+        public async Task<WorkWeekDto> GetWorkWeek([FromBody] WeekYearDto wyDto = null)
         {
-            int week = numweek ?? YearWeekHelp.CurrentWeek();
-            int yearnum = year ?? DateTime.Now.Year;
+            if (wyDto==null)
+            {
+                wyDto = YearWeekHelp.GetCurrentWeekYearDto();
+            }
             return
                 await
-                    Task.FromResult(_workDayService.GetWorkWeekDtoByWeekYear(week, yearnum));
+                    Task.FromResult(_workDayService.GetWorkWeekDtoByWeekYear(wyDto));
         }
 
         [HttpPut]

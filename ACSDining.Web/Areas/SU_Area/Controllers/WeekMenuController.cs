@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
-using ACSDining.Core.DTO;
-using ACSDining.Core.UnitOfWork;
+using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Service;
+using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -26,6 +26,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IMenuForWeekService _weekmenuService;
         private readonly UnitOfWork _unitOfWork;
         private readonly IDishService _dishService;
+        private readonly IWorkDaysService _workDaysService;
 
         public WeekMenuController(IUnitOfWorkAsync unitOfWork)
         {
@@ -33,23 +34,22 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _db = _unitOfWork.GetContext();
             _weekmenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
+            _workDaysService = new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
         }
 
         // GET api/WeekMenu
         [HttpGet]
         [Route("")]
-        [Route("{numweek}")]
-        [Route("{numweek}/{year}")]
         [ResponseType(typeof (WeekMenuDto))]
-        public async Task<WeekMenuDto> GetWeekMenu([FromUri] int? numweek = null, [FromUri] int? year = null)
+        public async Task<WeekMenuDto> GetWeekMenu([FromBody] WeekYearDto wyDto=null)
         {
-            WeekYearDto dto = new WeekYearDto
-            {
-                Week = numweek ?? YearWeekHelp.CurrentWeek(),
-                Year = year ?? DateTime.Now.Year
-            };
 
-            return await Task.FromResult(WeekMenuDtoByWeekYear(dto));
+            if (wyDto==null)
+            {
+                wyDto = YearWeekHelp.GetCurrentWeekYearDto();
+            }
+
+            return await Task.FromResult(WeekMenuDtoByWeekYear(wyDto));
         }
 
         [HttpGet]
@@ -58,7 +58,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             WeekYearDto nextweeknumber = YearWeekHelp.GetNextWeekYear(weekyear);
             MenuForWeek nextWeek =
-                _weekmenuService.GetWeekMenuByWeekYear(nextweeknumber.Week, nextweeknumber.Year);
+                _weekmenuService.GetWeekMenuByWeekYear(nextweeknumber);
 
             return Task.FromResult(nextWeek != null);
         }
@@ -92,12 +92,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (string[]))]
         public async Task<string[]> GetCategories()
         {
-            var cats = _unitOfWork.RepositoryAsync<DishType>();
-            await cats.Queryable().LoadAsync();
-                  string[] categories = await cats.Queryable()
-                        .Select(dt => dt.Category)
-                        .AsQueryable()
-                        .ToArrayAsync();
+
+            string[] categories = MapHelper.GetCategories(_unitOfWork);
 
             return categories;
 
@@ -220,13 +216,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 };
             }
 
-            WorkingWeek workWeek =
-                _unitOfWork.RepositoryAsync<WorkingWeek>()
-                    .Query()
-                    .Include(ww => ww.Year)
-                    .Include(ww => ww.WorkingDays.Select(wd => wd.DayOfWeek))
-                    .Select()
-                    .FirstOrDefault(ww => ww.Year.YearNumber == year.YearNumber && ww.WeekNumber == weekyear.Week);
+            WorkingWeek workWeek = _workDaysService.GetWorkWeekByWeekYear(weekyear);
+
             if (workWeek == null)
             {
                 workWeek = new WorkingWeek
@@ -237,13 +228,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 };
                 _db.WorkingWeeks.Add(workWeek);
                 _unitOfWork.SaveChanges();
-                workWeek=
-                _unitOfWork.RepositoryAsync<WorkingWeek>()
-                    .Query()
-                    .Include(ww => ww.Year)
-                    .Include(ww => ww.WorkingDays.Select(wd => wd.DayOfWeek))
-                    .Select()
-                    .FirstOrDefault(ww => ww.Year.YearNumber == year.YearNumber && ww.WeekNumber == weekyear.Week);
+
+                workWeek = _workDaysService.GetWorkWeekByWeekYear(weekyear);
             }
 
 
@@ -251,29 +237,33 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 year.WorkingWeeks.Add(workWeek);
             } 
-
-            List<MenuForDay> mfdays = new List<MenuForDay>();
-
+            
             for (var i = 0; i < 7; i++)
             {
                 if (workWeek != null)
                 {
-                    WorkingDay wday = workWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.ID == i + 1) ;
+                    WorkingDay wday = workWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.Id == i + 1) ;
                     MenuForDay mfd = new MenuForDay
                     {
-                        WorkingWeek = workWeek,
-                        WorkingDay = wday
+                        //WorkingWeek = workWeek,
+                        WorkingDay = wday,
+                        DayMenuCanBeChanged = true
                     };
                     _db.MenuForDays.Add(mfd);
                     _unitOfWork.SaveChanges();
                 }
             }
-            mfdays =
+            int[] daysid = workWeek != null
+                ? workWeek.WorkingDays.OrderBy(wd => wd.Id).Select(wd => wd.Id).ToArray()
+                : null;
+
+             List<MenuForDay> mfdays =
                 _unitOfWork.RepositoryAsync<MenuForDay>()
                     .Query()
-                    .Include(mfd => mfd.WorkingWeek)
+                    .Include(mfd => mfd.Dishes)
+                    .Include(mfd => mfd.WorkingDay)
                     .Select()
-                    .Where(mfd => workWeek != null && mfd.WorkingWeek.ID == workWeek.ID)
+                    .Where(mfd => daysid != null && (workWeek != null && daysid.Contains(mfd.WorkingDay.Id)))
                     .ToList();
             weekmenu = new MenuForWeek
             {
@@ -291,7 +281,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 throw;
             }
 
-            weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear.Week, weekyear.Year);
+            weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear);
             return WeekMenuDto.MapDto(_unitOfWork, weekmenu, true);
         }
     }
