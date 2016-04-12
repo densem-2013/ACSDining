@@ -17,7 +17,7 @@ using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "SuperUser")]
+    [Authorize(Roles = "SuperUser, Employee")]
     [RoutePrefix("api/WeekMenu")]
     //[EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
     public class WeekMenuController : ApiController

@@ -705,7 +705,7 @@
 
 			// Only do a callback, but ignore the results
 			callback(rootObject, options.parentName);
-			mappedRootObject = exports.getType(unwrappedRootObject) === "array" ? [] : {};
+			mappedRootObject = exports.getType(unwrappedRootObject) === "array" ? [] : { EQUAL: function(secobj) { throw new Error("Not implemented"); } };
 		}
 
 		options.visitedObjects.save(rootObject, mappedRootObject);

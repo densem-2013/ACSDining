@@ -551,7 +551,6 @@ E:\GitProjects\ACSDining\ACSDining.Web\bin\zh-Hant\System.Spatial.resources.dll
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.dll
 E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb
-E:\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Service.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.Configuration.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.Mvc.dll
@@ -560,8 +559,6 @@ E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.WebApi.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.Providers.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Unity.WebApi.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.dll
-E:\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Repository.dll
-E:\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Service.pdb
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.xml
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.Configuration.xml
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.Mvc.xml
@@ -570,7 +567,6 @@ E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.WebApi.xml
 E:\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.Providers.xml
 E:\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.pdb
 E:\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.xml
-E:\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Repository.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll.config
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.pdb

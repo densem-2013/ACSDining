@@ -23,12 +23,12 @@
         };
         self.doubleClick = function () {
             if (self.CanBeChanged()) {
-                this.isEditMode(true);
+                self.isEditMode(true);
             }
         };
         self.onFocusOut = function () {
             if (self.CanBeChanged()) {
-                this.isEditMode(false);
+                self.isEditMode(false);
             }
         };
     }
@@ -97,9 +97,14 @@
 
         self.OrderId = ko.observable();
 
-        self.CurrentWeekYear = ko.observable();
+        var tobj = {
+            week: 16,
+            year: 2016
+        };
 
-        self.WeekYear = ko.observable();
+        self.CurrentWeekYear = ko.observable(new WeekYear(tobj));
+
+        self.WeekYear = ko.observable(new WeekYear(tobj));
 
 
         self.MFD_models = ko.observableArray([]);
@@ -142,13 +147,13 @@
                 day: "numeric"
             };
 
-            var needed = ko.mapping.toJS(self.WeekYear);
+            var needed = self.WeekYear();
             if (needed !== undefined) {
 
-                var year = needed.Year;
+                var year = needed.year;
                 var firstDay = new Date(year, 0, 1).getDay();
 
-                var week = self.WeekYear().Week;
+                var week = self.WeekYear().week;
                 var d = new Date("Jan 01, " + year + " 01:00:00");
                 var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week - 1);
                 var n1 = new Date(w);
@@ -171,13 +176,13 @@
         //    }, onError);
         //};
 
-
-        self.SetMyDateByWeek = function(wyDto) {
+        self.SetMyDateByWeek = function (wyDto) {
             var firstDay = new Date(wyDto.year, 0, 1).getDay();
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week - 1);
             self.myDate(new Date(w));
         }.bind(self);
+
 
         var loadUserWeekOrder = function(wyDto) {
 
@@ -188,7 +193,7 @@
                 self.UserId(resp.userId);
                 self.WeekIsPaid(resp.weekIsPaid);
                 self.WeekYear(resp.weekYear);
-                ko.utils.arrayForEach(resp.mfD_models, function(object) {
+                ko.utils.arrayForEach(resp.dayOrderDtos, function(object) {
 
                     self.MFD_models.push(new menuForDayInfo(object, self.Categories()));
 
@@ -198,13 +203,13 @@
 
         }
 
-        self.LoadUserWeekOrder = function(wyDto) {
+        //self.LoadUserWeekOrder = function(wyDto) {
 
-            loadUserWeekOrder(wyDto);
-        }
+        //    loadUserWeekOrder(wyDto);
+        //}
 
         self.NextWeekOrder = function() {
-            var weekYear = new WeekYearModel(self.WeekYear());
+            var weekYear = new WeekYear(self.WeekYear());
             app.su_Service.GetNextWeekYear(weekYear).then(function(resp) {
 
                 self.SetMyDateByWeek(resp);
@@ -213,7 +218,7 @@
 
         }
         self.PrevWeekOrder = function() {
-            var weekYear = new WeekYearModel(self.WeekYear());
+            var weekYear = new WeekYear(self.WeekYear());
             app.su_Service.GetPrevWeekYear(weekYear).then(function(resp) {
 
                 self.SetMyDateByWeek(resp);
@@ -222,9 +227,9 @@
         }
         self.GoToNextWeekOrder = function() {
 
-            var curWeekYear = new WeekYearModel(self.CurrentWeekYear());
+            //var curWeekYear = new WeekYear(self.CurrentWeekYear());
 
-            app.su_Service.GetNextWeekYear(curWeekYear).then(function(nextWeekYear) {
+            app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function (nextWeekYear) {
                 self.loadWeekNumbers();
                 self.SetMyDateByWeek(nextWeekYear);
             });
@@ -240,7 +245,7 @@
                         Week: takedWeek,
                         Year: self.myDate().getFullYear()
                     };
-                    self.LoadUserWeekOrder(new WeekYear(weekyear));
+                    self.SetMyDateByWeek(weekyear);
                 }
             }
         }, self);
@@ -254,9 +259,12 @@
             }, onError);
         }
 
-        self.IsCurrentWeek = ko.computed(function () {
+        self.IsCurrentWeek = ko.computed(function() {
 
-            var res=self.CurrentWeekYear._isEqual(self.WeekYear);
+            //var res=self.CurrentWeekYear._isEqual(self.WeekYear);
+            //var curyear = self.CurrentWeekYear();
+            //var y = curyear.Year();
+            var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
             console.log("res= " + res);
             return res;
 
@@ -271,6 +279,7 @@
                 self.SetMyDateByWeek(self.CurrentWeekYear());
             }, onError);
         }
+
 
         self.CalcTotal = function() {
 
@@ -295,7 +304,8 @@
 
             //self.loadWeekNumbers();
             self.GetCurrentWeekYear();
-            self.LoadUserWeekOrder();
+            //self.LoadUserWeekOrder();
+            self.SetMyDateByWeek(self.CurrentWeekYear());
         }
         self.init();
     };

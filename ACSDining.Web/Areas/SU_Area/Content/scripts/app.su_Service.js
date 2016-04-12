@@ -8,11 +8,14 @@ ko.observableArray.fn.pushAll = function (valuesToPush) {
     return this;
 };
 
-ko.observable.fn._isEqual = function (valuesToEqual) {
-    var thisobject = ko.mapping.toJS(this());
-    var secobj = ko.mapping.toJS(valuesToEqual());
-    return thisobject.isEqual(secobj);
-};
+//ko.observable.fn._isEqual = function (valuesToEqual) {
+//    var temp = this();
+//    this.valueWillMutate();
+//    var thisobject = ko.mapping.toJS(temp);
+//    var secobj = ko.mapping.toJS(valuesToEqual);
+//    this.valueHasMutated();
+//    return thisobject.EQUAL(secobj);
+//};
 
 Date.prototype.getWeek = function () {
     var onejan = new Date(this.getFullYear(), 0, 1);
@@ -82,10 +85,10 @@ ko.bindingHandlers.datepicker = {
         }
     };
 
- var WeekYearModel=function(wyObj) {
+ var WeekYear=function(wyObj) {
       var self = this;
-      self.Week = wyObj.week;
-      self.Year = wyObj.year;
+      self.Week = ko.observable(wyObj.week);
+      self.Year = ko.observable(wyObj.year);
     }
 
 window.app.su_Service = (function() {
@@ -101,7 +104,6 @@ window.app.su_Service = (function() {
         currentweek: function() { return baseWeekMenuUri + "curWeekYear"; },
         categories: function() { return baseWeekMenuUri + "categories" },
         nextWeekYear: function () { return baseWeekMenuUri + "nextWeekYear" },
-        isNextWeekYear: function () { return baseWeekMenuUri + "isNextWeekYear" },
         prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
         deleteWeekMenu: function (menuid) { return baseWeekMenuUri + "delete/" + menuid }
     }
@@ -145,6 +147,7 @@ window.app.su_Service = (function() {
     var baseUserWeekOrder = "/api/Employee/";
     var serviceUserWeekOrders= {
         //weekorder: function (wyDto) { return baseUserWeekOrder /*+ serviceOrdersUrls.ordersParams(week, year) */ },
+        isNextWeekYear: function () { return baseUserWeekOrder + "isNextWeekYear" },
         canCreateOrderOnNextWeek: function () { return baseUserWeekOrder + "canCreateOrderOnNextWeek" }
     }
 
@@ -165,13 +168,10 @@ window.app.su_Service = (function() {
 
     return {
         LoadWeekMenu: function(wyDto) {
-            return ajaxRequest("get", baseWeekMenuUri, wyDto);
+            return ajaxRequest("put", baseWeekMenuUri, wyDto);
         },
         GetNextWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(), wyDto);
-        },
-        IsNextWeekYear: function (wyDto) {
-            return ajaxRequest("put", serviceWeekMenuUrls.isNextWeekYear(), wyDto);
         },
         GetPrevWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), wyDto);
@@ -204,7 +204,7 @@ window.app.su_Service = (function() {
             return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishId));
         },
         LoadWeekOrders: function (wyDto) {
-            return ajaxRequest("get", baseOrdersUri, wyDto);
+            return ajaxRequest("put", baseOrdersUri, wyDto);
         },
         //GetOrderSummary: function(week, year, item) {
         //    return ajaxRequest("put", serviceOrdersUrls.calcsummary(week, year), item);
@@ -216,7 +216,7 @@ window.app.su_Service = (function() {
             return ajaxRequest("post", serviceOrdersUrls.createOrder());
         },
         GetPaiments: function (wyDto) {
-            return ajaxRequest("get", basePaimentsUri, wyDto);
+            return ajaxRequest("put", basePaimentsUri, wyDto);
         },
         UpdatePaiment: function(orderid, pai) {
             return ajaxRequest("put", servicePaimentsUrls.updatePaiment(orderid), pai);
@@ -234,7 +234,10 @@ window.app.su_Service = (function() {
             return ajaxRequest("put", serviceWorkDaysUrls.updateWorkDays(),weekinfo);
         },
         LoadUserWeekOrder: function(wyDto) {
-            return ajaxRequest("get", /*serviceUserWeekOrders.weekorder(week,year)*/baseUserWeekOrder, wyDto);
+            return ajaxRequest("put", /*serviceUserWeekOrders.weekorder(week,year)*/baseUserWeekOrder, wyDto);
+        },
+        IsNextWeekYear: function (wyDto) {
+            return ajaxRequest("put", serviceUserWeekOrders.isNextWeekYear(), wyDto);
         },
         CanCreateOrderOnNextWeek: function () {
             return ajaxRequest("get", serviceUserWeekOrders.canCreateOrderOnNextWeek());

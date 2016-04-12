@@ -59,8 +59,6 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("")]
-        [Route("{numweek}")]
-        [Route("{numweek}/{year}")]
         [ResponseType(typeof (UserWeekOrderDto))]
         public async Task<IHttpActionResult> GetUserWeekOrderDto([FromBody] WeekYearDto wyDto)
         {
@@ -226,10 +224,10 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// Это уведомление позволяет или запрещает создание заказа на следующую неделю
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPut]
         [Route("isNextWeekYear")]
         [ResponseType(typeof (bool))]
-        public async Task<IHttpActionResult> IsNextWeek(WeekYearDto wyDto)
+        public async Task<IHttpActionResult> IsNextWeek([FromBody] WeekYearDto wyDto)
         {
             WeekYearDto curWeekYearDto = YearWeekHelp.GetCurrentWeekYearDto();
             WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
