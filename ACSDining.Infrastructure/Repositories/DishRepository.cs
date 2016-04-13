@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.DTO.SuperUser;
 
 namespace ACSDining.Infrastructure.Repositories
@@ -24,7 +23,7 @@ namespace ACSDining.Infrastructure.Repositories
 
         public static Dish UpdateDish(this IRepositoryAsync<Dish> repository, DishModelDto dmodel)
         {
-            Dish target = repository.Find(dmodel.DishID);
+            Dish target = repository.Find(dmodel.DishId);
             if (!string.Equals(dmodel.Foods, string.Empty))
             {
                 DishDetail dishDetail = new DishDetail {Foods = dmodel.Foods};

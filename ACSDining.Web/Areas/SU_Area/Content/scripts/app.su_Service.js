@@ -8,15 +8,6 @@ ko.observableArray.fn.pushAll = function (valuesToPush) {
     return this;
 };
 
-//ko.observable.fn._isEqual = function (valuesToEqual) {
-//    var temp = this();
-//    this.valueWillMutate();
-//    var thisobject = ko.mapping.toJS(temp);
-//    var secobj = ko.mapping.toJS(valuesToEqual);
-//    this.valueHasMutated();
-//    return thisobject.EQUAL(secobj);
-//};
-
 Date.prototype.getWeek = function () {
     var onejan = new Date(this.getFullYear(), 0, 1);
     var today = new Date(this.getFullYear(), this.getMonth(), this.getDate());
@@ -147,6 +138,7 @@ window.app.su_Service = (function() {
     var baseUserWeekOrder = "/api/Employee/";
     var serviceUserWeekOrders= {
         //weekorder: function (wyDto) { return baseUserWeekOrder /*+ serviceOrdersUrls.ordersParams(week, year) */ },
+        nextWeekOrderExists: function () { return baseUserWeekOrder + "nextWeekOrderExists" },
         isNextWeekYear: function () { return baseUserWeekOrder + "isNextWeekYear" },
         canCreateOrderOnNextWeek: function () { return baseUserWeekOrder + "canCreateOrderOnNextWeek" }
     }
@@ -238,6 +230,9 @@ window.app.su_Service = (function() {
         },
         IsNextWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceUserWeekOrders.isNextWeekYear(), wyDto);
+        },
+        NextWeekOrderExists: function () {
+            return ajaxRequest("get", serviceUserWeekOrders.nextWeekOrderExists());
         },
         CanCreateOrderOnNextWeek: function () {
             return ajaxRequest("get", serviceUserWeekOrders.canCreateOrderOnNextWeek());

@@ -38,7 +38,7 @@ namespace ACSDining.Infrastructure.HelpClasses
 
                     if (dayMenu != null)
                     {
-                        dayMenu.OrderCanBeChanged = false;
+                        dayMenu.OrderCanBeCreated = false;
                         dayMenu.DayMenuCanBeChanged = false;
                     }
                 }
@@ -67,17 +67,17 @@ namespace ACSDining.Infrastructure.HelpClasses
                         {
                             if (y.ID>day)
                             {
-                                y.OrderCanBeChanged = true;
+                                y.OrderCanBeCreated = true;
                                 y.DayMenuCanBeChanged = true;
                             }
                             if (y.ID==day)
                             {
-                                y.OrderCanBeChanged = DateTime.Now.Hour < 9;
+                                y.OrderCanBeCreated = DateTime.Now.Hour < 9;
                                 y.DayMenuCanBeChanged = DateTime.Now.Hour < 9;
                             }
                             if (y.ID<day)
                             {
-                                y.OrderCanBeChanged = false;
+                                y.OrderCanBeCreated = false;
                                 y.DayMenuCanBeChanged = false;
                             }
                         });
@@ -88,7 +88,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                         x.MenuCanBeChanged = false;
                         x.MenuForDay.ToList().ForEach(y =>
                         {
-                            y.OrderCanBeChanged = false;
+                            y.OrderCanBeCreated = false;
                             y.DayMenuCanBeChanged = false;
                         });
                     }

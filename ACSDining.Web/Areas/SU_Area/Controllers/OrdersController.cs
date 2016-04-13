@@ -30,7 +30,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         //Получить все фактические заявки на неделю
-        [HttpGet]
+        [HttpPut]
         [Route("fact")]
         public async Task<List<UserWeekOrderDto>> GetFactMenuOrders([FromBody] WeekYearDto wyDto = null)
         {
@@ -56,10 +56,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         //Получить все плановые заявки на неделю
-        [HttpGet]
+        [HttpPut]
         [Route("plan")]
-        [Route("plan/{numweek}")]
-        [Route("plan/{numweek}/{year}")]
         public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromBody] WeekYearDto wyDto = null)
         {
             if (wyDto == null)
@@ -115,7 +113,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                         if (x.OrderCanBeChanged)
                         {
                             List<DishQuantityRelations> dqaList =
-                                _dishQuantityService.GetByDayOrderMenuForDay(udoDto.DayOrderId, udoDto.MenuForDayId);
+                                _dishQuantityService.GetByDayOrderMenuForDay(udoDto.DayOrderId, udoDto.MenuForDay.Id);
 
                             for (int j = 1; j <= catLength; j++)
                             {

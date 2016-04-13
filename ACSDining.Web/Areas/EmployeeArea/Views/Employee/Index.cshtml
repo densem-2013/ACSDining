@@ -6,6 +6,15 @@
     <div class="col-sm-10 col-sm-offset-3 col-xs-offset-3" style="padding-bottom: 5px">
     <span data-bind="text: WeekTitle" id="wnDysplay" style="background: rgba(119, 222, 228, 0.61);color:rgb(232, 34, 208); "></span>
 </div>
+<div class="row">
+    <div class="col-md-9 col-xs-offset-3">
+        <div class="col-md-6">
+            <div class="input-group date">
+                <input type="text" class="form-control" data-provide="datepicker" data-bind="datepicker: myDate" />
+            </div>
+        </div>
+    </div>
+</div>
 <div class="col-md-10  col-sm-offset-1 col-sm-12 col-xs-12 object-non-visible" data-animation-effect="fadeIn">
     <div class="panel panel-default" id="mfwPanel">
         <table>
@@ -13,12 +22,12 @@
                 <tr style="background: #565659;">
                     <td class="col-md-3">
                         <div>
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ LoadUserWeekOrder(CurrentWeekNumber(),Year());} , css:{disabled: IsCurrentWeek()}" />
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ LoadUserWeekOrder((CurrentWeekYear()));} , css:{disabled: IsCurrentWeek()}" />
                         </div>
                     </td>
                     <td class="col-md-7">
                         <div class="col-sm-offset-5">
-                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: function(){return IsNextWeekMenuExist()? 'Перейти на следующую неделю':'Создать заказ на следующую неделю';}" />
+                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: NextWeekOrderExist() ? 'Перейти на следующую неделю':'Создать заказ на следующую неделю', css:{ enabled: CanCreateOrderOnNextWeek()}" />
                         </div>
                     </td>
                 </tr>
@@ -35,22 +44,24 @@
                 </tr>
             </thead>
             <tbody >
-            <!--ko foreach: MFD_models -->
+            <!--ko foreach: UserDayOrders -->
             <tr>
                 <td style="vertical-align: middle; text-align: center">
                     <span data-bind="text: DayOfWeek"></span>
                 </td>
-
-                <td data-bind="foreach: Dishes">
+                <!--ko with: MenuForDay-->
+                <!-- ko foreach: Dishes-->
+                <td >
                     <div style="border-bottom: 1px solid; text-align: right">
                         <span data-bind="text: $data.Category() + ' : '"></span>
                     </div>
                 </td>
-                <td data-bind="foreach: Dishes">
+                <td>
                     <div style="border-bottom: 1px solid;">
                         <span data-bind="text: $data.Title"></span>
                     </div>
-                </td>
+                </td> 
+                <!--/ko-->
                 <td style="vertical-align: middle; text-align: center;">
                     <!--ko foreach: Dishes-->
                     <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
@@ -74,8 +85,9 @@
                     </div>
                 </td>
                 <td style="text-align: right; vertical-align: middle; height: 100%">
-                    <span data-bind="text: TotalPrice()"></span>
+                    <span data-bind="text: DayOrderSummary()"></span>
                 </td>
+                <!--/ko-->
 
             </tr>
             <!--/ko--> 

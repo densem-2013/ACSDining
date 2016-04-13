@@ -64,7 +64,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DishExists(dish.DishID))
+                if (!DishExists(dish.DishId))
                 {
                     return NotFound();
                 }
@@ -108,7 +108,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             catch (DbUpdateException)
             {
-                if (DishExists(dmodel.DishID))
+                if (DishExists(dmodel.DishId))
                 {
                     return Conflict();
                 }
@@ -119,6 +119,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         // DELETE api/Dishes/5
+        [HttpDelete]
         [Route("delete/{id}")]
         [ResponseType(typeof (Dish))]
         public async Task<bool> DeleteDish(int id)

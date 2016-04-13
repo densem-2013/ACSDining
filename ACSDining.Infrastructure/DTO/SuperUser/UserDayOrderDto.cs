@@ -9,8 +9,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     public class UserDayOrderDto
     {
         public int DayOrderId { get; set; }
-        public int MenuForDayId { get; set; }
-        public WorkDayDto WorkDayDto { get; set; }
+        public MenuForDayDto MenuForDay { get; set; }
         public double[] DishQuantities { get; set; }
         public double DayOrderSummary { get; set; }
         public bool OrderCanBeChanged { get; set; }
@@ -48,8 +47,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             return new UserDayOrderDto
             {
                 DayOrderId = dayOrderMenu.Id,
-                MenuForDayId=dayOrderMenu.MenuForDay.ID,
-                WorkDayDto = WorkDayDto.MapDto(workday),
+                MenuForDay = MenuForDayDto.MapDto(dayOrderMenu.MenuForDay),
                 DishQuantities = dquantities,
                 DayOrderSummary = dayOrderMenu.DayOrderSummaryPrice,
                 OrderCanBeChanged = dayOrderMenu.OrderCanBeChanged

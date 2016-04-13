@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
 
@@ -11,7 +8,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     public class PlanUserDayOrderDto
     {
         public int PlanDayOrderId { get; set; }
-        public WorkDayDto WorkDayDto { get; set; }
+        //public WorkDayDto WorkDayDto { get; set; }
         public double[] DishQuantities { get; set; }
         public double DayOrderSummary { get; set; }
 
@@ -20,7 +17,6 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="planDayOrderMenu"></param>
-        /// <param name="quaList"></param>
         /// <param name="catlength"></param>
         /// <returns></returns>
         public static PlanUserDayOrderDto MapUserDayOrderDto(IUnitOfWorkAsync unitOfWork, PlannedDayOrderMenu planDayOrderMenu, int catlength)
@@ -48,7 +44,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             return new PlanUserDayOrderDto
             {
                 PlanDayOrderId = planDayOrderMenu.Id,
-                WorkDayDto = WorkDayDto.MapDto(workday),
+                //WorkDayDto = WorkDayDto.MapDto(workday),
                 DishQuantities = dquantities,
                 DayOrderSummary = planDayOrderMenu.DayOrderMenu.DayOrderSummaryPrice
             };

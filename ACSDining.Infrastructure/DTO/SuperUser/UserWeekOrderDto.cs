@@ -10,7 +10,6 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     {
         public string UserId { get; set; }
         public int OrderId { get; set; }
-        public string UserName { get; set; }
         public List<UserDayOrderDto> DayOrderDtos { get; set; }
         public double WeekSummaryPrice { get; set; }
         public double WeekPaid { get; set; }
@@ -27,7 +26,6 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 WeekPaid = weekOrderMenu.WeekPaid,
                 UserId = weekOrderMenu.User.Id,
                 OrderId = weekOrderMenu.Id,
-                UserName = weekOrderMenu.User.UserName,
                 DayOrderDtos =
                     weekOrderMenu.DayOrderMenus.Select(
                         dord => UserDayOrderDto.MapUserDayOrderDto(unitOfWork, dord, catLength)).ToList(),

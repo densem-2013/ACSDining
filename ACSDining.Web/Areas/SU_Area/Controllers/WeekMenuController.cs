@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -38,7 +37,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         // GET api/WeekMenu
-        [HttpGet]
+        [HttpPut]
         [Route("")]
         [ResponseType(typeof (WeekMenuDto))]
         public async Task<WeekMenuDto> GetWeekMenu([FromBody] WeekYearDto wyDto=null)
@@ -52,7 +51,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return await Task.FromResult(WeekMenuDtoByWeekYear(wyDto));
         }
 
-        [HttpGet]
+        [HttpPut]
         [Route("nwMenuExist")]
         public Task<bool> IsNexWeekMenuExist(WeekYearDto weekyear)
         {
@@ -120,7 +119,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
             List<Dish> dishes =
-                menuforday.Dishes.SelectMany(d => _dishService.AllDish().Where(dish => dish.DishID == d.DishID))
+                menuforday.Dishes.SelectMany(d => _dishService.AllDish().Where(dish => dish.DishID == d.DishId))
                     .ToList();
 
             menuFd.Dishes = dishes;

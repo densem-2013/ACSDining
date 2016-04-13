@@ -29,7 +29,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
 
-        [System.Web.Http.HttpGet]
+        [System.Web.Http.HttpPut]
         [System.Web.Http.Route("paiments")]
         [ResponseType(typeof(double))]
         public FilePathResult GetExelFromWeekPaimentstDto([FromBody] List<UserWeekPaimentDto> paimentList)

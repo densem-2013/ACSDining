@@ -35,7 +35,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                         if (firstOrDefault != null)
                             dmodels.Add(new DishModelDto
                             {
-                                DishID = i + 1,
+                                DishId = i + 1,
                                 Title = "_",
                                 Price = 0,
                                 Category = firstOrDefault.Category,

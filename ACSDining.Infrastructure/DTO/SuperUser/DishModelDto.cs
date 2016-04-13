@@ -4,7 +4,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
 {
     public class DishModelDto
     {
-        public int DishID { get; set; }
+        public int DishId { get; set; }
         public string Title { get; set; }
         public string ProductImage { get; set; }
         public double Price { get; set; }
@@ -15,7 +15,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         {
             return new DishModelDto
             {
-                DishID = dish.DishID,
+                DishId = dish.DishID,
                 Title = dish.Title,
                 ProductImage = dish.ProductImage,
                 Price = dish.Price,

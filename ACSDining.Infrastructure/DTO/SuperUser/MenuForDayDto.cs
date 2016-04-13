@@ -10,7 +10,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public string DayOfWeek { get; set; }
         public double TotalPrice { get; set; }
         public List<DishModelDto> Dishes { get; set; }
-        public bool Editing { get; set; }
+        public bool CanBeEditing { get; set; }
 
         public static MenuForDayDto MapDto(MenuForDay daymenu)
         {

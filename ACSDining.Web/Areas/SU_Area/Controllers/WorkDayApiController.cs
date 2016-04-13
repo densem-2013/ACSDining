@@ -27,8 +27,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _workDayService = new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
         }
 
-        [HttpGet]
-        [Route("{numweek}/{year}")]
+        [HttpPut]
+        [Route("")]
         public async Task<WorkWeekDto> GetWorkWeek([FromBody] WeekYearDto wyDto = null)
         {
             if (wyDto==null)

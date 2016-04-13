@@ -127,9 +127,9 @@
     <Compile Include="Identity\ApplicationDbContext.cs" />
     <Compile Include="Identity\ApplicationDbInitializer.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201604121154204_Initial.cs" />
-    <Compile Include="Migrations\201604121154204_Initial.Designer.cs">
-      <DependentUpon>201604121154204_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201604131133476_Initial.cs" />
+    <Compile Include="Migrations\201604131133476_Initial.Designer.cs">
+      <DependentUpon>201604131133476_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -166,8 +166,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201604121154204_Initial.resx">
-      <DependentUpon>201604121154204_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604131133476_Initial.resx">
+      <DependentUpon>201604131133476_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

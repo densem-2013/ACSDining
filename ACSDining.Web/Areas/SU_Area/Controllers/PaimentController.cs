@@ -36,6 +36,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         /// </summary>
         /// <param name="wyDto">Объект, инкапсулирующий запрашиваемую неделю в году</param>
         /// <returns></returns>
+        [HttpPut]
         [Route("weekPaiments")]
         [ResponseType(typeof (List<UserWeekPaimentDto>))]
         public async Task<List<UserWeekPaimentDto>> GetWeekPaiments([FromBody] WeekYearDto wyDto = null)
@@ -65,7 +66,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         /// </summary>
         /// <param name="wyDto"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPut]
         [Route("paimentsByDish")]
         [ResponseType(typeof(double[]))]
         public async Task<double[]> PaimentsByDishes([FromBody]WeekYearDto wyDto)

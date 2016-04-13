@@ -111,7 +111,7 @@ namespace ACSDining.Infrastructure.Identity
             :
                 base(userManager, authenticationManager)
         {
-           // _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
+            _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
         }
 
         public override Task<ClaimsIdentity> CreateUserIdentityAsync(User user)
@@ -125,25 +125,35 @@ namespace ACSDining.Infrastructure.Identity
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }
 
-        //public Task<SignInStatus> ValidateUserFromAd(string login, string password)
-        //{
-        //    UserPrincipal u = new UserPrincipal(_ad) {SamAccountName = login};
-        //    bool res = _ad.ValidateCredentials(u.SamAccountName, password);
-        //    if (res)
-        //    {
-        //        if (!u.IsAccountLockedOut())
-        //        {
-        //            return Task.FromResult(SignInStatus.Success);
-        //        }
-        //        else
-        //        {
-        //            return Task.FromResult(SignInStatus.LockedOut);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return Task.FromResult(SignInStatus.Failure);
-        //    }
-        //}
+        public Task<SignInStatus> ValidateUserFromAd(string login, string password)
+        {
+            bool res = false;
+            UserPrincipal u = null;
+            try
+            {
+                u = new UserPrincipal(_ad) { SamAccountName = login };
+                res = _ad.ValidateCredentials(u.SamAccountName, password);
+            }
+            catch (Exception)
+            {
+                res = false;
+                throw;
+            }
+            if (res)
+            {
+                if (!u.IsAccountLockedOut())
+                {
+                    return Task.FromResult(SignInStatus.Success);
+                }
+                else
+                {
+                    return Task.FromResult(SignInStatus.LockedOut);
+                }
+            }
+            else
+            {
+                return Task.FromResult(SignInStatus.Failure);
+            }
+        }
     }
 }
