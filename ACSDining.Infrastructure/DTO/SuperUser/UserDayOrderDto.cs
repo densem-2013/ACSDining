@@ -40,7 +40,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             for (int j = 1; j <= catlength; j++)
             {
                 var firstOrDefault = quaList.FirstOrDefault(
-                    q => q.MenuForDay.WorkingDay.DayOfWeek.Id == workday.Id && q.DishTypeId == j);
+                    q => q.MenuForDay.WorkingDay.Id == workday.Id && q.DishTypeId == j);
                 if (firstOrDefault != null)
                     dquantities[j - 1] = firstOrDefault.DishQuantity.Quantity;
             }

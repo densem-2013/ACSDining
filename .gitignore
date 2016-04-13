@@ -1,7 +1,7 @@
 ACSDining.Core/DBinitial/DishDetails.xml
 ACSDining.Web/Controllers/AccountController.cs
 ACSDining.Infrastructure/Identity/IdentityConfig.cs
-#ACSDining.Web/Web.config
+ACSDining.Web/Web.config
 */bin/*.*
 bin/*.*
 

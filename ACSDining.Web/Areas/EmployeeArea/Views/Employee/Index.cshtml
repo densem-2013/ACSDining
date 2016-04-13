@@ -64,16 +64,20 @@
                 <!--/ko-->
                 <td style="vertical-align: middle; text-align: center;">
                     <!--ko foreach: Dishes-->
-                    <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
-                        <!--ko ifnot: isEditMode() -->
+                    <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.OrderQuantity().clicked($element)}, event : { dblclick: $data.OrderQuantity().doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
+                        <!--ko ifnot: OrderQuantity().isEditMode() -->
                         <span data-bind="text: $data.Quantity"></span>
                         <!--/ko-->
-                        <!-- ko if: isEditMode -->
+                        <!-- ko if: OrderQuantity().isEditMode -->
                         <!-- ko if: (Category() == "Первое блюдо") -->
+                        <!-- ko with: OrderQuantity-->
                         <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
                         <!--/ko-->
+                        <!--/ko-->
                         <!-- ko ifnot: (Category() == "Первое блюдо") -->
+                        <!-- ko with: OrderQuantity-->
                         <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
+                        <!--/ko-->
                         <!--/ko-->
                         <!--/ko-->
                     </div>
@@ -83,11 +87,11 @@
                     <div>
                         <span data-bind="text: $data.Price" style="border-bottom: 1px solid"></span><br/>
                     </div>
-                </td>
-                <td style="text-align: right; vertical-align: middle; height: 100%">
-                    <span data-bind="text: DayOrderSummary()"></span>
-                </td>
+                </td> 
                 <!--/ko-->
+                <td style="text-align: right; vertical-align: middle; height: 100%">
+                    <span data-bind="text: DayOrderSummary"></span>
+                </td>
 
             </tr>
             <!--/ko--> 

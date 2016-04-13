@@ -142,7 +142,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
                 _db.MenuForWeeks.Remove(mfwModel);
                 _db.MenuForWeeks.Add(mfwModel);
-                //_weekmenuService.Update(mfwModel);
             }
 
             await _unitOfWork.SaveChangesAsync();
@@ -196,7 +195,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 var dto = WeekMenuDto.MapDto(_unitOfWork, weekmenu);
                 return dto;
             }
-           // if (!YearWeekHelp.WeekIsCurrentOrNext(weekyear)) return null;
 
             List<WorkingDay> workdays = new List<WorkingDay>();
 

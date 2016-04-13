@@ -1,9 +1,7 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
-using NLog.LayoutRenderers.Wrappers;
 
 namespace ACSDining.Infrastructure.HelpClasses
 {
@@ -17,7 +15,7 @@ namespace ACSDining.Infrastructure.HelpClasses
         public static int GetDishCategoriesCount(IUnitOfWorkAsync unitOfWorkAsync)
         {
             var cats = unitOfWorkAsync.RepositoryAsync<DishType>();
-            cats.Queryable().LoadAsync().RunSynchronously();
+
             string[] categories = cats.Queryable()
                 .Select(dt => dt.Category)
                 .AsQueryable()
@@ -33,7 +31,7 @@ namespace ACSDining.Infrastructure.HelpClasses
         public static string[] GetCategories(IUnitOfWorkAsync unitOfWorkAsync)
         {
             var cats = unitOfWorkAsync.RepositoryAsync<DishType>();
-            //cats.Queryable().LoadAsync().RunSynchronously();
+
             string[] categories = cats.Queryable()
                 .Select(dt => dt.Category)
                 .AsQueryable()
