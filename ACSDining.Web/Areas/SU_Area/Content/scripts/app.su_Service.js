@@ -159,6 +159,7 @@ window.app.su_Service = (function() {
     var serviceUserWeekOrders= {
         nextWeekOrderExists: function () { return baseUserWeekOrder + "nextWeekOrderExists" },
         isNextWeekYear: function () { return baseUserWeekOrder + "isNextWeekYear" },
+        updateuserweek: function () { return baseUserWeekOrder + "update" },
         canCreateOrderOnNextWeek: function () { return baseUserWeekOrder + "canCreateOrderOnNextWeek" }
     }
 
@@ -249,6 +250,9 @@ window.app.su_Service = (function() {
         },
         NextWeekOrderExists: function () {
             return ajaxRequest("get", serviceUserWeekOrders.nextWeekOrderExists());
+        },
+        UserWeekUpdateOrder: function (item) {
+            return ajaxRequest("put", serviceUserWeekOrders.updateuserweek(), item);
         },
         CanCreateOrderOnNextWeek: function () {
             return ajaxRequest("get", serviceUserWeekOrders.canCreateOrderOnNextWeek());

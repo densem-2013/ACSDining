@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.UnitOfWork;
 
-namespace ACSDining.Infrastructure.DTO.SuperUser
+namespace ACSDining.Infrastructure.DTO.Employee
 {
     //Представляет информацию о фактической заявке пользователя на неделю
     public class UserWeekOrderDto

@@ -56,7 +56,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                 int year = DateTime.Now.Year;
                 int day = (int) DateTime.Now.DayOfWeek;
                 int week = YearWeekHelp.CurrentWeek();
-                context.MenuForWeeks.Include("MenuForDay.WorkingWeek").Include("WorkingWeek.Year").ToList().ForEach(x =>
+                context.MenuForWeeks.Include("MenuForDay").Include("WorkingWeek.Year").ToList().ForEach(x =>
                 {
                     if (x.WorkingWeek.Year.YearNumber == year &&
                         (x.WorkingWeek.WeekNumber == week || x.WorkingWeek.WeekNumber == week + 1))

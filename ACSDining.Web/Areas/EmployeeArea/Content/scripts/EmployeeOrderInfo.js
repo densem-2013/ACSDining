@@ -17,20 +17,24 @@
         var self = this;
         self.isEditMode = ko.observable(false);
         self.Quantity = ko.observable(value);
-        self.CanBeChanged = ko.observable(canchange);
+        self.CanBeChanged = ko.observable(/*canchange*/true);
+        self.Store = ko.observable();
+        self.beenChanged = ko.observable(false);
         self.clicked = function (item) {
             if (self.CanBeChanged()) {
-
                 $(item).focusin();
             }
         };
         self.doubleClick = function () {
             if (self.CanBeChanged()) {
+                self.beenChanged(false);
+                self.Store(self.Quantity());
                 self.isEditMode(true);
             }
         };
         self.onFocusOut = function () {
             if (self.CanBeChanged()) {
+                self.beenChanged(self.Store() !== self.Quantity());
                 self.isEditMode(false);
             }
         };
@@ -95,8 +99,8 @@
             var sum = 0;
             var valsum;
             for (var i = 0; i < self.MenuForDay().Dishes().length; i++) {
-
-                valsum = parseFloat(self.MenuForDay().Dishes()[i].Price());
+                var dish = self.MenuForDay().Dishes()[i];
+                valsum = parseFloat(dish.Price() * dish.OrderQuantity().Quantity());
                 sum += valsum;
             };
             self.DayOrderSummary(sum.toFixed(2));
@@ -138,8 +142,6 @@
         self.QuantValues = [0, 1, 2, 3, 4, 5];
 
         self.BeenChanged = ko.observable(false);
-
-        self.WeekSummaryPrice = ko.observable();
 
         self.IsCurrentWeek = ko.observable();
 
@@ -193,7 +195,7 @@
                 self.UserId(resp.userId);
                 self.WeekIsPaid(resp.weekIsPaid);
                 self.WeekYear(resp.weekYear);
-                self.WeekSummaryPrice(resp.weekSummaryPrice);
+                self.WeekSummaryPrice(resp.weekSummaryPrice.toFixed(2));
                 ko.utils.arrayForEach(resp.dayOrderDtos, function(object) {
 
                     self.UserDayOrders.push(new userDayOrderInfo(object, self.Categories(), object.orderCanBeChanged));
@@ -274,8 +276,11 @@
         }
 
 
-        self.CalcSummary = function () {
+        self.CalcSummary = function (beenchanged) {
+            if (beenchanged) {
 
+                self.BeenChanged(true);
+            }
             var sum = 0;
 
             for (var ind = 0; ind < self.UserDayOrders().length; ind++) {
@@ -286,6 +291,21 @@
             }
 
             self.WeekSummaryPrice(sum.toFixed(2));
+        };
+
+        self.update = function () {
+            var userweekorder = {
+                UserId: self.UserId(),
+                OrderId: self.OrderId(),
+                DayOrderDtos: self.UserDayOrders(),
+                WeekSummaryPrice: self.WeekSummaryPrice(),
+                WeekIsPaid: self.WeekIsPaid(),
+                WeekYearDto:self.WeekYear()
+            };
+
+            app.su_Service.UserWeekUpdateOrder(userweekorder).then(function () {
+                self.BeenChanged(false);
+            }, onError());
         };
 
         self.init = function() {

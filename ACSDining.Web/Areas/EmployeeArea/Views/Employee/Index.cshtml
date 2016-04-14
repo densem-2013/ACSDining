@@ -14,14 +14,19 @@
             <table>
                 <tbody>
                 <tr style="background: #565659;">
-                    <td class="col-md-3">
-                        <div>
+                    <td >
+                        <div class ="col-md-3">
                             <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ SetMyDateByWeek((CurrentWeekYear()));} , css:{disabled: IsCurrentWeek()}" />
                         </div>
                     </td>
-                    <td class="col-md-7">
-                        <div class="col-sm-offset-5">
-                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: NextWeekOrderExist() ? 'Перейти на следующую неделю':'Создать заказ на следующую неделю', css:{ enabled: CanCreateOrderOnNextWeek()}"/>
+                    <td>
+                        <div class="col-md-3">
+                            <input type="button" value="Сохранить изменения" id="beenChanged" class="btn btn-warning" data-bind=" click:update , visible: BeenChanged" />
+                        </div>
+                    </td>
+                    <td >
+                        <div class="col-md-3 ">
+                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: NextWeekOrderExist() ? 'Перейти на следующую неделю':'Создать заказ на следующую неделю', css:{ disabled: !CanCreateOrderOnNextWeek()}" />
                         </div>
                     </td>
                 </tr>
@@ -67,12 +72,12 @@
                             <!-- ko if: OrderQuantity().isEditMode -->
                             <!-- ko if: ($index() % 4 === 0) -->
                             <!-- ko with: OrderQuantity-->
-                            <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
+                            <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())} }"></select>
                             <!--/ko-->
                             <!--/ko-->
                             <!-- ko ifnot: ($index() % 4 === 0) -->
                             <!-- ko with: OrderQuantity-->
-                            <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
+                            <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())} }"></select>
                             <!--/ko-->
                             <!--/ko-->
                             <!--/ko-->
@@ -95,7 +100,11 @@
                 <!--/ko-->
                 </tbody>
                 <tfoot>
-                </tfoot>
+                    <tr>
+                        <td colspan="5" style=" text-align: right"><span style="font-weight: bold">Итого</span></td>
+                        <td ><span data-bind="text: WeekSummaryPrice" style="font-weight: bold"></span></td>
+                    </tr>
+</tfoot>
             </table>
         </div>
     </div>
