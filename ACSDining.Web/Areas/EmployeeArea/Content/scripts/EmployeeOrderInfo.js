@@ -7,27 +7,30 @@
 /// <reference path="~/Content/app/jquery-1.10.2.js" />
 (function () {
 
-    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" });
+    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
+        .css({ 'background': 'rgba(119, 222, 228, 0.61)', 'color': 'rgb(232, 34, 208)', 'border': '3px solid rgb(50, 235, 213)' });
+
+
 
     var quantValueModel = function(value,canchange) {
 
         var self = this;
         self.isEditMode = ko.observable(false);
         self.Quantity = ko.observable(value);
-        self.CanBeChanged = canchange;
+        self.CanBeChanged = ko.observable(canchange);
         self.clicked = function (item) {
-            if (self.CanBeChanged) {
+            if (self.CanBeChanged()) {
 
                 $(item).focusin();
             }
         };
         self.doubleClick = function () {
-            if (self.CanBeChanged) {
+            if (self.CanBeChanged()) {
                 self.isEditMode(true);
             }
         };
         self.onFocusOut = function () {
-            if (self.CanBeChanged) {
+            if (self.CanBeChanged()) {
                 self.isEditMode(false);
             }
         };
@@ -46,7 +49,7 @@
         self.OrderQuantity = ko.observable(new quantValueModel(quantity, canbechanged));
     }
 
-    var menuForDay = function (dayobj, categs) {
+    var menuForDay = function(dayobj, categs) {
 
         var self = this;
 
@@ -54,15 +57,20 @@
         categs = categs || [];
 
         self.ID = ko.observable(dayobj.id);
-        self.DayOfWeek = ko.observable(dayobj.dayOfWeek);
-        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function (item) {
+        self.DayOfWeek = ko.observable(dayobj.menuForDay.dayOfWeek);
+        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function(item) {
             var ind = 0;
-            var first = ko.utils.arrayFirst(dayobj.menuForDay.dishes, function (element) {
+            var catind;
+            var first = ko.utils.arrayFirst(dayobj.menuForDay.dishes, function(element) {
+                var positivRes = element.category === item;
+                if (positivRes) {
+                    catind = ind;
+                }
                 ind++;
-                return element.category === item;
+                return positivRes;
             });
-            if (first != null) {
-                return new dishInfo(first, dayobj.quantCanBeChanged, dayobj.dishQuantities[ind]);
+            if (first != null && catind != null) {
+                return new dishInfo(first, dayobj.quantCanBeChanged, dayobj.dishQuantities[catind]);
             }
             return null;
 
@@ -82,7 +90,7 @@
         self.MenuForDay = ko.observable(new menuForDay(dayOrdObject,categories));
 
         self.OrderCanBeChanged = ko.observable(dayOrdObject.orderCanBeChanged);
-        self.DayOrderSummary = ko.observable(dayOrdObject.dayOrderSummary);
+        self.DayOrderSummary = ko.observable(dayOrdObject.dayOrderSummary.toFixed(2));
         self.CalcDayOrderTotal = function() {
             var sum = 0;
             var valsum;

@@ -70,7 +70,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                                 y.OrderCanBeCreated = true;
                                 y.DayMenuCanBeChanged = true;
                             }
-                            if (y.ID==day)
+                            if (y.ID == day )
                             {
                                 y.OrderCanBeCreated = DateTime.Now.Hour < 9;
                                 y.DayMenuCanBeChanged = DateTime.Now.Hour < 9;

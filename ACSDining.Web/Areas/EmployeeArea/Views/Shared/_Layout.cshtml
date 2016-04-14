@@ -12,7 +12,6 @@
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/themes/base/css")
     @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/ViewModel")
     @RenderSection("scripts", required: false)
 </head>
 <body class="pagebg">
@@ -27,22 +26,20 @@
                     </h1>
                     <div class="tophead_i1">
                         <div class="blockinform">
-                            <div class="dleft">
-                                <div class="logOnGreeting col-md-5" id="infoTitle"><span></span></div>
-                                <div class="dright">
-                                    <div class="logOnGreeting  col-md-5" style="text-align: right;">
-                                        @if (Session["Fname"] != null)
-                                        {
-                                            <span> Вы вошли как, @Session["Fname"]   @Session["Lname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
-                                        }
-                                        else
-                                        {
-                                            <span>
-                                                Пожалуйста,
-                                                авторизируйтесь
-                                            </span>
-                                        }
-                                    </div>
+                            <div class="logOnGreeting">
+                                <div class=" col-md-5" id="infoTitle"><span></span></div>
+                                <div style="text-align: right;">
+                                    @if (Session["Fname"] != null)
+                                    {
+                                        <span> Вы вошли как, @Session["Fname"]   @Session["Lname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            Пожалуйста,
+                                            авторизируйтесь
+                                        </span>
+                                    }
                                 </div>
                             </div>
                         </div>

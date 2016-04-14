@@ -27,8 +27,9 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 UserId = weekOrderMenu.User.Id,
                 OrderId = weekOrderMenu.Id,
                 DayOrderDtos =
-                    weekOrderMenu.DayOrderMenus.Select(
-                        dord => UserDayOrderDto.MapUserDayOrderDto(unitOfWork, dord, catLength)).ToList(),
+                    weekOrderMenu.DayOrderMenus.Where(dord =>
+                            dord.MenuForDay.WorkingDay.IsWorking).Select(
+                        dord =>UserDayOrderDto.MapUserDayOrderDto(unitOfWork, dord, catLength)).ToList(),
                 WeekSummaryPrice = weekOrderMenu.WeekOrderSummaryPrice,
                 WeekYear = WeekYearDto.MapDto(weekOrderMenu.MenuForWeek.WorkingWeek)
             };

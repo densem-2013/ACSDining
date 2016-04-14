@@ -5,6 +5,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using ACSDining.Infrastructure.HelpClasses;
 using PerpetuumSoft.Knockout;
 
 namespace ACSDining.Web
@@ -20,7 +21,8 @@ namespace ACSDining.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            
+
+            TimerHandler.Init();
         }
 
     }

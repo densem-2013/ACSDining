@@ -240,14 +240,17 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 if (workWeek != null)
                 {
                     WorkingDay wday = workWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.Id == i + 1) ;
-                    MenuForDay mfd = new MenuForDay
+                    if (wday != null && wday.IsWorking)
                     {
-                        //WorkingWeek = workWeek,
-                        WorkingDay = wday,
-                        DayMenuCanBeChanged = true
-                    };
-                    _db.MenuForDays.Add(mfd);
-                    _unitOfWork.SaveChanges();
+                        MenuForDay mfd = new MenuForDay
+                        {
+                            //WorkingWeek = workWeek,
+                            WorkingDay = wday,
+                            DayMenuCanBeChanged = true
+                        };
+                        _db.MenuForDays.Add(mfd);
+                        _unitOfWork.SaveChanges();
+                    }
                 }
             }
             int[] daysid = workWeek != null
@@ -262,6 +265,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                     .Select()
                     .Where(mfd => daysid != null && (workWeek != null && daysid.Contains(mfd.WorkingDay.Id)))
                     .ToList();
+
             weekmenu = new MenuForWeek
             {
                 WorkingWeek = workWeek,

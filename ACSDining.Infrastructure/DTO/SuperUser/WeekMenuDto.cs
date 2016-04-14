@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
@@ -12,7 +13,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public double SummaryPrice { get; set; }
         public List<MenuForDayDto> MfdModels { get; set; }
 
-        public static WeekMenuDto MapDto(IUnitOfWork unitOfWork, MenuForWeek wmenu,
+        public static WeekMenuDto MapDto(IUnitOfWorkAsync unitOfWork, MenuForWeek wmenu,
             bool emptyDishes = false)
         {
             if (wmenu == null) return null;
@@ -26,10 +27,11 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             {
                 List<DishType> dtypes = unitOfWork.Repository<DishType>().Queryable().ToList();
                 dtoModel.MfdModels = new List<MenuForDayDto>();
+                int catLength = MapHelper.GetDishCategoriesCount(unitOfWork);
                 foreach (MenuForDay mfd in wmenu.MenuForDay)
                 {
                     var dmodels = new List<DishModelDto>();
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < catLength; i++)
                     {
                         DishType firstOrDefault = dtypes.FirstOrDefault(dt => dt.Id == i + 1);
                         if (firstOrDefault != null)

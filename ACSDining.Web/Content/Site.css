@@ -28,10 +28,10 @@ body
     text-align: left;
 }
 /*TOPHEAD*/
-.tophead, .tophead .dleft, .tophead .dright
+/*.tophead, .tophead .dleft, .tophead .dright
 {
     height: 120px;
-}
+}*/
 .tophead
 {
     overflow: hidden;
@@ -605,13 +605,14 @@ div#title
 .logOnGreeting
 {
     font-size: 20px;
-    color: crimson;
     padding-top:30px;
     top: 20px;
-}
-.dright > .logOnGreeting {
     font-style: italic;
     color: #CC7C12;
+    white-space: nowrap;
+}
+.date.form-control {
+    background: transparent;
 }
 /*Project Overview ----------------- */
 

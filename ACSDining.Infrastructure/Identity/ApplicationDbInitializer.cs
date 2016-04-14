@@ -22,7 +22,6 @@ namespace ACSDining.Infrastructure.Identity
         {
             if (System.Diagnostics.Debugger.IsAttached == false)
                 System.Diagnostics.Debugger.Launch();
-
             
             string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
                                       @"ACSDining.Core\DBinitial\DishDetails.xml";
@@ -347,14 +346,7 @@ namespace ACSDining.Infrastructure.Identity
             Dictionary<string, int> catCount = categories.ToDictionary(cat => cat, count => countDish(count, dishArray));
             Func<List<Dish>> getDishes = () =>
             {
-                List<Dish> ds = new List<Dish>();
-                foreach (KeyValuePair<string, int> pair in catCount)
-                {
-                    ds.Add(
-                        dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key))
-                            .ElementAt(Rand.Next(pair.Value)));
-                }
-                return ds;
+                return catCount.Select(pair => dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(Rand.Next(pair.Value))).ToList();
             };
 
             Year year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
@@ -374,6 +366,8 @@ namespace ACSDining.Infrastructure.Identity
                     context.WorkingWeeks.Include("Year").ToList().FirstOrDefault(
                         w => year != null && (w.WeekNumber == YearWeekHelp.CurrentWeek() - week + correct_week &&
                                               w.Year.YearNumber == year.YearNumber));
+
+                bool ordCanCreated = week == 0 && DateTime.Now.Hour < 9;
                 for (int i = 1; i <= 7; i++)
                 {
                     List<Dish> dishes = getDishes();
@@ -381,14 +375,15 @@ namespace ACSDining.Infrastructure.Identity
                         context.WorkingDays.Include("WorkingWeek").ToList().FirstOrDefault(
                             wd => workweek != null && (wd.WorkingWeek.ID == workweek.ID && wd.DayOfWeek.Id == i));
 
-                    if (workday != null /*&& workday.IsWorking*/)
+                    if (workday != null && workday.IsWorking)
                     {
                         MenuForDay dayMenu = new MenuForDay
                         {
                             Dishes = dishes,
                             WorkingDay = workday,
-                            //WorkingWeek = workweek,
-                            TotalPrice = dishes.Select(d => d.Price).Sum()
+                            TotalPrice = dishes.Select(d => d.Price).Sum(),
+                            OrderCanBeCreated = ordCanCreated,
+                            DayMenuCanBeChanged = ordCanCreated
                          };
 
                         mfdays.Add(dayMenu);
@@ -400,7 +395,7 @@ namespace ACSDining.Infrastructure.Identity
                     MenuForDay = mfdays,
                     WorkingWeek = workweek,
                     SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum(),
-                    OrderCanBeCreated = true
+                    OrderCanBeCreated = ordCanCreated
                 });
             }
             context.MenuForWeeks.AddRange(weekmenus);

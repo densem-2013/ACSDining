@@ -3,38 +3,32 @@
 }
 
 <hr />
-    <div class="col-sm-10 col-sm-offset-3 col-xs-offset-3" style="padding-bottom: 5px">
-    <span data-bind="text: WeekTitle" id="wnDysplay" style="background: rgba(119, 222, 228, 0.61);color:rgb(232, 34, 208); "></span>
-</div>
 <div class="row">
-    <div class="col-md-9 col-xs-offset-3">
-        <div class="col-md-6">
-            <div class="input-group date">
-                <input type="text" class="form-control" data-provide="datepicker" data-bind="datepicker: myDate" />
-            </div>
+    <div class="col-md-3 ">
+        <div class="input-group date form-control" id="datepick" data-provide="datepicker" data-bind="datepicker: myDate">
+            @*<input type="text" />*@
         </div>
     </div>
-</div>
-<div class="col-md-10  col-sm-offset-1 col-sm-12 col-xs-12 object-non-visible" data-animation-effect="fadeIn">
-    <div class="panel panel-default" id="mfwPanel">
-        <table>
-            <tbody>
+    <div class="col-md-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0">
+        <div class="panel panel-default" id="mfwPanel">
+            <table>
+                <tbody>
                 <tr style="background: #565659;">
                     <td class="col-md-3">
                         <div>
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ LoadUserWeekOrder((CurrentWeekYear()));} , css:{disabled: IsCurrentWeek()}" />
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ SetMyDateByWeek((CurrentWeekYear()));} , css:{disabled: IsCurrentWeek()}" />
                         </div>
                     </td>
                     <td class="col-md-7">
                         <div class="col-sm-offset-5">
-                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: NextWeekOrderExist() ? 'Перейти на следующую неделю':'Создать заказ на следующую неделю', css:{ enabled: CanCreateOrderOnNextWeek()}" />
+                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: NextWeekOrderExist() ? 'Перейти на следующую неделю':'Создать заказ на следующую неделю', css:{ enabled: CanCreateOrderOnNextWeek()}"/>
                         </div>
                     </td>
                 </tr>
-            </tbody>
-        </table>
-        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
-            <thead>
+                </tbody>
+            </table>
+            <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
+                <thead>
                 <tr>
                     <th class="col-sm-1">День недели</th>
                     <th class="col-sm-2">Категория блюда</th>
@@ -42,95 +36,72 @@
                     <th class="col-sm-1">Заказать</th>
                     <th class="col-sm-2" colspan="2">Стоимость</th>
                 </tr>
-            </thead>
-            <tbody >
-            <!--ko foreach: UserDayOrders -->
-            <tr>
-                <td style="vertical-align: middle; text-align: center">
-                    <span data-bind="text: DayOfWeek"></span>
-                </td>
-                <!--ko with: MenuForDay-->
-                <!-- ko foreach: Dishes-->
-                <td >
-                    <div style="border-bottom: 1px solid; text-align: right">
-                        <span data-bind="text: $data.Category() + ' : '"></span>
-                    </div>
-                </td>
-                <td>
-                    <div style="border-bottom: 1px solid;">
-                        <span data-bind="text: $data.Title"></span>
-                    </div>
-                </td> 
-                <!--/ko-->
-                <td style="vertical-align: middle; text-align: center;">
-                    <!--ko foreach: Dishes-->
-                    <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.OrderQuantity().clicked($element)}, event : { dblclick: $data.OrderQuantity().doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
-                        <!--ko ifnot: OrderQuantity().isEditMode() -->
-                        <span data-bind="text: $data.Quantity"></span>
-                        <!--/ko-->
-                        <!-- ko if: OrderQuantity().isEditMode -->
-                        <!-- ko if: (Category() == "Первое блюдо") -->
-                        <!-- ko with: OrderQuantity-->
-                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
-                        <!--/ko-->
-                        <!--/ko-->
-                        <!-- ko ifnot: (Category() == "Первое блюдо") -->
-                        <!-- ko with: OrderQuantity-->
-                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
-                        <!--/ko-->
-                        <!--/ko-->
-                        <!--/ko-->
-                    </div>
-                    <!--/ko-->
-                </td>
-                <td data-bind="foreach: Dishes" style="text-align: right">
-                    <div>
-                        <span data-bind="text: $data.Price" style="border-bottom: 1px solid"></span><br/>
-                    </div>
-                </td> 
-                <!--/ko-->
-                <td style="text-align: right; vertical-align: middle; height: 100%">
-                    <span data-bind="text: DayOrderSummary"></span>
-                </td>
-
-            </tr>
-            <!--/ko--> 
-            </tbody>
-            <tfoot>
-                @*<tr>
-                    <td style="border-bottom: 1px solid;  border-right: 0" colspan="2"><span class="changesaved" data-bind="visible: ChangeSaved"> Изменения сохранены </span></td>
-                    <td style="border-bottom: 1px solid; align-content: stretch; border-left: 0" colspan="2">
-                        <input type="button" class="btn btn-success btn-lg" value="Сохранить изменения" data-bind="click: SaveToServer , visible: BeenChanged" />
-                        <span style="float: right;"> Итого: </span>
-                    </td> 
-                    <td style="border-bottom: 1px solid;"></td>
-                    <td style="border-bottom: 1px solid; text-align: right">
-                        <span data-bind=" text : SummaryPrice()"></span>
-                    </td>
-                </tr>
+                </thead>
+                <tbody>
+                <!--ko foreach: UserDayOrders -->
                 <tr>
-                    <td colspan="7">
-                        <div class="dataTables_paginate paging_simple_numbers" style="padding:5px;">
-                            <ul class="pagination">
-                                <li class=" paginate_button previous">
-                                    <a href="#" data-bind=" click: function(){ $root.LoadWeekMenu($root.WeekNumber() - 1); }">Previous</a>
-                                </li>
-                                <li class="paginate_button " data-bind="foreach: NumbersWeeks">
-                                    <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $root.WeekNumber()}, click: function(){ $root.LoadWeekMenu($data); }"></a>
-                                </li>
-                                <li class=" paginate_button next">
-                                    <a href="#" data-bind="click: function(){ $root.LoadWeekMenu($root.WeekNumber() + 1 ); }">Next</a>
-                                </li>
-                            </ul>
-                        </div>
+                    <!--ko with: MenuForDay-->
+                    <td style="vertical-align: middle; text-align: center">
+                        <span data-bind="text: DayOfWeek"></span>
                     </td>
-                </tr>*@
-            </tfoot>
-        </table>
-    </div>
+                    <td>
+                        <!-- ko foreach: Dishes-->
+                        <div style="border-bottom: 1px solid; text-align: right">
+                            <span data-bind="text: $data.Category() + ' : '"></span>
+                        </div>
+                        <!--/ko-->
+                    </td>
+                    <td>
+                        <!-- ko foreach: Dishes-->
+                        <div style="border-bottom: 1px solid;">
+                            <span data-bind="text: $data.Title"></span>
+                        </div>
+                        <!--/ko-->
+                    </td>
+                    <td style="vertical-align: middle; text-align: center;">
+                        <!--ko foreach: Dishes-->
+                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.OrderQuantity().clicked($element)}, event : { dblclick: $data.OrderQuantity().doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
+                            <!--ko ifnot: OrderQuantity().isEditMode() -->
+                            <span data-bind="text: OrderQuantity().Quantity"></span>
+                            <!--/ko-->
+                            <!-- ko if: OrderQuantity().isEditMode -->
+                            <!-- ko if: ($index() % 4 === 0) -->
+                            <!-- ko with: OrderQuantity-->
+                            <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
+                            <!--/ko-->
+                            <!--/ko-->
+                            <!-- ko ifnot: ($index() % 4 === 0) -->
+                            <!-- ko with: OrderQuantity-->
+                            <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary()} }"></select>
+                            <!--/ko-->
+                            <!--/ko-->
+                            <!--/ko-->
+                        </div>
+                        <!--/ko-->
+                    </td>
+                    <td style="text-align: right">
+                        <!--ko foreach: Dishes-->
+                        <div>
+                            <span data-bind="text:  Price" style="border-bottom: 1px solid"></span><br/>
+                        </div>
+                        <!--/ko-->
+                    </td>
+                    <!--/ko-->
+                    <td style="text-align: right; vertical-align: middle; height: 100%">
+                        <span data-bind="text: DayOrderSummary"></span>
+                    </td>
 
+                </tr>
+                <!--/ko-->
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+        </div>
+    </div>
 </div>
 
+@Scripts.Render("~/bundles/ViewModel")
 @Scripts.Render("~/bundles/EmployeeInfo")
 
 <script type="text/javascript">
