@@ -486,16 +486,13 @@ namespace ACSDining.Infrastructure.Identity
             {
                 foreach (MenuForWeek mfw in weekmenus)
                 {
-
-
                     //context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
 
                     WeekOrderMenu weekOrder = new WeekOrderMenu
                     {
                         User = user,
                         MenuForWeek = mfw,
-                        WeekOrderSummaryPrice = 0.0,
-                       // PlannedWeekOrderMenu = plannedWeekOrderMenu
+                        WeekOrderSummaryPrice = 0.0
                     };
                     PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu { WeekOrderMenu = weekOrder };
                     context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
@@ -506,8 +503,7 @@ namespace ACSDining.Infrastructure.Identity
                     {
                         DayOrderMenu dayOrderMenu = new DayOrderMenu
                         {
-                            MenuForDay = daymenu//,
-                           // PlannedDayOrderMenu = plannedDayOrderMenu
+                            MenuForDay = daymenu
                         };
                         PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu{DayOrderMenu = dayOrderMenu};
                         dayOrderMenus.Add(dayOrderMenu);

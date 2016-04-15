@@ -75,9 +75,8 @@
             });
             if (first != null && catind != null) {
                 return new dishInfo(first, dayobj.quantCanBeChanged, dayobj.dishQuantities[catind]);
-            }
+            };
             return null;
-
         }));
 
     }
@@ -91,7 +90,9 @@
         self.ID = ko.observable(dayOrdObject.id);
         self.DayOfWeek = ko.observable(dayOrdObject.dayOfWeek);
 
-        self.MenuForDay = ko.observable(new menuForDay(dayOrdObject,categories));
+        self.MenuForDay = ko.observable(new menuForDay(dayOrdObject, categories));
+
+        self.DishQuantities = ko.observableArray(dayOrdObject.dishQuantities);
 
         self.OrderCanBeChanged = ko.observable(dayOrdObject.orderCanBeChanged);
         self.DayOrderSummary = ko.observable(dayOrdObject.dayOrderSummary.toFixed(2));
@@ -131,6 +132,8 @@
 
         self.WeekSummaryPrice = ko.observable();
         
+        self.WeekPaid = ko.observable();
+
         self.WeekIsPaid = ko.observable();
 
         self.CanCreateOrderOnNextWeek = ko.observable();
@@ -294,12 +297,26 @@
         };
 
         self.update = function () {
+
+            ko.utils.arrayForEach(self.UserDayOrders(), function(item) {
+
+                item.DishQuantities([]);
+
+                ko.utils.arrayForEach(item.MenuForDay().Dishes(), function(dish) {
+
+                    item.DishQuantities.push(dish.OrderQuantity().Quantity());
+
+                });
+
+            });
+
             var userweekorder = {
                 UserId: self.UserId(),
                 OrderId: self.OrderId(),
                 DayOrderDtos: self.UserDayOrders(),
                 WeekSummaryPrice: self.WeekSummaryPrice(),
                 WeekIsPaid: self.WeekIsPaid(),
+                WeekPaid: self.WeekPaid(),
                 WeekYearDto:self.WeekYear()
             };
 

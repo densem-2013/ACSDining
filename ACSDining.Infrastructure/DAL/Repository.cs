@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
 using LinqKit;
@@ -15,7 +16,7 @@ namespace ACSDining.Infrastructure.DAL
     {
         #region Private Fields
 
-        //private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
@@ -23,8 +24,8 @@ namespace ACSDining.Infrastructure.DAL
 
         public Repository(IUnitOfWorkAsync unitOfWork)
         {
-            //_context = context;
             _unitOfWork = unitOfWork;
+            _context = ((UnitOfWork)_unitOfWork).GetContext();
             //var dbContext = _context ;
 
             if (_unitOfWork != null)
@@ -32,12 +33,7 @@ namespace ACSDining.Infrastructure.DAL
                 _dbSet = ((UnitOfWork)_unitOfWork).GetContext().Set<TEntity>();
             }
         }
-
-        //public virtual IRepository<T> GetRepository<T>() where T : class
-        //{
-        //    return _unitOfWork.Repository<T>();
-        //}
-
+        
         public virtual IRepositoryAsync<T> GetRepositoryAsync<T>() where T : class
         {
             return _unitOfWork.RepositoryAsync<T>();
@@ -56,8 +52,10 @@ namespace ACSDining.Infrastructure.DAL
         public virtual void Insert(TEntity entity)
         {
             try
-            {
+            {   
+                _context.Entry(entity).State=EntityState.Added;
                 _dbSet.Attach(entity);
+                _unitOfWork.SaveChanges();
             }
             catch (Exception)
             {
@@ -81,7 +79,9 @@ namespace ACSDining.Infrastructure.DAL
 
         public virtual void Update(TEntity entity)
         {
+            _context.Entry(entity).State = EntityState.Modified;
             _dbSet.Attach(entity);
+            _unitOfWork.SaveChanges();
         }
 
         public virtual void Delete(object id)
@@ -92,7 +92,9 @@ namespace ACSDining.Infrastructure.DAL
 
         public virtual void Delete(TEntity entity)
         {
+            _context.Entry(entity).State = EntityState.Deleted;
             _dbSet.Attach(entity);
+            _unitOfWork.SaveChanges();
         }
 
         public IQueryFluent<TEntity> Query()
@@ -114,7 +116,12 @@ namespace ACSDining.Infrastructure.DAL
         {
             return _dbSet;
         }
-        
+
+        public List<TEntity> GetAll()
+        {
+            return Queryable().ToList();
+        }
+
         public virtual async Task<TEntity> FindAsync(params object[] keyValues)
         {
             return await _dbSet.FindAsync(keyValues);
@@ -139,7 +146,9 @@ namespace ACSDining.Infrastructure.DAL
                 return false;
             }
 
+            _context.Entry(entity).State = EntityState.Deleted;
             _dbSet.Attach(entity);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
         }

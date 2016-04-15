@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Repositories;
 
@@ -23,12 +22,7 @@ namespace ACSDining.Infrastructure.Services
 
         public List<DishQuantityRelations> GetByDayOrderMenuForDay(int dayorderid, int menufordayid)
         {
-            return _repository.Query()
-                .Include(dq => dq.DishQuantity)
-                .Include(dq => dq.MenuForDay.WorkingDay.DayOfWeek)
-                .Select()
-                .Where(dqr => dqr.MenuForDayId == menufordayid && dqr.DayOrderMenuId == dayorderid)
-                .ToList();
+            return _repository.GetRelationsListByDayIdMenuId(dayorderid, menufordayid);
         }
     }
 }

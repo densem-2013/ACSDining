@@ -20,6 +20,7 @@ namespace ACSDining.Infrastructure.Repositories
         IQueryFluent<TEntity> Query(Expression<Func<TEntity, bool>> query);
         IQueryFluent<TEntity> Query();
         IQueryable<TEntity> Queryable();
-       // IRepository<T> GetRepository<T>() where T : class; 
+        List<TEntity> GetAll();
+        // IRepository<T> GetRepository<T>() where T : class; 
     }
 }

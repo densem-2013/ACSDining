@@ -2,7 +2,6 @@
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.Repositories;
 
 namespace ACSDining.Infrastructure.Repositories
 {
@@ -70,5 +69,89 @@ namespace ACSDining.Infrastructure.Repositories
                     om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week && om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year).ToList();
         }
 
+        /// <summary>
+        /// Создаёт новый заказ на неделю для указанного пользователя
+        /// </summary>
+        /// <param name="repository"></param>
+        /// <param name="wyDto"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public static WeekOrderMenu NewWeekOrdersMenuByWeekYearUser(this IRepositoryAsync<WeekOrderMenu> repository, WeekYearDto wyDto, User user)
+        {
+            MenuForWeek weekmenu = repository.GetRepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
+            if (weekmenu==null)
+            {
+                return null;
+            }
+            
+            List<DishQuantityRelations> dquaList = new List<DishQuantityRelations>();
+            List<DayOrderMenu> dayorders = weekmenu.MenuForDay.Select(daymenu =>
+            {
+                return new DayOrderMenu
+                {
+                    MenuForDay = daymenu
+                };
+            }).ToList();
+
+            WeekOrderMenu newWeekOrder=new WeekOrderMenu
+            {
+                User=user,
+                MenuForWeek = weekmenu,
+                DayOrderMenus = weekmenu.MenuForDay.Select(daymenu=>new DayOrderMenu
+                {
+                    MenuForDay = daymenu
+                }).ToList(),
+                WeekOrderSummaryPrice = 0.00
+            };
+            PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu { WeekOrderMenu = newWeekOrder };
+
+            List<DayOrderMenu> dayOrderMenus = new List<DayOrderMenu>();
+
+            DishQuantity dqu = repository.GetRepositoryAsync<DishQuantity>().GetAll().FirstOrDefault(dq => dq.Quantity == 0.00);
+
+            foreach (MenuForDay daymenu in weekmenu.MenuForDay)
+            {
+                DayOrderMenu dayOrderMenu = new DayOrderMenu
+                {
+                    MenuForDay = daymenu
+                };
+                PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu { DayOrderMenu = dayOrderMenu };
+                plannedWeekOrderMenu.PlannedDayOrderMenus.Add(plannedDayOrderMenu);
+                dayOrderMenus.Add(dayOrderMenu);
+                foreach (Dish dish in daymenu.Dishes)
+                {
+                    DishType first =
+                        repository.GetRepositoryAsync<DishType>()
+                            .GetAll()
+                            .FirstOrDefault(dy => string.Equals(dy.Category, dish.DishType.Category));
+
+                    if (first != null)
+                    {
+                        DishQuantityRelations dqrs = new DishQuantityRelations
+                        {
+                            DishQuantity = dqu,
+                            DishType = first,
+                            MenuForDay = daymenu,
+                            DayOrderMenu = dayOrderMenu,
+                            PlannedDayOrderMenu = plannedDayOrderMenu
+                        };
+                        dayOrderMenu.DayOrderSummaryPrice = 0.00;
+                        dquaList.Add(dqrs);
+                    }
+                }
+                newWeekOrder.WeekOrderSummaryPrice = 0.00;
+            }
+            
+            newWeekOrder.DayOrderMenus = dayOrderMenus;
+
+            repository.GetRepositoryAsync<DishQuantityRelations>().InsertRange(dquaList);
+
+            repository.GetRepositoryAsync<PlannedWeekOrderMenu>().Insert(plannedWeekOrderMenu);
+
+            newWeekOrder =
+                repository.OrdersMenuByWeekYear(wyDto).FirstOrDefault(om => string.Equals(om.User.Id, user.Id));
+
+            return newWeekOrder;
+        }
     }
 }

@@ -118,6 +118,7 @@ namespace ACSDining.Infrastructure.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         WeekPaid = c.Double(nullable: false),
+                        WeekIsPaid = c.Boolean(nullable: false),
                         Balance = c.Double(nullable: false),
                         WeekOrderSummaryPrice = c.Double(nullable: false),
                         Note = c.String(),

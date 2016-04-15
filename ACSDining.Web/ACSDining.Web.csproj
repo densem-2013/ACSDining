@@ -565,6 +565,7 @@
     <Content Include="Content\css\fonts\FontAwesome.otf" />
     <Content Include="Areas\SU_Area\Views\SU_\AccountManagement.cshtml" />
     <Content Include="Areas\SU_Area\Views\SU_\WorkDayManagement.cshtml" />
+    <None Include="Properties\PublishProfiles\Densem_profile.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap.js" />

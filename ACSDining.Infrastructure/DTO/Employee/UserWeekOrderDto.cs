@@ -14,6 +14,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public List<UserDayOrderDto> DayOrderDtos { get; set; }
         public double WeekSummaryPrice { get; set; }
         public double WeekPaid { get; set; }
+        public bool WeekIsPaid { get; set; }
         public WeekYearDto WeekYear { get; set; }
 
         /// <param name="unitOfWork"></param>
@@ -33,6 +34,29 @@ namespace ACSDining.Infrastructure.DTO.Employee
                         dord =>UserDayOrderDto.MapUserDayOrderDto(unitOfWork, dord, catLength)).ToList(),
                 WeekSummaryPrice = weekOrderMenu.WeekOrderSummaryPrice,
                 WeekYear = WeekYearDto.MapDto(weekOrderMenu.MenuForWeek.WorkingWeek)
+            };
+        }
+
+        /// <param name="unitOfWork"></param>
+        /// <param name="orderid"></param>
+        /// <param name="catLength">Количество категорий блюд</param>
+        /// <param name="wyDto">Неделя и год создания заказа</param>
+        /// <param name="userid"></param>
+        /// <returns></returns>
+        public static UserWeekOrderDto Create(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto, string userid, int orderid, int catLength)
+        {
+            return new UserWeekOrderDto
+            {
+                WeekPaid = 0.00,
+                UserId = userid,
+                OrderId = orderid,
+                WeekIsPaid = false,
+                //DayOrderDtos =
+                    //weekOrderMenu.DayOrderMenus.Where(dord =>
+                    //        dord.MenuForDay.WorkingDay.IsWorking).Select(
+                    //    dord => UserDayOrderDto.MapUserDayOrderDto(unitOfWork, dord, catLength)).ToList(),
+                WeekSummaryPrice = 0.00,
+                WeekYear = wyDto
             };
         }
     }
