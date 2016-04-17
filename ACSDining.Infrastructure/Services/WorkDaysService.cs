@@ -35,11 +35,7 @@ namespace ACSDining.Infrastructure.Services
         public WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto)
         {
             return
-                _repository.Query()
-                    .Include(ww => ww.WorkingDays.Select(wd => wd.DayOfWeek))
-                    .Include(ww => ww.Year)
-                    .Select()
-                    .FirstOrDefault(ww => ww.WeekNumber == wyDto.Week && ww.Year.YearNumber == wyDto.Year);
+                _repository.WorkWeekByWeekYear(wyDto);
         }
 
         public WorkingWeek UpdateWorkDays(WorkWeekDto weekModel)

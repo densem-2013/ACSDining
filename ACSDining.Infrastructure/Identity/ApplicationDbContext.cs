@@ -31,8 +31,8 @@ namespace ACSDining.Infrastructure.Identity
         public ApplicationDbContext()
             : base("name=ApplicationDbContext", throwIfV1Schema: false)
         {
-            //Configuration.LazyLoadingEnabled = false;
-            //Configuration.ProxyCreationEnabled = false;
+            Configuration.LazyLoadingEnabled = false;
+            Configuration.ProxyCreationEnabled = false;
         }
 
         static ApplicationDbContext()

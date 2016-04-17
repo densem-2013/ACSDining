@@ -48,7 +48,22 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
-            return await Task.FromResult(WeekMenuDtoByWeekYear(wyDto));
+            MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(wyDto);
+            if (weekmenu != null)
+            {
+                return await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork,weekmenu));
+            }
+            else
+            {
+                weekmenu = _weekmenuService.CreateByWeekYear(wyDto);
+                _db.MenuForWeeks.Add(weekmenu);
+                await _unitOfWork.SaveChangesAsync();
+
+                weekmenu = _weekmenuService.GetWeekMenuByWeekYear(wyDto);
+
+                return await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu,true));
+            }
+
         }
 
         [HttpPut]
@@ -92,7 +107,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public async Task<string[]> GetCategories()
         {
 
-            string[] categories = MapHelper.GetCategories(_unitOfWork);
+            string[] categories = MapHelper.GetCategoriesStrings(_unitOfWork);
 
             return categories;
 
@@ -187,103 +202,106 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         /// </summary>
         /// <param name="weekyear"></param>
         /// <returns></returns>
-        private WeekMenuDto WeekMenuDtoByWeekYear(WeekYearDto weekyear)
-        {
-            MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear);
-            if (weekmenu != null)
-            {
-                var dto = WeekMenuDto.MapDto(_unitOfWork, weekmenu);
-                return dto;
-            }
+        //private WeekMenuDto WeekMenuDtoByWeekYear(WeekYearDto weekyear)
+        //{
+        //    MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear);
+        //    if (weekmenu != null)
+        //    {
+        //        var dto = WeekMenuDto.MapDto(_unitOfWork, weekmenu);
+        //        return dto;
+        //    }
 
-            List<WorkingDay> workdays = new List<WorkingDay>();
+        //    List<WorkingDay> workdays = new List<WorkingDay>();
 
-            Year year =
-                _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y => y.YearNumber == weekyear.Year) ??
-                new Year {YearNumber = weekyear.Year};
+        //    Year year =
+        //        _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y => y.YearNumber == weekyear.Year);
+        //    if (year==null)
+        //    {
+        //        year=new Year { YearNumber = weekyear.Year };
+        //        _unitOfWork.RepositoryAsync<Year>().Insert(year);
+        //        year =
+        //        _unitOfWork.RepositoryAsync<Year>().Queryable().FirstOrDefault(y => y.YearNumber == weekyear.Year);
+        //    }
 
-            List<WorkingDay> wdays=new List<WorkingDay>();
-            for (int i = 0; i < 7; i++)
-            {
-                WorkingDay wday = new WorkingDay
-                {
-                    DayOfWeek =
-                        _unitOfWork.RepositoryAsync<ACSDining.Core.Domains.DayOfWeek>().FindAsync(i + 1).Result,
-                    IsWorking = i < 5
-                };
-            }
+        //    List<WorkingDay> wdays=new List<WorkingDay>();
+        //    for (int i = 0; i < 7; i++)
+        //    {
+        //        WorkingDay wday = new WorkingDay
+        //        {
+        //            DayOfWeek =
+        //                _unitOfWork.RepositoryAsync<ACSDining.Core.Domains.DayOfWeek>().FindAsync(i + 1).Result,
+        //            IsWorking = i < 5
+        //        };
+        //    }
 
-            WorkingWeek workWeek = _workDaysService.GetWorkWeekByWeekYear(weekyear);
+        //    WorkingWeek workWeek = _workDaysService.GetWorkWeekByWeekYear(weekyear);
 
-            if (workWeek == null)
-            {
-                workWeek = new WorkingWeek
-                {
-                    WeekNumber = weekyear.Week,
-                    Year = year,
-                    WorkingDays = wdays
-                };
-                _db.WorkingWeeks.Add(workWeek);
-                _unitOfWork.SaveChanges();
+        //    if (workWeek == null)
+        //    {
+        //        workWeek = new WorkingWeek
+        //        {
+        //            WeekNumber = weekyear.Week,
+        //            Year = year,
+        //            WorkingDays = wdays
+        //        };
+        //        _unitOfWork.RepositoryAsync<WorkingWeek>().Insert(workWeek);
+                
+        //        workWeek = _workDaysService.GetWorkWeekByWeekYear(weekyear);
+        //    }
 
-                workWeek = _workDaysService.GetWorkWeekByWeekYear(weekyear);
-            }
 
-
-            if (year.WorkingWeeks.FirstOrDefault(ww => ww.WeekNumber == workWeek.WeekNumber) == null)
-            {
-                year.WorkingWeeks.Add(workWeek);
-            } 
+        //    if (year != null && year.WorkingWeeks.FirstOrDefault(ww => ww.WeekNumber == workWeek.WeekNumber) == null)
+        //    {
+        //        year.WorkingWeeks.Add(workWeek);
+        //    } 
             
-            for (var i = 0; i < 7; i++)
-            {
-                if (workWeek != null)
-                {
-                    WorkingDay wday = workWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.Id == i + 1) ;
-                    if (wday != null && wday.IsWorking)
-                    {
-                        MenuForDay mfd = new MenuForDay
-                        {
-                            //WorkingWeek = workWeek,
-                            WorkingDay = wday,
-                            DayMenuCanBeChanged = true
-                        };
-                        _db.MenuForDays.Add(mfd);
-                        _unitOfWork.SaveChanges();
-                    }
-                }
-            }
-            int[] daysid = workWeek != null
-                ? workWeek.WorkingDays.OrderBy(wd => wd.Id).Select(wd => wd.Id).ToArray()
-                : null;
+        //    for (var i = 0; i < 7; i++)
+        //    {
+        //        if (workWeek != null)
+        //        {
+        //            WorkingDay wday = workWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.Id == i + 1) ;
+        //            if (wday != null && wday.IsWorking)
+        //            {
+        //                MenuForDay mfd = new MenuForDay
+        //                {
+        //                    //WorkingWeek = workWeek,
+        //                    WorkingDay = wday,
+        //                    DayMenuCanBeChanged = true
+        //                };
+        //                _unitOfWork.RepositoryAsync<MenuForDay>().Insert(mfd);
+        //            }
+        //        }
+        //    }
+        //    int[] daysid = workWeek != null
+        //        ? workWeek.WorkingDays.OrderBy(wd => wd.Id).Select(wd => wd.Id).ToArray()
+        //        : null;
 
-             List<MenuForDay> mfdays =
-                _unitOfWork.RepositoryAsync<MenuForDay>()
-                    .Query()
-                    .Include(mfd => mfd.Dishes)
-                    .Include(mfd => mfd.WorkingDay)
-                    .Select()
-                    .Where(mfd => daysid != null && (workWeek != null && daysid.Contains(mfd.WorkingDay.Id)))
-                    .ToList();
+        //     List<MenuForDay> mfdays =
+        //        _unitOfWork.RepositoryAsync<MenuForDay>()
+        //            .Query()
+        //            .Include(mfd => mfd.Dishes)
+        //            .Include(mfd => mfd.WorkingDay)
+        //            .Select()
+        //            .Where(mfd => daysid != null && (workWeek != null && daysid.Contains(mfd.WorkingDay.Id)))
+        //            .ToList();
 
-            weekmenu = new MenuForWeek
-            {
-                WorkingWeek = workWeek,
-                MenuForDay = mfdays
-            };
+        //    weekmenu = new MenuForWeek
+        //    {
+        //        WorkingWeek = workWeek,
+        //        MenuForDay = mfdays
+        //    };
 
-            try
-            {
-                _db.MenuForWeeks.Add(weekmenu);
-                _unitOfWork.SaveChanges();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+        //    try
+        //    {
+        //        _unitOfWork.RepositoryAsync<MenuForWeek>().Insert(weekmenu);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
 
-            weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear);
-            return WeekMenuDto.MapDto(_unitOfWork, weekmenu, true);
-        }
+        //    weekmenu = _weekmenuService.GetWeekMenuByWeekYear(weekyear);
+        //    return WeekMenuDto.MapDto(_unitOfWork, weekmenu, true);
+        //}
     }
 }

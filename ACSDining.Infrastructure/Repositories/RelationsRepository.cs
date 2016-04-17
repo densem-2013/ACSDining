@@ -12,6 +12,7 @@ namespace ACSDining.Infrastructure.Repositories
             return repository.Query()
                 .Include(dq => dq.DishQuantity)
                 .Include(dq => dq.MenuForDay.WorkingDay.DayOfWeek)
+                .Include(dq => dq.DayOrderMenu.MenuForDay)
                 .Select()
                 .Where(dqr => dqr.MenuForDayId == menufordayid && dqr.DayOrderMenuId == dayorderid)
                 .ToList();

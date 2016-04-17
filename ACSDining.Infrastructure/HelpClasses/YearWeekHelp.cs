@@ -16,9 +16,9 @@ namespace ACSDining.Infrastructure.HelpClasses
             Calendar myCal = myCi.Calendar;
 
             // Gets the DTFI properties required by GetWeekOfYear.
-            CalendarWeekRule myCwr = myCi.DateTimeFormat.CalendarWeekRule;
+            CalendarWeekRule myCwr = CalendarWeekRule.FirstFourDayWeek;
             DayOfWeek myFirstDow = myCi.DateTimeFormat.FirstDayOfWeek;
-            DateTime curDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            DateTime curDay = DateTime.Now;
             return myCal.GetWeekOfYear(curDay, myCwr, myFirstDow);
         };
 

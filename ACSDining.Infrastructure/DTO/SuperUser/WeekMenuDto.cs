@@ -13,51 +13,28 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public double SummaryPrice { get; set; }
         public List<MenuForDayDto> MfdModels { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="wmenu"></param>
+        /// <param name="forWeekOrders">Если преобразование происходит для OrderApiController</param>
+        /// <returns></returns>
         public static WeekMenuDto MapDto(IUnitOfWorkAsync unitOfWork, MenuForWeek wmenu,
-            bool emptyDishes = false)
+            bool forWeekOrders = false)
         {
             if (wmenu == null) return null;
             WeekMenuDto dtoModel = new WeekMenuDto
             {
                 Id = wmenu.ID,
-                WeekYear = WeekYearDto.MapDto(wmenu.WorkingWeek),
-                SummaryPrice = wmenu.SummaryPrice
+                WeekYear = !forWeekOrders ? WeekYearDto.MapDto(wmenu.WorkingWeek) : null,
+                SummaryPrice = wmenu.SummaryPrice,
+                MfdModels =
+                    wmenu.MenuForDay.ToList()
+                        .Select(mfd => MenuForDayDto.MapDto(unitOfWork, mfd, forWeekOrders))
+                        .ToList()
             };
-            if (emptyDishes)
-            {
-                List<DishType> dtypes = unitOfWork.Repository<DishType>().Queryable().ToList();
-                dtoModel.MfdModels = new List<MenuForDayDto>();
-                int catLength = MapHelper.GetDishCategoriesCount(unitOfWork);
-                foreach (MenuForDay mfd in wmenu.MenuForDay)
-                {
-                    var dmodels = new List<DishModelDto>();
-                    for (int i = 0; i < catLength; i++)
-                    {
-                        DishType firstOrDefault = dtypes.FirstOrDefault(dt => dt.Id == i + 1);
-                        if (firstOrDefault != null)
-                            dmodels.Add(new DishModelDto
-                            {
-                                DishId = i + 1,
-                                Title = "_",
-                                Price = 0,
-                                Category = firstOrDefault.Category,
-                                Foods = "_"
-                            });
-                    }
 
-                    dtoModel.MfdModels.Add(new MenuForDayDto
-                    {
-                        Id = mfd.ID,
-                        DayOfWeek = mfd.WorkingDay.DayOfWeek.Name,
-                        TotalPrice = mfd.TotalPrice,
-                        Dishes = dmodels
-                    });
-                }
-            }
-            else
-            {
-                dtoModel.MfdModels = wmenu.MenuForDay.ToList().Select(MenuForDayDto.MapDto).ToList();
-            }
             return dtoModel;
         }
     }

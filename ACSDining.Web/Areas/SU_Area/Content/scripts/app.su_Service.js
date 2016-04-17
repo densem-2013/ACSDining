@@ -27,7 +27,7 @@ ko.extenders.numeric = function (target, precision) {
                 }
             }
         }
-    }).extend({ notify: 'always' });
+    }).extend({ notify: "always" });
 
     //initialize with current value to make sure it is rounded appropriately
     result(target());
@@ -36,10 +36,14 @@ ko.extenders.numeric = function (target, precision) {
     return result;
 };
 Date.prototype.getWeek = function () {
-    var onejan = new Date(this.getFullYear(), 0, 1);
+    //var onejan = new Date(this.getFullYear(), 0, 1);
     var today = new Date(this.getFullYear(), this.getMonth(), this.getDate());
-    var dayOfYear = ((today - onejan + 1) / 86400000);
-    return Math.ceil(dayOfYear / 7);
+    //var dayOfYear = ((today - onejan +1) / 86400000);
+    //return Math.ceil((dayOfYear) / 7);
+
+    var onejan = new Date(today.getFullYear(), 0, 1);
+    var millisecsInDay = 86400000;
+    return Math.ceil((((today - onejan ) / millisecsInDay) + onejan.getDay() ) / 7);
 };
 
 
@@ -48,7 +52,7 @@ ko.bindingHandlers.datepicker = {
 
         var options = $.extend(
             {},
-            $.datepicker.regional['ru'],
+            $.datepicker.regional["ru"],
             {
                 beforeShowDay: $.datepicker.noWeekends,
                 dateFormat: "dd/mm/yy",
@@ -57,7 +61,7 @@ ko.bindingHandlers.datepicker = {
                 showOtherMonths: true,
                 selectOtherMonths: true, 
                 firstDay: 1,
-                //showWeek: true,
+                showWeek: true,
                 constraintInput: true,
                 showAnim: "slideDown",
                 hideIfNoPrevNext: true,
@@ -127,8 +131,9 @@ window.app.su_Service = (function() {
 
     var baseOrdersUri = "/api/Orders/";
     var serviceOrdersUrls = {
-
-        updateOrder: function () { return baseOrdersUri + "update" },
+        factweekorders: function () { return baseOrdersUri + "fact" },
+        planweekorders: function () { return baseOrdersUri + "plan" },
+        updateWeekOrders: function () { return baseOrdersUri + "update" },
         createOrder: function () { return baseOrdersUri + "create"  },
         calcsummary: function () { return baseOrdersUri + "summary/"  }
     }
@@ -215,11 +220,14 @@ window.app.su_Service = (function() {
         DeleteDish: function(dishId) {
             return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishId));
         },
-        LoadWeekOrders: function (wyDto) {
-            return ajaxRequest("put", baseOrdersUri, wyDto);
+        FactLoadWeekOrders: function (wyDto) {
+            return ajaxRequest("put", serviceOrdersUrls.factweekorders(), wyDto);
         },
-        UpdateOrder: function( item) {
-            return ajaxRequest("put", serviceOrdersUrls.updateOrder(), item);
+        PlanLoadWeekOrders: function (wyDto) {
+            return ajaxRequest("put", serviceOrdersUrls.planweekorders(), wyDto);
+        },
+        UpdateOrders: function( item) {
+            return ajaxRequest("put", serviceOrdersUrls.updateWeekOrders(), item);
         },
         CreateOrdersNextweek: function () {
             return ajaxRequest("post", serviceOrdersUrls.createOrder());

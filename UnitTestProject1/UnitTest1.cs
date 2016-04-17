@@ -9,6 +9,7 @@ using ACSDining.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DayOfWeek = System.DayOfWeek;
 
 namespace UnitTestProject1
 {
@@ -44,22 +45,25 @@ namespace UnitTestProject1
                 Assert.IsTrue(dishes.Any());
         }
 
+        [TestMethod]
         public void WeekNumber_Test()
         {
             Func<int> nweek = () =>
             {
-                CultureInfo myCi = new CultureInfo("uk-UA");
-                Calendar myCal = myCi.Calendar;
+                CultureInfo myCI = new CultureInfo("en-US");
+                Calendar myCal = myCI.Calendar;
 
                 // Gets the DTFI properties required by GetWeekOfYear.
-                CalendarWeekRule myCwr = myCi.DateTimeFormat.CalendarWeekRule;
-                System.DayOfWeek myFirstDow = myCi.DateTimeFormat.FirstDayOfWeek;
-                DateTime lastDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-                return myCal.GetWeekOfYear(lastDay, myCwr, myFirstDow);
+                CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
+                DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
+                
+                // Displays the total number of weeks in the current year.
+                //DateTime LastDay = new System.DateTime(DateTime.Now.Year, 12, 31);
+                return myCal.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, myFirstDOW);
 
             };
             int wn = nweek();
-            Assert.IsTrue(wn > 40);
+            Assert.IsTrue(wn == 15 );
         }
         [TestMethod]
         public void CreateMenuForWeek()

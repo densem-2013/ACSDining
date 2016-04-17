@@ -214,9 +214,6 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\LinqKit.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.Mvc.xml
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.xml
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebGrease.dll
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.dll
-E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\UnitTestProject1.dll.config
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\UnitTestProject1.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\UnitTestProject1.pdb

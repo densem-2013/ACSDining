@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace ACSDining.Infrastructure.DAL
     {
         #region Private Fields
 
-        private readonly ApplicationDbContext _context;
+        public ApplicationDbContext Context { get; private set; }
         private readonly DbSet<TEntity> _dbSet;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
@@ -25,7 +26,7 @@ namespace ACSDining.Infrastructure.DAL
         public Repository(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _context = ((UnitOfWork)_unitOfWork).GetContext();
+            Context = ((UnitOfWork)_unitOfWork).GetContext();
             //var dbContext = _context ;
 
             if (_unitOfWork != null)
@@ -53,9 +54,9 @@ namespace ACSDining.Infrastructure.DAL
         {
             try
             {   
-                _context.Entry(entity).State=EntityState.Added;
+                Context.Entry(entity).State=EntityState.Added;
                 _dbSet.Attach(entity);
-                _unitOfWork.SaveChanges();
+                //_unitOfWork.SaveChanges();
             }
             catch (Exception)
             {
@@ -79,9 +80,9 @@ namespace ACSDining.Infrastructure.DAL
 
         public virtual void Update(TEntity entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            Context.Entry(entity).State = EntityState.Modified;
             _dbSet.Attach(entity);
-            _unitOfWork.SaveChanges();
+           // _unitOfWork.SaveChanges();
         }
 
         public virtual void Delete(object id)
@@ -92,9 +93,9 @@ namespace ACSDining.Infrastructure.DAL
 
         public virtual void Delete(TEntity entity)
         {
-            _context.Entry(entity).State = EntityState.Deleted;
+            Context.Entry(entity).State = EntityState.Deleted;
             _dbSet.Attach(entity);
-            _unitOfWork.SaveChanges();
+            //_unitOfWork.SaveChanges();
         }
 
         public IQueryFluent<TEntity> Query()
@@ -146,9 +147,9 @@ namespace ACSDining.Infrastructure.DAL
                 return false;
             }
 
-            _context.Entry(entity).State = EntityState.Deleted;
+            Context.Entry(entity).State = EntityState.Deleted;
             _dbSet.Attach(entity);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            //await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return true;
         }
@@ -190,14 +191,6 @@ namespace ACSDining.Infrastructure.DAL
         {
             return await Select(filter, orderBy, includes, page, pageSize).ToListAsync();
         }
-
-        public virtual void InsertOrUpdateGraph(TEntity entity)
-        {
-            _entitesChecked = null;
-            _dbSet.Attach(entity);
-        }
-
-        HashSet<object> _entitesChecked; // tracking of all process entities in the object graph when calling SyncObjectGraph
-
+        
     }
 }

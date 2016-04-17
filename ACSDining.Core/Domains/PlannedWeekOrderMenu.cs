@@ -6,15 +6,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ACSDining.Core.Domains
 {
-    public class PlannedWeekOrderMenu 
+    public sealed class PlannedWeekOrderMenu
     {
+        public PlannedWeekOrderMenu()
+        {
+            PlannedDayOrderMenus = new List<PlannedDayOrderMenu>();
+        }
+
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [JsonIgnore]
-        public virtual WeekOrderMenu WeekOrderMenu { get; set; }
+        public WeekOrderMenu WeekOrderMenu { get; set; }
+
         [JsonIgnore]
-        public virtual ICollection<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; }
+        public ICollection<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; }
     }
 }

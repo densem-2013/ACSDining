@@ -6,7 +6,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [System.Web.Http.Authorize(Roles = "SuperUser")]
+    [System.Web.Http.Authorize(Roles = "Employee,SuperUser")]
     public class SU_Controller : Controller
     {
         private ApplicationUserManager _userManager;

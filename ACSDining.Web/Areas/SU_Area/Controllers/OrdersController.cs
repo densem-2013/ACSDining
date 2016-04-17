@@ -16,6 +16,7 @@ using Microsoft.Ajax.Utilities;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
+    [Authorize(Roles = "Employee,SuperUser")]
     [RoutePrefix("api/Orders")]
     public class OrdersController : ApiController
     {
@@ -33,27 +34,21 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //Получить все фактические заявки на неделю
         [HttpPut]
         [Route("fact")]
-        public async Task<List<UserWeekOrderDto>> GetFactMenuOrders([FromBody] WeekYearDto wyDto = null)
+        [ResponseType(typeof(WeekOrderDto))]
+        public async Task<WeekOrderDto> GetFactMenuOrders([FromBody] WeekYearDto wyDto)
         {
             if (wyDto==null)
             {
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
-            var cats = _unitOfWork.RepositoryAsync<DishType>();
-            await cats.Queryable().LoadAsync();
-            string[] categories = await cats.Queryable()
-                .Select(dt => dt.Category)
-                .AsQueryable()
-                .ToArrayAsync();
-            int catLength = categories.Length;
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
             List<WeekOrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(wyDto);
 
-            List<UserWeekOrderDto> userWeekOrderDtos =
-                orderList.Select(uwo => UserWeekOrderDto.MapDto(_unitOfWork, uwo, catLength)).ToList();
+            WeekOrderDto weekOrderDto = WeekOrderDto.MapDto(_unitOfWork, orderList, catLength);
 
-            return await Task.FromResult(userWeekOrderDtos);
+            return await Task.FromResult(weekOrderDto);
         }
 
         //Получить все плановые заявки на неделю
@@ -87,72 +82,25 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return await Task.FromResult(planUserWeekOrderDtos);
         }
 
-        //Изменить фактическую заявку указанного пользователя на меню соответствующей недели в году
+        //Изменить фактическую заявку указанного списка пользователей на меню соответствующей недели в году
         [HttpPut]
         [Route("update")]
-        [ResponseType(typeof (int))]
-        public async Task<IHttpActionResult> UpdateUserWeekOrder([FromBody] UserWeekOrderDto userWeekOrderDto)
+        public async Task<IHttpActionResult> UpdateWeekOrders([FromBody] WeekOrderDto weekOrderDto)
         {
-            if (userWeekOrderDto == null)
+            if (weekOrderDto == null)
             {
                 return BadRequest("Bad Request Object");
             }
-            WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.UserId);
-            if (forUpdateOrder == null)
-            {
-                return NotFound();
-            }
-
             int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            List<UserWeekOrderDto> forUpdateOrders =
+                weekOrderDto.UserWeekOrders.Select(uwo => UserWeekOrderDto.MapDto(_unitOfWork,_orderMenuService.Find(uwo.OrderId),catLength,true)).ToList();
 
-            forUpdateOrder.DayOrderMenus.ForEach(x =>
+            forUpdateOrders.ForEach(x=>
             {
-                foreach (UserDayOrderDto udoDto in userWeekOrderDto.DayOrderDtos.ToList())
-                {
-                    if (udoDto.DayOrderId == x.Id)
-                    {
-                        if (x.OrderCanBeChanged)
-                        {
-                            List<DishQuantityRelations> dqaList =
-                                _dishQuantityService.GetByDayOrderMenuForDay(udoDto.DayOrderId, udoDto.MenuForDay.Id);
-
-                            for (int j = 1; j <= catLength; j++)
-                            {
-                                //Находим связь, указывающую на текущее значение фактической дневной заявки на блюдо
-                                var firstOrDefault = dqaList.FirstOrDefault(
-                                    q => q.DayOrderMenuId == x.Id && q.DishTypeId == j);
-                                if (firstOrDefault != null)
-                                {
-                                    double curQuantity = firstOrDefault.DishQuantity.Quantity;
-                                    //если заказанное количество изменилось
-                                    if (Math.Abs(curQuantity - udoDto.DishQuantities[j - 1]) > 0.001)
-                                    {
-                                        var dishQuantityRelations = _dishQuantityService.Query()
-                                            .Include(dq => dq.DishQuantity)
-                                            .Include(dq => dq.MenuForDay)
-                                            .Include(dq => dq.DayOrderMenu)
-                                            .Select()
-                                            .FirstOrDefault(
-                                                dq =>
-                                                    Math.Abs(dq.DishQuantity.Quantity - udoDto.DishQuantities[j - 1]) <
-                                                    0.001);
-                                        if (dishQuantityRelations != null)
-                                        {
-                                            //переустанавливаем связь на найденную сущность, содержащую необходимое количество
-                                            firstOrDefault.DishQuantity = dishQuantityRelations.DishQuantity;
-                                            _dishQuantityService.Update(firstOrDefault);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                _orderMenuService.UpdateUserWeekOrder(_unitOfWork, x);
             });
 
-            int res = await _unitOfWork.SaveChangesAsync();
-
-            return Ok(res);
+            return Ok();
         }
         
         protected override void Dispose(bool disposing)

@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
@@ -7,6 +8,12 @@ namespace ACSDining.Infrastructure.HelpClasses
 {
     public static class MapHelper
     {
+        public static List<DishType> GetDishCategories(IUnitOfWorkAsync unitOfWorkAsync)
+        {
+            var cats = unitOfWorkAsync.RepositoryAsync<DishType>().GetAll();
+
+            return cats;
+        }
         /// <summary>
         /// Получить количество категорий блюд
         /// </summary>
@@ -28,7 +35,7 @@ namespace ACSDining.Infrastructure.HelpClasses
         /// </summary>
         /// <param name="unitOfWorkAsync"></param>
         /// <returns></returns>
-        public static string[] GetCategories(IUnitOfWorkAsync unitOfWorkAsync)
+        public static string[] GetCategoriesStrings(IUnitOfWorkAsync unitOfWorkAsync)
         {
             var cats = unitOfWorkAsync.RepositoryAsync<DishType>();
 

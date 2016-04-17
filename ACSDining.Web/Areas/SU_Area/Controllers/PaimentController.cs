@@ -14,7 +14,7 @@ using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "SuperUser")]
+    [Authorize(Roles = "Employee,SuperUser")]
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {
@@ -48,7 +48,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-            List<WeekOrderMenu> orderMenus = _orderMenuService.GetAllByWeekYear(wyDto).ToList();
+            List<WeekOrderMenu> orderMenus = _orderMenuService.GetOrderMenuByWeekYear(wyDto).ToList();
 
             MenuForWeek mfw = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
             if (mfw == null)
@@ -82,7 +82,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             //Выделяем память для искомых данных ( +1 для хранения суммы всех ожидаемых проплат)
             double[] paiments = new double[workDayCount*catLength + 1];
 
-            WeekOrderMenu[] weekOrderMenus = _orderMenuService.GetAllByWeekYear(wyDto).ToArray();
+            WeekOrderMenu[] weekOrderMenus = _orderMenuService.GetOrderMenuByWeekYear(wyDto).ToArray();
 
             List<UserWeekPaimentDto> userWeekPaiments =
                 weekOrderMenus.Select(om => UserWeekPaimentDto.MapDto(_unitOfWork, om, catLength)).ToList();

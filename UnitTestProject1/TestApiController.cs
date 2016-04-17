@@ -31,7 +31,7 @@ namespace UnitTestProject1
             WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork);
             WeekYearDto wyDto = new WeekYearDto
             {
-                Week = 12,
+                Week = 18,
                 Year = 2016
             };
             WeekMenuDto wmDto = weekMenuApi.GetWeekMenu(wyDto).Result;
@@ -56,7 +56,7 @@ namespace UnitTestProject1
                 Week = 15,
                 Year = 2016
             };
-            List<UserWeekOrderDto> uwoDtos = ord.GetFactMenuOrders(wyDto).Result;
+            WeekOrderDto uwoDtos = ord.GetFactMenuOrders(wyDto).Result;
 
             Assert.IsNotNull(uwoDtos);
 

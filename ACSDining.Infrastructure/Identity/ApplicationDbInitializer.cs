@@ -20,11 +20,14 @@ namespace ACSDining.Infrastructure.Identity
 
         protected override void Seed(ApplicationDbContext context)
         {
-            if (System.Diagnostics.Debugger.IsAttached == false)
-                System.Diagnostics.Debugger.Launch();
-            
+            //if (System.Diagnostics.Debugger.IsAttached == false)
+            //    System.Diagnostics.Debugger.Launch();
+
             string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
                                       @"ACSDining.Core\DBinitial\DishDetails.xml";
+
+            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\bin\Debug", "") +
+            //                          @"ACSDining.Core\DBinitial\DishDetails.xml";
 
             InitializeIdentityForEf(context, _path); 
             var dishes = GetDishesFromXml(context, _path);
@@ -367,7 +370,7 @@ namespace ACSDining.Infrastructure.Identity
                         w => year != null && (w.WeekNumber == YearWeekHelp.CurrentWeek() - week + correct_week &&
                                               w.Year.YearNumber == year.YearNumber));
 
-                bool ordCanCreated = week == 0 && DateTime.Now.Hour < 9;
+                bool ordCanCreated = true;//week == 0 && DateTime.Now.Hour < 9;
                 for (int i = 1; i <= 7; i++)
                 {
                     List<Dish> dishes = getDishes();
@@ -383,7 +386,8 @@ namespace ACSDining.Infrastructure.Identity
                             WorkingDay = workday,
                             TotalPrice = dishes.Select(d => d.Price).Sum(),
                             OrderCanBeCreated = ordCanCreated,
-                            DayMenuCanBeChanged = ordCanCreated
+                            DayMenuCanBeChanged = ordCanCreated,
+                            OrderCanBeChanged = true
                          };
 
                         mfdays.Add(dayMenu);
@@ -499,18 +503,20 @@ namespace ACSDining.Infrastructure.Identity
 
                     List<DayOrderMenu> dayOrderMenus=new List<DayOrderMenu>();
 
+                    List<DishType> dishTypes = context.DishTypes.ToList();
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
                     {
                         DayOrderMenu dayOrderMenu = new DayOrderMenu
                         {
-                            MenuForDay = daymenu
+                            MenuForDay = daymenu,
+                            OrderCanBeChanged = true
                         };
                         PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu{DayOrderMenu = dayOrderMenu};
-                        dayOrderMenus.Add(dayOrderMenu);
+
                         foreach (Dish dish in daymenu.Dishes)
                         {
                             DishType first = null;
-                            foreach (var dy in context.DishTypes.AsEnumerable())
+                            foreach (var dy in dishTypes)
                             {
                                 if (string.Equals(dy.Category, dish.DishType.Category))
                                 {
@@ -539,6 +545,7 @@ namespace ACSDining.Infrastructure.Identity
                             }
 
                         }
+                        dayOrderMenus.Add(dayOrderMenu);
                         weekOrder.WeekOrderSummaryPrice += dayOrderMenu.DayOrderSummaryPrice;
                     }
                     weekOrder.DayOrderMenus = dayOrderMenus;

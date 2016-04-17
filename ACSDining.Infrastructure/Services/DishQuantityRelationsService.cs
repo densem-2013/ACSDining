@@ -8,6 +8,7 @@ namespace ACSDining.Infrastructure.Services
     {
         //Получить связи на заказанное количество блюд в указанной фактической дневной заявке на указанное меню рабочего дня
         List<DishQuantityRelations> GetByDayOrderMenuForDay(int dayorderid, int menufordayid);
+
     }
 
     public class DishQuantityRelationsService : Service<DishQuantityRelations>, IDishQuantityRelationsService

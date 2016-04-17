@@ -12,7 +12,7 @@ using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "SuperUser")]
+    [Authorize(Roles = "Employee,SuperUser")]
     [RoutePrefix("api/WorkDays")]
     public class WorkDayApiController : ApiController
     {

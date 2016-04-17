@@ -22,7 +22,7 @@ namespace ACSDining.Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            TimerHandler.Init();
+           // TimerHandler.Init();
         }
 
     }

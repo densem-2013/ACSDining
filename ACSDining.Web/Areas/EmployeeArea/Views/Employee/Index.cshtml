@@ -6,7 +6,6 @@
 <div class="row">
     <div class="col-md-3 ">
         <div class="input-group date form-control" id="datepick" data-provide="datepicker" data-bind="datepicker: myDate">
-            @*<input type="text" />*@
         </div>
     </div>
     <div class="col-md-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0">
@@ -16,17 +15,17 @@
                 <tr style="background: #565659;">
                     <td >
                         <div class ="col-md-3">
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:function(){ SetMyDateByWeek((CurrentWeekYear()));} , css:{disabled: IsCurrentWeek()}" />
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:SetMyDateByWeek((CurrentWeekYear())) , css:{ disabled: IsCurrentWeek}" />
                         </div>
                     </td>
                     <td>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <input type="button" value="Сохранить изменения" id="beenChanged" class="btn btn-warning" data-bind=" click:update , visible: BeenChanged" />
                         </div>
                     </td>
                     <td >
-                        <div class="col-md-3 ">
-                            <input type="button" id="btnaddmenu" class="btn" data-bind=" value: NextWeekOrderExist() ? 'Перейти на следующую неделю':'Создать заказ на следующую неделю', css:{ disabled: !CanCreateOrderOnNextWeek()}" />
+                        <div class="col-md-3 "style="float: right; margin-right: 150px;">
+                            <input type="button" id="btnaddmenu" class="btn" data-bind=" click: GoToNextWeekOrder ,value: MessageOnNextWeekButton,css:{disabled: IsNextWeekYear}" />
                         </div>
                     </td>
                 </tr>
@@ -65,8 +64,9 @@
                     </td>
                     <td style="vertical-align: middle; text-align: center;">
                         <!--ko foreach: Dishes-->
-                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.OrderQuantity().clicked($element)}, event : { dblclick: $data.OrderQuantity().doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'right'}">
-                            <!--ko ifnot: OrderQuantity().isEditMode() -->
+                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.OrderQuantity().clicked($element)}, event : { mouseenter: $data.OrderQuantity().onmouseenter , mouseleave:function(){$data.OrderQuantity().onFocusOut();; $root.CalcSummary($data.OrderQuantity().beenChanged())}}">
+                            <!--, tooltip: {title: 'DoubleClick For Edit', placement: 'left'}-->
+                            <!--ko ifnot: OrderQuantity().isEditMode -->
                             <span data-bind="text: OrderQuantity().Quantity"></span>
                             <!--/ko-->
                             <!-- ko if: OrderQuantity().isEditMode -->

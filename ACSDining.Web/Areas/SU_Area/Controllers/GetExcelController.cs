@@ -12,7 +12,7 @@ using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [System.Web.Http.Authorize(Roles = "SuperUser")]
+    [System.Web.Http.Authorize(Roles = "Employee,SuperUser")]
     [System.Web.Http.RoutePrefix("api/GetExcel")]
     public class GetExcelController : ApiController
     {
@@ -38,7 +38,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             WeekYearDto wyDto = first != null ? first.WeekYear : null;
             WorkingWeek workweek = _workDaysService.GetWorkWeekByWeekYear(wyDto);
 
-            string[] dishCategories = MapHelper.GetCategories(_unitOfWork);
+            string[] dishCategories = MapHelper.GetCategoriesStrings(_unitOfWork);
 
             string filename = _getExcelService.GetExcelFileFromPaimentsModel(paimentList, dishCategories, workweek);
 

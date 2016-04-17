@@ -17,7 +17,7 @@
         var self = this;
         self.isEditMode = ko.observable(false);
         self.Quantity = ko.observable(value);
-        self.CanBeChanged = ko.observable(/*canchange*/true);
+        self.CanBeChanged = ko.observable(canchange/*true*/);
         self.Store = ko.observable();
         self.beenChanged = ko.observable(false);
         self.clicked = function (item) {
@@ -25,13 +25,15 @@
                 $(item).focusin();
             }
         };
-        self.doubleClick = function () {
+
+        self.onmouseenter = function () {
             if (self.CanBeChanged()) {
                 self.beenChanged(false);
                 self.Store(self.Quantity());
                 self.isEditMode(true);
             }
         };
+
         self.onFocusOut = function () {
             if (self.CanBeChanged()) {
                 self.beenChanged(self.Store() !== self.Quantity());
@@ -60,21 +62,18 @@
         dayobj = dayobj || {};
         categs = categs || [];
 
-        self.ID = ko.observable(dayobj.id);
+        self.ID = ko.observable(dayobj.menuForDay.id);
         self.DayOfWeek = ko.observable(dayobj.menuForDay.dayOfWeek);
-        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function(item) {
-            var ind = 0;
-            var catind;
+        self.OrderCanBeChanged = ko.observable(dayobj.menuForDay.orderCanBeChanged);
+        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function (item, ind) {
+
             var first = ko.utils.arrayFirst(dayobj.menuForDay.dishes, function(element) {
                 var positivRes = element.category === item;
-                if (positivRes) {
-                    catind = ind;
-                }
-                ind++;
+
                 return positivRes;
             });
-            if (first != null && catind != null) {
-                return new dishInfo(first, dayobj.quantCanBeChanged, dayobj.dishQuantities[catind]);
+            if (first != null ) {
+                return new dishInfo(first, dayobj.menuForDay.orderCanBeChanged, dayobj.dishQuantities[ind]);
             };
             return null;
         }));
@@ -87,14 +86,13 @@
         dayOrdObject = dayOrdObject || {};
         categories = categories || [];
 
-        self.ID = ko.observable(dayOrdObject.id);
+        self.DayOrderId = ko.observable(dayOrdObject.dayOrderId);
         self.DayOfWeek = ko.observable(dayOrdObject.dayOfWeek);
 
         self.MenuForDay = ko.observable(new menuForDay(dayOrdObject, categories));
 
         self.DishQuantities = ko.observableArray(dayOrdObject.dishQuantities);
 
-        self.OrderCanBeChanged = ko.observable(dayOrdObject.orderCanBeChanged);
         self.DayOrderSummary = ko.observable(dayOrdObject.dayOrderSummary.toFixed(2));
         self.CalcDayOrderTotal = function() {
             var sum = 0;
@@ -145,96 +143,83 @@
         self.QuantValues = [0, 1, 2, 3, 4, 5];
 
         self.BeenChanged = ko.observable(false);
-
-        self.IsCurrentWeek = ko.observable();
+        self.IsCurrentWeek = ko.pureComputed(function () {
+            var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
+            console.log("Week= " + self.WeekYear().week + "Year=" + self.WeekYear().year + "IsCurrentWeek= " + res);
+            return res;
+        }, self);
+        
 
         self.NextWeekOrderExist = ko.observable();
+        
+        self.MessageOnNextWeekButton=ko.pureComputed(function() {
+
+            if (self.IsNextWeekYear()) return "Заказ на следующую неделю";
+            else {
+                if (self.NextWeekOrderExist()) {
+                    return "Редактировать заказ на следующую неделю";
+                } else {
+                    return "Создать  заказ на следующую неделю";
+                }
+            }
+        }, self);
 
         // Callback for error responses from the server.
         function onError(error) {
             self.Message("Error: " + error.status + " " + error.statusText);
         }
 
-        self.WeekTitle = ko.computed(function() {
+        self.WeekTitle = ko.computed(function () {
             var options = {
                 weekday: "short",
                 year: "numeric",
                 month: "short",
                 day: "numeric"
             };
+            var year = self.WeekYear().year;
+            var firstDay = new Date(year, 0, 1).getDay() ;
 
-            var needed = self.WeekYear();
-            if (needed !== null && needed !== undefined) {
-
-                var year = needed.year;
-                var firstDay = new Date(year, 0, 1).getDay();
-
-                var week = self.WeekYear().week;
-                var d = new Date("Jan 01, " + year + " 01:00:00");
-                var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week - 1);
-                var n1 = new Date(w);
-                var n2 = new Date(w + 345600000);
-                return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
-            } else {
-                return null;
-            }
+            var week = self.WeekYear().week;
+            var d = new Date("Jan 01, " + year + " 01:00:00");
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week );
+            var n1 = new Date(w);
+            var n2 = new Date(w + 345600000);
+            return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
-
         
+
         self.SetMyDateByWeek = function (wyDto) {
             var firstDay = new Date(wyDto.year, 0, 1).getDay();
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week - 1);
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week );
             self.myDate(new Date(w));
         }.bind(self);
 
 
-        var loadUserWeekOrder = function(wyDto) {
+        var loadUserWeekOrder = function(wyDto1) {
 
-            app.su_Service.LoadUserWeekOrder(wyDto).then(function(resp) {
+            app.su_Service.LoadUserWeekOrder(wyDto1).then(function (resp1) {
                 self.UserDayOrders([]);
 
-                self.OrderId(resp.orderId);
-                self.UserId(resp.userId);
-                self.WeekIsPaid(resp.weekIsPaid);
-                self.WeekYear(resp.weekYear);
-                self.WeekSummaryPrice(resp.weekSummaryPrice.toFixed(2));
-                ko.utils.arrayForEach(resp.dayOrderDtos, function(object) {
+                self.OrderId(resp1.orderId);
+                self.UserId(resp1.userId);
+                self.WeekIsPaid(resp1.weekIsPaid);
+                self.WeekYear(resp1.weekYear);
+                self.WeekSummaryPrice(resp1.weekSummaryPrice.toFixed(2));
+                ko.utils.arrayForEach(resp1.dayOrderDtos, function (object) {
 
                     self.UserDayOrders.push(new userDayOrderInfo(object, self.Categories(), object.orderCanBeChanged));
 
                 });
 
-                app.su_Service.IsNextWeekYear(wyDto).then(function (resp) {
-                    self.IsNextWeekYear(resp);
+                app.su_Service.IsNextWeekYear(wyDto1).then(function (resp2) {
+                    self.IsNextWeekYear(resp2);
                 });
-
-                var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
-
-                self.IsCurrentWeek(res);
-
+                
             }, onError);
 
         }
-        
-        self.NextWeekOrder = function() {
-            var weekYear = new WeekYear(self.WeekYear());
-            app.su_Service.GetNextWeekYear(weekYear).then(function(resp) {
 
-                self.SetMyDateByWeek(resp);
-
-            }, onError);
-
-        }
-        self.PrevWeekOrder = function() {
-            var weekYear = new WeekYear(self.WeekYear());
-            app.su_Service.GetPrevWeekYear(weekYear).then(function(resp) {
-
-                self.SetMyDateByWeek(resp);
-
-            }, onError);
-
-        }
         self.GoToNextWeekOrder = function() {
             
             app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function (nextWeekYear) {
@@ -244,21 +229,21 @@
         };
 
         self.myDate.subscribe = ko.computed(function() {
-            var takedWeek = self.myDate().getWeek() + 1;
+            var takedWeek = self.myDate().getWeek()-1;
             var needObj = self.WeekYear();
             if (needObj != undefined) {
-                var curweek = needObj.Week;
-                if (takedWeek !== curweek) {
+                var curweek = needObj.week;
+                if (!isNaN(takedWeek) && takedWeek !== curweek) {
                     var weekyear = {
                         Week: takedWeek,
                         Year: self.myDate().getFullYear()
                     };
-                    if (!isNaN(weekyear.Week)  && !isNaN(weekyear.Year) ) {
+                    if (!isNaN(weekyear.Week) && !isNaN(weekyear.Year)) {
 
                         loadUserWeekOrder(weekyear);
                     }
                 };
-            }
+            };
         }, self);
 
         self.GetCurrentWeekYear = function() {
@@ -317,12 +302,12 @@
                 WeekSummaryPrice: self.WeekSummaryPrice(),
                 WeekIsPaid: self.WeekIsPaid(),
                 WeekPaid: self.WeekPaid(),
-                WeekYearDto:self.WeekYear()
+                WeekYear: self.WeekYear()
             };
 
             app.su_Service.UserWeekUpdateOrder(userweekorder).then(function () {
                 self.BeenChanged(false);
-            }, onError());
+            }, onError);
         };
 
         self.init = function() {
@@ -335,6 +320,10 @@
 
             app.su_Service.NextWeekOrderExists().then(function (respnext) {
                 self.NextWeekOrderExist(respnext);
+            }, onError);
+
+            app.su_Service.CanCreateOrderOnNextWeek().then(function(cancreatenext) {
+                self.CanCreateOrderOnNextWeek(cancreatenext);
             }, onError);
 
             self.SetMyDateByWeek(self.CurrentWeekYear());

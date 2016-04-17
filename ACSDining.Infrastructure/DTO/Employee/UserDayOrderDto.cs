@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.UnitOfWork;
 
-namespace ACSDining.Infrastructure.DTO.SuperUser
+namespace ACSDining.Infrastructure.DTO.Employee
 {
     //Заказ пользователя на день
     public class UserDayOrderDto
@@ -20,9 +21,10 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         /// <param name="unitOfWork"></param>
         /// <param name="dayOrderMenu"></param>
         /// <param name="catlength"></param>
+        /// <param name="forWeekOrders">Если преобразование происходит для OrderApiController</param>
         /// <returns></returns>
         public static UserDayOrderDto MapUserDayOrderDto(IUnitOfWorkAsync unitOfWork, DayOrderMenu dayOrderMenu,
-            int catlength)
+            int catlength, bool forWeekOrders = false)
         {
             WorkingDay workday = dayOrderMenu.MenuForDay.WorkingDay;
 
@@ -30,9 +32,13 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 .Query()
                 .Include(dq => dq.DishQuantity)
                 .Include(dq => dq.MenuForDay.WorkingDay.DayOfWeek)
+                .Include(dq => dq.DayOrderMenu.MenuForDay.WorkingDay.DayOfWeek)
                 .Select()
-                .Where(dqr => dqr.MenuForDayId == dayOrderMenu.MenuForDay.ID && dqr.DayOrderMenuId == dayOrderMenu.Id)
-                .ToList();
+                .Where(
+                    dqr =>
+                        dqr.DayOrderMenuId == dayOrderMenu.Id&& dqr.MenuForDayId == dayOrderMenu.MenuForDay.ID )
+                        .OrderBy(dq=>dq.DishTypeId)
+                        .ToList();
 
             double[] dquantities = new double[catlength];
 
@@ -47,7 +53,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             return new UserDayOrderDto
             {
                 DayOrderId = dayOrderMenu.Id,
-                MenuForDay = MenuForDayDto.MapDto(dayOrderMenu.MenuForDay),
+                MenuForDay = MenuForDayDto.MapDto(unitOfWork, dayOrderMenu.MenuForDay, forWeekOrders),
                 DishQuantities = dquantities,
                 DayOrderSummary = dayOrderMenu.DayOrderSummaryPrice,
                 OrderCanBeChanged = dayOrderMenu.OrderCanBeChanged

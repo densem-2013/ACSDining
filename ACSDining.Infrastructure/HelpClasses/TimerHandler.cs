@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using ACSDining.Core.Domains;
@@ -11,7 +13,8 @@ namespace ACSDining.Infrastructure.HelpClasses
     {
         public static void Init()
         {
-            StartChecking();
+            //StartChecking();
+            FakeStartChecking();
             // In some constructor or method that runs when the app starts.
             // 1st parameter is the callback to be run every iteration.
             // 2nd parameter is optional parameters for the callback.
@@ -29,12 +32,13 @@ namespace ACSDining.Infrastructure.HelpClasses
                 WeekYearDto wyDto = YearWeekHelp.GetCurrentWeekYearDto();
                 using (ApplicationDbContext _db = new ApplicationDbContext())
                 {
+                    int dayNum = (int) DateTime.Now.DayOfWeek;
                     MenuForDay dayMenu =
                         _db.MenuForDays.FirstOrDefault(
                             mfd =>
                                 mfd.WorkingDay.WorkingWeek.Year.YearNumber == wyDto.Year &&
                                 mfd.WorkingDay.WorkingWeek.WeekNumber == wyDto.Week &&
-                                mfd.WorkingDay.DayOfWeek.Id == (int) DateTime.Now.DayOfWeek);
+                                mfd.WorkingDay.DayOfWeek.Id == dayNum);
 
                     if (dayMenu != null)
                     {
@@ -56,45 +60,76 @@ namespace ACSDining.Infrastructure.HelpClasses
                 int year = DateTime.Now.Year;
                 int day = (int) DateTime.Now.DayOfWeek;
                 int week = YearWeekHelp.CurrentWeek();
-                context.MenuForWeeks.Include("MenuForDay").Include("WorkingWeek.Year").ToList().ForEach(x =>
+                List<MenuForWeek> weekmenus =
+                    context.MenuForWeeks.Include("MenuForDay").Include("WorkingWeek.Year").ToList();
+                weekmenus.ForEach(x =>
                 {
                     if (x.WorkingWeek.Year.YearNumber == year &&
                         (x.WorkingWeek.WeekNumber == week || x.WorkingWeek.WeekNumber == week + 1))
                     {
                         x.OrderCanBeCreated = true;
                         x.MenuCanBeChanged = true;
+                        context.Entry(x).State = EntityState.Modified;
                         x.MenuForDay.ToList().ForEach(y =>
                         {
-                            if (y.ID>day)
+                            if (y.ID > day)
                             {
                                 y.OrderCanBeCreated = true;
                                 y.DayMenuCanBeChanged = true;
                             }
-                            if (y.ID == day )
+                            if (y.ID == day)
                             {
                                 y.OrderCanBeCreated = DateTime.Now.Hour < 9;
                                 y.DayMenuCanBeChanged = DateTime.Now.Hour < 9;
                             }
-                            if (y.ID<day)
+                            if (y.ID < day)
                             {
                                 y.OrderCanBeCreated = false;
                                 y.DayMenuCanBeChanged = false;
                             }
+                            context.Entry(y).State = EntityState.Modified;
                         });
                     }
                     else
                     {
                         x.OrderCanBeCreated = false;
                         x.MenuCanBeChanged = false;
+                        context.Entry(x).State = EntityState.Modified;
                         x.MenuForDay.ToList().ForEach(y =>
                         {
                             y.OrderCanBeCreated = false;
                             y.DayMenuCanBeChanged = false;
+                            context.Entry(y).State = EntityState.Modified;
                         });
                     }
                 });
+                context.SaveChanges();
             }
 
+        }
+
+        private static void FakeStartChecking()
+        {
+            using (ApplicationDbContext context = new ApplicationDbContext())
+            {
+                List<MenuForWeek> weekmenus =
+                    context.MenuForWeeks.Include("MenuForDay").Include("WorkingWeek.Year").ToList();
+                weekmenus.ForEach(x =>
+                {
+                    x.OrderCanBeCreated = true;
+                    x.MenuCanBeChanged = true;
+                    x.MenuForDay.ToList().ForEach(y =>
+                    {
+
+                        y.OrderCanBeCreated = true;
+                        y.DayMenuCanBeChanged = true;
+                        context.Entry(y).State = EntityState.Modified;
+                    });
+                    context.Entry(x).State = EntityState.Modified;
+                });
+                context.SaveChanges();
+            }
+            
         }
     }
 }

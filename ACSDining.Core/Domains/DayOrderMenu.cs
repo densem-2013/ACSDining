@@ -10,8 +10,8 @@ namespace ACSDining.Core.Domains
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public double DayOrderSummaryPrice { get; set; }
-        //Пользователь может изменить заказ на это меню
         public bool OrderCanBeChanged { get; set; }
+
         [JsonIgnore]
         public virtual MenuForDay MenuForDay { get; set; }
         [JsonIgnore]

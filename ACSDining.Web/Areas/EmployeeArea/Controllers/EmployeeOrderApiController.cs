@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
@@ -17,11 +14,10 @@ using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using WebGrease.Css.Extensions;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 {
-    [Authorize(Roles = "Employee")]
+    [Authorize(Roles = "Employee,SuperUser")]
     [RoutePrefix("api/Employee")]
     public class EmployeeOrderApiController : ApiController
     {
@@ -137,60 +133,14 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             {
                 return BadRequest("Bad Request Object");
             }
-            WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.UserId);
+            WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.OrderId);
             if (forUpdateOrder == null)
             {
                 return NotFound();
             }
 
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-            forUpdateOrder.DayOrderMenus.ForEach(x =>
-            {
-                foreach (UserDayOrderDto udoDto in userWeekOrderDto.DayOrderDtos.ToList())
-                {
-                    if (udoDto.DayOrderId == x.Id)
-                    {
-                        if (x.OrderCanBeChanged)
-                        {
-                            List<DishQuantityRelations> dqaList =
-                                _dishQuantityService.GetByDayOrderMenuForDay(udoDto.DayOrderId, udoDto.MenuForDay.Id);
-
-                            for (int j = 1; j <= catLength; j++)
-                            {
-                                //Находим связь, указывающую на текущее значение фактической дневной заявки на блюдо
-                                var firstOrDefault = dqaList.FirstOrDefault(
-                                    q => q.DayOrderMenuId == x.Id && q.DishTypeId == j);
-                                if (firstOrDefault != null)
-                                {
-                                    double curQuantity = firstOrDefault.DishQuantity.Quantity;
-                                    //если заказанное количество изменилось
-                                    if (Math.Abs(curQuantity - udoDto.DishQuantities[j - 1]) > 0.001)
-                                    {
-                                        var dishQuantityRelations = _dishQuantityService.Query()
-                                            .Include(dq => dq.DishQuantity)
-                                            .Include(dq => dq.MenuForDay)
-                                            .Include(dq => dq.DayOrderMenu)
-                                            .Select()
-                                            .FirstOrDefault(
-                                                dq =>
-                                                    Math.Abs(dq.DishQuantity.Quantity - udoDto.DishQuantities[j - 1]) <
-                                                    0.001);
-                                        if (dishQuantityRelations != null)
-                                        {
-                                            //переустанавливаем связь на найденную сущность, содержащую искомое количество
-                                            firstOrDefault.DishQuantity = dishQuantityRelations.DishQuantity;
-                                            _dishQuantityService.Update(firstOrDefault);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            int res = await _unitOfWork.SaveChangesAsync();
+            int res = await Task.FromResult(_orderMenuService.UpdateUserWeekOrder(_unitOfWork,userWeekOrderDto));
 
             return Ok(res);
         }
@@ -201,7 +151,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("nextWeekMenuCanOrder")]
+        [Route("canCreateOrderOnNextWeek")]
         [ResponseType(typeof (bool))]
         public async Task<IHttpActionResult> CanCreateOrderOnNextWeek()
         {

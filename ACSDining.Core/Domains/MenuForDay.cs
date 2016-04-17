@@ -22,7 +22,7 @@ namespace ACSDining.Core.Domains
         public MenuForDay()
         {
             Dishes = new List<Dish>();
-            PlannedDayOrderMenus = new List<PlannedDayOrderMenu>();
+            DayOrderMenus = new List<DayOrderMenu>();
         }
 
         [Key]
@@ -35,12 +35,16 @@ namespace ACSDining.Core.Domains
         //СуперЮзер может изменить меню на этот день
         public bool DayMenuCanBeChanged { get; set; }
 
+        //Пользователь может изменить заказ на это меню
+        public bool OrderCanBeChanged { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<Dish> Dishes { get; set; }
 
         [JsonIgnore]
         public virtual WorkingDay WorkingDay { get; set; }
 
-        public ICollection<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; }
+        //public ICollection<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; }
+        public ICollection<DayOrderMenu> DayOrderMenus { get; set; }
     }
 }

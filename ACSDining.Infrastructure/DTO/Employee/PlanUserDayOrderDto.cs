@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
 
-namespace ACSDining.Infrastructure.DTO.SuperUser
+namespace ACSDining.Infrastructure.DTO.Employee
 {
     public class PlanUserDayOrderDto
     {
         public int PlanDayOrderId { get; set; }
-        //public WorkDayDto WorkDayDto { get; set; }
         public double[] DishQuantities { get; set; }
         public double DayOrderSummary { get; set; }
 
@@ -23,13 +23,10 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         {
             WorkingDay workday = planDayOrderMenu.DayOrderMenu.MenuForDay.WorkingDay;
 
-            List<DishQuantityRelations> quaList = unitOfWork.Repository<DishQuantityRelations>()
-                .Query()
-                .Include(dq => dq.DishQuantity)
-                .Include(dq => dq.MenuForDay.WorkingDay.DayOfWeek)
-                .Select()
-                .Where(dqr => dqr.MenuForDayId == planDayOrderMenu.DayOrderMenu.MenuForDay.ID && dqr.DayOrderMenuId == planDayOrderMenu.DayOrderMenu.Id)
-                .ToList();
+            List<DishQuantityRelations> quaList =
+                unitOfWork.RepositoryAsync<DishQuantityRelations>()
+                    .GetRelationsListByDayIdMenuId(planDayOrderMenu.DayOrderMenu.MenuForDay.ID,
+                        planDayOrderMenu.DayOrderMenu.Id);
 
             double[] dquantities = new double[catlength];
 
@@ -41,10 +38,10 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 if (firstOrDefault != null)
                     dquantities[j - 1] = firstOrDefault.DishQuantity.Quantity;
             }
+
             return new PlanUserDayOrderDto
             {
                 PlanDayOrderId = planDayOrderMenu.Id,
-                //WorkDayDto = WorkDayDto.MapDto(workday),
                 DishQuantities = dquantities,
                 DayOrderSummary = planDayOrderMenu.DayOrderMenu.DayOrderSummaryPrice
             };

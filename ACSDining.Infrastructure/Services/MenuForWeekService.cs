@@ -20,6 +20,7 @@ namespace ACSDining.Infrastructure.Services
         IQueryable<MenuForWeek> GetAll();
         
         Task<bool> DeleteMenuForWeek(int menuid);
+        MenuForWeek CreateByWeekYear(WeekYearDto wyDto);
     }
 
     public class MenuForWeekService : Service<MenuForWeek>, IMenuForWeekService
@@ -32,6 +33,10 @@ namespace ACSDining.Infrastructure.Services
             _repository = repository;
         }
 
+        public MenuForWeek CreateByWeekYear(WeekYearDto wyDto)
+        {
+            return _repository.CreateMenuForWeekOnWeekYear(wyDto);
+        }
         public double[] UnitWeekPrices(int menuforweekid,string[] categories)
         {
             return _repository.GetUnitWeekPrices(menuforweekid,categories);

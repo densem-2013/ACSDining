@@ -13,7 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "SuperUser")]
+    [Authorize(Roles = "Employee,SuperUser")]
     [RoutePrefix("api/Account")]
     public class AccountManagementApiController : ApiController
     {
