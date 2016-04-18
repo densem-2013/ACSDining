@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -12,7 +10,6 @@ using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Services;
-using Microsoft.Ajax.Utilities;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {

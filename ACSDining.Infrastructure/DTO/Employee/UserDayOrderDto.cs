@@ -13,7 +13,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public MenuForDayDto MenuForDay { get; set; }
         public double[] DishQuantities { get; set; }
         public double DayOrderSummary { get; set; }
-
+        public bool OrderCanBeChanged { get; set; }
         /// <summary>
         /// Получает представление фактической заявки
         /// </summary>
@@ -54,7 +54,8 @@ namespace ACSDining.Infrastructure.DTO.Employee
                 DayOrderId = dayOrderMenu.Id,
                 MenuForDay = MenuForDayDto.MapDto(unitOfWork, dayOrderMenu.MenuForDay, forWeekOrders),
                 DishQuantities = dquantities,
-                DayOrderSummary = dayOrderMenu.DayOrderSummaryPrice
+                DayOrderSummary = dayOrderMenu.DayOrderSummaryPrice,
+                OrderCanBeChanged = dayOrderMenu.MenuForDay.OrderCanBeChanged
             };
         }
 

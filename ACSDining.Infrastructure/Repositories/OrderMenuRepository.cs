@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.UnitOfWork;
@@ -22,12 +20,12 @@ namespace ACSDining.Infrastructure.Repositories
         {
             List<WeekOrderMenu> weekOrderMenus = repository.OrdersMenuByWeekYear(wyDto);
             WorkingWeek workingWeek = repository.GetRepositoryAsync<WorkingWeek>().WorkWeekByWeekYear(wyDto);
-            int dayCount = workingWeek.WorkingDays.Count();
+            int dayCount = workingWeek.WorkingDays.Count(d => d.IsWorking);
             int arLenth = dayCount*catLenth;
             double[] res = new double[arLenth];
             foreach (WeekOrderMenu wordmenu in weekOrderMenus)
             {
-                for (int i = 0; i < wordmenu.DayOrderMenus.Count; i++)
+                for (int i = 0; i < dayCount; i++)
                 {
                     DayOrderMenu dayord = wordmenu.DayOrderMenus.ElementAt(i);
 

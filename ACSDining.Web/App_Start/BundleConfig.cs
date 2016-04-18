@@ -64,21 +64,21 @@ namespace ACSDining.Web
                         "~/Scripts/knockout-bootstrap.min.js"
             ));
 
-            bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
-                        "~/Scripts/jquery-ui-{version}.js"));
+            //bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
+            //            "~/Scripts/jquery-ui-{version}.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                        "~/Scripts/jquery.unobtrusive*",
-                        "~/Scripts/jquery.validate*"));
+            //bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
+            //            "~/Scripts/jquery.unobtrusive*",
+            //            "~/Scripts/jquery.validate*"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-            bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-                        "~/Scripts/modernizr-*"));
+            //bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
+            //            "~/Scripts/modernizr-*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js",
-                      "~/Scripts/respond.js"));
+            //bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+            //          "~/Scripts/bootstrap.js",
+            //          "~/Scripts/respond.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                        "~/Content/bootstrap.css",
@@ -86,10 +86,9 @@ namespace ACSDining.Web
                        "~/Content/themes/Cupertino/jquery-ui.min.css",
                        "~/Content/themes/Cupertino/jquery-ui.structure.min.css",
                        "~/Content/themes/Cupertino/jquery-ui.theme.min.css",
-                       "~/Content/css/bootstrap-datetimepicker.min.css",
-                        "~/Content/Site.css",
-                       "~/Content/css/style.css",
-                       "~/Content/css/fonts/custom.css"));
+                       "~/Content/Site.css",
+                       "~/Content/css/style.css"
+                       ));
 
             bundles.Add(new StyleBundle("~/Modal/css").Include(
                 "~/Content/worthy/modal/css/bootstrap.css",

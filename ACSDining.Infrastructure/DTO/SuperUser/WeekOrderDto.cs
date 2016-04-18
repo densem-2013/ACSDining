@@ -13,6 +13,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public List<UserWeekOrderDto> UserWeekOrders { get; set; }
         public WeekMenuDto MenuForWeekDto { get; set; }
         public double[] SummaryDishQuantities { get; set; }
+        public string[] DayNames { get; set; }
 
         public static WeekOrderDto MapDto(IUnitOfWorkAsync unitOfWork, List<WeekOrderMenu> weekOrderMenus, int catLength)
         {
@@ -28,7 +29,12 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 UserWeekOrders =
                     weekOrderMenus.Select(woDto => UserWeekOrderDto.MapDto(unitOfWork, woDto, catLength, true)).ToList(),
                 MenuForWeekDto = WeekMenuDto.MapDto(unitOfWork, first != null ? first.MenuForWeek : null, true),
-                SummaryDishQuantities = unitOfWork.RepositoryAsync<WeekOrderMenu>().SummaryDishesQuantities(wyDto,catLength)
+                SummaryDishQuantities =
+                    unitOfWork.RepositoryAsync<WeekOrderMenu>().SummaryDishesQuantities(wyDto, catLength),
+                DayNames =
+                    first != null
+                        ? first.DayOrderMenus.Select(dom => dom.MenuForDay.WorkingDay.DayOfWeek.Name).ToArray()
+                        : null
             };
         }
     }

@@ -13,7 +13,6 @@ namespace ACSDining.Infrastructure.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         DayOrderSummaryPrice = c.Double(nullable: false),
-                        OrderCanBeChanged = c.Boolean(nullable: false),
                         MenuForDay_ID = c.Int(),
                         WeekOrderMenu_Id = c.Int(),
                     })
@@ -29,7 +28,6 @@ namespace ACSDining.Infrastructure.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         TotalPrice = c.Double(nullable: false),
-                        OrderCanBeCreated = c.Boolean(nullable: false),
                         DayMenuCanBeChanged = c.Boolean(nullable: false),
                         OrderCanBeChanged = c.Boolean(nullable: false),
                         WorkingDay_Id = c.Int(),

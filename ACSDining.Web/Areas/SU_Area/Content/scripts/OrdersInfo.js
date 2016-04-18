@@ -9,69 +9,32 @@
     $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
         .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
     
-    var quantValueModel = function (value, canchange) {
+    var quantValueModel = function (value) {
 
         var self = this;
         self.isEditMode = ko.observable(false);
         self.Quantity = ko.observable(value);
-        self.CanBeChanged = ko.observable(canchange/*true*/);
         self.Store = ko.observable();
         self.beenChanged = ko.observable(false);
-        self.clicked = function (item) {
-            if (self.CanBeChanged()) {
+        self.clicked = function (item, canchange) {
+            if (!canchange) return;
                 $(item).focusin();
-            }
         };
 
-        self.onmouseenter = function () {
-            if (self.CanBeChanged()) {
+        self.onmouseenter = function (canchange) {
+            if (!canchange) return;
                 self.beenChanged(false);
                 self.Store(self.Quantity());
                 self.isEditMode(true);
-            }
         };
 
-        self.onFocusOut = function () {
-            if (self.CanBeChanged()) {
+        self.onFocusOut = function (canchange) {
+            if (!canchange) return;
                 self.beenChanged(self.Store() !== self.Quantity());
                 self.isEditMode(false);
-            }
         };
     }
 
-    //var dishInfo = function (dinfo, canbechanged, quantity) {
-
-    //    var self = this;
-
-    //    self.DishId = ko.observable(dinfo.dishID);
-
-    //    self.OrderQuantity = ko.observable(new quantValueModel(quantity, canbechanged));
-    //}
-
-    //var menuForDay = function (dayobj, categs) {
-
-    //    var self = this;
-
-    //    dayobj = dayobj || {};
-    //    categs = categs || [];
-
-    //    self.ID = ko.observable(dayobj.menuForDay.id);
-    //    //self.DayOfWeek = ko.observable(dayobj.menuForDay.dayOfWeek);
-    //    self.OrderCanBeChanged = ko.observable(dayobj.menuForDay.orderCanBeChanged);
-    //    self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function (item, ind) {
-
-    //        var first = ko.utils.arrayFirst(dayobj.menuForDay.dishes, function (element) {
-    //            var positivRes = element.category === item;
-
-    //            return positivRes;
-    //        });
-    //        if (first != null) {
-    //            return new dishInfo(first, dayobj.menuForDay.orderCanBeChanged, dayobj.dishQuantities[ind]);
-    //        };
-    //        return null;
-    //    }));
-
-    //}
     var userDayOrderInfo = function (dayOrdObject, categories) {
 
         var self = this;
@@ -81,9 +44,10 @@
 
         self.DayOrderId = ko.observable(dayOrdObject.dayOrderId);
 
-        //self.MenuForDay = ko.observable(new menuForDay(dayOrdObject, categories));
+        self.OrderCanBeChanged = ko.observable(dayOrdObject.orderCanBeChanged);
+
         self.DishQuantities = ko.observableArray(ko.utils.arrayMap(dayOrdObject.dishQuantities,function(item) {
-            return new quantValueModel(item, dayOrdObject.orderCanBeChanged);
+            return new quantValueModel(item);
         }));
 
     }
@@ -101,9 +65,8 @@
         self.UserDayOrders = ko.observableArray(ko.utils.arrayMap(userWeekOrder.dayOrderDtos, function (item) {
             return new userDayOrderInfo(item, caterories);
         }));
-        
+        self.WeekSummaryPrice = ko.observable(userWeekOrder.weekSummaryPrice.toFixed(2));
         self.BeenChanged = ko.observable(false);
-
 
     };
 
@@ -132,20 +95,32 @@
 
         self.IsNextWeekYear = ko.observable();
 
+        self.DaysOfWeek = ko.observableArray([]);
+
         function onError(error) {
             self.Message("Error: " + error.status + " " + error.statusText);
         }
 
         self.CalcSummaryDishQuantyties = function(daynum, catnum) {
             var dishquantyties = 0;
+            var catlengh = self.Categories().length;
+            self.SummaryDishQuantities([]);
+            var len = catlengh * self.DaysOfWeek().length;
+            var start = new Array(len).fill(0);
+            //ko.utils.arrayForEach(self.SummaryDishQuantities(),function(el) {
+            //    el = 0;
+            //});
+
             ko.utils.arrayForEach(self.WeekUserOrderModels(), function(weekuserorder) {
-                var dish = ko.utils.arrayFirst(weekuserorder.UserDayOrders()[daynum].DishQuantyties(), function(item, index) {
-                    return index === catnum;
+                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function (item, index1) {
+                    ko.utils.arrayForEach(item.DishQuantities(), function(dqua, ind2) {
+
+                        start[catlengh * index1 + ind2] += dqua.Quantity();
+                    });
                 });
-                dishquantyties += item.Quantity();
+                //dishquantyties += item.Quantity();
             });
-            var catLength = self.Categories().length;
-            self.SummaryDishQuantities()[catLength * daynum + catnum] = dishquantyties;
+            self.SummaryDishQuantities.pushAll(start);
         };
         self.GetCurrentWeekYear = function () {
 
@@ -162,7 +137,8 @@
                 self.WeekUserOrderModels([]);
 
                 self.WeekYear(resp1.weekYearDto);
-
+                self.DaysOfWeek([]);
+                self.DaysOfWeek.pushAll(resp1.dayNames);
                 self.SummaryDishQuantities([]);
                 self.SummaryDishQuantities.pushAll(resp1.summaryDishQuantities);
 
@@ -242,7 +218,6 @@
             };
         }, self);
 
-        self.DaysOfWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"];
 
         self.pageSize = ko.observable(10);
 

@@ -53,10 +53,10 @@
         <div class="page">
             <div class="dleft">
                 <div class="dright">
-                    
+
                     <div class="container">
                         <div class="row">
-                            <div class="col-sm-3">
+                            <div class="col-md-3">
                                 <div class="input-group date form-control" id="datepick" data-provide="datepicker" data-bind="datepicker: myDate">
                                 </div>
                                 <div class="sidebar-nav">
@@ -76,16 +76,18 @@
                                                 <li><a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a></li>
                                                 <li><a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a></li>
                                                 <li><a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a></li>
-                                                <li><a href="@Url.RouteUrl(new { action = "WorkDayManagement", controller = "SU_", area = "SU_Area" })">Рабочие дни</a></li>
-                                                <li><a href="@Url.RouteUrl(new { action = "AccountManagement", controller = "SU_", area = "SU_Area" })">Управление пользователями</a></li>
+                                                <li><a href="@Url.RouteUrl(new {action = "WorkDayManagement", controller = "SU_", area = "SU_Area"})">Рабочие дни</a></li>
+                                                <li><a href="@Url.RouteUrl(new {action = "AccountManagement", controller = "SU_", area = "SU_Area"})">Управление пользователями</a></li>
                                             </ul>
                                         </div><!--/.nav-collapse -->
                                     </div>
                                 </div>
                             </div>
-                            <div class="main_content_background col-sm-9">
-                                <div class="main_content">
-                                    @RenderBody()
+                            <div class="col-md-9 " data-animation-effect="fadeIn" style="margin-left: 0">
+                                <div class=" main_content_background object-non-visible">
+                                    <div class="main_content">
+                                        @RenderBody()
+                                    </div>
                                 </div>
                             </div>
                         </div>

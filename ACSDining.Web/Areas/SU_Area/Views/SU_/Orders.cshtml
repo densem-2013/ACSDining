@@ -1,8 +1,6 @@
 ﻿@{
     ViewBag.Title = "Orders";
 }
-<div class="row">
-    <div class="col-md-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0">
         <div class="panel panel-default" id="mfwPanel">
 
             <table class="table table-striped table-bordered fixed  table-hover" id="ordesTable">
@@ -32,24 +30,30 @@
                     <td class="rights"><span data-bind="text: UserName"></span></td>
                     <!--ko foreach: UserDayOrders-->
                     <!--ko foreach: DishQuantities-->
-                    <td data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseenter: $data.onmouseenter , mouseleave:function(){$data.onFocusOut();; $root.CalcSummaryDishQuantyties($data.beenChanged())}}">
+                    <td data-bind="singleClick: function(){$data.clicked($element, $parent.OrderCanBeChanged())}, event : { mouseenter: function(){ $data.onmouseenter($parent.OrderCanBeChanged());} , mouseleave:function(){$data.onFocusOut($parent.OrderCanBeChanged()); $root.CalcSummaryDishQuantyties($data.index, $index())}}">
                         <!--ko ifnot: $data.isEditMode()-->
                         <span data-bind="text: Quantity"></span>
                         <!--/ko-->
                         <!-- ko if: $data.isEditMode() -->
                         <!-- ko if: ($index() % 4 === 0) -->
-                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity,event:{focusout: function(){$data.onFocusOut(); $root.CalcSummaryDishQuantyties($parent[1].index(),index())} }"></select>
+                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity,event:{focusout: function(){$data.onFocusOut($parent.OrderCanBeChanged()); $root.CalcSummaryDishQuantyties($parentContext.index, $index())} }"></select>
                         <!--/ko-->
                         <!-- ko ifnot: ($index() % 4 === 0) -->
-                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity,event:{focusout:  function(){$data.onFocusOut();$root.CalcSummaryDishQuantyties($parent[1].index(),index())} }"></select>
+                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity,event:{focusout:  function(){$data.onFocusOut($parent.OrderCanBeChanged());$root.CalcSummaryDishQuantyties($parentContext.index, $index())} }"></select>
                         <!--/ko-->
                         <!--/ko-->
                     </td>
                     <!--/ko-->
                     <!--/ko-->
-                    <td><span data-bind="text: $data.SummaryPrice"></span></td>
+                    <td><span data-bind="text: WeekSummaryPrice"></span></td>
                 </tr>
                 <!--/ko-->
+                <tr>
+                    <td colspan="2">Всего заказано</td>
+                    <!--ko foreach: SummaryDishQuantities-->
+                    <td><span data-bind="text: $data"></span></td>
+                    <!--/ko-->
+                </tr>
                 <tr>
                     <td colspan="24">
                         <div class="row">
@@ -76,8 +80,6 @@
                 </tfoot>
             </table>
         </div>
-    </div>
-</div>
             @Scripts.Render("~/bundles/WeekOrders")
             <script type="text/javascript">
 
