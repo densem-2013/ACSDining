@@ -13,6 +13,7 @@ using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
@@ -26,7 +27,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         private readonly IOrderMenuService _orderMenuService;
         private readonly IDishQuantityRelationsService _dishQuantityService;
         private readonly IUnitOfWorkAsync _unitOfWork;
-        private ApplicationUserManager _userManager;
+        private readonly ApplicationUserManager _userManager;
 
         public EmployeeOrderApiController(IUnitOfWorkAsync unitOfWorkAsync)
         {
@@ -35,18 +36,9 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _dishQuantityService = new DishQuantityRelationsService(_unitOfWork.RepositoryAsync<DishQuantityRelations>());
+            _userManager = new ApplicationUserManager(new UserStore<User>(_db));
         }
-
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                _userManager = _userManager ??
-                               HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                return _userManager;
-            }
-        }
-
+        
         /// <summary>
         /// Получить представление фактической заявки  запрашивающего пользователя за заданную неделю в году
         /// </summary>
@@ -86,23 +78,14 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             else
             {
                 User user =
-                    await UserManager.FindByNameAsync(ControllerContext.RequestContext.Principal.Identity.GetUserName());
-                MenuForWeek weekmenu = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
-                ordmenu = new WeekOrderMenu
+                    await _userManager.FindByNameAsync(ControllerContext.RequestContext.Principal.Identity.GetUserName());
+
+                if (!YearWeekHelp.WeekIsCurrentOrNext(wyDto))
                 {
-                    User = user,
-                    MenuForWeek = weekmenu
-                };
-
-                PlannedWeekOrderMenu planmenu = new PlannedWeekOrderMenu
-                {
-                    WeekOrderMenu = ordmenu
-                };
-                _db.WeekOrderMenus.Add(ordmenu);
-
-                await _unitOfWork.SaveChangesAsync();
-
-                ordmenu = _orderMenuService.FindByUserIdWeekYear(user.Id, wyDto);
+                    return Content(HttpStatusCode.BadRequest,
+                    string.Format(" order on week {0} year {1} not can be created", wyDto.Week, wyDto.Year));
+                }
+                ordmenu = _orderMenuService.CreateNew(user, wyDto);
 
                 model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu, catLength);
             }

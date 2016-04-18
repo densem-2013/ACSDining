@@ -53,7 +53,7 @@ namespace UnitTestProject1
                 Year = 2016
             };
 
-            WeekOrderMenu newOrderMenu = _weekOrderMenuRepository.NewWeekOrdersMenuByWeekYearUser(wyDto, user);
+            WeekOrderMenu newOrderMenu = _weekOrderMenuRepository.CreateWeekOrderMenu(user,wyDto);//NewWeekOrdersMenuByWeekYearUser(wyDto, user);
             Assert.IsNotNull(newOrderMenu);
         }
     }

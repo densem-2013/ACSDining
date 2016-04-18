@@ -567,6 +567,7 @@ E:\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.Practices.Unity.WebApi.xml
 E:\GitProjects\ACSDining\ACSDining.Web\bin\System.Web.Providers.xml
 E:\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.pdb
 E:\GitProjects\ACSDining\ACSDining.Web\bin\LinqKit.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\EntityFramework.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll.config
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Web.pdb
@@ -574,7 +575,6 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Core.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\ACSDining.Infrastructure.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Antlr3.Runtime.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\DelegateDecompiler.dll
-C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\EntityFramework.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\EntityFramework.SqlServer.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.AspNet.Identity.Core.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.AspNet.Identity.EntityFramework.dll

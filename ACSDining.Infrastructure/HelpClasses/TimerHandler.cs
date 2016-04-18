@@ -42,7 +42,6 @@ namespace ACSDining.Infrastructure.HelpClasses
 
                     if (dayMenu != null)
                     {
-                        dayMenu.OrderCanBeCreated = false;
                         dayMenu.DayMenuCanBeChanged = false;
                     }
                 }
@@ -74,17 +73,14 @@ namespace ACSDining.Infrastructure.HelpClasses
                         {
                             if (y.ID > day)
                             {
-                                y.OrderCanBeCreated = true;
                                 y.DayMenuCanBeChanged = true;
                             }
                             if (y.ID == day)
                             {
-                                y.OrderCanBeCreated = DateTime.Now.Hour < 9;
                                 y.DayMenuCanBeChanged = DateTime.Now.Hour < 9;
                             }
                             if (y.ID < day)
                             {
-                                y.OrderCanBeCreated = false;
                                 y.DayMenuCanBeChanged = false;
                             }
                             context.Entry(y).State = EntityState.Modified;
@@ -97,7 +93,6 @@ namespace ACSDining.Infrastructure.HelpClasses
                         context.Entry(x).State = EntityState.Modified;
                         x.MenuForDay.ToList().ForEach(y =>
                         {
-                            y.OrderCanBeCreated = false;
                             y.DayMenuCanBeChanged = false;
                             context.Entry(y).State = EntityState.Modified;
                         });
@@ -120,8 +115,6 @@ namespace ACSDining.Infrastructure.HelpClasses
                     x.MenuCanBeChanged = true;
                     x.MenuForDay.ToList().ForEach(y =>
                     {
-
-                        y.OrderCanBeCreated = true;
                         y.DayMenuCanBeChanged = true;
                         context.Entry(y).State = EntityState.Modified;
                     });

@@ -385,7 +385,6 @@ namespace ACSDining.Infrastructure.Identity
                             Dishes = dishes,
                             WorkingDay = workday,
                             TotalPrice = dishes.Select(d => d.Price).Sum(),
-                            OrderCanBeCreated = ordCanCreated,
                             DayMenuCanBeChanged = ordCanCreated,
                             OrderCanBeChanged = true
                          };
@@ -509,7 +508,6 @@ namespace ACSDining.Infrastructure.Identity
                         DayOrderMenu dayOrderMenu = new DayOrderMenu
                         {
                             MenuForDay = daymenu,
-                            OrderCanBeChanged = true
                         };
                         PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu{DayOrderMenu = dayOrderMenu};
 

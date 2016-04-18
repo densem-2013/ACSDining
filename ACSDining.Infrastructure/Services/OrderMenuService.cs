@@ -16,7 +16,7 @@ namespace ACSDining.Infrastructure.Services
         WeekOrderMenu Find(int orderid);
         WeekOrderMenu FindByUserIdWeekYear(string userid, WeekYearDto wyDto);
         List<WeekOrderMenu> GetOrderMenuByWeekYear(WeekYearDto wyDto);
-
+        WeekOrderMenu CreateNew( User user, WeekYearDto wyDto);
         int UpdateUserWeekOrder(IUnitOfWorkAsync unitOfWork, UserWeekOrderDto userWeekOrderDto);
     }
 
@@ -65,6 +65,11 @@ namespace ACSDining.Infrastructure.Services
         public int UpdateUserWeekOrder(IUnitOfWorkAsync unitOfWork, UserWeekOrderDto userWeekOrderDto)
         {
             return _repository.UserWeekOrderUpdate(unitOfWork, userWeekOrderDto);
+        }
+
+        public WeekOrderMenu CreateNew( User user, WeekYearDto wyDto)
+        {
+            return _repository.CreateWeekOrderMenu( user, wyDto);
         }
     }
 }

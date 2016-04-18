@@ -12,6 +12,10 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public WeekYearDto WeekYear { get; set; }
         public double SummaryPrice { get; set; }
         public List<MenuForDayDto> MfdModels { get; set; }
+        //Это меню может быть изменено
+        public bool MenuCanBeChanged { get; set; }
+        //На это недельное меню может быть сделан заказ
+        public bool OrderCanBeCreated { get; set; }
 
         /// <summary>
         /// 
@@ -32,7 +36,9 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 MfdModels =
                     wmenu.MenuForDay.ToList()
                         .Select(mfd => MenuForDayDto.MapDto(unitOfWork, mfd, forWeekOrders))
-                        .ToList()
+                        .ToList(),
+                        MenuCanBeChanged = wmenu.MenuCanBeChanged,
+                        OrderCanBeCreated = wmenu.OrderCanBeCreated
             };
 
             return dtoModel;

@@ -244,14 +244,12 @@ C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Uni
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.WebHost.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.Owin.dll
-C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebGrease.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\NLog.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\PerpetuumSoft.Knockout.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.OAuth.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Razor.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Razor.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Deployment.dll
-C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Core.pdb
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Infrastructure.pdb
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\ACSDining.Web.pdb
@@ -284,7 +282,6 @@ C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Razor.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Razor.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Deployment.xml
-C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.csprojResolveAssemblyReference.cache
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.pdb

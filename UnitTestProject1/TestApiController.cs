@@ -68,7 +68,7 @@ namespace UnitTestProject1
             WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork);
             WeekYearDto wyDto = new WeekYearDto
             {
-                Week = 18,
+                Week = 17,
                 Year = 2016
             };
             WeekMenuDto dto = weekMenuApi.GetWeekMenu(wyDto).Result;

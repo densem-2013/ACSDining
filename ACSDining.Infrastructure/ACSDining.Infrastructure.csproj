@@ -123,6 +123,7 @@
     <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />
     <Compile Include="DTO\WeekYearDTO.cs" />
     <Compile Include="HelpClasses\MapHelper.cs" />
+    <Compile Include="HelpClasses\TestHelper.cs" />
     <Compile Include="HelpClasses\YearWeekHelp.cs" />
     <Compile Include="Identity\ApplicationDbContext.cs" />
     <Compile Include="Identity\ApplicationDbInitializer.cs" />

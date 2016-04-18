@@ -120,7 +120,8 @@ namespace ACSDining.Infrastructure.Repositories
                         MenuForDay mfd = new MenuForDay
                         {
                             WorkingDay = wday,
-                            DayMenuCanBeChanged = true
+                            DayMenuCanBeChanged = true,
+                            OrderCanBeChanged = true
                         };
                         mfdays.Add(mfd);
                     }

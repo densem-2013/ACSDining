@@ -30,8 +30,6 @@ namespace ACSDining.Core.Domains
         public int ID { get; set; }
 
         public double TotalPrice { get; set; }
-        //Пользователь может создать заказ на это меню
-        public bool OrderCanBeCreated { get; set; }
         //СуперЮзер может изменить меню на этот день
         public bool DayMenuCanBeChanged { get; set; }
 

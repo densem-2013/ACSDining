@@ -81,13 +81,13 @@ namespace ACSDining.Web
                       "~/Scripts/respond.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                        "~/Content/Site.css",
                        "~/Content/bootstrap.css",
                        "~/Content/font-awesome/font-awesome.css",
                        "~/Content/themes/Cupertino/jquery-ui.min.css",
                        "~/Content/themes/Cupertino/jquery-ui.structure.min.css",
                        "~/Content/themes/Cupertino/jquery-ui.theme.min.css",
                        "~/Content/css/bootstrap-datetimepicker.min.css",
+                        "~/Content/Site.css",
                        "~/Content/css/style.css",
                        "~/Content/css/fonts/custom.css"));
 
