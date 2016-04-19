@@ -20,8 +20,8 @@ namespace ACSDining.Web
             routes.MapRoute(
                 name: "Default_Account",
                 url: "Account/{action}",
-                defaults: new { area = "", controller = "Account", action = "Login" },
-                namespaces: new string[] { "ACSDining.Web.Controllers" }
+                defaults: new { area = "", controller = "Account", action = "Login" }//,
+               // namespaces: new string[] { "ACSDining.Web.Controllers" }
             );
             
             routes.MapRoute(
@@ -34,8 +34,8 @@ namespace ACSDining.Web
             routes.MapRoute(
                 name: "Default_Area",
                 url: "{area}/{controller}/{action}/{id}",
-                defaults: new { area = "", controller = "Home", action = "Index", id = UrlParameter.Optional },
-                namespaces: new string[] { "ACSDining.Web.Controllers" }
+                defaults: new { area = "", controller = "Home", action = "Index", id = UrlParameter.Optional }//,
+               // namespaces: new string[] { "ACSDining.Web.Controllers" }
             );
 
 

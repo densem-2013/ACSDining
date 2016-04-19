@@ -144,9 +144,9 @@
 
         self.BeenChanged = ko.observable(false);
         self.IsCurrentWeek = ko.pureComputed(function () {
-            var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
-            console.log("Week= " + self.WeekYear().week + "Year=" + self.WeekYear().year + "IsCurrentWeek= " + res);
-            return res;
+
+            return self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
+
         }, self);
         
 
@@ -246,14 +246,11 @@
             };
         }, self);
 
-        self.GetCurrentWeekYear = function() {
+        //self.GetCurrentWeekYear = function() {
 
-            app.su_Service.GetCurrentWeekYear().then(function(resp) {
 
-                self.CurrentWeekYear(resp);
-
-            }, onError);
-        }
+        //    }, onError);
+        //}
 
         self.DeleteNextWeekOrder = function() {
             var menuid = self.OrderId();
@@ -271,12 +268,10 @@
             }
             var sum = 0;
 
-            for (var ind = 0; ind < self.UserDayOrders().length; ind++) {
-
-                self.UserDayOrders()[ind].CalcDayOrderTotal();
-
-                sum += parseFloat(self.UserDayOrders()[ind].DayOrderSummary());
-            }
+            ko.utils.arrayForEach(self.UserDayOrders(), function(item) {
+                item.CalcDayOrderTotal();
+                sum += item.DayOrderSummary();
+            });
 
             self.WeekSummaryPrice(sum.toFixed(2));
         };
@@ -316,7 +311,13 @@
                 self.Categories.pushAll(resp);
             }, onError);
 
-            self.GetCurrentWeekYear();
+
+            app.su_Service.GetCurrentWeekYear().then(function(resp) {
+
+                self.CurrentWeekYear(resp);
+
+            }, onError);
+            };
 
             app.su_Service.NextWeekOrderExists().then(function (respnext) {
                 self.NextWeekOrderExist(respnext);

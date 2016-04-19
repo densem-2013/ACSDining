@@ -125,6 +125,7 @@ window.app.su_Service = (function() {
         currentweek: function() { return baseWeekMenuUri + "curWeekYear"; },
         categories: function() { return baseWeekMenuUri + "categories" },
         nextWeekYear: function () { return baseWeekMenuUri + "nextWeekYear" },
+        isnextweekmenuexists: function (){ return baseWeekMenuUri + "isnextweekmenuexists"},
         prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
         deleteWeekMenu: function (menuid) { return baseWeekMenuUri + "delete/" + menuid }
     }
@@ -192,6 +193,9 @@ window.app.su_Service = (function() {
         },
         GetPrevWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), wyDto);
+        },
+        IsNextWeekMenuExists: function () {
+            return ajaxRequest("get", serviceWeekMenuUrls.isnextweekmenuexists());
         },
         GetCurrentWeekYear: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.currentweek());

@@ -31,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IncludeIisSettings>true</IncludeIisSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -563,7 +564,8 @@
     <Content Include="Content\css\fonts\FontAwesome.otf" />
     <Content Include="Areas\SU_Area\Views\SU_\AccountManagement.cshtml" />
     <Content Include="Areas\SU_Area\Views\SU_\WorkDayManagement.cshtml" />
-    <None Include="Properties\PublishProfiles\Densem_profile.pubxml" />
+    <None Include="Properties\PublishProfiles\Dining_package.pubxml" />
+    <None Include="Properties\PublishProfiles\Dining_profile.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap.js" />

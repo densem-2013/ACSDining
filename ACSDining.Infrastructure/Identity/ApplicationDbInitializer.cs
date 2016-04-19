@@ -23,11 +23,11 @@ namespace ACSDining.Infrastructure.Identity
             //if (System.Diagnostics.Debugger.IsAttached == false)
             //    System.Diagnostics.Debugger.Launch();
 
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-                                      @"ACSDining.Core\DBinitial\DishDetails.xml";
-
-            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\bin\Debug", "") +
+            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
             //                          @"ACSDining.Core\DBinitial\DishDetails.xml";
+
+            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\bin\Debug", "") +
+                                      @"ACSDining.Core\DBinitial\DishDetails.xml";
 
             InitializeIdentityForEf(context, _path); 
             var dishes = GetDishesFromXml(context, _path);

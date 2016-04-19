@@ -103,7 +103,7 @@
         </table>
     </div>
 
-    <div id="modalbox" class="modal ">
+<div id="modalbox" class="modal ">
     <div class="modal-dialog">
         <div class="panel panel-default">
             <div class="modal-content">
@@ -113,28 +113,28 @@
                 <div class="modal-body">
                     <table class="table table-condensed table-striped table-bordered pre-scrollable" id="pageTable">
                         <thead>
-                            <tr>
-                                <th>№</th>
-                                <th>Название</th>
-                                <th>Стоимость</th>
-                                <th>Выбрать</th>
-                            </tr>
+                        <tr>
+                            <th>№</th>
+                            <th>Название</th>
+                            <th>Стоимость</th>
+                            <th>Выбрать</th>
+                        </tr>
                         </thead>
                         <tbody data-bind="foreach:pagedList">
-                            <tr>
-                                <td>
-                                    <span data-bind="text: $parent.pageIndex() * $parent.pageSize() + $index() + 1"></span>
-                                </td>
-                                <td>
-                                    <span data-bind="text:Title"></span>
-                                </td>
-                                <td>
-                                    <span data-bind="text:Price"></span>
-                                </td>
-                                <td>
-                                    <input type="radio" name="dishGroup" data-bind="checked: $parent.SelectedDish,checkedValue : DishId, click: $parent.changeSelected" />
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>
+                                <span data-bind="text: $parent.pageIndex() * $parent.pageSize() + $index() + 1"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text:Title"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text:Price"></span>
+                            </td>
+                            <td>
+                                <input type="radio" name="dishGroup" data-bind="checked: $parent.SelectedDish, checkedValue : DishId, click: $parent.changeSelected"/>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                     <div class="row">
@@ -163,6 +163,25 @@
         </div>
     </div>
 </div>
+
+<div id="modalMessage" class="modal">
+
+    <div class="modal-dialog">
+        <div class="panel panel-default">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Внимание, ошибка! </h1>
+                </div>
+                <div class="modal-body">
+                    <span data-bind="text:Message"></span>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @Scripts.Render("~/bundles/MenuForWeek")
 
 
@@ -173,6 +192,8 @@
 
             $("#pageTable").height("350px");
             $("#modalbox").offset({ top: 100 });
+
+            $("#modalMessage").offset({ top: 200 });
 
         })();
     </script>

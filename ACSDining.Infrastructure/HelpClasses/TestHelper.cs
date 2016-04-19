@@ -12,10 +12,10 @@ namespace ACSDining.Infrastructure.HelpClasses
     {
         private static readonly Random Rand = new Random();
 
-        private static List<Dish> GetDishes(IUnitOfWorkAsync _unitOfWork)
+        public static List<Dish> GetDishes(IUnitOfWorkAsync unitOfWork)
         {
-            Dish[] dishArray = _unitOfWork.GetContext().Dishes.ToArray();
-            string[] categories = MapHelper.GetCategoriesStrings(_unitOfWork);
+            Dish[] dishArray = unitOfWork.GetContext().Dishes.ToArray();
+            string[] categories = MapHelper.GetCategoriesStrings(unitOfWork);
 
             Func<string, IEnumerable<Dish>, int> countDish = (str, list) =>
             {

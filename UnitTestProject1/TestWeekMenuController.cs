@@ -28,8 +28,8 @@ namespace UnitTestProject1
         public TestWeekMenuController()
         {
             _unitOfWork = new UnitOfWork();
-            _db=_unitOfWork.
-            _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
+            _db = _unitOfWork.GetContext();
+            _userManager = new ApplicationUserManager(new UserStore<User>(_db));
             _weekOrderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
         }
