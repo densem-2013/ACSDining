@@ -4,55 +4,55 @@
 /// <reference path="~/Areas/AdminArea/Content/scripts/app.service.js" />
 /// <reference path="~/Scripts/knockout-3.3.0.debug.js" />
 /// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
-(function() {
+(function () {
 
     $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
         .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
-    
+
     var quantValueModel = function (value) {
 
         var self = this;
         self.isEditMode = ko.observable(false);
         self.Quantity = ko.observable(value);
         self.Store = ko.observable();
+
         self.beenChanged = ko.observable(false);
         self.clicked = function (item, canchange) {
             if (!canchange) return;
-                $(item).focusin();
+            $(item).focusin();
         };
 
         self.onmouseenter = function (canchange) {
             if (!canchange) return;
-                self.beenChanged(false);
-                self.Store(self.Quantity());
-                self.isEditMode(true);
+            self.beenChanged(false);
+            self.Store(self.Quantity());
+            self.isEditMode(true);
         };
 
         self.onFocusOut = function (canchange) {
             if (!canchange) return;
-                self.beenChanged(self.Store() !== self.Quantity());
-                self.isEditMode(false);
+            self.beenChanged(self.Store() !== self.Quantity());
+            self.isEditMode(false);
         };
     }
 
-    var userDayOrderInfo = function (dayOrdObject, categories) {
+    var userDayOrderInfo = function (dayOrdObject, dishQuantities) {
 
         var self = this;
 
         dayOrdObject = dayOrdObject || {};
-        categories = categories || [];
 
         self.DayOrderId = ko.observable(dayOrdObject.dayOrderId);
 
         self.OrderCanBeChanged = ko.observable(dayOrdObject.orderCanBeChanged);
 
-        self.DishQuantities = ko.observableArray(ko.utils.arrayMap(dayOrdObject.dishQuantities,function(item) {
-            return new quantValueModel(item);
+        self.DishQuantities = ko.observableArray(ko.utils.arrayMap(dishQuantities, function (item) {
+            return new quantValueModel(item, dayOrdObject.orderCanBeChanged);
         }));
 
     }
 
-    var weekUserOrderModel = function (userWeekOrder,caterories) {
+    var weekUserOrderModel = function (userWeekOrder,catlength) {
 
         var self = this;
 
@@ -62,15 +62,21 @@
 
         self.UserName = ko.observable(userWeekOrder.userName);
 
-        self.UserDayOrders = ko.observableArray(ko.utils.arrayMap(userWeekOrder.dayOrderDtos, function (item) {
-            return new userDayOrderInfo(item, caterories);
+        self.UserDayOrders = ko.observableArray(ko.utils.arrayMap(userWeekOrder.dayOrderDtos, function (item, index) {
+            var dishQuants = userWeekOrder.userWeekOrderDishes.slice(index * catlength, (index + 1) * catlength );
+            return new userDayOrderInfo(item, dishQuants);
         }));
-        self.WeekSummaryPrice = ko.observable(userWeekOrder.weekSummaryPrice.toFixed(2));
+        self.WeekSummaryPrice = ko.observable(userWeekOrder.weekSummaryPrice.toFixed(2));//.extend({ numeric: 2 });
+
         self.BeenChanged = ko.observable(false);
+
+        //self.UserWeekOrderDishes = ko.observableArray(ko.utils.arrayMap(userWeekOrder.userWeekOrderDishes, function (item) {
+        //    return new quantValueModel(item);
+        //}));
 
     };
 
-    var weekOrdersModel = function() {
+    var weekOrdersModel = function () {
         var self = this;
 
         self.Message = ko.observable("");
@@ -97,39 +103,54 @@
 
         self.DaysOfWeek = ko.observableArray([]);
 
+        self.WeekDishPrices = ko.observableArray([]);
+
+        self.PlanWeekDishPrices = ko.observableArray([]);
+
         function onError(error) {
             self.Message("Error: " + error.status + " " + error.statusText);
         }
 
-        self.CalcSummaryDishQuantyties = function(daynum, catnum) {
-            var dishquantyties = 0;
+        self.CalcSummaryDishQuantyties = function (daynum, catnum) {
+
             var catlengh = self.Categories().length;
             self.SummaryDishQuantities([]);
             var len = catlengh * self.DaysOfWeek().length;
             var start = new Array(len).fill(0);
-            //ko.utils.arrayForEach(self.SummaryDishQuantities(),function(el) {
-            //    el = 0;
-            //});
 
-            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(weekuserorder) {
-                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function (item, index1) {
-                    ko.utils.arrayForEach(item.DishQuantities(), function(dqua, ind2) {
 
-                        start[catlengh * index1 + ind2] += dqua.Quantity();
+            ko.utils.arrayForEach(self.WeekUserOrderModels(), function (weekuserorder) {
+                //if (self.BeenChanged()) {
+                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function (item, dayind) {
+                    ko.utils.arrayForEach(item.DishQuantities(), function (dqua, catind) {
+                        start[catlengh * dayind + catind] += dqua.Quantity();
                     });
                 });
-                //dishquantyties += item.Quantity();
+                // };
             });
+
+            ko.utils.arrayForEach(self.WeekUserOrderModels(), function (weekuserorder) {
+                // if (self.BeenChanged()) {
+                weekuserorder.WeekSummaryPrice();
+
+                var ordersum = 0;
+
+                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function(dayorder, dayindex) {
+                    ko.utils.arrayForEach(dayorder.DishQuantities(), function(dishquant, quantindex) {
+
+                        ordersum += dishquant.Quantity() * self.WeekDishPrices()[dayindex * catlengh + quantindex];
+
+                    });
+
+                });
+
+                weekuserorder.WeekSummaryPrice(ordersum.toFixed(2));
+                //};
+            });
+
             self.SummaryDishQuantities.pushAll(start);
         };
-        self.GetCurrentWeekYear = function () {
 
-            app.su_Service.GetCurrentWeekYear().then(function (resp) {
-
-                self.CurrentWeekYear(resp);
-
-            }, onError);
-        }
 
         var factloadWeekOrders = function (wyDto1) {
 
@@ -144,9 +165,12 @@
 
                 self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function (uwoObject) {
 
-                    return  new weekUserOrderModel(uwoObject, self.Categories());
+                    return new weekUserOrderModel(uwoObject, self.Categories().length);
 
                 }));
+
+                self.WeekDishPrices([]);
+                self.WeekDishPrices.pushAll(resp1.weekDishPrices);
 
                 app.su_Service.IsNextWeekYear(wyDto1).then(function (resp2) {
                     self.IsNextWeekYear(resp2);
@@ -171,7 +195,7 @@
                 self.BeenChanged(false);
             }, onError);
         };
-        
+
         self.SetMyDateByWeek = function (wyDto) {
             var firstDay = new Date(wyDto.year, 0, 1).getDay();
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
@@ -186,9 +210,7 @@
                 month: "short",
                 day: "numeric"
             };
-            //if (self.WeekYear() == undefined || self.WeekYear().year==undefined) {
-            //    return "";
-            //}
+
             var year = self.WeekYear().year;
             var firstDay = new Date(year, 0, 1).getDay();
 
@@ -263,126 +285,19 @@
                 self.Categories.pushAll(resp);
             }, onError);
 
-            self.GetCurrentWeekYear();
+             app.su_Service.GetCurrentWeekYear().then(function (resp) {
 
+                self.CurrentWeekYear(resp);
 
+            }, onError);
+            
             self.SetMyDateByWeek(self.CurrentWeekYear());
-
         }
 
         self.init();
     };
 
     ko.applyBindings(new weekOrdersModel());
-    //var ordersViewModel = {
-    //    UserOrders: ko.observableArray([]),
-    //    WeekNumber: ko.observable(),
-    //    NumbersOfWeek: ko.observableArray([]),
-    //    Message: ko.observable(),
-    //    CurrentWeekNumber: ko.observable(),
-    //    myDate: ko.observable(new Date()),
-    //    FirstCourseValues: [0, 0.5, 1, 2, 3,  4, 5],
-    //    QuantValues: [0, 1, 2, 3, 4, 5],
-    //    BeenChanged: ko.observable(false),
-    //    Year:ko.observable(),
-    //    Categories :ko.observableArray([])
-    //};
-    //// Callback for error responses from the server.
-    //function onError(error) {
-    //    ordersViewModel.Message('Error: ' + error.status + ' ' + error.statusText);
-    //}
-
-    //ordersViewModel.CalcSummary = function(item) {
-    //    var source = {
-    //        UserId: item.UserId(),
-    //        UserName: item.UserName(),
-    //        SummaryPrice: item.SummaryPrice(),
-    //        WeekIsPaid: item.WeekIsPaid(),
-    //        Dishquantities: $.map(item.Dishquantities(), function(value) {
-    //            return value.Quantity;
-    //        })
-    //    };
-    //    app.su_Service.GetOrderSummary(ordersViewModel.WeekNumber(), ordersViewModel.Year(), source).then(
-    //        function(data) {
-    //            item.SummaryPrice(data.toFixed(2));
-    //        },
-    //        function(error) {
-    //            onError(error);
-    //        });
-
-    //}.bind(ordersViewModel);
-
-        
-    
-    //var userWeekOrder = function(item) {
-
-    //    var self = this;
-
-    //    self.UserId = ko.observable(item.userId);
-    //    self.UserName = ko.observable(item.userName);
-    //    self.SummaryPrice = ko.observable(item.orderSummaryPrice.toFixed(2));
-    //    self.WeekIsPaid = ko.observable(item.weekIsPaid);
-
-    //    self.Dishquantities = ko.observableArray(ko.utils.arrayMap(item.dishquantities, function(value) {
-    //        return new quantValueModel(value);
-    //    }));
-
-
-    //}
-
-    
-    //ordersViewModel.loadWeekNumbers = function () {
-    //    app.su_Service.LoadWeekNumbers().then(function (resp) {
-
-    //        ordersViewModel.NumbersOfWeek.pushAll(resp);
-
-    //    }, onError);
-    //};
-
-
-    //ordersViewModel.LoadOrders = function () {
-
-    //    app.su_Service.LoadWeekOrders(ordersViewModel.WeekNumber(), ordersViewModel.Year()).then(
-    //       function (resp) {
-    //           ordersViewModel.UserOrders([]);
-    //           ordersViewModel.WeekNumber(resp.weekNumber);
-    //           ordersViewModel.Year(resp.yearNumber);
-
-    //           ko.utils.arrayForEach(resp.userOrders, function (object) {
-
-    //               ordersViewModel.UserOrders.push(new userWeekOrder(object));
-
-    //           });
-    //       },
-    //       function (error) {
-    //           onError(error);
-    //       });
-    //}
-
-    //ordersViewModel.GetCurrentWeekYear = function () {
-
-    //    app.su_Service.GetCurrentWeekYear().then(function (resp) {
-    //        ordersViewModel.CurrentWeekNumber(resp);
-
-    //    }, onError);
-    //}
-
-    //ordersViewModel.IsCurrentWeek = ko.computed(function() {
-    //    return ordersViewModel.CurrentWeekNumber() === ordersViewModel.WeekNumber();
-    //}.bind(ordersViewModel));
-
-
-    //app.su_Service.GetCategories().then(function (resp) {
-    //    ordersViewModel.Categories.pushAll(resp);
-    //}, onError);
-
-    //ordersViewModel.LoadOrders();
-    //ordersViewModel.loadWeekNumbers();
-    //ordersViewModel.GetCurrentWeekYear();
-
- 
-    //ko.applyBindings(ordersViewModel);
-    
 
 })();
 

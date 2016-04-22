@@ -32,7 +32,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             WeekMenuDto dtoModel = new WeekMenuDto
             {
                 Id = wmenu.ID,
-                //WeekYear = !forWeekOrders ? WeekYearDto.MapDto(wmenu.WorkingWeek) : null,
+                //WeekYear = !forWeekOrders ? WeekYearDto.GetMapDto(wmenu.WorkingWeek) : null,
                 SummaryPrice = wmenu.SummaryPrice,
                 MfdModels =
                     wmenu.MenuForDay.ToList()

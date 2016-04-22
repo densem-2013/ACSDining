@@ -5,10 +5,7 @@ using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
-using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Infrastructure.UnitOfWork;
-using LinqKit;
 using UserDayOrderDto = ACSDining.Infrastructure.DTO.Employee.UserDayOrderDto;
 
 namespace ACSDining.Infrastructure.Repositories
@@ -25,43 +22,37 @@ namespace ACSDining.Infrastructure.Repositories
             double[] res = new double[arLenth];
             foreach (WeekOrderMenu wordmenu in weekOrderMenus)
             {
+                double[] userWod = repository.UserWeekOrderDishes(wordmenu, dayCount, catLenth);
                 for (int i = 0; i < dayCount; i++)
                 {
-                    DayOrderMenu dayord = wordmenu.DayOrderMenus.ElementAt(i);
-
-                    List<DishQuantityRelations> dquaList =
-                        repository.GetRepositoryAsync<DishQuantityRelations>()
-                            .GetRelationsListByDayIdMenuId(dayord.Id, dayord.MenuForDay.ID);
-
-                    for (int j = 1; j <= dayord.MenuForDay.Dishes.Count; j++)
+                    for (int j = 1; j <= catLenth; j++)
                     {
-                        var firstOrDefault = dquaList.FirstOrDefault(q => q.DishTypeId == j);
-                        if (firstOrDefault != null) res[i*catLenth + j - 1] += firstOrDefault.DishQuantity.Quantity;
+                        res[i*catLenth + j - 1] += userWod[i*catLenth + j - 1];
                     }
                 }
             }
             return res;
         }
 
-        public static double[] GetUserWeekOrderDishes(this IRepositoryAsync<WeekOrderMenu> repository,
-            List<DishQuantityRelations> quaList, string[] categories, MenuForWeek mfw)
+        public static double[] UserWeekOrderDishes(this IRepositoryAsync<WeekOrderMenu> repository,
+            WeekOrderMenu wordmenu, int dayCount, int catLength)
         {
 
-            double[] dquantities = new double[20];
+            double[] dquantities = new double[dayCount*catLength];
 
-            for (int i = 1; i <= 7; i++)
+            for (int i = 0; i < dayCount; i++)
             {
-                WorkingDay workday = mfw.WorkingWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.Id == i);
-                if (workday != null && workday.IsWorking)
+                DayOrderMenu dayord = wordmenu.DayOrderMenus.ElementAt(i);
+
+                List<DishQuantityRelations> dquaList =
+                    repository.GetRepositoryAsync<DishQuantityRelations>()
+                        .GetRelationsListByDayIdMenuId(dayord.Id, dayord.MenuForDay.ID);
+
+                for (int j = 1; j <= catLength; j++)
                 {
-                    for (int j = 1; j <= categories.Length; j++)
-                    {
-                        var firstOrDefault = quaList.FirstOrDefault(
-                            q => q.MenuForDay.WorkingDay.DayOfWeek.Id == i && q.DishTypeId == j
-                            );
-                        if (firstOrDefault != null)
-                            dquantities[(i - 1)*4 + j - 1] = firstOrDefault.DishQuantity.Quantity;
-                    }
+                    var firstOrDefault = dquaList.FirstOrDefault(q => q.DishTypeId == j);
+                    if (firstOrDefault != null)
+                        dquantities[i*catLength + j - 1] += firstOrDefault.DishQuantity.Quantity;
                 }
             }
             return dquantities;
@@ -197,65 +188,68 @@ namespace ACSDining.Infrastructure.Repositories
                 .FirstOrDefault(om => om.Id == orderid);
         }
 
-        public static int UserWeekOrderUpdate(this IRepositoryAsync<WeekOrderMenu> repository,
-            IUnitOfWorkAsync unitOfWork, UserWeekOrderDto userWeekOrderDto)
+        public static int UserWeekOrderUpdate(this IRepositoryAsync<WeekOrderMenu> repository, int catLength, UserWeekOrderDto userWeekOrderDto)
         {
-            ApplicationDbContext _db = unitOfWork.GetContext();
+            ApplicationDbContext _db = repository.Context;
 
             WeekOrderMenu forUpdateOrder = repository.FindOrderMenuById(userWeekOrderDto.OrderId);
-            int catLength = MapHelper.GetDishCategoriesCount(unitOfWork);
 
-            forUpdateOrder.DayOrderMenus.ForEach(x =>
+            double[] userweekorderdishes = userWeekOrderDto.UserWeekOrderDishes;
+
+            for (int i = 0; i < userWeekOrderDto.DayOrderDtos.Count; i++)
             {
-                foreach (UserDayOrderDto udoDto in userWeekOrderDto.DayOrderDtos.ToList())
+                UserDayOrderDto doDto = userWeekOrderDto.DayOrderDtos.ElementAtOrDefault(i);
+                DayOrderMenu dom = forUpdateOrder.DayOrderMenus.FirstOrDefault(dm => doDto != null && dm.Id == doDto.DayOrderId);
+                if (dom != null && doDto != null)
                 {
-                    if (udoDto.DayOrderId == x.Id)
+                    if (dom.MenuForDay.OrderCanBeChanged)
                     {
-                        if (x.MenuForDay.OrderCanBeChanged)
+                        List<DishQuantityRelations> dqaList =
+                            repository.GetRepositoryAsync<DishQuantityRelations>()
+                                .GetRelationsListByDayIdMenuId(dom.Id, dom.MenuForDay.ID);
+
+                        for (int j = 1; j <= catLength; j++)
                         {
-                            List<DishQuantityRelations> dqaList =
-                                repository.GetRepositoryAsync<DishQuantityRelations>()
-                                    .GetRelationsListByDayIdMenuId(udoDto.DayOrderId, udoDto.MenuForDay.Id);
-
-                            for (int j = 1; j <= catLength; j++)
+                            //Находим связь, указывающую на текущее значение фактической дневной заявки на блюдо
+                            var firstOrDefault = dqaList.FirstOrDefault(q => q.DishTypeId == j);
+                            if (firstOrDefault != null)
                             {
-                                //Находим связь, указывающую на текущее значение фактической дневной заявки на блюдо
-                                var firstOrDefault = dqaList.FirstOrDefault(q => q.DishTypeId == j);
-                                if (firstOrDefault != null)
+                                double curQuantity = firstOrDefault.DishQuantity.Quantity;
+                                //если заказанное количество изменилось
+                                if (
+                                    Math.Abs(curQuantity - userweekorderdishes[i * (j - 1) + j - 1]) >
+                                    0.001)
                                 {
-                                    double curQuantity = firstOrDefault.DishQuantity.Quantity;
-                                    //если заказанное количество изменилось
-                                    if (Math.Abs(curQuantity - udoDto.DishQuantities[j - 1]) > 0.001)
-                                    {
-                                        var dishQuantity = unitOfWork.RepositoryAsync<DishQuantity>().GetAll()
-                                            .FirstOrDefault(
-                                                dq =>
-                                                    Math.Abs(dq.Quantity - udoDto.DishQuantities[j - 1]) <
-                                                    0.001);
-                                        if (dishQuantity == null) continue;
+                                    var dishQuantity = repository.GetRepositoryAsync<DishQuantity>().GetAll()
+                                        .FirstOrDefault(
+                                            dq =>
+                                                Math.Abs(dq.Quantity -
+                                                         userweekorderdishes[i * (j - 1) + j - 1]) <
+                                                0.001);
+                                    if (dishQuantity == null) continue;
 
-                                        //переустанавливаем связь на найденную сущность, содержащую искомое количество
-                                        firstOrDefault.DishQuantity = dishQuantity;
+                                    //переустанавливаем связь на найденную сущность, содержащую искомое количество
+                                    firstOrDefault.DishQuantity = dishQuantity;
 
-                                        _db.DQRelations.AddOrUpdate(firstOrDefault);
+                                    _db.DQRelations.AddOrUpdate(firstOrDefault);
 
-                                        //обновляем сумму заказа на день
-                                        x.DayOrderSummaryPrice = udoDto.DayOrderSummary;
-                                        _db.DayOrderMenus.AddOrUpdate(x);
+                                    //обновляем сумму заказа на день
+                                    dom.DayOrderSummaryPrice = doDto.DayOrderSummary;
+                                    _db.DayOrderMenus.AddOrUpdate(dom);
 
-                                    }
                                 }
                             }
                         }
                     }
                 }
-            });
+            }
+
             //обновляем сумму заказа на неделю
             forUpdateOrder.WeekOrderSummaryPrice = userWeekOrderDto.WeekSummaryPrice;
 
             _db.WeekOrderMenus.AddOrUpdate(forUpdateOrder);
 
-            return unitOfWork.SaveChangesAsync().Result;
+            return _db.SaveChangesAsync().Result;
         }
 
         public static WeekOrderMenu CreateWeekOrderMenu(this IRepositoryAsync<WeekOrderMenu> repository, User user,

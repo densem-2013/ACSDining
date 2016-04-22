@@ -9,14 +9,13 @@ namespace ACSDining.Infrastructure.Services
 {
     public interface IMenuForWeekService: IService<MenuForWeek>
     {
-        double[] UnitWeekPrices(int menuforweekid, string[] categories);
+        //Получить цены на каждое блюдо в меню на указанной неделе
+        double[] GetUnitWeekPricesByWeekYear(WeekYearDto wyDto, int catLenth);
         
         MenuForWeek GetWeekMenuByWeekYear(WeekYearDto wyDto);
 
         List<int> WeekNumbers();
-
-        //double SummaryPrice(UserWeekOrderDto usorder, int numweek, int year);
-
+        
         IQueryable<MenuForWeek> GetAll();
         
         Task<bool> DeleteMenuForWeek(int menuid);
@@ -37,9 +36,9 @@ namespace ACSDining.Infrastructure.Services
         {
             return _repository.CreateMenuForWeekOnWeekYear(wyDto);
         }
-        public double[] UnitWeekPrices(int menuforweekid,string[] categories)
+        public double[] GetUnitWeekPricesByWeekYear(WeekYearDto wyDto, int catLenth)
         {
-            return _repository.GetUnitWeekPrices(menuforweekid,categories);
+            return _repository.UnitWeekPricesByWeekYear(wyDto, catLenth);
         }
 
         public List<int> WeekNumbers()

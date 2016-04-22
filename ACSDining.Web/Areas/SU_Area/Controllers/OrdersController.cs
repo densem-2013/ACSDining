@@ -40,10 +40,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
 
             int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
-
-            List<WeekOrderMenu> orderList = _orderMenuService.GetOrderMenuByWeekYear(wyDto);
-
-            WeekOrderDto weekOrderDto = WeekOrderDto.MapDto(_unitOfWork, orderList, catLength);
+            
+            WeekOrderDto weekOrderDto = WeekOrderDto.GetMapDto(_unitOfWork, wyDto, catLength);
 
             return await Task.FromResult(weekOrderDto);
         }
@@ -94,7 +92,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             forUpdateOrders.ForEach(x=>
             {
-                _orderMenuService.UpdateUserWeekOrder(_unitOfWork, x);
+                _orderMenuService.UpdateUserWeekOrder(catLength, x);
             });
 
             return Ok();

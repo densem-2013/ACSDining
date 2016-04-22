@@ -4,20 +4,19 @@ using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.Repositories;
-using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.Services
 {
     public interface IOrderMenuService : IService<WeekOrderMenu>
     {
-        //Возвращает массив, хранящий количества каждого блюда, заказанного каждый день на неделе
+        //Возвращает массив, хранящий количества каждого блюда, заказанного каждый день на неделе всеми клиентами
         double[] SummaryWeekDishesOrderQuantities(WeekYearDto wyDto, int catLenth);
         void UpdateOrderMenu(WeekOrderMenu weekOrder);
         WeekOrderMenu Find(int orderid);
         WeekOrderMenu FindByUserIdWeekYear(string userid, WeekYearDto wyDto);
         List<WeekOrderMenu> GetOrderMenuByWeekYear(WeekYearDto wyDto);
         WeekOrderMenu CreateNew( User user, WeekYearDto wyDto);
-        int UpdateUserWeekOrder(IUnitOfWorkAsync unitOfWork, UserWeekOrderDto userWeekOrderDto);
+        int UpdateUserWeekOrder(int catcount, UserWeekOrderDto userWeekOrderDto);
     }
 
     public class OrderMenuService : Service<WeekOrderMenu>, IOrderMenuService
@@ -34,6 +33,12 @@ namespace ACSDining.Infrastructure.Services
         {
             return _repository.SummaryDishesQuantities(wyDto,catLenth);
         }
+
+        public double[] GetUserWeekOrderDishes(WeekOrderMenu wom, int daycount, int catlength)
+        {
+            return _repository.UserWeekOrderDishes(wom, daycount, catlength);
+        }
+
         public void UpdateOrderMenu(WeekOrderMenu weekOrder)
         {
             _repository.Update(weekOrder);
@@ -62,9 +67,9 @@ namespace ACSDining.Infrastructure.Services
                         om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&
                         om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year);
         }
-        public int UpdateUserWeekOrder(IUnitOfWorkAsync unitOfWork, UserWeekOrderDto userWeekOrderDto)
+        public int UpdateUserWeekOrder(int catcount, UserWeekOrderDto userWeekOrderDto)
         {
-            return _repository.UserWeekOrderUpdate(unitOfWork, userWeekOrderDto);
+            return _repository.UserWeekOrderUpdate(catcount, userWeekOrderDto);
         }
 
         public WeekOrderMenu CreateNew( User user, WeekYearDto wyDto)

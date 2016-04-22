@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.Employee
@@ -17,6 +17,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public double WeekPaid { get; set; }
         public bool WeekIsPaid { get; set; }
         public WeekYearDto WeekYear { get; set; }
+        public double[] UserWeekOrderDishes { get; set; }
 
         /// <param name="unitOfWork"></param>
         /// <param name="weekOrderMenu"></param>
@@ -26,6 +27,9 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public static UserWeekOrderDto MapDto(IUnitOfWorkAsync unitOfWork, WeekOrderMenu weekOrderMenu, int catLength,
             bool forWeekOrders = false)
         {
+            WorkingWeek workingWeek = weekOrderMenu.MenuForWeek.WorkingWeek;
+            int dayCount = workingWeek.WorkingDays.Count(d => d.IsWorking);
+
             return new UserWeekOrderDto
             {
                 WeekPaid = weekOrderMenu.WeekPaid,
@@ -35,10 +39,12 @@ namespace ACSDining.Infrastructure.DTO.Employee
                 DayOrderDtos =
                     weekOrderMenu.DayOrderMenus.Where(dord =>
                         dord.MenuForDay.WorkingDay.IsWorking).Select(
-                            dord => UserDayOrderDto.MapUserDayOrderDto(unitOfWork, dord, catLength, forWeekOrders))
+                            dord => UserDayOrderDto.MapUserDayOrderDto(unitOfWork, dord, forWeekOrders))
                         .ToList(),
                 WeekSummaryPrice = weekOrderMenu.WeekOrderSummaryPrice,
-                WeekYear = WeekYearDto.MapDto(weekOrderMenu.MenuForWeek.WorkingWeek)
+                WeekYear = WeekYearDto.MapDto(workingWeek),
+                UserWeekOrderDishes =
+                    unitOfWork.RepositoryAsync<WeekOrderMenu>().UserWeekOrderDishes(weekOrderMenu, dayCount, catLength)
             };
         }
     }

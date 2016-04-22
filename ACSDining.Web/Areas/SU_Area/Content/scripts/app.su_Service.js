@@ -14,7 +14,7 @@ ko.extenders.numeric = function (target, precision) {
         write: function (newValue) {
             var current = target(),
                 roundingMultiplier = Math.pow(10, precision),
-                newValueAsNum = isNaN(newValue) ? 0 : parseFloat(+newValue),
+                newValueAsNum = (isNaN(newValue)||newValue==undefined) ? 0 : parseFloat(+newValue),
                 valueToWrite = Math.round(newValueAsNum * roundingMultiplier) / roundingMultiplier;
 
             //only write if it changed

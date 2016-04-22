@@ -10,31 +10,35 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     public class WeekOrderDto
     {
         public WeekYearDto WeekYearDto { get; set; }
+        //недельный заказ каждого клиента 
         public List<UserWeekOrderDto> UserWeekOrders { get; set; }
         public WeekMenuDto MenuForWeekDto { get; set; }
+        //Суммарное количество заказа каждого блюда на неделе
         public double[] SummaryDishQuantities { get; set; }
+        //названия рабочих дней недели
         public string[] DayNames { get; set; }
+        //цены на единицу каждого блюда
+        public double[] WeekDishPrices { get; set; }
 
-        public static WeekOrderDto MapDto(IUnitOfWorkAsync unitOfWork, List<WeekOrderMenu> weekOrderMenus, int catLength)
+        public static WeekOrderDto GetMapDto(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto, int catLength)
         {
-            WeekOrderMenu first = weekOrderMenus.FirstOrDefault();
-            WeekYearDto wyDto = null;
-            if (first != null)
-            {
-                wyDto = WeekYearDto.MapDto(first.MenuForWeek.WorkingWeek);
-            }
+            List<WeekOrderMenu> weekOrderMenus = unitOfWork.RepositoryAsync<WeekOrderMenu>().OrdersMenuByWeekYear(wyDto);
+
+            MenuForWeek menuForWeek = unitOfWork.RepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
+
             return new WeekOrderDto
             {
                 WeekYearDto = wyDto,
                 UserWeekOrders =
                     weekOrderMenus.Select(woDto => UserWeekOrderDto.MapDto(unitOfWork, woDto, catLength, true)).ToList(),
-                MenuForWeekDto = WeekMenuDto.MapDto(unitOfWork, first != null ? first.MenuForWeek : null, true),
+                MenuForWeekDto = WeekMenuDto.MapDto(unitOfWork, menuForWeek, true),
                 SummaryDishQuantities =
                     unitOfWork.RepositoryAsync<WeekOrderMenu>().SummaryDishesQuantities(wyDto, catLength),
                 DayNames =
-                    first != null
-                        ? first.DayOrderMenus.Select(dom => dom.MenuForDay.WorkingDay.DayOfWeek.Name).ToArray()
-                        : null
+                    menuForWeek.WorkingWeek.WorkingDays.Where(wd => wd.IsWorking)
+                        .Select(wd => wd.DayOfWeek.Name)
+                        .ToArray(),
+                WeekDishPrices = unitOfWork.RepositoryAsync<MenuForWeek>().UnitWeekPricesByWeekYear(wyDto, catLength)
             };
         }
     }

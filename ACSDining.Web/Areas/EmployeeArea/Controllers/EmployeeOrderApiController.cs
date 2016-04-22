@@ -117,13 +117,16 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 return BadRequest("Bad Request Object");
             }
             WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.OrderId);
+
+
             if (forUpdateOrder == null)
             {
                 return NotFound();
             }
 
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-            int res = await Task.FromResult(_orderMenuService.UpdateUserWeekOrder(_unitOfWork,userWeekOrderDto));
+            int res = await Task.FromResult(_orderMenuService.UpdateUserWeekOrder(catLength, userWeekOrderDto));
 
             return Ok(res);
         }

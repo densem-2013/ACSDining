@@ -10,18 +10,23 @@ namespace ACSDining.Infrastructure.Repositories
     public static class MenuForWeekRepository
     {
 
-        public static double[] GetUnitWeekPrices(this IRepositoryAsync<MenuForWeek> repository, int menuforweekid, string[] categories)
+        public static double[] UnitWeekPricesByWeekYear(this IRepositoryAsync<MenuForWeek> repository, WeekYearDto wyDto, int catLenth)
         {
 
-            double[] unitprices = new double[20];
+            MenuForWeek mfw = repository.GetWeekMenuByWeekYear(wyDto);
 
-            MenuForWeek mfw = repository.Find(menuforweekid);
-            for (int i = 0; i < 5; i++)
+            WorkingWeek workingWeek = repository.GetRepositoryAsync<WorkingWeek>().WorkWeekByWeekYear(wyDto);
+            int dayCount = workingWeek.WorkingDays.Count(d => d.IsWorking);
+            int arLenth = dayCount * catLenth;
+
+            double[] unitprices = new double[arLenth];
+
+            for (int i = 0; i < dayCount; i++)
             {
                 MenuForDay daymenu = mfw.MenuForDay.ElementAt(i);
-                for (int j = 0; j < categories.Length; j++)
+                for (int j = 0; j < catLenth; j++)
                 {
-                    unitprices[i*4 + j] = daymenu.Dishes.ElementAt(j).Price;
+                    unitprices[i*j + j] = daymenu.Dishes.ElementAt(j).Price;
                 }
             }
             return unitprices;
