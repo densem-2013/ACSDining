@@ -51,7 +51,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //Получить все плановые заявки на неделю
         [HttpPut]
         [Route("plan")]
-        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromBody] WeekYearDto wyDto = null)
+        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromBody] WeekYearDto wyDto)
         {
             if (wyDto == null)
             {

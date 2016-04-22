@@ -57,22 +57,38 @@
             }
             return new dishInfo(dish);
         }));
+
         self.Editing = ko.observable(false);
         self.TotalPrice = ko.observable();
         self.Dishes.subscribe = ko.computed(function () {
             var sum = 0;
-            var valsum;
-            for (var i = 0; i < self.Dishes().length; i++) {
 
-                valsum = parseFloat(self.Dishes()[i].Price());
-                sum += valsum;
-            };
-
+            ko.utils.arrayForEach(self.Dishes(), function(dish) {
+                sum += parseFloat(dish.Price());
+            });
 
             self.TotalPrice(sum.toFixed(2));
 
         }.bind(self));
 
+    }
+
+    var workDayInfo = function (workday) {
+        var self = this;
+        self.WorkDayId = ko.observable(workday.workDayId);
+        self.IsWorking = ko.observable(workday.isWorking);
+        self.DayNumber = ko.observable(workday.dayNumber);
+        self.DayName = ko.observable(workday.dayName);
+    }
+
+    var workWeekModel = function(weekmodel) {
+        var self = this;
+
+        self.WorkweekId = ko.observable(weekmodel.workWeekId);
+        self.WorkingDays = ko.observableArray(ko.utils.arrayMap(weekmodel.workDays, function(workday) {
+            return new workDayInfo(workday);
+        }));
+        self.CanBeChanged = ko.observable();
     }
 
     var weekMenuModel = function() {
@@ -120,7 +136,7 @@
 
         self.IsNextWeekYear = ko.observable(false);
 
-       
+        self.WorkingWeek = ko.observable();
 
         self.IsCurrentWeek = ko.pureComputed(function () {
 
@@ -137,8 +153,7 @@
             self.Message("Error: " + error.status + " " + error.statusText);
             $("#modalMessage").modal("show");
         }
-
-        self.WeekTitle = ko.computed(function () {
+          self.WeekTitle = ko.computed(function () {
             var options = {
                 weekday: "short",
                 year: "numeric",
@@ -232,32 +247,31 @@
         };
 
 
-        self.loadWeekNumbers = function () {
-            app.su_Service.LoadWeekNumbers().then(function(resp) {
-                self.NumbersWeeks([]);
-                for (var i = 0; i < resp.length; i++) {
+        //self.loadWeekNumbers = function () {
+        //    app.su_Service.LoadWeekNumbers().then(function(resp) {
+        //        self.NumbersWeeks([]);
+        //        for (var i = 0; i < resp.length; i++) {
 
-                    self.NumbersWeeks.push(resp[i]);
+        //            self.NumbersWeeks.push(resp[i]);
 
-                };
-            }, onError);
-        };
+        //        };
+        //    }, onError);
+        //};
 
         self.loadDishes = function (dish) {
             app.su_Service.DishesByCategory(dish.Category()).then(function (resp) {
-                self.DishesByCategory([]);
 
-                for (var i = 0; i < resp.length; i++) {
-
-                    self.DishesByCategory.push(new dishInfo(resp[i]));
-
-                    if (resp[i].dishID === dish.DishId()) {
-                        self.SelectedDish(resp[i].dishID);
+                var disharray = ko.utils.arrayMap(resp, function(catdish) {
+                    if (catdish.dishID === dish.DishID()) {
+                        self.SelectedDish(catdish.dishID);
                     };
-                };
-
+                    return new dishInfo(catdish);
+                });
+                self.DishesByCategory(disharray);
+                
             }, onError);
         }
+
         self.showDishes = function (searchdish, index) {
             self.UpdatableMFD(index);
             self.Category(searchdish.Category());
@@ -293,6 +307,8 @@
                 self.MenuId(resp.id);
                 self.WeekYear(resp.weekYear);
                 self.SummaryPrice(resp.summaryPrice);
+
+                self.WorkingWeek(resp.workWeek);
 
                 app.su_Service.IsNextWeekYear(wyDto).then(function (resp2) {
                     self.IsNextWeekYear(resp2);

@@ -46,7 +46,6 @@ Date.prototype.getWeek = function () {
     return Math.ceil((((today - onejan ) / millisecsInDay) + onejan.getDay() ) / 7);
 };
 
-
 ko.bindingHandlers.datepicker = {
     init: function (element, valueAccessor, allBindingsAccessor) {
 
@@ -110,11 +109,30 @@ ko.bindingHandlers.datepicker = {
         }
     };
 
- var WeekYear=function(wyObj) {
-      var self = this;
-      self.Week = ko.observable(wyObj.week);
-      self.Year = ko.observable(wyObj.year);
-    }
+var WeekYear = function(wyObj) {
+    var self = this;
+    self.Week = ko.observable(wyObj.week);
+    self.Year = ko.observable(wyObj.year);
+};
+
+ //var weekTitleCalculate = function (weekyear) {
+ //    var options = {
+ //        weekday: "short",
+ //        year: "numeric",
+ //        month: "short",
+ //        day: "numeric"
+ //    };
+ //    var weekYearObj = weekyear;
+ //    var year = weekYearObj.year;
+ //    var firstDay = new Date(year, 0, 1).getDay();
+
+ //    var week = weekYearObj.week;
+ //    var d = new Date("Jan 01, " + year + " 01:00:00");
+ //    var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
+ //    var n1 = new Date(w);
+ //    var n2 = new Date(w + 345600000);
+ //    return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+ //};
 
 window.app.su_Service = (function() {
 

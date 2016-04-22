@@ -161,6 +161,7 @@ namespace ACSDining.Web.Controllers
                         return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
                     }
                     return RedirectToLocal(returnUrl);
+                    //return RedirectToLocal("Login");
 
                 case SignInStatus.LockedOut:
                     ModelState.AddModelError("", "Ваша учётная запись заблокирована.");
@@ -216,51 +217,7 @@ namespace ACSDining.Web.Controllers
             }
         }
 
-        // GET: /Account/Register
-        [AllowAnonymous]
-        public ActionResult Register()
-        {
-            return View();
-        }
-
-        //
-        // POST: /Account/Register
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new User
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    UserName = model.UserName,
-                    RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
-                };
-                var result = UserManager.Create(user);
-                if (result==IdentityResult.Success)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                    // Дополнительные сведения о том, как включить подтверждение учетной записи и сброс пароля, см. по адресу: http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Отправка сообщения электронной почты с этой ссылкой
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Подтверждение учетной записи", "Подтвердите вашу учетную запись, щелкнув <a href=\"" + callbackUrl + "\">здесь</a>");
-
-                    return RedirectToAction("Index", "Home");
-                }
-                AddErrors(IdentityResult.Failed());
-            }
-
-            // Появление этого сообщения означает наличие ошибки; повторное отображение формы
-            return View(model);
-        }
-
+       
         // POST: /Account/LogOff
         [HttpGet]
         //[ValidateAntiForgeryToken]

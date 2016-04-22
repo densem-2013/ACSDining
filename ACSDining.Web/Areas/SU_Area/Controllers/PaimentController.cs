@@ -39,7 +39,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPut]
         [Route("weekPaiments")]
         [ResponseType(typeof (List<UserWeekPaimentDto>))]
-        public async Task<List<UserWeekPaimentDto>> GetWeekPaiments([FromBody] WeekYearDto wyDto = null)
+        public async Task<List<UserWeekPaimentDto>> GetWeekPaiments([FromBody] WeekYearDto wyDto)
         {
             if (wyDto==null)
             {

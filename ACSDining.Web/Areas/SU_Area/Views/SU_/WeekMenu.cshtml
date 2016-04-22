@@ -5,6 +5,17 @@
     <div class="panel panel-default" id="mfwPanel">
         <table>
             <tbody>
+            <tr>
+                 <!--ko foreach: WorkingDays-->
+                <td>
+                    <!-- ko text: DayNumber--><!-- /ko-->
+                    <span data-bind="text: DayName"></span>
+                </td>
+                <td>
+                    <input type="checkbox" data-bind="checkedValue: IsWorking"/>
+                </td>
+                <!-- /ko-->
+            </tr>
                 <tr style="background: #565659;">
                     <td class="col-md-3">
                         <div>
