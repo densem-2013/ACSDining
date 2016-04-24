@@ -2,6 +2,7 @@
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.HelpClasses;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
@@ -14,6 +15,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public List<DishModelDto> Dishes { get; set; }
         public bool CanBeEditing { get; set; }
         public bool OrderCanBeChanged { get; set; }
+        public bool OrderWasBooking { get; set; }
 
         public static MenuForDayDto MapDto(IUnitOfWorkAsync unitOfWork, MenuForDay daymenu, bool forWeekOrder = false)
         {
@@ -25,7 +27,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 dmodels = new List<DishModelDto>();
                 if (daymenu.Dishes.Any())
                 {
-                    dmodels = daymenu.Dishes.Select(DishModelDto.MapDto).ToList();
+                    dmodels = daymenu.Dishes.OrderBy(d=>d.DishType.Id).Select(DishModelDto.MapDto).ToList();
                     canchangeorder = daymenu.OrderCanBeChanged;
                 }
                 else
@@ -55,7 +57,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 DayOfWeek = !forWeekOrder ? daymenu.WorkingDay.DayOfWeek.Name : null,
                 TotalPrice = daymenu.TotalPrice,
                 Dishes = dmodels,
-                OrderCanBeChanged = canchangeorder
+                OrderCanBeChanged = canchangeorder,
+                OrderWasBooking = unitOfWork.RepositoryAsync<WeekOrderMenu>().GetUsersMadeOrder(daymenu.ID).Any()
             };
         }
 

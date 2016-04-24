@@ -9,6 +9,9 @@
     $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
         .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
 
+    
+    $("ul.nav.navbar-nav li:nth-child(2)").addClass("active");
+
     var quantValueModel = function (value) {
 
         var self = this;
@@ -111,7 +114,7 @@
             self.Message("Error: " + error.status + " " + error.statusText);
         }
 
-        self.CalcSummaryDishQuantyties = function (daynum, catnum) {
+        self.CalcSummaryDishQuantyties = function(daynum, catnum) {
 
             var catlengh = self.Categories().length;
             self.SummaryDishQuantities([]);
@@ -119,33 +122,35 @@
             var start = new Array(len).fill(0);
 
 
-            ko.utils.arrayForEach(self.WeekUserOrderModels(), function (weekuserorder) {
+            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(weekuserorder) {
                 //if (self.BeenChanged()) {
-                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function (item, dayind) {
-                    ko.utils.arrayForEach(item.DishQuantities(), function (dqua, catind) {
+                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function(item, dayind) {
+                    ko.utils.arrayForEach(item.DishQuantities(), function(dqua, catind) {
                         start[catlengh * dayind + catind] += dqua.Quantity();
                     });
                 });
                 // };
             });
 
-            ko.utils.arrayForEach(self.WeekUserOrderModels(), function (weekuserorder) {
-                // if (self.BeenChanged()) {
-                weekuserorder.WeekSummaryPrice();
+            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(weekuserorder) {
+                if (self.BeenChanged()) {
+                   // weekuserorder.WeekSummaryPrice();
 
-                var ordersum = 0;
+                    var ordersum = 0;
 
-                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function(dayorder, dayindex) {
-                    ko.utils.arrayForEach(dayorder.DishQuantities(), function(dishquant, quantindex) {
+                    var prices = self.WeekDishPrices();
 
-                        ordersum += dishquant.Quantity() * self.WeekDishPrices()[dayindex * catlengh + quantindex];
+                    ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function(dayorder, dayindex) {
+                        ko.utils.arrayForEach(dayorder.DishQuantities(), function(dishquant, quantindex) {
+                            var quant = dishquant.Quantity();
+                            ordersum +=  quant * prices[dayindex * catlengh + quantindex];
+
+                        });
 
                     });
 
-                });
-
-                weekuserorder.WeekSummaryPrice(ordersum.toFixed(2));
-                //};
+                    weekuserorder.WeekSummaryPrice(ordersum.toFixed(2));
+                };
             });
 
             self.SummaryDishQuantities.pushAll(start);

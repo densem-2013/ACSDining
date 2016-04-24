@@ -5,50 +5,53 @@
 /// <reference path="~/Scripts/bootstrap.js" />
 /// <reference path="~/Scripts/knockout-3.3.0.debug.js" />
 /// <reference path="~/Scripts/knockout.mapping-latest.debug.js" />
-(function () {
+/// <reference path="~/Content/app/jquery-1.10.2.js" />
+(function() {
 
     $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
         .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
 
+    $("ul.nav.navbar-nav li:first-child").addClass("active");
 
-    var dishInfo = function (dinfo) {
+    var dishInfo = function(dinfo) {
 
         var self = this;
 
-        self.DishId = ko.observable(dinfo.dishID);
+        self.DishId = ko.observable(dinfo.dishId);
         self.Title = ko.observable(dinfo.title);
         self.ProductImage = ko.observable(dinfo.productImage);
         self.Price = ko.observable(dinfo.price.toFixed(2));
         self.Category = ko.observable(dinfo.category);
 
-        self.UpdateWeekMenu = function (dishupdate) {
+        self.UpdateWeekMenu = function(dishupdate) {
             this.DishId(dishupdate.DishId());
             this.Title(dishupdate.Title());
             this.ProductImage(dishupdate.ProductImage());
             this.Price(dishupdate.Price());
 
         };
+        this.isHovering = ko.observable(false);
     }
 
-    var menuForDayInfo = function (object,categs) {
+    var menuForDayInfo = function(object, categs) {
 
         var self = this;
 
         object = object || {};
         categs = categs || [];
 
-        self.ID = ko.observable(object.id);
+        self.Id = ko.observable(object.id);
         self.DayOfWeek = ko.observable(object.dayOfWeek);
         var ind = 0;
-        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function (item) {
-            var first = ko.utils.arrayFirst(object.dishes, function (element) {
+        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function(item) {
+            var first = ko.utils.arrayFirst(object.dishes, function(element) {
 
                 return element.category === item;
             });
             if (first != null) {
                 return new dishInfo(first);
             }
-            var dish= {
+            var dish = {
                 dishID: "0",
                 title: ":",
                 productImage: "",
@@ -60,7 +63,7 @@
 
         self.Editing = ko.observable(false);
         self.TotalPrice = ko.observable();
-        self.Dishes.subscribe = ko.computed(function () {
+        self.Dishes.subscribe = ko.computed(function() {
             var sum = 0;
 
             ko.utils.arrayForEach(self.Dishes(), function(dish) {
@@ -71,9 +74,11 @@
 
         }.bind(self));
 
+        //На меню уже был сделан заказ
+        self.OrderWasBooking = ko.observable(object.orderWasBooking);
     }
 
-    var workDayInfo = function (workday) {
+    var workDayInfo = function(workday) {
         var self = this;
         self.WorkDayId = ko.observable(workday.workDayId);
         self.IsWorking = ko.observable(workday.isWorking);
@@ -103,7 +108,9 @@
 
         self.MFD_models = ko.observableArray([]);
 
+        self.UpdatedDayMenus = ko.observableArray([]);
 
+        self.Title = ko.observable("");
         self.Message = ko.observable("");
 
         self.myDate = ko.observable(new Date());
@@ -120,25 +127,20 @@
 
         self.SummaryPrice = ko.observable();
 
-        //self.NumbersWeeks = ko.observableArray();
-
-        self.IsNextWeekMenuExist = ko.observable();
-
-        //self.IsNextWeekMenuExist.subscribe = ko.computed(function() {
-
-        //    var cur = self.CurrentWeekNumber();
-        //    var result = false;
-        //    ko.utils.arrayForEach(self.NumbersWeeks(), function (value) {
-        //        if (value === cur + 1) result = true;
-        //    });
-        //    self.IsNextWeekMenuExist(result);
-        //});
-
+        self.IsNextWeekMenuExists = ko.observable();
+        
         self.IsNextWeekYear = ko.observable(false);
 
         self.WorkingWeek = ko.observable();
 
-        self.IsCurrentWeek = ko.pureComputed(function () {
+        self.OrderCanBeCreated = ko.observable();
+
+        //Сигнализирует, что есть пользователи, которым нужно отправить сообщение об изменении меню
+        self.ForEmailExistsObject = ko.pureComputed(function() {
+            return self.UpdatedDayMenus().length > 0;
+        }, self);
+
+        self.IsCurrentWeekYear = ko.pureComputed(function() {
 
             return self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
 
@@ -150,10 +152,18 @@
 
         // Callback for error responses from the server.
         function onError(error) {
+            self.Title("Внимание, ошибка! ");
             self.Message("Error: " + error.status + " " + error.statusText);
             $("#modalMessage").modal("show");
         }
-          self.WeekTitle = ko.computed(function () {
+
+        self.NextWeekMenuButton = {
+            Message: function() { return self.IsNextWeekYear() ? "Удалить меню на следующую неделю" : (self.IsNextWeekMenuExists() ? "Перейти к меню на следующую неделю" : "Создать меню на следующую неделю") },
+            action: function() { return  self.IsNextWeekYear() ? self.DeleteNextWeekMenu : (self.IsNextWeekMenuExists() ? self.GoToNextWeekMenu : self.CreateNextWeekMenu) },
+            cssclass: function() { return self.IsNextWeekYear() ? "btn-danger" : "btnaddmenu enabled" }
+        };
+
+        self.WeekTitle = ko.computed(function() {
             var options = {
                 weekday: "short",
                 year: "numeric",
@@ -232,47 +242,22 @@
                 });
         }
 
-        self.edit = function(item) {
-            self.BeenChanged(true);
-            item._Undo = ko.mapping.toJS(item);
-            item.Editing(true);
-        };
 
-
-
-        self.cancel = function(item) {
-            item = ko.mapping.fromJS(item._Undo, {}, item);
-            revertChanges(item);
-            item.Editing(false);
-        };
-
-
-        //self.loadWeekNumbers = function () {
-        //    app.su_Service.LoadWeekNumbers().then(function(resp) {
-        //        self.NumbersWeeks([]);
-        //        for (var i = 0; i < resp.length; i++) {
-
-        //            self.NumbersWeeks.push(resp[i]);
-
-        //        };
-        //    }, onError);
-        //};
-
-        self.loadDishes = function (dish) {
-            app.su_Service.DishesByCategory(dish.Category()).then(function (resp) {
+        self.loadDishes = function(dish) {
+            app.su_Service.DishesByCategory(dish.Category()).then(function(resp) {
 
                 var disharray = ko.utils.arrayMap(resp, function(catdish) {
-                    if (catdish.dishID === dish.DishID()) {
-                        self.SelectedDish(catdish.dishID);
+                    if (catdish.dishId === dish.DishId()) {
+                        self.SelectedDish(catdish.dishId);
                     };
                     return new dishInfo(catdish);
                 });
                 self.DishesByCategory(disharray);
-                
+
             }, onError);
         }
 
-        self.showDishes = function (searchdish, index) {
+        self.showDishes = function(searchdish, index) {
             self.UpdatableMFD(index);
             self.Category(searchdish.Category());
             self.loadDishes(searchdish);
@@ -281,7 +266,7 @@
             $("#modalbox").modal("show");
         }
 
-        self.changeSelected = function (clikedItem) {
+        self.changeSelected = function(clikedItem) {
             if (self.SelectedDish() === clikedItem.DishId()) {
                 self.BeenChanged(true);
                 self.SelectedDish(clikedItem.DishId());
@@ -289,28 +274,28 @@
             return true;
         }
 
-        self.SetMyDateByWeek = function (wyDto) {
+        self.SetMyDateByWeek = function(wyDto) {
             var firstDay = new Date(wyDto.year, 0, 1).getDay();
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week);
             self.myDate(new Date(w));
         }.bind(self);
 
-        var loadWeekMenu = function (wyDto) {
+        var loadWeekMenu = function(wyDto) {
 
-            app.su_Service.LoadWeekMenu(wyDto).then(function (resp) {
+            app.su_Service.LoadWeekMenu(wyDto).then(function(resp) {
 
-                self.MFD_models(ko.utils.arrayMap(resp.mfdModels,function(item) {
+                self.MFD_models(ko.utils.arrayMap(resp.mfdModels, function(item) {
                     return new menuForDayInfo(item, self.Categories());
                 }));
 
                 self.MenuId(resp.id);
-                self.WeekYear(resp.weekYear);
+                self.WeekYear(resp.workWeek.weekYear);
                 self.SummaryPrice(resp.summaryPrice);
+                self.OrderCanBeCreated(resp.orderCanBeCreated);
+                self.WorkingWeek(new workWeekModel(resp.workWeek));
 
-                self.WorkingWeek(resp.workWeek);
-
-                app.su_Service.IsNextWeekYear(wyDto).then(function (resp2) {
+                app.su_Service.IsNextWeekYear(wyDto).then(function(resp2) {
                     self.IsNextWeekYear(resp2);
                 });
 
@@ -318,40 +303,17 @@
 
         }
 
-        //self.LoadWeekMenu = function (numweek, year) {
 
-        //    loadmenu(numweek, year);
+        self.GoToNextWeekMenu = function() {
 
-        //}
-
-        self.NextWeekMenu = function () {
-
-            app.su_Service.GetNextWeekYear(self.WeekYear()).then(function(resp) {
-
-                self.SetMyDateByWeek(resp);
-
-            }, onError);
-
-        }
-        self.PrevWeekMenu = function () {
-
-            app.su_Service.GetPrevWeekYear(self.WeekYear()).then(function (resp) {
-
-                self.SetMyDateByWeek(resp);
-            }, onError);
-
-        }
-
-        self.GoToNextWeekMenu = function () {
-            
-            app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function (nextWeekYear) {
+            app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function(nextWeekYear) {
 
                 self.SetMyDateByWeek(nextWeekYear);
 
             });
         };
 
-        self.myDate.subscribe = ko.computed(function () {
+        self.myDate.subscribe = ko.computed(function() {
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
             if (needObj != undefined) {
@@ -368,52 +330,77 @@
                 };
             };
         }, self);
+        
+        self.applyChanges = function() {
 
-        self.GetCurrentWeekYear = function () {
+            var catIndex = ko.utils.arrayFirst(ko.utils.arrayMap(self.Categories(), function(cat, ind) {
+                if (cat === self.Category()) {
 
-            app.su_Service.GetCurrentWeekYear().then(function (resp) {
-
-                self.CurrentWeekYear(resp);
-
-            }, onError);
-        }
-
-
-
-        self.applyChanges = function () {
-
-            var catIndex = $.map(self.Categories(), function (n, i) {
-                if (self.Category() === n)
-                    return i;
-                return i;
+                    return ind;
+                }
+                return null;
+            }), function(elem) {
+                return elem !== null;
             });
 
-
-            var dish = ko.utils.arrayFirst(self.DishesByCategory(), function (value) {
+            var dish = ko.utils.arrayFirst(self.DishesByCategory(), function(value) {
                 return value.DishId() === self.SelectedDish();
             });
+            var upateIndex = self.UpdatableMFD();
+
+            var mfdupdate = self.MFD_models()[upateIndex];
+            //Если на меню уже был сделан заказ, сохраняем id
+            if (mfdupdate.OrderWasBooking()) {
+
+                var exists = ko.utils.arrayFirst(self.UpdatedDayMenus(), function(item) {
+                    return item === mfdupdate.Id();
+                });
+                if (exists==null) {
+                    self.UpdatedDayMenus.push(mfdupdate.Id());
+                };
+
+            }
 
             if (dish != undefined) {
-
-                self.MFD_models()[self.UpdatableMFD()].Dishes()[catIndex].UpdateWeekMenu(dish);
-                this.CalcTotal();
+                var dishupdate = mfdupdate.Dishes()[catIndex];
+                var dishUpObject = ko.mapping.toJS(dishupdate);
+                dishupdate.UpdateWeekMenu(dish);
+                self.CalcTotal();
             };
 
-
+            self.save(mfdupdate);
 
             $("#modalbox").modal("hide");
         }
 
-        self.DeleteNextWeekMenu = function () {
+        self.DeleteNextWeekMenu = function() {
             var menuid = self.MenuId();
             app.su_Service.DeleteNextWeekMenu(menuid).then(function () {
-                self.LoadWeekMenu();
-                self.loadWeekNumbers();
-                self.SetMyDateByWeek(self.CurrentWeekNumber(), self.Year());
+
+                app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
+                    self.IsNextWeekMenuExists(respnext);
+                }, onError);
+
+                self.SetMyDateByWeek(self.CurrentWeekYear());
             }, onError);
         }
 
-        self.CalcTotal = function () {
+        self.CreateNextWeekMenu = function() {
+            app.su_Service.CreateNextWeekMenu().then(function(res) {
+                if (res) {
+
+                    app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
+                        self.IsNextWeekMenuExists(respnext);
+                    }, onError);
+
+                    app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function(nextDto) {
+                        self.SetMyDateByWeek(nextDto);
+                    }, onError);
+                }
+            });
+        };
+
+        self.CalcTotal = function() {
 
             var sum = 0;
             ko.utils.arrayForEach(self.MFD_models(), function(item) {
@@ -428,32 +415,54 @@
 
         self.MFD_models.subscribe = ko.computed(self.CalcTotal, self);
 
-        self.init = function () {
-            app.su_Service.GetCategories().then(function (resp) {
+
+        self.SendBooking = function() {
+
+            var menuUpdate = {
+                DateTime: self.WeekTitle(),
+                Message: self.Message(),
+                UpdatedDayMenu: self.UpdatedDayMenus()
+            };
+
+            app.su_Service.SendMenuUpdateMessage(menuUpdate).then(function() {
+                self.UpdatedDayMenus([]);
+            }, onError);
+        };
+        self.SetAsOrderable=function() {
+
+            var orderablemessage = {
+                DateTime: self.WeekTitle()
+            };
+            app.su_Service.SetAsOrderable(orderablemessage).then(function(res) {
+                self.OrderCanBeCreated(res);
+            }, onError);
+        }
+
+        self.init = function() {
+            app.su_Service.GetCategories().then(function(resp) {
                 self.Categories([]);
                 self.Categories.pushAll(resp);
             }, onError);
 
             //self.loadWeekNumbers();
-           
+
             app.su_Service.GetCurrentWeekYear().then(function(resp) {
 
                 self.CurrentWeekYear(resp);
 
             }, onError);
 
-             };
-           // self.LoadWeekMenu();
-        //app.su_Service.LoadWeekMenu()
+            app.su_Service.IsNextWeekMenuExists().then(function(respnext) {
+                self.IsNextWeekMenuExists(respnext);
+            }, onError);
 
-        app.su_Service.IsNextWeekMenuExist().then(function (respnext) {
-            self.IsNextWeekMenuExist(result);
-        }, onError);
-    }
-
+        };
         self.init();
 
-    ko.applyBindings( new weekMenuModel());
+    }
+
+
+    ko.applyBindings(new weekMenuModel());
 
 
 })();

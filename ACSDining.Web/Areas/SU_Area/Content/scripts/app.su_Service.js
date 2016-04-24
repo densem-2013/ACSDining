@@ -7,6 +7,19 @@ ko.observableArray.fn.pushAll = function (valuesToPush) {
     this.valueHasMutated();
     return this;
 };
+
+ko.bindingHandlers.hover = {
+    init: function (element, valueAccessor) {
+        var value = valueAccessor();
+        ko.applyBindingsToNode(element, {
+            event: {
+                mouseenter: function () { value(true) },
+                mouseleave: function () { value(false) }
+            }
+        });
+    }
+}
+
 ko.extenders.numeric = function (target, precision) {
     //create a writable computed observable to intercept writes to our observable
     var result = ko.pureComputed({
@@ -138,14 +151,16 @@ window.app.su_Service = (function() {
 
     var baseWeekMenuUri = "/api/WeekMenu/";
     var serviceWeekMenuUrls = {
-
         weekNumbers: function() { return baseWeekMenuUri + "WeekNumbers"; },
         currentweek: function() { return baseWeekMenuUri + "curWeekYear"; },
         categories: function() { return baseWeekMenuUri + "categories" },
-        nextWeekYear: function () { return baseWeekMenuUri + "nextWeekYear" },
-        isnextweekmenuexists: function (){ return baseWeekMenuUri + "isnextweekmenuexists"},
+        create: function() { return baseWeekMenuUri + "create" },
+        nextWeekYear: function() { return baseWeekMenuUri + "nextWeekYear" },
+        isnextweekmenuexists: function() { return baseWeekMenuUri + "isnextweekmenuexists" },
         prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
-        deleteWeekMenu: function (menuid) { return baseWeekMenuUri + "delete/" + menuid }
+        deleteWeekMenu: function(menuid) { return baseWeekMenuUri + "delete/" + menuid },
+        sendmenuUpdateMessage: function() { return baseWeekMenuUri + "menuupdatemessage" },
+        setasorderable: function() { return baseWeekMenuUri + "setasorderable" }
     }
 
     var baseOrdersUri = "/api/Orders/";
@@ -207,7 +222,7 @@ window.app.su_Service = (function() {
             return ajaxRequest("put", baseWeekMenuUri, wyDto);
         },
         GetNextWeekYear: function (wyDto) {
-            return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(), wyDto);
+            return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(),wyDto);
         },
         GetPrevWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), wyDto);
@@ -226,6 +241,15 @@ window.app.su_Service = (function() {
         },
         DeleteNextWeekMenu: function(menuid) {
             return ajaxRequest("delete", serviceWeekMenuUrls.deleteWeekMenu(menuid));
+        },
+        CreateNextWeekMenu: function () {
+            return ajaxRequest("post", serviceWeekMenuUrls.create());
+        },
+        SendMenuUpdateMessage: function(message) {
+            return ajaxRequest("put", serviceWeekMenuUrls.sendmenuUpdateMessage(), message);
+        },
+        SetAsOrderable: function (message) {
+            return ajaxRequest("put", serviceWeekMenuUrls.setasorderable(), message);
         },
         GetCategories: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.categories());

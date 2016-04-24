@@ -26,7 +26,7 @@ namespace ACSDining.Infrastructure.Identity
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
             //                          @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web\bin\Debug", "") +
+            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web", "") +
                                       @"ACSDining.Core\DBinitial\DishDetails.xml";
 
             InitializeIdentityForEf(context, _path); 
@@ -34,7 +34,7 @@ namespace ACSDining.Infrastructure.Identity
             CreateWorkingDays(context);
             CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
-            GetUsersFromXml(context, _path);
+            //GetUsersFromXml(context, _path);
             CreateOrders(context);
             base.Seed(context);
         }
@@ -374,6 +374,7 @@ namespace ACSDining.Infrastructure.Identity
                 for (int i = 1; i <= 7; i++)
                 {
                     List<Dish> dishes = getDishes();
+                    dishes.OrderBy(d => d.DishType.Id);
                     WorkingDay workday =
                         context.WorkingDays.Include("WorkingWeek").ToList().FirstOrDefault(
                             wd => workweek != null && (wd.WorkingWeek.ID == workweek.ID && wd.DayOfWeek.Id == i));
@@ -513,15 +514,7 @@ namespace ACSDining.Infrastructure.Identity
 
                         foreach (Dish dish in daymenu.Dishes)
                         {
-                            DishType first = null;
-                            foreach (var dy in dishTypes)
-                            {
-                                if (string.Equals(dy.Category, dish.DishType.Category))
-                                {
-                                    first = dy;
-                                    break;
-                                }
-                            }
+                            DishType first = dishTypes.FirstOrDefault(dy => dy.Id== dish.DishType.Id);
                             if (first != null)
                             {
                                 int catindex = first.Id - 1;
@@ -544,9 +537,10 @@ namespace ACSDining.Infrastructure.Identity
 
                         }
                         dayOrderMenus.Add(dayOrderMenu);
-                        weekOrder.WeekOrderSummaryPrice += dayOrderMenu.DayOrderSummaryPrice;
+                       // weekOrder.WeekOrderSummaryPrice += dayOrderMenu.DayOrderSummaryPrice;
                     }
                     weekOrder.DayOrderMenus = dayOrderMenus;
+                    weekOrder.WeekOrderSummaryPrice = weekOrder.DayOrderMenus.Select(dom=>dom.DayOrderSummaryPrice).Sum();
                 }
             }
             context.DQRelations.AddRange(dquaList);

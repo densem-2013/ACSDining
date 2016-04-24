@@ -388,16 +388,35 @@ table
 {
     border: solid 0px #e8eef4;
     border-collapse: collapse;
-    width: 345px;
 }
 
 
 
-table td
-{
+td.orderquant{
+    padding: 0px; /* border: solid 1px #e8eef4; */
+    -moz-min-width: 40px;
+    -ms-min-width: 40px;
+    -o-min-width: 40px;
+    -webkit-min-width: 40px;
+    min-width: 40px;
+}
+
+td.weekmenu div{
     padding: 5px; /* border: solid 1px #e8eef4; */
+    -moz-min-height: 30px;
+    -ms-min-height: 30px;
+    -o-min-height: 30px;
+    -webkit-min-height: 30px;
+    min-height: 30px;
+    white-space: nowrap;
+    max-width: 500px;
 }
-
+.menu_hover{
+    background: aqua;
+    border: 1px solid darkcyan;
+    padding: 0;
+    margin: 0;
+}
 
 table th
 {
@@ -1010,4 +1029,7 @@ div.disabled > .btn-circle:hover{
     color: #777;
     cursor: not-allowed;
     background-color: #fff;
+}
+select.input-small {
+    padding: 0
 }

@@ -337,5 +337,19 @@ namespace ACSDining.Infrastructure.Repositories
 
             return weekOrder;
         }
+
+        public static List<User> GetUsersMadeOrder(this IRepositoryAsync<WeekOrderMenu> repository, int daymenuid)
+        {
+            List<WeekOrderMenu> whohasweekorder = repository.Query()
+                .Include(om => om.MenuForWeek.MenuForDay.Select(dm => dm.Dishes.Select(d => d.DishType)))
+                .Include(om => om.User)
+                .Include(om => om.MenuForWeek.WorkingWeek.Year)
+                .Include(wm => wm.MenuForWeek.WorkingWeek.WorkingDays.Select(d => d.DayOfWeek))
+                .Include(om => om.DayOrderMenus.Select(dom => dom.MenuForDay.Dishes.Select(d => d.DishType)))
+                .Select().Where(
+                    om => om.DayOrderMenus.Select(dom => dom.MenuForDay.ID).Contains(daymenuid)).ToList();
+
+            return whohasweekorder.Select(wom => wom.User).ToList();
+        } 
     }
 }

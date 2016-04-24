@@ -16,13 +16,13 @@ span.changesaved {
     background-color: #dc8648;
     color: #183ca0;
 }
-#curweek, #btnaddmenu {
+#curweek, .btnaddmenu {
     background-color: #2bcb19;
     color: #ffffff;
     padding:5px;
     margin:5px;
 }
-#curweek.disabled {
+.disabled {
     background-color: #d96666;
     color: #ffffff;
 }

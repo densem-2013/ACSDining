@@ -108,6 +108,7 @@
     <Compile Include="DAL\QueryObject.cs" />
     <Compile Include="DAL\Repository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="DTO\MenuUpdateMessageDto.cs" />
     <Compile Include="DTO\SuperUser\AccountDto.cs" />
     <Compile Include="DTO\SuperUser\DishModelDto.cs" />
     <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />

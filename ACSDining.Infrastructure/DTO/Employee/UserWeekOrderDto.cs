@@ -34,7 +34,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
             {
                 WeekPaid = weekOrderMenu.WeekPaid,
                 UserId = weekOrderMenu.User.Id,
-                UserName = weekOrderMenu.User.UserName,
+                UserName = string.Format("{0} {1}", weekOrderMenu.User.LastName, weekOrderMenu.User.FirstName),
                 OrderId = weekOrderMenu.Id,
                 DayOrderDtos =
                     weekOrderMenu.DayOrderMenus.Where(dord =>

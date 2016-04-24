@@ -17,6 +17,8 @@ namespace ACSDining.Infrastructure.Services
         List<WeekOrderMenu> GetOrderMenuByWeekYear(WeekYearDto wyDto);
         WeekOrderMenu CreateNew( User user, WeekYearDto wyDto);
         int UpdateUserWeekOrder(int catcount, UserWeekOrderDto userWeekOrderDto);
+        //Возвращает список пользователей, которые уже сделали заказ на указанное дневное меню для отправки им сообщения
+        List<User> GetUsersMedeBooking(int daymenuid);
     }
 
     public class OrderMenuService : Service<WeekOrderMenu>, IOrderMenuService
@@ -75,6 +77,11 @@ namespace ACSDining.Infrastructure.Services
         public WeekOrderMenu CreateNew( User user, WeekYearDto wyDto)
         {
             return _repository.CreateWeekOrderMenu( user, wyDto);
+        }
+
+        public List<User> GetUsersMedeBooking(int daymenuid)
+        {
+            return _repository.GetUsersMadeOrder(daymenuid);
         }
     }
 }

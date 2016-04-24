@@ -23,10 +23,10 @@ namespace ACSDining.Infrastructure.Repositories
 
             for (int i = 0; i < dayCount; i++)
             {
-                MenuForDay daymenu = mfw.MenuForDay.ElementAt(i);
+                MenuForDay daymenu = mfw.MenuForDay.OrderBy(mfd=>mfd.WorkingDay.DayOfWeek.Id).ElementAt(i);
                 for (int j = 0; j < catLenth; j++)
                 {
-                    unitprices[i*j + j] = daymenu.Dishes.ElementAt(j).Price;
+                    unitprices[i * catLenth + j] = daymenu.Dishes.OrderBy(d=>d.DishType.Id).ElementAt(j).Price;
                 }
             }
             return unitprices;
@@ -47,6 +47,20 @@ namespace ACSDining.Infrastructure.Repositories
             return mfw;
         }
 
+        public static MenuForWeek GetMenuById(this IRepositoryAsync<MenuForWeek> repository, int menuid)
+        {
+            MenuForWeek mfw =
+                repository.Query()
+                    .Include(wm => wm.MenuForDay.Select(dm => dm.Dishes.Select(d => d.DishType)))
+                    .Include(wm => wm.MenuForDay.Select(dm => dm.Dishes.Select(d => d.DishDetail)))
+                    .Include(wm => wm.Orders)
+                    .Include(wm => wm.WorkingWeek.Year)
+                    .Include(wm => wm.WorkingWeek.WorkingDays.Select(d => d.DayOfWeek))
+                    .Select()
+                    .FirstOrDefault(wm => wm.ID == menuid);
+
+            return mfw;
+        }
         public static List<int> GetWeekNumbers(this IRepositoryAsync<MenuForWeek> repository)
         {
             List<MenuForWeek> list = repository.Query().Include(mfw => mfw.WorkingWeek.Year).Select().ToList();
@@ -87,11 +101,13 @@ namespace ACSDining.Infrastructure.Repositories
             Year year = yearRepository.GetAll().FirstOrDefault(y => y.YearNumber == weekyear.Year) ??
                         new Year { YearNumber = weekyear.Year };
 
-            for (int i = 0; i < 7; i++)
+            List<Core.Domains.DayOfWeek> daysWeeks = repository.GetRepositoryAsync<Core.Domains.DayOfWeek>().GetAll();
+
+            for (int i = 0; i < daysWeeks.Count; i++)
             {
                 WorkingDay wday = new WorkingDay
                 {
-                    DayOfWeek =repository.GetRepositoryAsync<Core.Domains.DayOfWeek>().FindAsync(i + 1).Result,
+                    DayOfWeek = daysWeeks.ElementAt(i),
                     IsWorking = i < 5
                 };
                 workdays.Add(wday);

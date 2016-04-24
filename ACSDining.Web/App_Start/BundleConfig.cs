@@ -42,12 +42,12 @@ namespace ACSDining.Web
                         ));
 
 
-            bundles.Add(new ScriptBundle("~/bundles/Modal").Include(
-                     "~/Content/worthy/modal/js/jquery-1.10.2.js",
-                     "~/Content/worthy/modal/js/bootstrap.min.js",
-                     "~/Content/worthy/modal/js/jquery.metisMenu.js",
-                     "~/Content/worthy/modal/js/custom.js"
-                     ));
+            //bundles.Add(new ScriptBundle("~/bundles/Modal").Include(
+            //         "~/Content/worthy/modal/js/jquery-1.10.2.js",
+            //         "~/Content/worthy/modal/js/bootstrap.min.js",
+            //         "~/Content/worthy/modal/js/jquery.metisMenu.js",
+            //         "~/Content/worthy/modal/js/custom.js"
+            //         ));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-2.1.4.min.js",
@@ -90,11 +90,11 @@ namespace ACSDining.Web
                        "~/Content/css/style.css"
                        ));
 
-            bundles.Add(new StyleBundle("~/Modal/css").Include(
-                "~/Content/worthy/modal/css/bootstrap.css",
-                "~/Content/worthy/modal/css/font-awesome.css",
-                "~/Content/worthy/modal/css/custom.css"
-                ));
+            //bundles.Add(new StyleBundle("~/Modal/css").Include(
+            //    "~/Content/worthy/modal/css/bootstrap.css",
+            //    "~/Content/worthy/modal/css/font-awesome.css",
+            //    "~/Content/worthy/modal/css/custom.css"
+            //    ));
 
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(

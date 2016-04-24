@@ -2,47 +2,51 @@
     ViewBag.Title = "Index";
 }
 
-    <div class="panel panel-default" id="mfwPanel">
-        <table>
-            <tbody>
-            <tr>
-                 <!--ko foreach: WorkingDays-->
-                <td>
-                    <!-- ko text: DayNumber--><!-- /ko-->
-                    <span data-bind="text: DayName"></span>
-                </td>
-                <td>
-                    <input type="checkbox" data-bind="checkedValue: IsWorking"/>
-                </td>
-                <!-- /ko-->
-            </tr>
-                <tr style="background: #565659;">
-                    <td class="col-md-3">
-                        <div>
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click: function(){$root.SetMyDateByWeek($root.CurrentWeekNumber(),$root.Year())},css:{disabled: IsCurrentWeek}" />
+    <div class="panel panel-default" id="mfwPanel" >
+       
+        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable" style="font-size: 1.2em; text-align: center">
+            <thead>
+                <tr style="vertical-align: middle;">
+                    <!-- ko with: WorkingWeek-->
+                    <td  style="white-space: nowrap"><span>Рабочие дни : </span></td>
+                    <!--ko foreach: WorkingDays-->
+                    <td>
+                        <div style="vertical-align: middle; white-space: nowrap">
+                            <!-- ko text: DayNumber--><!-- /ko-->
+                            <input type="checkbox"  data-bind="checked: IsWorking, value: IsWorking" />
+                            <span data-bind="text: DayName"></span>
                         </div>
                     </td>
-                    <td class="col-md-5  " style="float: right">
-                        <div>
-                            <!--ko ifnot: IsNextWeekMenuExist -->
-                            <input type="button" id="btnaddmenu" class="btn" value="Создать меню на следующую неделю" data-bind="click:GoToNextWeekMenu" /> 
-                            <!--/ko--> 
-                            <!--ko if: IsNextWeekMenu-->
-                            <input type="button" id="btnDel" class="btn btn-danger" value="Удалить меню на следующую неделю" data-bind="click:DeleteNextWeekMenu" />
-                            <!--/ko--> 
+                    <!-- /ko-->
+                    <!-- /ko-->
+                </tr>
+                <tr style="background: #565659;">
+                    <td colspan="2" style="border-right-style: none;">
+                        <div style="vertical-align: middle; width: 100%">
+                            <input type="button" value="Перейти на текущую неделю" class="btn btnaddmenu" data-bind=" click: function(){$root.SetMyDateByWeek($root.CurrentWeekYear())}, visible: !IsCurrentWeekYear(), css:{'btn-danger': IsCurrentWeekYear}" />
+                        </div>
+                    </td>
+                    <td colspan="3" style="text-align: center; vertical-align: middle; border-right-style: none; border-left-style: none;">
+                        <div style="width: 100%">
+                            <input type="button" class="btn btn-info" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject" />
+                        </div>
+                    </td>
+                    <td colspan="2" style="text-align: center; vertical-align: middle; border-right-style: none; border-left-style: none;">
+                        <div style="width: 100%">
+                            <input type="button" class="btn btn-warning" value="Подтвердить возможность заказа по меню" data-bind="click:SetAsOrderable, visible: !OrderCanBeCreated()" />
+                        </div>
+                    </td>
+                    <td colspan="3" style="text-align: center; vertical-align: middle; border-left-style: none;">
+                        <div style="float: right; width: 100%">
+                            <input type="button" class="btn " data-bind="click:NextWeekMenuButton.action(), value: NextWeekMenuButton.Message(), css:NextWeekMenuButton.cssclass()" />
                         </div>
                     </td>
                 </tr>
-            </tbody>
-        </table>
-        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable" >
-            <thead>
                 <tr>
-                    <th class="col-sm-1">День недели</th>
-                    <th class="col-sm-2">Категория блюда</th>
-                    <th class="col-sm-5">Название</th>
-                    <th class="col-sm-2" colspan="2" style="text-align: center">Стоимость</th>
-                    <th class="col-sm-2" style="text-align: center"><span data-bind="text: BeenChanged()?'Сохранить / Отмена':'Изменить' "></span></th>
+                    <th  style="vertical-align: middle; text-align: center">День недели</th>
+                    <th colspan="2" style="vertical-align: middle; text-align: center">Категория блюда</th>
+                    <th colspan="5" style="vertical-align: middle; text-align: center">Название</th>
+                    <th  colspan="2" style="vertical-align: middle; text-align: center">Стоимость</th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: MFD_models">
@@ -50,69 +54,41 @@
                     <td style="vertical-align: middle; text-align: center">
                         <span data-bind="text: DayOfWeek"></span>
                     </td>
-                    <td data-bind="foreach: Dishes">
-                        <div style="border-bottom: 1px solid; text-align: right">
+                    <td colspan="2" class="weekmenu" data-bind="foreach: Dishes">
+                        <div style="border-bottom: 1px solid; text-align: right" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
                             <span data-bind="text: $data.Category() + ' : '"></span>
                         </div>
                     </td>
-                    <td data-bind="foreach: Dishes">
-                        <div style="border-bottom: 1px solid">
+                    <td colspan="5" class="weekmenu" data-bind="foreach: Dishes">
+                        <div style="border-bottom: 1px solid" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
                             <span data-bind="text: Title"></span>
-                            <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$parents[1].showDishes($data, $parentContext.$index())}" style="float: right; max-height: 15px; width: 70px;"></button>
+                            <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$parents[1].showDishes($data, $parentContext.$index())}" style="float: right; max-height: 25px; width: 70px;"></button>
 
                         </div>
                     </td>
-                    <td data-bind="foreach: Dishes" style="text-align: right">
-                        <div>
-                            <span data-bind="text: Price" style="border-bottom: 1px solid"></span><br />
+                    <td class="weekmenu" data-bind="foreach: Dishes" style="text-align: right;vertical-align: middle">
+                        <div data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
+                            <span data-bind="text: Price" style="border-bottom: 1px solid; padding: 5px;"></span><br />
                         </div>
                     </td>
                     <td style="text-align: right; vertical-align: middle; height: 100%">
                         <span data-bind="text: TotalPrice"></span>
                     </td>
-                    <td style="vertical-align: middle; text-align: center">
+                    @*<td style="vertical-align: middle; text-align: center">
                         <!-- ko ifnot: Editing -->
                         <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: function(){ $parent.edit($data)} "></button>
-                        <!--/ko--> 
+                        <!--/ko-->
                         <!-- ko if: Editing -->
                         <button class="glyphicon glyphicon-save btn-warning btn-lg" data-bind="click: function(){ $parent.save($data)} "></button>
                         <button class="glyphicon glyphicon-adjust btn-danger btn-lg" data-bind="click: function(){ $parent.cancel($data)} "></button>
                         <!--/ko-->
-                    </td>
-
+                    </td>*@
                 </tr>
             </tbody>
             <tfoot>
-                <tr>
-                    <td style="border-bottom: 1px solid; border-right: 0" colspan="2"></td>
-                    <td style="border-bottom: 1px solid; align-content: stretch; border-left: 0" colspan="2">
-                        <span style="float: right;"> Итого: </span>
-                    </td>
-                    <td style="border-bottom: 1px solid; text-align: right" >
-                        <span data-bind=" text : SummaryPrice()"></span>
-                    </td>
-                    <td style="border-bottom: 1px solid;"></td>
-                </tr>
-                <tr>
-                    <td colspan="7">
-                        <div class="dataTables_paginate paging_simple_numbers" style="padding:5px;">
-                            <ul class="pagination">
-                                <li class=" paginate_button previous">
-                                    <a href="#" data-bind=" click: PrevWeekMenu">Previous</a>
-                                </li>
-                                <li class="paginate_button " data-bind="foreach: NumbersWeeks">
-                                    <a href="#" class="paginate_button" data-bind="text: $data, css: { active: $data == $parent.WeekNumber()}, click: function(){ $parent.SetMyDateByWeek($data,$parent.Year()); }"></a>
-                                </li>
-                                <li class=" paginate_button next">
-                                    <a href="#" data-bind="click: NextWeekMenu">Next</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
             </tfoot>
         </table>
-    </div>
+</div>
 
 <div id="modalbox" class="modal ">
     <div class="modal-dialog">
@@ -181,10 +157,10 @@
         <div class="panel panel-default">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1>Внимание, ошибка! </h1>
+                    <h1 data-bind="text: Title"></h1>
                 </div>
                 <div class="modal-body">
-                    <span data-bind="text:Message"></span>
+                    <input  data-bind="textInput: Message"/>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-default" data-dismiss="modal">Закрыть</button>

@@ -1,4 +1,7 @@
-﻿(function() {
+﻿(function () {
+
+    $("ul.nav.navbar-nav li:nth-child(3)").addClass("active");
+
     var DishInfo = function(dish) {
         var self = this;
         self.DishId = ko.observable(dish.dishID);
