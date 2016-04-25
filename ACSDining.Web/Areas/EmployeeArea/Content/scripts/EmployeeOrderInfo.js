@@ -54,31 +54,23 @@
         self.OrderQuantity = ko.observable(new quantValueModel(quantity, canbechanged));
     }
 
-    var menuForDay = function(dayobj, categs) {
+    var menuForDay = function (menuForDay, categs, dishquantities) {
 
         var self = this;
 
-        dayobj = dayobj || {};
+        menuForDay = menuForDay || {};
         categs = categs || [];
 
-        self.ID = ko.observable(dayobj.menuForDay.id);
-        self.DayOfWeek = ko.observable(dayobj.menuForDay.dayOfWeek);
-        self.OrderCanBeChanged = ko.observable(dayobj.menuForDay.orderCanBeChanged);
-        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function(item, ind) {
+        self.ID = ko.observable(menuForDay.id);
+        self.DayOfWeek = ko.observable(menuForDay.dayOfWeek);
+        self.OrderCanBeChanged = ko.observable(menuForDay.orderCanBeChanged);
+        self.Dishes = ko.observableArray(ko.utils.arrayMap(menuForDay.dishes, function(item, ind) {
 
-            var first = ko.utils.arrayFirst(dayobj.menuForDay.dishes, function(element) {
-                var positivRes = element.category === item;
-
-                return positivRes;
-            });
-            if (first != null) {
-                return new dishInfo(first, dayobj.menuForDay.orderCanBeChanged, dayobj.dishQuantities[ind]);
-            };
-            return null;
+            return new dishInfo(item, menuForDay.orderCanBeChanged, dishquantities[ind]);
         }));
 
     }
-    var userDayOrderInfo = function(dayOrdObject, categories) {
+    var userDayOrderInfo = function (dayOrdObject, categories, dishQuantities) {
 
         var self = this;
 
@@ -88,9 +80,11 @@
         self.DayOrderId = ko.observable(dayOrdObject.dayOrderId);
         self.DayOfWeek = ko.observable(dayOrdObject.dayOfWeek);
 
-        self.MenuForDay = ko.observable(new menuForDay(dayOrdObject, categories));
+        self.MenuForDay = ko.observable(new menuForDay(dayOrdObject.menuForDay, categories, dishQuantities));
 
-        self.DishQuantities = ko.observableArray(dayOrdObject.dishQuantities);
+        self.DishQuantities = ko.observableArray(ko.utils.arrayMap(dishQuantities,function(quant) {
+            return new quantValueModel(quant, dayOrdObject.orderCanBeChanged);
+        }));
 
         self.DayOrderSummary = ko.observable(dayOrdObject.dayOrderSummary.toFixed(2));
         self.CalcDayOrderTotal = function() {
@@ -140,7 +134,10 @@
 
         self.QuantValues = [0, 1, 2, 3, 4, 5];
 
+        self.UserWeekOrderDishes = ko.observableArray([]);
+
         self.BeenChanged = ko.observable(false);
+
         self.IsCurrentWeek = ko.pureComputed(function() {
 
             return self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
@@ -196,19 +193,24 @@
 
         var loadUserWeekOrder = function(wyDto1) {
 
-            app.su_Service.LoadUserWeekOrder(wyDto1).then(function(resp1) {
-                self.UserDayOrders([]);
+            app.su_Service.LoadUserWeekOrder(wyDto1).then(function (resp1) {
 
                 self.OrderId(resp1.orderId);
                 self.UserId(resp1.userId);
                 self.WeekIsPaid(resp1.weekIsPaid);
                 self.WeekYear(resp1.weekYear);
                 self.WeekSummaryPrice(resp1.weekSummaryPrice.toFixed(2));
-                ko.utils.arrayForEach(resp1.dayOrderDtos, function(object) {
+                self.UserWeekOrderDishes(resp1.UserWeekOrderDishes);
 
-                    self.UserDayOrders.push(new userDayOrderInfo(object, self.Categories(), object.orderCanBeChanged));
+                var dishcount = resp1.dayOrderDtos[0].menuForDay.dishes.length;
 
-                });
+                self.UserDayOrders(ko.utils.arrayMap(resp1.dayOrderDtos, function (object,index) {
+
+                    var start = resp1.userWeekOrderDishes.slice(index * dishcount, (index + 1) * dishcount);
+
+                    return new userDayOrderInfo(object, self.Categories(), start);
+
+                }));
 
                 app.su_Service.IsNextWeekYear(wyDto1).then(function(resp2) {
                     self.IsNextWeekYear(resp2);
@@ -268,10 +270,12 @@
                 sum += parseFloat(item.DayOrderSummary());
             });
 
-            self.WeekSummaryPrice(sum);
+            self.WeekSummaryPrice(sum.toFixed(2));
         };
 
         self.update = function() {
+
+            self.UserWeekOrderDishes([]);
 
             ko.utils.arrayForEach(self.UserDayOrders(), function(item) {
 
@@ -283,6 +287,8 @@
 
                 });
 
+                self.UserWeekOrderDishes.pushAll(item.DishQuantities());
+
             });
 
             var userweekorder = {
@@ -292,7 +298,8 @@
                 WeekSummaryPrice: self.WeekSummaryPrice(),
                 WeekIsPaid: self.WeekIsPaid(),
                 WeekPaid: self.WeekPaid(),
-                WeekYear: self.WeekYear()
+                WeekYear: self.WeekYear(),
+                UserWeekOrderDishes: self.UserWeekOrderDishes()
             };
 
             app.su_Service.UserWeekUpdateOrder(userweekorder).then(function() {
@@ -310,9 +317,9 @@
             app.su_Service.GetCurrentWeekYear().then(function(resp) {
 
                 self.CurrentWeekYear(resp);
-                self.SetMyDateByWeek(resp);
 
             }, onError);
+
 
             app.su_Service.NextWeekOrderExists().then(function(respnext) {
                 self.NextWeekOrderExist(respnext);
@@ -323,6 +330,7 @@
             }, onError);
 
 
+            self.SetMyDateByWeek(self.CurrentWeekYear());
         };
 
 

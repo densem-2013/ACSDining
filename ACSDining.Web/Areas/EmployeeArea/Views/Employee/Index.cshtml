@@ -14,8 +14,13 @@
                 <tbody>
                 <tr style="background: #565659;">
                     <td >
-                        <div class ="col-md-3">
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:SetMyDateByWeek((CurrentWeekYear())) , css:{ disabled: IsCurrentWeek}" />
+                        <div class="col-md-3">
+                            <!--ko ifnot: IsCurrentWeek-->
+                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:SetMyDateByWeek((CurrentWeekYear())) , css:{ disabled: IsCurrentWeek}"/>
+                            <!--/ko-->
+                            <!--ko if: IsCurrentWeek-->
+                            <span>Текущая неделя</span>
+                            <!--/ko-->
                         </div>
                     </td>
                     <td>
@@ -25,7 +30,7 @@
                     </td>
                     <td >
                         <div class="col-md-3 "style="float: right; margin-right: 170px;">
-                            <input type="button" id="btnaddmenu" class="btn" data-bind=" click: GoToNextWeekOrder ,value: MessageOnNextWeekButton,css:{disabled: IsNextWeekYear}" />
+                            <input type="button" id="btnaddmenu" class="btn" data-bind=" click: GoToNextWeekOrder ,value: MessageOnNextWeekButton,css:{disabled: IsNextWeekYear}, visible: CanCreateOrderOnNextWeek" />
                         </div>
                     </td>
                 </tr>
@@ -63,25 +68,22 @@
                         <!--/ko-->
                     </td>
                     <td style="vertical-align: middle; text-align: center;">
-                        <!--ko foreach: Dishes-->
-                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.OrderQuantity().clicked($element)}, event : { mouseenter: $data.OrderQuantity().onmouseenter , mouseleave:function(){$data.OrderQuantity().onFocusOut();; $root.CalcSummary($data.OrderQuantity().beenChanged())}}">
-                            <!--, tooltip: {title: 'DoubleClick For Edit', placement: 'left'}-->
-                            <!--ko ifnot: OrderQuantity().isEditMode -->
-                            <span data-bind="text: OrderQuantity().Quantity"></span>
+                        <!--ko foreach: Dishes--> 
+                        <!--ko with: OrderQuantity-->
+                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseenter: $data.onmouseenter , mouseleave:function(){$data.onFocusOut();; $root.CalcSummary($data.beenChanged())}}">
+                            <!--ko ifnot: isEditMode -->
+                            <span data-bind="text: Quantity"></span>
                             <!--/ko-->
-                            <!-- ko if: OrderQuantity().isEditMode -->
+                            <!-- ko if: isEditMode -->
                             <!-- ko if: ($index() % 4 === 0) -->
-                            <!-- ko with: OrderQuantity-->
                             <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())} }"></select>
                             <!--/ko-->
-                            <!--/ko-->
                             <!-- ko ifnot: ($index() % 4 === 0) -->
-                            <!-- ko with: OrderQuantity-->
                             <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())} }"></select>
                             <!--/ko-->
                             <!--/ko-->
-                            <!--/ko-->
-                        </div>
+                        </div> 
+                        <!--/ko-->
                         <!--/ko-->
                     </td>
                     <td style="text-align: right">

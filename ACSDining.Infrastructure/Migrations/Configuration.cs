@@ -8,7 +8,7 @@ namespace ACSDining.Infrastructure.Migrations
     {
         private string _path =
             AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-            @"ACSDining.Core\DBinitial\DishDetails.xml";
+            @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
         public Configuration()
         {

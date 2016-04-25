@@ -123,17 +123,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="DBinitial\DishDetails.xml" />
-    <Content Include="DBinitial\Employeers.xml" />
-    <Content Include="DBinitial\Images\Dishes\Azu po-tatarsky.png" />
-    <Content Include="DBinitial\Images\Dishes\Molochniy_coctail.png" />
-    <Content Include="DBinitial\Images\Dishes\Muffiny_s_golubikoy.png" />
-    <Content Include="DBinitial\Images\Dishes\Orange_Criushoun.png" />
-    <Content Include="DBinitial\Images\Dishes\Paheliya.png" />
-    <Content Include="DBinitial\Images\Dishes\Solianka_Gribnaya.png" />
-    <Content Include="DBinitial\Images\Dishes\Souse_Curry.png" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

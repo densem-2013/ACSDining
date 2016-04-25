@@ -316,6 +316,8 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\DBinitial\DishDetails.xml" />
+    <Content Include="App_Data\DBinitial\Employeers.xml" />
     <Content Include="Areas\SU_Area\Content\scripts\AccountsInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\app.su_Service.js" />
     <Content Include="Areas\SU_Area\Content\scripts\DishesInfo.js" />
@@ -530,7 +532,6 @@
     <Content Include="Views\Account\Lockout.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Areas\EmployeeArea\Models\" />
   </ItemGroup>
   <ItemGroup>

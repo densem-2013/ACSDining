@@ -13,7 +13,7 @@ using System.DirectoryServices.AccountManagement;
 
 namespace ACSDining.Web.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [System.Web.Http.Authorize(Roles = "Employee,SuperUser")]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
@@ -92,6 +92,10 @@ namespace ACSDining.Web.Controllers
                                 Session["Fname"] = user.FirstName;
                                 Session["Lname"] = user.LastName;
                                 Session["LastLoginDate"] = user.LastLoginTime;
+                                await
+                                    _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                        shouldLockout: false);
+
                                 return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                             }
                             if (await UserManager.IsInRoleAsync(user.Id, "SuperUser"))

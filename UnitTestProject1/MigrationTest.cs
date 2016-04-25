@@ -35,7 +35,7 @@ namespace UnitTestProject1
         public void TestMigration()
         {
             string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-                           @"ACSDining.Core\DBinitial\DishDetails.xml";
+                           @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
             ApplicationDbInitializer.InitializeIdentityForEf(dataContext, _path);
 

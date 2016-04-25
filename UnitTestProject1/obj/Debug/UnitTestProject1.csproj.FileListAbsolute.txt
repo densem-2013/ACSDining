@@ -288,3 +288,6 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.WebPages.Deployme
 E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb
 E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.dll
 E:\GitProjects\ACSDining\UnitTestProject1\obj\Debug\UnitTestProject1.pdb
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebGrease.dll
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.dll
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb

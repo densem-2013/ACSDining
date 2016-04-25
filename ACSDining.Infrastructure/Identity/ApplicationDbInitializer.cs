@@ -26,8 +26,7 @@ namespace ACSDining.Infrastructure.Identity
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
             //                          @"ACSDining.Core\DBinitial\DishDetails.xml";
 
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Web", "") +
-                                      @"ACSDining.Core\DBinitial\DishDetails.xml";
+            string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
 
             InitializeIdentityForEf(context, _path); 
             var dishes = GetDishesFromXml(context, _path);
@@ -211,7 +210,7 @@ namespace ACSDining.Infrastructure.Identity
                 userEmpl = new User
                 {
                     UserName = "employee",
-                    Email = "test@test.com",
+                    Email = "densem-2013@yandex.ua",
                     FirstName = "Employee",
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
@@ -224,25 +223,25 @@ namespace ACSDining.Infrastructure.Identity
                     userManager.AddToRole(userEmpl.Id, "Employee");
                 }
             }
-            User userEmplown = userManager.FindByName("denis_semiletov");
-            if (userEmplown == null)
-            {
-                userEmplown = new User
-                {
-                    UserName = "Семилетов Денис",
-                    Email = "densem-2013@yandex.ua",
-                    FirstName = "Денис",
-                    LastName = "Семилетов",
-                    LastLoginTime = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777A123$x")
-                };
-                var empownresult = userManager.Create(userEmplown, "777A123$x");
-                if (empownresult.Succeeded)
-                {
-                    userManager.AddToRole(userEmplown.Id, "Employee");
-                }
-            }
+            //User userEmplown = userManager.FindByName("denis_semiletov");
+            //if (userEmplown == null)
+            //{
+            //    userEmplown = new User
+            //    {
+            //        UserName = "Семилетов Денис",
+            //        Email = "densem-2013@yandex.ua",
+            //        FirstName = "Денис",
+            //        LastName = "Семилетов",
+            //        LastLoginTime = DateTime.UtcNow,
+            //        RegistrationDate = DateTime.UtcNow,
+            //        PasswordHash = userManager.PasswordHasher.HashPassword("777A123$x")
+            //    };
+            //    var empownresult = userManager.Create(userEmplown, "777A123$x");
+            //    if (empownresult.Succeeded)
+            //    {
+            //        userManager.AddToRole(userEmplown.Id, "Employee");
+            //    }
+            //}
         }
 
         public static Dish[] GetDishesFromXml(ApplicationDbContext context, string userspath)
@@ -399,7 +398,8 @@ namespace ACSDining.Infrastructure.Identity
                     MenuForDay = mfdays,
                     WorkingWeek = workweek,
                     SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum(),
-                    OrderCanBeCreated = ordCanCreated
+                    OrderCanBeCreated = ordCanCreated,
+                    MenuCanBeChanged = ordCanCreated
                 });
             }
             context.MenuForWeeks.AddRange(weekmenus);
@@ -490,8 +490,6 @@ namespace ACSDining.Infrastructure.Identity
             {
                 foreach (MenuForWeek mfw in weekmenus)
                 {
-                    //context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
-
                     WeekOrderMenu weekOrder = new WeekOrderMenu
                     {
                         User = user,
@@ -537,7 +535,6 @@ namespace ACSDining.Infrastructure.Identity
 
                         }
                         dayOrderMenus.Add(dayOrderMenu);
-                       // weekOrder.WeekOrderSummaryPrice += dayOrderMenu.DayOrderSummaryPrice;
                     }
                     weekOrder.DayOrderMenus = dayOrderMenus;
                     weekOrder.WeekOrderSummaryPrice = weekOrder.DayOrderMenus.Select(dom=>dom.DayOrderSummaryPrice).Sum();
