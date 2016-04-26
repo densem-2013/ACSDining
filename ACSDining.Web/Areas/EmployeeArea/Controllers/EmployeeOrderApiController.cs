@@ -57,11 +57,11 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             WeekMenuDto weekmodel = WeekMenuDto.MapDto(_unitOfWork as UnitOfWork,
                 _weekMenuService.GetWeekMenuByWeekYear(wyDto));
 
-            //Меню на запрашиваемую неделю не было создано
-            if (weekmodel == null)
+            //Меню на запрашиваемую неделю не было создано или заказ сделать ещё нельзя
+            if (weekmodel == null || !weekmodel.OrderCanBeCreated)
             {
                 return Content(HttpStatusCode.BadRequest,
-                    string.Format(" menu on week {0} year {1} not created", wyDto.Week, wyDto.Year));
+                    $" menu on week {wyDto.Week} year {wyDto.Year} not created");
             }
 
             int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
@@ -73,17 +73,16 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             if (ordmenu != null)
             {
                 model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu, catLength);
-
             }
             else
             {
                 User user =
-                    await _userManager.FindByNameAsync(ControllerContext.RequestContext.Principal.Identity.GetUserName());
+                    await _userManager.FindByIdAsync(userid);
 
                 if (!YearWeekHelp.WeekIsCurrentOrNext(wyDto))
                 {
                     return Content(HttpStatusCode.BadRequest,
-                    string.Format(" order on week {0} year {1} not can be created", wyDto.Week, wyDto.Year));
+                        $" order on week {wyDto.Week} year {wyDto.Year} not can be created");
                 }
                 ordmenu = _orderMenuService.CreateNew(user, wyDto);
 

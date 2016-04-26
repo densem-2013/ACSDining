@@ -296,34 +296,19 @@ namespace ACSDining.Infrastructure.Repositories
                 };
                 PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu {DayOrderMenu = dayOrderMenu};
 
-                foreach (Dish dish in daymenu.Dishes)
-                {
-                    DishType first = null;
-                    foreach (var dy in dishTypes)
+                dquaList.AddRange(from dish in daymenu.Dishes
+                    select dishTypes.FirstOrDefault(dy => string.Equals(dy.Category, dish.DishType.Category))
+                    into first
+                    where first != null
+                    let catindex = first.Id - 1
+                    select new DishQuantityRelations
                     {
-                        if (string.Equals(dy.Category, dish.DishType.Category))
-                        {
-                            first = dy;
-                            break;
-                        }
-                    }
-                    if (first != null)
-                    {
-                        int catindex = first.Id - 1;
-
-                        DishQuantityRelations dqrs = new DishQuantityRelations
-                        {
-                            DishQuantity = dqua,
-                            DishType = first,
-                            MenuForDay = daymenu,
-                            DayOrderMenu = dayOrderMenu,
-                            PlannedDayOrderMenu = plannedDayOrderMenu
-                        };
-
-                        dquaList.Add(dqrs);
-                    }
-
-                }
+                        DishQuantity = dqua,
+                        DishType = first,
+                        MenuForDay = daymenu,
+                        DayOrderMenu = dayOrderMenu,
+                        PlannedDayOrderMenu = plannedDayOrderMenu
+                    });
                 dayOrderMenu.DayOrderSummaryPrice = 0.00;
                 dayOrderMenus.Add(dayOrderMenu);
                 weekOrder.WeekOrderSummaryPrice += dayOrderMenu.DayOrderSummaryPrice;

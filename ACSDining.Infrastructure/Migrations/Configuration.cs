@@ -10,12 +10,12 @@ namespace ACSDining.Infrastructure.Migrations
         //private string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
         private string _path =
             AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-            @"App_Data\DBinitial\DishDetails.xml";
+            @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
-            AutomaticMigrationDataLossAllowed = true;
+            //AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(ApplicationDbContext context)

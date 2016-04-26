@@ -105,12 +105,12 @@
 
         self.WeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
-
         self.MFD_models = ko.observableArray([]);
 
         self.UpdatedDayMenus = ko.observableArray([]);
 
         self.Title = ko.observable("");
+
         self.Message = ko.observable("");
 
         self.myDate = ko.observable(new Date());

@@ -145,7 +145,7 @@ namespace ACSDining.Infrastructure.Repositories
             {
                 {
                     WorkingDay wday = workWeek.WorkingDays.FirstOrDefault(wd => wd.DayOfWeek.Id == i + 1);
-                    if (wday != null && wday.IsWorking)
+                    if (wday != null /*&& wday.IsWorking*/)
                     {
                         MenuForDay mfd = new MenuForDay
                         {

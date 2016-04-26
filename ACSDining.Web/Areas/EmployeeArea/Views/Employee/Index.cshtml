@@ -14,12 +14,12 @@
                 <tbody>
                 <tr style="background: #565659;">
                     <td >
-                        <div class="col-md-3">
+                        <div class="col-md-3" style="height: 40px; white-space: nowrap; vertical-align: middle; color: white; ">
                             <!--ko ifnot: IsCurrentWeek-->
                             <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:SetMyDateByWeek((CurrentWeekYear())) , css:{ disabled: IsCurrentWeek}"/>
                             <!--/ko-->
                             <!--ko if: IsCurrentWeek-->
-                            <span>Текущая неделя</span>
+                            <label>Текущая неделя</label>
                             <!--/ko-->
                         </div>
                     </td>
