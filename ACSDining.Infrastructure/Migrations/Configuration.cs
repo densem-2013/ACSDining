@@ -7,15 +7,15 @@ namespace ACSDining.Infrastructure.Migrations
 {
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-        //private string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
-        private string _path =
-            AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-            @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
+        private string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
+        //private string _path =
+        //    AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
+        //    @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
-            //AutomaticMigrationDataLossAllowed = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(ApplicationDbContext context)

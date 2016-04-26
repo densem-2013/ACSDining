@@ -33,6 +33,14 @@
         this.isHovering = ko.observable(false);
     }
 
+    var workDayInfo = function (workday) {
+        var self = this;
+        self.WorkDayId = ko.observable(workday.workDayId);
+        self.IsWorking = ko.observable(workday.isWorking);
+        self.DayNumber = ko.observable(workday.dayNumber);
+        self.DayName = ko.observable(workday.dayName);
+    }
+
     var menuForDayInfo = function(object, categs) {
 
         var self = this;
@@ -41,7 +49,7 @@
         categs = categs || [];
 
         self.Id = ko.observable(object.id);
-        self.DayOfWeek = ko.observable(object.dayOfWeek);
+        self.WorkDay = ko.observable(new workDayInfo(object.workDay));
         var ind = 0;
         self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function(item) {
             var first = ko.utils.arrayFirst(object.dishes, function(element) {
@@ -78,22 +86,13 @@
         self.OrderWasBooking = ko.observable(object.orderWasBooking);
     }
 
-    var workDayInfo = function(workday) {
-        var self = this;
-        self.WorkDayId = ko.observable(workday.workDayId);
-        self.IsWorking = ko.observable(workday.isWorking);
-        self.DayNumber = ko.observable(workday.dayNumber);
-        self.DayName = ko.observable(workday.dayName);
-    }
 
     var workWeekModel = function(weekmodel) {
         var self = this;
 
         self.WorkweekId = ko.observable(weekmodel.workWeekId);
-        self.WorkingDays = ko.observableArray(ko.utils.arrayMap(weekmodel.workDays, function(workday) {
-            return new workDayInfo(workday);
-        }));
-        self.CanBeChanged = ko.observable();
+        self.WorkingDays = ko.observableArray([]);
+        self.CanBeChanged = ko.observable(weekmodel.canBeChanged);
     }
 
     var weekMenuModel = function() {
@@ -410,8 +409,9 @@
 
             var sum = 0;
             ko.utils.arrayForEach(self.MFD_models(), function(item) {
-
-                sum += parseFloat(item.TotalPrice());
+                if (item.WorkDay().IsWorking()) {
+                    sum += parseFloat(item.TotalPrice());
+                }
 
             });
 
@@ -446,8 +446,15 @@
         }
 
         self.WorkWeekApply = function() {
+            var workWeek = {
+                WorkweekId: self.WorkingWeek().WorkWeekId(),
+                WorkingDays: ko.utils.arrayMap(self.MFD_models(), function(mfd) {
+                    return mfd.WorkDay();
+                }),
+                CanBeChanged: self.WorkingWeek().CanBeChanged()
+            };
 
-            app.su_Service.ApplyWorkWeek(self.WorkingWeek()).then(function (res) {
+            app.su_Service.ApplyWorkWeek(workWeek).then(function (res) {
 
                 self.WorkingWeek().CanBeChanged(!res);
 

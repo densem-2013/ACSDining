@@ -10,7 +10,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     public class MenuForDayDto
     {
         public int Id { get; set; }
-        public string DayOfWeek { get; set; }
+        public WorkDayDto WorkDay { get; set; }
         public double TotalPrice { get; set; }
         public List<DishModelDto> Dishes { get; set; }
         public bool CanBeEditing { get; set; }
@@ -54,7 +54,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             return new MenuForDayDto
             {
                 Id = daymenu.ID,
-                DayOfWeek = !forWeekOrder ? daymenu.WorkingDay.DayOfWeek.Name : null,
+                WorkDay = !forWeekOrder ? WorkDayDto.MapDto(daymenu.WorkingDay) : null,
                 TotalPrice = daymenu.TotalPrice,
                 Dishes = dmodels,
                 OrderCanBeChanged = canchangeorder,

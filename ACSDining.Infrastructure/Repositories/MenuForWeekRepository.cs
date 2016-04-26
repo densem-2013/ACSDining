@@ -131,7 +131,8 @@ namespace ACSDining.Infrastructure.Repositories
                 {
                     WeekNumber = weekyear.Week,
                     Year = year,
-                    WorkingDays = workdays
+                    WorkingDays = workdays,
+                    CanBeChanged = true
                 };
             }
 

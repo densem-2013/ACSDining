@@ -449,7 +449,6 @@
     <Content Include="Content\themes\Cupertino\images\Thumbs.db" />
     <Content Include="Areas\SU_Area\Views\SU_\Payment.cshtml" />
     <Content Include="Areas\SU_Area\Views\SU_\AccountManagement.cshtml" />
-    <Content Include="Areas\SU_Area\Views\SU_\WorkDayManagement.cshtml" />
     <Content Include="Areas\SU_Area\Views\SU_\EmailTemplates\DayMenuChanged.html" />
     <Content Include="Areas\SU_Area\Views\SU_\EmailTemplates\RegistationCompleted.html" />
     <Content Include="Content\css\fonts\fontawesome-webfont.eot" />

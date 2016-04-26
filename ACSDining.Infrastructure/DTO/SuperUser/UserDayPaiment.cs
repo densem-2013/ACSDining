@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
@@ -15,13 +16,9 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         {
             WorkingDay workday = dayOrder.MenuForDay.WorkingDay;
 
-            List<DishQuantityRelations> quaList = unitOfWork.Repository<DishQuantityRelations>()
-                .Query()
-                .Include(dq => dq.DishQuantity)
-                .Include(dq => dq.MenuForDay.WorkingDay.DayOfWeek)
-                .Select()
-                .Where(dqr => dqr.MenuForDayId == dayOrder.MenuForDay.ID && dqr.DayOrderMenuId == dayOrder.Id)
-                .ToList();
+            List<DishQuantityRelations> quaList =
+                unitOfWork.RepositoryAsync<DishQuantityRelations>()
+                    .GetRelationsListByDayIdMenuId(dayOrder.Id, dayOrder.MenuForDay.ID);
 
             double[] paiments = new double[catLength];
 

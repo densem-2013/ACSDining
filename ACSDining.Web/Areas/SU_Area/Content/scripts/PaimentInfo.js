@@ -1,7 +1,7 @@
 ﻿(function() {
 
     $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" });
-    $("ul.nav.navbar-nav li:nth-child(4)").addClass("active");
+    $("ul.nav.navbar-nav li: nth-child(4)").addClass("active");
 
 
     var noteValueModel = function (value) {

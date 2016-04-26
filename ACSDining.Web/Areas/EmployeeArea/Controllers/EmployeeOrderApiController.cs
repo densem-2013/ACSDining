@@ -61,7 +61,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             if (weekmodel == null || !weekmodel.OrderCanBeCreated)
             {
                 return Content(HttpStatusCode.BadRequest,
-                    $" menu on week {wyDto.Week} year {wyDto.Year} not created");
+                    string.Format(" menu on week {0} year {1} not created",wyDto.Week,wyDto.Year));
             }
 
             int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
@@ -82,7 +82,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 if (!YearWeekHelp.WeekIsCurrentOrNext(wyDto))
                 {
                     return Content(HttpStatusCode.BadRequest,
-                        $" order on week {wyDto.Week} year {wyDto.Year} not can be created");
+                        string.Format(" order on week {0} year {1} not can be created", wyDto.Week, wyDto.Year));
                 }
                 ordmenu = _orderMenuService.CreateNew(user, wyDto);
 

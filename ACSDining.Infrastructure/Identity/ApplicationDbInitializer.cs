@@ -14,7 +14,7 @@ using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Infrastructure.Identity
 {
-    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+    public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
     {
 
         private static readonly Random Rand = new Random();
@@ -24,12 +24,12 @@ namespace ACSDining.Infrastructure.Identity
             //if (System.Diagnostics.Debugger.IsAttached == false)
             //    System.Diagnostics.Debugger.Launch();
 
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-                                      @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
+            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
+            //                          @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
             //string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
 
-           // string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
+            string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
 
             InitializeIdentityForEf(context, _path);
             var dishes = GetDishesFromXml(context, _path);
@@ -157,7 +157,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
                     PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
-                    CanMakeBooking = true
+                    CanMakeBooking = true,
+                    IsExisting = true
                 };
                 var adminresult = userManager.Create(useradmin, "777123");
                 if (adminresult.Succeeded)
@@ -178,7 +179,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
                     PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
-                    CanMakeBooking = true
+                    CanMakeBooking = true,
+                    IsExisting = true
                 };
 
                 var suresult = userManager.Create(usersu, "777123");
@@ -202,7 +204,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
                     PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
-                    CanMakeBooking = true
+                    CanMakeBooking = true,
+                    IsExisting = true
                 };
                 var deresult = userManager.Create(userdinEmpl, "777123");
                 if (deresult.Succeeded)
@@ -223,7 +226,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
                     PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
-                    CanMakeBooking = true
+                    CanMakeBooking = true,
+                    IsExisting = true
                 };
                 var empresult = userManager.Create(userEmpl, "777123");
                 if (empresult.Succeeded)
@@ -305,7 +309,8 @@ namespace ACSDining.Infrastructure.Identity
                     {
                         WeekNumber = i + 1,
                         Year = year,
-                        WorkingDays = new List<WorkingDay>()
+                        WorkingDays = new List<WorkingDay>(),
+                        CanBeChanged = true
                     };
                     for (int j = 0; j < 7; j++)
                     {
@@ -337,14 +342,18 @@ namespace ACSDining.Infrastructure.Identity
             Dictionary<string, int> catCount = categories.ToDictionary(cat => cat, count => countDish(count, dishArray));
             Func<List<Dish>> getDishes = () =>
             {
-                return catCount.Select(pair => dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key)).ElementAt(Rand.Next(pair.Value))).ToList();
+                return
+                    catCount.Select(
+                        pair =>
+                            dishArray.Where(d => string.Equals(d.DishType.Category, pair.Key))
+                                .ElementAt(Rand.Next(pair.Value))).ToList();
             };
 
             Year year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
             Year correct_year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year - 1);
             int correct_week = 0;
-            List<MenuForWeek> weekmenus=new List<MenuForWeek>();
-            for (int week = 0; week < 25; week++)
+            List<MenuForWeek> weekmenus = new List<MenuForWeek>();
+            for (int week = 0; week < 5; week++)
             {
                 var weekLessZero = YearWeekHelp.CurrentWeek() - week <= 0;
                 if (weekLessZero)
@@ -358,7 +367,7 @@ namespace ACSDining.Infrastructure.Identity
                         w => year != null && (w.WeekNumber == YearWeekHelp.CurrentWeek() - week + correct_week &&
                                               w.Year.YearNumber == year.YearNumber));
 
-                bool ordCanCreated = true;//week == 0 && DateTime.Now.Hour < 9;
+                bool ordCanCreated = true; //
                 for (int i = 1; i <= 7; i++)
                 {
                     List<Dish> dishes = getDishes();
@@ -367,16 +376,17 @@ namespace ACSDining.Infrastructure.Identity
                         context.WorkingDays.Include("WorkingWeek").ToList().FirstOrDefault(
                             wd => workweek != null && (wd.WorkingWeek.ID == workweek.ID && wd.DayOfWeek.Id == i));
 
-                    if (workday != null && workday.IsWorking)
+                    if (workday != null /* && workday.IsWorking*/)
                     {
                         MenuForDay dayMenu = new MenuForDay
                         {
                             Dishes = dishes,
                             WorkingDay = workday,
                             TotalPrice = dishes.Select(d => d.Price).Sum(),
-                            DayMenuCanBeChanged = ordCanCreated,
+                            DayMenuCanBeChanged =
+                                week == 0 && ((int) DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9,
                             OrderCanBeChanged = true
-                         };
+                        };
 
                         mfdays.Add(dayMenu);
 
@@ -386,9 +396,9 @@ namespace ACSDining.Infrastructure.Identity
                 {
                     MenuForDay = mfdays,
                     WorkingWeek = workweek,
-                    SummaryPrice = mfdays.AsEnumerable().Select(d => d.TotalPrice).Sum(),
-                    OrderCanBeCreated = ordCanCreated,
-                    MenuCanBeChanged = ordCanCreated
+                    SummaryPrice = mfdays.Where(mfd => mfd.WorkingDay.IsWorking).Select(d => d.TotalPrice).Sum(),
+                    OrderCanBeCreated = true,
+                    MenuCanBeChanged = week == 0
                 });
             }
             context.MenuForWeeks.AddRange(weekmenus);
@@ -423,7 +433,9 @@ namespace ACSDining.Infrastructure.Identity
                                     EmailConfirmed = true,
                                     SecurityStamp = Guid.NewGuid().ToString(),
                                     RegistrationDate = DateTime.UtcNow,
-                                    LastLoginTime = DateTime.UtcNow
+                                    LastLoginTime = DateTime.UtcNow,
+                                    IsExisting = true,
+                                    CanMakeBooking = true
                                 };
                         }
                         return null;
@@ -526,7 +538,7 @@ namespace ACSDining.Infrastructure.Identity
                         dayOrderMenus.Add(dayOrderMenu);
                     }
                     weekOrder.DayOrderMenus = dayOrderMenus;
-                    weekOrder.WeekOrderSummaryPrice = weekOrder.DayOrderMenus.Select(dom=>dom.DayOrderSummaryPrice).Sum();
+                    weekOrder.WeekOrderSummaryPrice = weekOrder.DayOrderMenus.Where(dom=>dom.MenuForDay.WorkingDay.IsWorking).Select(dom=>dom.DayOrderSummaryPrice).Sum();
                 }
             }
             context.DQRelations.AddRange(dquaList);

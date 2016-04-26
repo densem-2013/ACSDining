@@ -107,6 +107,7 @@ namespace ACSDining.Infrastructure.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         WeekNumber = c.Int(nullable: false),
+                        CanBeChanged = c.Boolean(nullable: false),
                         Year_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -165,6 +166,7 @@ namespace ACSDining.Infrastructure.Migrations
                         LastLoginTime = c.DateTime(nullable: false),
                         RegistrationDate = c.DateTime(nullable: false),
                         CanMakeBooking = c.Boolean(nullable: false),
+                        IsExisting = c.Boolean(nullable: false),
                         Email = c.String(maxLength: 256),
                         EmailConfirmed = c.Boolean(nullable: false),
                         PasswordHash = c.String(),

@@ -43,7 +43,7 @@ namespace ACSDining.Core.Domains
         [DataType(DataType.DateTime)]
         public virtual DateTime RegistrationDate { get; set; }
         public virtual bool CanMakeBooking { get; set; }
-
+        public virtual bool IsExisting { get; set; }
         [JsonIgnore]
         public virtual ICollection<WeekOrderMenu> OrderMenus { get; set; }
 

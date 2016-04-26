@@ -9,7 +9,6 @@ using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Models.ViewModels;
 using ACSDining.Core.Domains;
 using NLog;
-using System.DirectoryServices.AccountManagement;
 
 namespace ACSDining.Web.Controllers
 {
@@ -91,7 +90,7 @@ namespace ACSDining.Web.Controllers
                                 user.LastLoginTime = DateTime.UtcNow;
                                 Session["Fname"] = user.FirstName;
                                 Session["Lname"] = user.LastName;
-                                Session["LastLoginDate"] = user.LastLoginTime;
+                                user.LastLoginTime = DateTime.Now;
                                 await
                                     _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                         shouldLockout: false);
@@ -103,7 +102,7 @@ namespace ACSDining.Web.Controllers
                                 user.LastLoginTime = DateTime.UtcNow;
                                 Session["Fname"] = user.FirstName;
                                 Session["Lname"] = user.LastName;
-                                Session["LastLoginDate"] = user.LastLoginTime;
+                                user.LastLoginTime = DateTime.Now;
                                 await
                                     _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                         shouldLockout: false);
@@ -159,7 +158,6 @@ namespace ACSDining.Web.Controllers
                     //        user.LastLoginTime = DateTime.UtcNow;
                     //        Session["Fname"] = user.FirstName;
                     //        Session["Lname"] = user.LastName;
-                    //        Session["LastLoginDate"] = user.LastLoginTime;
                     //    }
 
                     //    return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
@@ -180,7 +178,7 @@ namespace ACSDining.Web.Controllers
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["Fname"] = specuser.FirstName;
                             Session["Lname"] = specuser.LastName;
-                            Session["LastLoginDate"] = specuser.LastLoginTime;
+                            specuser.LastLoginTime=DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
@@ -192,7 +190,7 @@ namespace ACSDining.Web.Controllers
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["Fname"] = specuser.FirstName;
                             Session["Lname"] = specuser.LastName;
-                            Session["LastLoginDate"] = specuser.LastLoginTime;
+                            specuser.LastLoginTime = DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
@@ -204,7 +202,7 @@ namespace ACSDining.Web.Controllers
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["Fname"] = specuser.FirstName;
                             Session["Lname"] = specuser.LastName;
-                            Session["LastLoginDate"] = specuser.LastLoginTime;
+                            specuser.LastLoginTime = DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
@@ -229,7 +227,6 @@ namespace ACSDining.Web.Controllers
         {
             Session["Fname"] = null;
             Session["Lname"] = null;
-            Session["LastLoginDate"] = null;
             AuthenticationManager.SignOut();
             return RedirectToAction("Index", "Home", new { area = "" });
         }
