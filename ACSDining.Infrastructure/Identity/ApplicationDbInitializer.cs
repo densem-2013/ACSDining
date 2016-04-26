@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
 using System.Linq;
+using System.Web.Hosting;
 using System.Xml.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.HelpClasses;
@@ -23,12 +24,14 @@ namespace ACSDining.Infrastructure.Identity
             //if (System.Diagnostics.Debugger.IsAttached == false)
             //    System.Diagnostics.Debugger.Launch();
 
-            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-            //                          @"ACSDining.Core\DBinitial\DishDetails.xml";
+            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
+                                      @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
-            string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
+            //string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
 
-            InitializeIdentityForEf(context, _path); 
+           // string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
+
+            InitializeIdentityForEf(context, _path);
             var dishes = GetDishesFromXml(context, _path);
             CreateWorkingDays(context);
             CreateMenuForWeek(context, dishes);
@@ -62,7 +65,8 @@ namespace ACSDining.Infrastructure.Identity
                     FirstName = "Admin",
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow
+                    RegistrationDate = DateTime.UtcNow,
+                    CanMakeBooking = true
                 };
                 var adminresult = userManager.Create(useradmin, "777123");
                 if (adminresult.Succeeded)
@@ -152,7 +156,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
+                    CanMakeBooking = true
                 };
                 var adminresult = userManager.Create(useradmin, "777123");
                 if (adminresult.Succeeded)
@@ -172,7 +177,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
+                    CanMakeBooking = true
                 };
 
                 var suresult = userManager.Create(usersu, "777123");
@@ -195,7 +201,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
+                    CanMakeBooking = true
                 };
                 var deresult = userManager.Create(userdinEmpl, "777123");
                 if (deresult.Succeeded)
@@ -215,7 +222,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123"),
+                    CanMakeBooking = true
                 };
                 var empresult = userManager.Create(userEmpl, "777123");
                 if (empresult.Succeeded)
@@ -223,25 +231,6 @@ namespace ACSDining.Infrastructure.Identity
                     userManager.AddToRole(userEmpl.Id, "Employee");
                 }
             }
-            //User userEmplown = userManager.FindByName("denis_semiletov");
-            //if (userEmplown == null)
-            //{
-            //    userEmplown = new User
-            //    {
-            //        UserName = "Семилетов Денис",
-            //        Email = "densem-2013@yandex.ua",
-            //        FirstName = "Денис",
-            //        LastName = "Семилетов",
-            //        LastLoginTime = DateTime.UtcNow,
-            //        RegistrationDate = DateTime.UtcNow,
-            //        PasswordHash = userManager.PasswordHasher.HashPassword("777A123$x")
-            //    };
-            //    var empownresult = userManager.Create(userEmplown, "777A123$x");
-            //    if (empownresult.Succeeded)
-            //    {
-            //        userManager.AddToRole(userEmplown.Id, "Employee");
-            //    }
-            //}
         }
 
         public static Dish[] GetDishesFromXml(ApplicationDbContext context, string userspath)

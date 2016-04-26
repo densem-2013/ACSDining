@@ -18,10 +18,10 @@ namespace ACSDining.Web.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private readonly PrincipalContext _ad;
+        //private readonly PrincipalContext _ad;
         public AccountController( ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
-            _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
+            //_ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -72,8 +72,8 @@ namespace ACSDining.Web.Controllers
 
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
-            //var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
+            //var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
+            var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -123,47 +123,47 @@ namespace ACSDining.Web.Controllers
                                 }
                         }
                     }
-                    else
-                    {
+                    //else
+                    //{
 
-                        UserPrincipal u = new UserPrincipal(_ad) { SamAccountName = model.LogIn };
-                        PrincipalSearcher search = new PrincipalSearcher(u);
-                        UserPrincipal usprincrezult = (UserPrincipal)search.FindOne();
-                        search.Dispose();
-                        if (usprincrezult != null)
-                            user = new User
-                            {
-                                FirstName = usprincrezult.GivenName,
-                                LastName = usprincrezult.Surname,
-                                Email = usprincrezult.EmailAddress,
-                                UserName = usprincrezult.SamAccountName,
-                                LastLoginTime = DateTime.UtcNow,
-                                RegistrationDate = DateTime.UtcNow,
-                                EmailConfirmed = true,
-                                PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
-                            };
+                    //    UserPrincipal u = new UserPrincipal(_ad) { SamAccountName = model.LogIn };
+                    //    PrincipalSearcher search = new PrincipalSearcher(u);
+                    //    UserPrincipal usprincrezult = (UserPrincipal)search.FindOne();
+                    //    search.Dispose();
+                    //    if (usprincrezult != null)
+                    //        user = new User
+                    //        {
+                    //            FirstName = usprincrezult.GivenName,
+                    //            LastName = usprincrezult.Surname,
+                    //            Email = usprincrezult.EmailAddress,
+                    //            UserName = usprincrezult.SamAccountName,
+                    //            LastLoginTime = DateTime.UtcNow,
+                    //            RegistrationDate = DateTime.UtcNow,
+                    //            EmailConfirmed = true,
+                    //            PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
+                    //        };
 
 
-                        var res = UserManager.CreateAsync(user).Result;
-                        if (res == IdentityResult.Success)
-                        {
-                            if (user != null) await UserManager.AddToRoleAsync(user.Id, "Employee");
-                        }
+                    //    var res = UserManager.CreateAsync(user).Result;
+                    //    if (res == IdentityResult.Success)
+                    //    {
+                    //        if (user != null) await UserManager.AddToRoleAsync(user.Id, "Employee");
+                    //    }
 
-                        await
-                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                                shouldLockout: false);
+                    //    await
+                    //        _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                    //            shouldLockout: false);
 
-                        if (user != null)
-                        {
-                            user.LastLoginTime = DateTime.UtcNow;
-                            Session["Fname"] = user.FirstName;
-                            Session["Lname"] = user.LastName;
-                            Session["LastLoginDate"] = user.LastLoginTime;
-                        }
+                    //    if (user != null)
+                    //    {
+                    //        user.LastLoginTime = DateTime.UtcNow;
+                    //        Session["Fname"] = user.FirstName;
+                    //        Session["Lname"] = user.LastName;
+                    //        Session["LastLoginDate"] = user.LastLoginTime;
+                    //    }
 
-                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
-                    }
+                    //    return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
+                    //}
                     return RedirectToLocal(returnUrl);
                     //return RedirectToLocal("Login");
 

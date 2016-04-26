@@ -19,15 +19,15 @@ namespace UnitTestProject1
     {
         private readonly ApplicationDbContext dataContext;
         private readonly IUnitOfWorkAsync _unitOfWork;
-        private readonly IWorkDaysService _workDaysService;
         private readonly ApplicationUserManager _userManager;
+        private readonly IMenuForWeekService _menuForWeekService;
 
         public MigrationTest()
         {
             _unitOfWork = new UnitOfWork();
             dataContext = _unitOfWork.GetContext();
-            IRepositoryAsync<WorkingWeek> workRepo = _unitOfWork.RepositoryAsync<WorkingWeek>();
-            _workDaysService = new WorkDaysService(workRepo);
+            IRepositoryAsync<MenuForWeek> menuRepo = _unitOfWork.RepositoryAsync<MenuForWeek>();
+            _menuForWeekService = new MenuForWeekService(menuRepo);
             _userManager = new ApplicationUserManager(new UserStore<User>(dataContext));
         }
 
@@ -58,7 +58,7 @@ namespace UnitTestProject1
         public void CreateWorkDaysTest()
         {
             ApplicationDbInitializer.CreateWorkingDays(dataContext);
-            List<WorkingDay> workingDays = _workDaysService.Queryable().SelectMany(ww => ww.WorkingDays).ToList();
+            List<WorkingDay> workingDays = dataContext.WorkingDays.ToList();
             Assert.IsTrue(workingDays.Count > 0);
 
         }

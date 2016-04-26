@@ -227,7 +227,7 @@ E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Practices.
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Newtonsoft.Json.xml
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\NLog.xml
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csprojResolveAssemblyReference.cache
-E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.Migrations.Initial.resources
-E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csproj.GenerateResource.Cache
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.dll
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.pdb
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.Migrations.Initial.resources
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csproj.GenerateResource.Cache

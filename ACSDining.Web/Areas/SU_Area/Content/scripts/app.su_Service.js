@@ -160,7 +160,8 @@ window.app.su_Service = (function() {
         prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
         deleteWeekMenu: function(menuid) { return baseWeekMenuUri + "delete/" + menuid },
         sendmenuUpdateMessage: function() { return baseWeekMenuUri + "menuupdatemessage" },
-        setasorderable: function() { return baseWeekMenuUri + "setasorderable" }
+        setasorderable: function () { return baseWeekMenuUri + "setasorderable" },
+        workweekapply: function (){ return baseWeekMenuUri + "workweekapply" }
     }
 
     var baseOrdersUri = "/api/Orders/";
@@ -221,17 +222,20 @@ window.app.su_Service = (function() {
         LoadWeekMenu: function(wyDto) {
             return ajaxRequest("put", baseWeekMenuUri, wyDto);
         },
-        GetNextWeekYear: function (wyDto) {
-            return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(),wyDto);
+        GetNextWeekYear: function(wyDto) {
+            return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(), wyDto);
         },
-        GetPrevWeekYear: function (wyDto) {
+        GetPrevWeekYear: function(wyDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), wyDto);
         },
-        IsNextWeekMenuExists: function () {
+        IsNextWeekMenuExists: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.isnextweekmenuexists());
         },
         GetCurrentWeekYear: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.currentweek());
+        },
+        ApplyWorkWeek: function(wwDto) {
+            return ajaxRequest("put", workweekapply, wwDto);
         },
         LoadWeekNumbers: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.weekNumbers());

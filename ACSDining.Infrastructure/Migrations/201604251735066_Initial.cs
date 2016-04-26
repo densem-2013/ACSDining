@@ -164,6 +164,7 @@ namespace ACSDining.Infrastructure.Migrations
                         LastName = c.String(nullable: false),
                         LastLoginTime = c.DateTime(nullable: false),
                         RegistrationDate = c.DateTime(nullable: false),
+                        CanMakeBooking = c.Boolean(nullable: false),
                         Email = c.String(maxLength: 256),
                         EmailConfirmed = c.Boolean(nullable: false),
                         PasswordHash = c.String(),

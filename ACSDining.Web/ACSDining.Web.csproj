@@ -300,7 +300,6 @@
     <Compile Include="Areas\SU_Area\Controllers\GetExcelController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
-    <Compile Include="Areas\SU_Area\Controllers\WorkDayApiController.cs" />
     <Compile Include="Areas\SU_Area\Models\EmailMessageModels.cs" />
     <Compile Include="Areas\SU_Area\Models\PoolRequestModelBinder.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />

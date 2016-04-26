@@ -17,6 +17,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         {
             return new WorkWeekDto
             {
+                WorkWeekId = workweek.ID,
                 WeekYear = WeekYearDto.MapDto(workweek),
                 WorkDays = workweek.WorkingDays.Select(WorkDayDto.MapDto).ToList(),
                 CanBeChanged = YearWeekHelp.WeekDaysCanBeChanged(workweek)

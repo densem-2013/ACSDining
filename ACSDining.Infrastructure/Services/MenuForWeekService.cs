@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
+using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Repositories;
+using LinqKit;
 
 namespace ACSDining.Infrastructure.Services
 {
@@ -21,6 +23,9 @@ namespace ACSDining.Infrastructure.Services
         Task<bool> DeleteMenuForWeek(int menuid);
         MenuForWeek CreateByWeekYear(WeekYearDto wyDto);
         MenuForWeek FindById(int menuid);
+
+        WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto);
+        WorkingWeek UpdateWorkDays(WorkWeekDto weekModel);
     }
 
     public class MenuForWeekService : Service<MenuForWeek>, IMenuForWeekService
@@ -65,6 +70,24 @@ namespace ACSDining.Infrastructure.Services
         public MenuForWeek GetWeekMenuByWeekYear(WeekYearDto wyDto)
         {
             return _repository.GetWeekMenuByWeekYear(wyDto);
+        }
+        public WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto)
+        {
+            return
+                _repository.WorkWeekByWeekYear(wyDto);
+        }
+
+        public WorkingWeek UpdateWorkDays(WorkWeekDto weekModel)
+        {
+            WorkingWeek week = GetWorkWeekByWeekYear(weekModel.WeekYear);
+
+            week.WorkingDays.ForEach(x =>
+            {
+                var firstOrDefault = weekModel.WorkDays.FirstOrDefault(wd => wd.WorkdayId == x.Id);
+                var isWorking = firstOrDefault != null && firstOrDefault.IsWorking;
+                x.IsWorking = isWorking;
+            });
+            return week;
         }
     }
 }

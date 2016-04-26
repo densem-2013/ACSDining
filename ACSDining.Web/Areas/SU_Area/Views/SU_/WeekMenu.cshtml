@@ -18,6 +18,11 @@
                         </div>
                     </td>
                     <!-- /ko-->
+                    <td>
+                        <div style="vertical-align: middle; width: 100%">
+                            <input type="button" value="Подтвердить рабочие дни" class="btn btn-info" data-bind=" click: $root.WorkWeekApply , visible: CanBeChanged" />
+                        </div>
+                    </td>
                     <!-- /ko-->
                 </tr>
                 <tr style="background: #565659;">
@@ -71,21 +76,18 @@
                             <span data-bind="text: Price" style="border-bottom: 1px solid; padding: 5px;"></span><br />
                         </div>
                     </td>
-                    <td style="text-align: right; vertical-align: middle; height: 100%">
+                    <td style="text-align: center; vertical-align: middle; height: 100%">
                         <span data-bind="text: TotalPrice"></span>
                     </td>
-                    @*<td style="vertical-align: middle; text-align: center">
-                        <!-- ko ifnot: Editing -->
-                        <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: function(){ $parent.edit($data)} "></button>
-                        <!--/ko-->
-                        <!-- ko if: Editing -->
-                        <button class="glyphicon glyphicon-save btn-warning btn-lg" data-bind="click: function(){ $parent.save($data)} "></button>
-                        <button class="glyphicon glyphicon-adjust btn-danger btn-lg" data-bind="click: function(){ $parent.cancel($data)} "></button>
-                        <!--/ko-->
-                    </td>*@
                 </tr>
             </tbody>
             <tfoot>
+            <tr>
+                <td colspan="9" style="text-align: right"><span>Итого :</span></td>
+                <td style="text-align: center; vertical-align: middle; height: 100%">
+                    <span data-bind="text: SummaryPrice"></span>
+                </td>
+            </tr>
             </tfoot>
         </table>
 </div>

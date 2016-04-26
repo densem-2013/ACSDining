@@ -19,13 +19,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IGetExcelService _getExcelService;
-        private readonly IWorkDaysService _workDaysService;
+        private readonly IMenuForWeekService _menuForWeekService;
 
         public GetExcelController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _getExcelService = new GetExcelService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
-            _workDaysService=new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
+            _menuForWeekService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
         }
 
 
@@ -36,7 +36,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
             UserWeekPaimentDto first = paimentList.FirstOrDefault();
             WeekYearDto wyDto = first != null ? first.WeekYear : null;
-            WorkingWeek workweek = _workDaysService.GetWorkWeekByWeekYear(wyDto);
+            WorkingWeek workweek = _menuForWeekService.GetWorkWeekByWeekYear(wyDto);
 
             string[] dishCategories = MapHelper.GetCategoriesStrings(_unitOfWork);
 

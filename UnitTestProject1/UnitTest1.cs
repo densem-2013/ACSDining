@@ -26,7 +26,6 @@ namespace UnitTestProject1
         private readonly ApplicationUserManager _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IDishService _dishService;
-        private readonly IWorkDaysService _workDaysService;
         private readonly IMenuForWeekService _menuForWeekService;
         private readonly IOrderMenuService _orderMenuService;
 
@@ -36,7 +35,6 @@ namespace UnitTestProject1
             _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
             _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_unitOfWork.GetContext()));
             _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
-            _workDaysService = new WorkDaysService(_unitOfWork.RepositoryAsync<WorkingWeek>());
             _menuForWeekService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService=new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
@@ -87,7 +85,7 @@ namespace UnitTestProject1
         public void CreateWorkingDays()
         {
             ApplicationDbInitializer.CreateWorkingDays(_unitOfWork.GetContext());
-            Assert.IsTrue(_workDaysService.Queryable().Any());
+            Assert.IsTrue(_unitOfWork.GetContext().WorkingDays.Any());
         }
 
         [TestMethod]

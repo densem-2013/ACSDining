@@ -1,14 +1,16 @@
 using System;
 using System.Data.Entity.Migrations;
+using System.Web.Hosting;
 using ACSDining.Infrastructure.Identity;
 
 namespace ACSDining.Infrastructure.Migrations
 {
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
+        //private string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
         private string _path =
             AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-            @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
+            @"App_Data\DBinitial\DishDetails.xml";
 
         public Configuration()
         {
@@ -28,7 +30,7 @@ namespace ACSDining.Infrastructure.Migrations
             ApplicationDbInitializer.CreateWorkingDays(context);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
-           // ApplicationDbInitializer.GetUsersFromXml(context, _path);
+            // ApplicationDbInitializer.GetUsersFromXml(context, _path);
             ApplicationDbInitializer.CreateOrders(context);
 
         }

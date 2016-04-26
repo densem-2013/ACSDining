@@ -56,11 +56,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu));
             }
-            else
-            {
-                return null;
-            }
-
+            return null;
         }
 
         [HttpPost]
@@ -71,22 +67,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             WeekYearDto nextDto = YearWeekHelp.GetNextWeekYear(YearWeekHelp.GetCurrentWeekYearDto());
             MenuForWeek weekmenu = _weekmenuService.CreateByWeekYear(nextDto);
 
-            //_db.Entry(weekmenu).State=EntityState.Added;
-            //_db.MenuForWeeks.Attach(weekmenu);
-            try
-            {
-                _db.MenuForWeeks.Add(weekmenu);
-                _db.SaveChanges();
-            }
-            catch (Exception)
-            {
-                    
-                throw;
-            }
+            _db.MenuForWeeks.Add(weekmenu);
+            _db.SaveChanges();
 
             weekmenu = _weekmenuService.GetWeekMenuByWeekYear(nextDto);
             bool res = weekmenu != null;
-            //return await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu, true));
+
             return Ok(res);
         }
 
@@ -163,6 +149,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             return Ok(true);
         }
+
         /// <summary>
         /// Отправляет всем клиентам уведомление о возможности сделать заказ на вновь созданное меню
         /// </summary>
@@ -185,6 +172,31 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             return Ok(true);
         }
+
+        /// <summary>
+        /// Подтверждает выбор рабочих дней в неделе
+        /// </summary>
+        /// <param name="wwDto"></param>
+        /// <returns></returns>
+        /// 
+        [HttpPut]
+        [Route("workweekapply")]
+        public async Task<IHttpActionResult> WorkWeekCommit([FromBody] WorkWeekDto wwDto)
+        {
+            if (wwDto == null)
+            {
+                return BadRequest();
+            }
+
+            WorkingWeek week = _weekmenuService.UpdateWorkDays(wwDto);
+
+            week.CanBeChanged = false;
+
+            _db.WorkingWeeks.AddOrUpdate(week);
+
+            return Ok(true);
+        }
+
 
         [HttpPut]
         [Route("update")]
@@ -242,25 +254,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return NotFound();
             }
-            try
-            {
-                //WorkingWeek weekdel = mfw.WorkingWeek;
-                //_db.Entry(weekdel).State = EntityState.Deleted;
-                //_db.WorkingWeeks.Attach(weekdel);
-                //_db.Entry(mfw).State = EntityState.Deleted;
-                //_db.MenuForWeeks.Attach(mfw);
+            _db.MenuForWeeks.Remove(mfw);
 
-
-                _db.MenuForWeeks.Remove(mfw);
-
-                await _db.SaveChangesAsync();
-
-            }
-            catch (Exception)
-            {
-                    
-                throw;
-            }
+            await _db.SaveChangesAsync();
 
             return StatusCode(HttpStatusCode.NoContent);
         }

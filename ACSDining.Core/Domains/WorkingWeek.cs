@@ -18,5 +18,6 @@ namespace ACSDining.Core.Domains
         public int WeekNumber { get; set; }
         public ICollection<WorkingDay> WorkingDays { get; set; }
         public Year Year { get; set; }
+        public bool CanBeChanged { get; set; }
     }
 }

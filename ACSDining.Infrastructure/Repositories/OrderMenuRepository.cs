@@ -16,7 +16,7 @@ namespace ACSDining.Infrastructure.Repositories
             WeekYearDto wyDto, int catLenth)
         {
             List<WeekOrderMenu> weekOrderMenus = repository.OrdersMenuByWeekYear(wyDto);
-            WorkingWeek workingWeek = repository.GetRepositoryAsync<WorkingWeek>().WorkWeekByWeekYear(wyDto);
+            WorkingWeek workingWeek = repository.GetRepositoryAsync<MenuForWeek>().WorkWeekByWeekYear(wyDto);
             int dayCount = workingWeek.WorkingDays.Count(d => d.IsWorking);
             int arLenth = dayCount*catLenth;
             double[] res = new double[arLenth];
@@ -265,7 +265,7 @@ namespace ACSDining.Infrastructure.Repositories
 
             if (!dayMenus.Any()) return null;
 
-            WorkingWeek workingWeek = repository.GetRepositoryAsync<WorkingWeek>().WorkWeekByWeekYear(wyDto);
+            WorkingWeek workingWeek = repository.GetRepositoryAsync<MenuForWeek>().WorkWeekByWeekYear(wyDto);
 
             DishQuantity dqua =
                 repository.GetRepositoryAsync<DishQuantity>()

@@ -150,11 +150,17 @@
 
         self.ChangeSaved = ko.observable(false);
 
+        function modalShow(title, message) {
+
+            self.Title(title);
+            self.Message(message);
+            $("#modalMessage").modal("show");
+
+        }
         // Callback for error responses from the server.
         function onError(error) {
-            self.Title("Внимание, ошибка! ");
-            self.Message("Error: " + error.status + " " + error.statusText);
-            $("#modalMessage").modal("show");
+
+            modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         }
 
         self.NextWeekMenuButton = {
@@ -291,7 +297,7 @@
 
                 self.MenuId(resp.id);
                 self.WeekYear(resp.workWeek.weekYear);
-                self.SummaryPrice(resp.summaryPrice);
+                self.SummaryPrice(resp.summaryPrice.toFixed(2));
                 self.OrderCanBeCreated(resp.orderCanBeCreated);
                 self.WorkingWeek(new workWeekModel(resp.workWeek));
 
@@ -428,6 +434,7 @@
                 self.UpdatedDayMenus([]);
             }, onError);
         };
+        
         self.SetAsOrderable=function() {
 
             var orderablemessage = {
@@ -437,6 +444,16 @@
                 self.OrderCanBeCreated(res);
             }, onError);
         }
+
+        self.WorkWeekApply = function() {
+
+            app.su_Service.ApplyWorkWeek(self.WorkingWeek()).then(function (res) {
+
+                self.WorkingWeek().CanBeChanged(!res);
+
+            });
+
+        };
 
         self.init = function() {
             app.su_Service.GetCategories().then(function(resp) {
