@@ -35,7 +35,7 @@
                     <td class="rights"><span data-bind="text: UserName"></span></td>
                     <!--ko foreach: UserDayOrders-->
                     <!--ko foreach: DishQuantities-->
-                    <td class="orderquant"  data-bind="singleClick: function(){$data.clicked($element, $parent.OrderCanBeChanged())}, event : { mouseenter: function(){ $data.onmouseenter($parent.OrderCanBeChanged());} , mouseleave:function(){$data.onFocusOut($parent.OrderCanBeChanged()); if($data.beenChanged()){$root.BeenChanged(true);} $root.CalcSummaryDishQuantyties($data.index, $index())}}">
+                    <td class="orderquant" data-bind="singleClick: function(){$data.clicked($element, $parent.OrderCanBeChanged())}, event : { mouseenter: function(){ $data.onmouseenter($parent.OrderCanBeChanged());} , mouseleave:function(){$data.onFocusOut($parent.OrderCanBeChanged()); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$parentContext.$index(),$index()); } }}">
                         <!--ko ifnot: $data.isEditMode()-->
                         <span data-bind="text: Quantity"></span>
                         <!--/ko-->

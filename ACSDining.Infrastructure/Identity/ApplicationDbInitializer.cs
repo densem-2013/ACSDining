@@ -14,7 +14,8 @@ using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Infrastructure.Identity
 {
-    public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
+    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+   // public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
     {
 
         private static readonly Random Rand = new Random();
@@ -255,12 +256,13 @@ namespace ACSDining.Infrastructure.Identity
 
             Func<string, double> parseDouble = str =>
             {
-                double num = Double.Parse(str);
-                return num;
+                double val = double.Parse(str);
+                return  val > 30.0 ? val/100 : val;
             };
+
             try
             {
-
+                
                 Dish[] dishes = (from el in collection.AsEnumerable()
                                  select new Dish
                                  {
@@ -538,7 +540,7 @@ namespace ACSDining.Infrastructure.Identity
                         dayOrderMenus.Add(dayOrderMenu);
                     }
                     weekOrder.DayOrderMenus = dayOrderMenus;
-                    weekOrder.WeekOrderSummaryPrice = weekOrder.DayOrderMenus.Where(dom=>dom.MenuForDay.WorkingDay.IsWorking).Select(dom=>dom.DayOrderSummaryPrice).Sum();
+                    weekOrder.WeekOrderSummaryPrice = weekOrder.DayOrderMenus.Where(dom => dom.MenuForDay.WorkingDay.IsWorking).Sum(dom => dom.DayOrderSummaryPrice);
                 }
             }
             context.DQRelations.AddRange(dquaList);

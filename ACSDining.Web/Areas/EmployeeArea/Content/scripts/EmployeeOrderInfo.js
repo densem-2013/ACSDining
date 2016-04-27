@@ -62,7 +62,7 @@
         categs = categs || [];
 
         self.ID = ko.observable(menuForDay.id);
-        self.DayOfWeek = ko.observable(menuForDay.dayOfWeek);
+        self.DayOfWeek = ko.observable(menuForDay.workDay.dayName);
         self.OrderCanBeChanged = ko.observable(menuForDay.orderCanBeChanged);
         self.Dishes = ko.observableArray(ko.utils.arrayMap(menuForDay.dishes, function(item, ind) {
 
@@ -193,6 +193,7 @@
 
         var loadUserWeekOrder = function(wyDto1) {
 
+
             app.su_Service.LoadUserWeekOrder(wyDto1).then(function (resp1) {
 
                 self.OrderId(resp1.orderId);
@@ -282,12 +283,11 @@
                 item.DishQuantities([]);
 
                 ko.utils.arrayForEach(item.MenuForDay().Dishes(), function(dish) {
-
-                    item.DishQuantities.push(dish.OrderQuantity().Quantity());
-
+                    var quant = dish.OrderQuantity().Quantity();
+                    item.DishQuantities.push(quant);
+                    self.UserWeekOrderDishes.push(quant);
                 });
 
-                self.UserWeekOrderDishes.pushAll(item.DishQuantities());
 
             });
 
@@ -307,34 +307,40 @@
             }, onError);
         };
 
-        self.init = function() {
-            app.su_Service.GetCategories().then(function(resp) {
-                self.Categories([]);
-                self.Categories.pushAll(resp);
-            }, onError);
+        self.init = function () {
 
 
-            app.su_Service.GetCurrentWeekYear().then(function(resp) {
+            app.su_Service.GetCurrentWeekYear().then(function (resp) {
 
                 self.CurrentWeekYear(resp);
 
             }, onError);
 
 
-            app.su_Service.NextWeekOrderExists().then(function(respnext) {
+            app.su_Service.NextWeekOrderExists().then(function (respnext) {
                 self.NextWeekOrderExist(respnext);
             }, onError);
 
-            app.su_Service.CanCreateOrderOnNextWeek().then(function(cancreatenext) {
+            app.su_Service.CanCreateOrderOnNextWeek().then(function (cancreatenext) {
                 self.CanCreateOrderOnNextWeek(cancreatenext);
             }, onError);
 
-
             self.SetMyDateByWeek(self.CurrentWeekYear());
+
+        };
+
+        self.loadCategories = function() {
+
+            app.su_Service.GetCategories().then(function(resp) {
+                // self.Categories([]);
+                self.Categories(resp);
+                setTimeout(self.init(), 500);
+                //self.init();
+            }, onError);
         };
 
 
-        self.init();
+        self.loadCategories();
     }
 
 

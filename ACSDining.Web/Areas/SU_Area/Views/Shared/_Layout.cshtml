@@ -30,7 +30,7 @@
                         <div class="dleft">
                             <div class="logOnGreeting col-md-5" id="infoTitle"><span></span></div>
                             <div class="dright">
-                                <div class="logOnGreeting  col-md-5" style="text-align: right;">
+                                <div class="logOnGreeting  col-md-5" id="autorizeMessage" style="text-align: right;">
                                     @if (Session["Fname"] != null)
                                     {
                                         <span> Вы вошли как, @Session["Fname"]   @Session["Lname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>

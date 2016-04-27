@@ -624,12 +624,13 @@ div#title
 .logOnGreeting
 {
     font-size: 20px;
-    padding-top:30px;
+    padding: 30px 30px;
     top: 20px;
     font-style: italic;
     color: #CC7C12;
     white-space: nowrap;
 }
+
 .date.form-control {
     background: transparent;
 }

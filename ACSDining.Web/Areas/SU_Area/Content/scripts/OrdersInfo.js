@@ -11,6 +11,7 @@
 
     
     $("ul.nav.navbar-nav li:nth-child(2)").addClass("active");
+    $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
 
     var quantValueModel = function (value) {
 
@@ -73,10 +74,10 @@
 
         self.BeenChanged = ko.observable(false);
 
-        //self.UserWeekOrderDishes = ko.observableArray(ko.utils.arrayMap(userWeekOrder.userWeekOrderDishes, function (item) {
-        //    return new quantValueModel(item);
-        //}));
 
+        self.WeekPaid = ko.observable(userWeekOrder.weekPaid);
+
+        self.WeekIsPaid = ko.observable(userWeekOrder.weekIsPaid);
     };
 
     var weekOrdersModel = function () {
@@ -114,27 +115,28 @@
             self.Message("Error: " + error.status + " " + error.statusText);
         }
 
-        self.CalcSummaryDishQuantyties = function(daynum, catnum) {
+        self.CalcSummaryDishQuantyties = function(daynum,catnum) {
 
             var catlengh = self.Categories().length;
-            self.SummaryDishQuantities([]);
-            var len = catlengh * self.DaysOfWeek().length;
-            var start = new Array(len).fill(0);
 
-
-            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(weekuserorder) {
-                //if (self.BeenChanged()) {
-                ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function(item, dayind) {
-                    ko.utils.arrayForEach(item.DishQuantities(), function(dqua, catind) {
-                        start[catlengh * dayind + catind] += dqua.Quantity();
-                    });
+            var dayFilterArray = ko.utils.arrayMap(self.WeekUserOrderModels(), function(weekuserorder) {
+                return ko.utils.arrayFirst(weekuserorder.UserDayOrders(), function(dayord, dnum) {
+                    return dnum === daynum;
                 });
-                // };
             });
+            var dayCatFilterArray = ko.utils.arrayMap(dayFilterArray, function(dayord, dn) {
+                return ko.utils.arrayFirst(dayord.DishQuantities(), function(dqua, catind) {
+                    return catind === catnum;
+                });
+            });
+            var total = 0;
+            ko.utils.arrayForEach(dayCatFilterArray, function(elem) {
+                total += elem.Quantity();
+            });
+            self.SummaryDishQuantities.replace(self.SummaryDishQuantities()[catlengh * daynum + catnum],total);
 
             ko.utils.arrayForEach(self.WeekUserOrderModels(), function(weekuserorder) {
                 if (self.BeenChanged()) {
-                   // weekuserorder.WeekSummaryPrice();
 
                     var ordersum = 0;
 
@@ -153,7 +155,6 @@
                 };
             });
 
-            self.SummaryDishQuantities.pushAll(start);
         };
 
 
@@ -185,20 +186,37 @@
 
         }
 
-        self.update = function () {
+        self.update = function (wuOrder,daynumber,catnumder) {
 
-            var forUpdateUwo = ko.utils.arrayFilter(self.WeekUserOrderModels(), function (item) {
-                return item.BeenChanged();
+            var weekorddishes = [];
+
+            ko.utils.arrayForEach(wuOrder.UserDayOrders(), function (item) {
+
+                ko.utils.arrayForEach(item.DishQuantities(), function (quant) {
+                    weekorddishes.push(quant.Quantity());
+                });
+
+
             });
 
             var userweekorder = {
-                UserWeekOrders: forUpdateUwo,
-                WeekYear: self.WeekYear()
+                UserId: wuOrder.UserId(),
+                OrderId: wuOrder.OrderId(),
+                DayOrderDtos: wuOrder.UserDayOrders(),
+                WeekSummaryPrice: wuOrder.WeekSummaryPrice(),
+                WeekIsPaid: wuOrder.WeekIsPaid(),
+                WeekPaid: wuOrder.WeekPaid(),
+                WeekYear: self.WeekYear(),
+                UserWeekOrderDishes: weekorddishes
             };
 
-            app.su_Service.UpdateOrders(userweekorder).then(function () {
-                self.BeenChanged(false);
-            }, onError);
+            self.CalcSummaryDishQuantyties(daynumber, catnumder);
+
+            app.su_Service.UserWeekUpdateOrder(userweekorder).then(function (res) {
+                if (res) {
+                    wuOrder.BeenChanged(false);
+                }
+            });
         };
 
         self.SetMyDateByWeek = function (wyDto) {

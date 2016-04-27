@@ -157,7 +157,7 @@ window.app.su_Service = (function() {
         create: function() { return baseWeekMenuUri + "create" },
         nextWeekYear: function() { return baseWeekMenuUri + "nextWeekYear" },
         isnextweekmenuexists: function() { return baseWeekMenuUri + "isnextweekmenuexists" },
-        prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
+        //prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
         deleteWeekMenu: function(menuid) { return baseWeekMenuUri + "delete/" + menuid },
         sendmenuUpdateMessage: function() { return baseWeekMenuUri + "menuupdatemessage" },
         setasorderable: function () { return baseWeekMenuUri + "setasorderable" },
@@ -190,10 +190,10 @@ window.app.su_Service = (function() {
         accounts: function() { return baseAccountsUri + "All" },
         deleteAccount: function(id) { return baseAccountsUri + "delete/" + id }
     }
-    var baseWorkDaysUri = "/api/WorkDays/";
-    var serviceWorkDaysUrls = {
-        updateWorkDays: function () { return baseWorkDaysUri + "update"  }
-    }
+    //var baseWorkDaysUri = "/api/WorkDays/";
+    //var serviceWorkDaysUrls = {
+    //    updateWorkDays: function () { return baseWorkDaysUri + "update"  }
+    //}
 
     var baseUserWeekOrder = "/api/Employee/";
     var serviceUserWeekOrders= {
@@ -225,9 +225,9 @@ window.app.su_Service = (function() {
         GetNextWeekYear: function(wyDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(), wyDto);
         },
-        GetPrevWeekYear: function(wyDto) {
-            return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), wyDto);
-        },
+        //GetPrevWeekYear: function(wyDto) {
+        //    return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), wyDto);
+        //},
         IsNextWeekMenuExists: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.isnextweekmenuexists());
         },
@@ -294,12 +294,12 @@ window.app.su_Service = (function() {
         DeleteAccount: function (accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));
         },
-        GetWorkDays: function (wyDto) {
-            return ajaxRequest("get", baseWorkDaysUri, wyDto);
-        },
-        UpdateWorkDays: function (weekinfo) {
-            return ajaxRequest("put", serviceWorkDaysUrls.updateWorkDays(),weekinfo);
-        },
+        //GetWorkDays: function (wyDto) {
+        //    return ajaxRequest("get", baseWorkDaysUri, wyDto);
+        //},
+        //UpdateWorkDays: function (weekinfo) {
+        //    return ajaxRequest("put", serviceWorkDaysUrls.updateWorkDays(),weekinfo);
+        //},
         LoadUserWeekOrder: function(wyDto) {
             return ajaxRequest("put", baseUserWeekOrder, wyDto);
         },

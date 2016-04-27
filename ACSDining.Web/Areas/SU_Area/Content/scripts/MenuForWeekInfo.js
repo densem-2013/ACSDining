@@ -11,7 +11,8 @@
     $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
         .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
 
-    $("ul.nav.navbar-nav li:first-child").addClass("active");
+    $("ul.nav.navbar-nav li:first-child").addClass("active"); 
+    $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
 
     var dishInfo = function(dinfo) {
 
