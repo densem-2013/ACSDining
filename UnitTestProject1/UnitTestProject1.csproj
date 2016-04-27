@@ -98,6 +98,7 @@
     <Compile Include="MigrationTest.cs" />
     <Compile Include="RepositoryTest.cs" />
     <Compile Include="TestEmployeerOrderApiController.cs" />
+    <Compile Include="DynamicallyMenuTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACSDining.Core\ACSDining.Core.csproj">

@@ -30,9 +30,9 @@
                             <div class="logOnGreeting">
                                 <div id="infoTitle"><span></span></div>
                                 <div style="text-align: right;">
-                                    @if (Session["Fname"] != null)
+                                    @if (Session["EmployeeFullname"] != null)
                                     {
-                                        <span> Вы вошли как, @Session["Fname"]   @Session["Lname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
+                                        <span> Вы вошли как, @Session["EmployeeFullname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
                                     }
                                     else
                                     {

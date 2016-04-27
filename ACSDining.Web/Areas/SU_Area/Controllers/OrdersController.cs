@@ -18,14 +18,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class OrdersController : ApiController
     {
         private readonly IOrderMenuService _orderMenuService;
-        private readonly IDishQuantityRelationsService _dishQuantityService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
         public OrdersController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
-            _dishQuantityService = new DishQuantityRelationsService(_unitOfWork.RepositoryAsync<DishQuantityRelations>());
         }
 
         //Получить все фактические заявки на неделю

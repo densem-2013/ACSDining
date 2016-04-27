@@ -88,8 +88,9 @@ namespace ACSDining.Web.Controllers
                             if (await UserManager.IsInRoleAsync(user.Id, "Employee"))
                             {
                                 user.LastLoginTime = DateTime.UtcNow;
-                                Session["Fname"] = user.FirstName;
-                                Session["Lname"] = user.LastName;
+                                Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
+                                //Session["Fname"] = user.FirstName;
+                                //Session["Lname"] = user.LastName;
                                 user.LastLoginTime = DateTime.Now;
                                 await
                                     _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
@@ -100,8 +101,9 @@ namespace ACSDining.Web.Controllers
                             if (await UserManager.IsInRoleAsync(user.Id, "SuperUser"))
                             {
                                 user.LastLoginTime = DateTime.UtcNow;
-                                Session["Fname"] = user.FirstName;
-                                Session["Lname"] = user.LastName;
+                                Session["FullName"] = user.LastName + " " + user.FirstName;
+                                //Session["Fname"] = user.FirstName;
+                                //Session["Lname"] = user.LastName;
                                 user.LastLoginTime = DateTime.Now;
                                 await
                                     _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
@@ -156,8 +158,7 @@ namespace ACSDining.Web.Controllers
                     //    if (user != null)
                     //    {
                     //        user.LastLoginTime = DateTime.UtcNow;
-                    //        Session["Fname"] = user.FirstName;
-                    //        Session["Lname"] = user.LastName;
+                    //      Session["EmployeeFullname"] = specuser.LastName + " " + specuser.FirstName;
                     //    }
 
                     //    return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
@@ -176,8 +177,9 @@ namespace ACSDining.Web.Controllers
                         if (await UserManager.IsInRoleAsync(specuser.Id, "Administrator"))
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
-                            Session["Fname"] = specuser.FirstName;
-                            Session["Lname"] = specuser.LastName;
+                            Session["FullName"] = specuser.LastName + " " + specuser.FirstName;
+                            //Session["Fname"] = user.FirstName;
+                            //Session["Lname"] = user.LastName;
                             specuser.LastLoginTime=DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
@@ -188,8 +190,9 @@ namespace ACSDining.Web.Controllers
                         if (await UserManager.IsInRoleAsync(specuser.Id, "SuperUser"))
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
-                            Session["Fname"] = specuser.FirstName;
-                            Session["Lname"] = specuser.LastName;
+                            Session["FullName"] = specuser.LastName + " " + specuser.FirstName;
+                            //Session["Fname"] = user.FirstName;
+                            //Session["Lname"] = user.LastName;
                             specuser.LastLoginTime = DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
@@ -200,8 +203,9 @@ namespace ACSDining.Web.Controllers
                         if (await UserManager.IsInRoleAsync(specuser.Id, "Employee"))
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
-                            Session["Fname"] = specuser.FirstName;
-                            Session["Lname"] = specuser.LastName;
+                            Session["EmployeeFullname"] = specuser.LastName + " " + specuser.FirstName;
+                            //Session["Fname"] = user.FirstName;
+                            //Session["Lname"] = user.LastName;
                             specuser.LastLoginTime = DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
@@ -225,8 +229,9 @@ namespace ACSDining.Web.Controllers
         //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            Session["Fname"] = null;
-            Session["Lname"] = null;
+            Session["FullName"] = null;
+            //Session["Fname"] = null;
+            //Session["Lname"] = null;
             AuthenticationManager.SignOut();
             return RedirectToAction("Index", "Home", new { area = "" });
         }

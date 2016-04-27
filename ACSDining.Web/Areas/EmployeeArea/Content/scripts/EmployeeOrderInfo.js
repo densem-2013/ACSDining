@@ -87,16 +87,18 @@
         }));
 
         self.DayOrderSummary = ko.observable(dayOrdObject.dayOrderSummary.toFixed(2));
-        self.CalcDayOrderTotal = function() {
+
+        self.DayOrderSummary.subscribable = ko.computed(function() {
+
             var sum = 0;
 
             ko.utils.arrayForEach(self.MenuForDay().Dishes(), function(dish) {
                 sum += parseFloat(dish.Price() * dish.OrderQuantity().Quantity());
             });
+            return sum.toFixed(2);
+        });
 
-            self.DayOrderSummary(sum.toFixed(2));
-        };
-    }
+     }
 
     var weekUserOrderModel = function() {
 
@@ -267,7 +269,7 @@
             var sum = 0;
 
             ko.utils.arrayForEach(self.UserDayOrders(), function(item) {
-                item.CalcDayOrderTotal();
+               // item.CalcDayOrderTotal();
                 sum += parseFloat(item.DayOrderSummary());
             });
 
@@ -309,6 +311,9 @@
 
         self.init = function () {
 
+            app.su_Service.GetCategories().then(function (resp) {
+                self.Categories(resp);
+            }, onError);
 
             app.su_Service.GetCurrentWeekYear().then(function (resp) {
 
@@ -328,22 +333,11 @@
             self.SetMyDateByWeek(self.CurrentWeekYear());
 
         };
+        self.init();
 
-        self.loadCategories = function() {
-
-            app.su_Service.GetCategories().then(function(resp) {
-                // self.Categories([]);
-                self.Categories(resp);
-                setTimeout(self.init(), 500);
-                //self.init();
-            }, onError);
-        };
-
-
-        self.loadCategories();
     }
 
-
     ko.applyBindings(new weekUserOrderModel());
+
 }());
 
