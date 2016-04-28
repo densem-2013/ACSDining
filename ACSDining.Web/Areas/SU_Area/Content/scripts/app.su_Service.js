@@ -168,7 +168,7 @@ window.app.su_Service = (function() {
     var serviceOrdersUrls = {
         factweekorders: function () { return baseOrdersUri + "fact" },
         planweekorders: function () { return baseOrdersUri + "plan" },
-        updateWeekOrders: function () { return baseOrdersUri + "update" },
+        updateWeekOrder: function () { return baseOrdersUri + "update" },
         createOrder: function () { return baseOrdersUri + "create"  },
         calcsummary: function () { return baseOrdersUri + "summary/"  }
     }
@@ -276,8 +276,8 @@ window.app.su_Service = (function() {
         PlanLoadWeekOrders: function (wyDto) {
             return ajaxRequest("put", serviceOrdersUrls.planweekorders(), wyDto);
         },
-        UpdateOrders: function( item) {
-            return ajaxRequest("put", serviceOrdersUrls.updateWeekOrders(), item);
+        UpdateOrder: function( item) {
+            return ajaxRequest("put", serviceOrdersUrls.updateWeekOrder(), item);
         },
         CreateOrdersNextweek: function () {
             return ajaxRequest("post", serviceOrdersUrls.createOrder());

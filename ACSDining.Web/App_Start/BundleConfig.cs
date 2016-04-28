@@ -87,7 +87,8 @@ namespace ACSDining.Web
                        "~/Content/themes/Cupertino/jquery-ui.structure.min.css",
                        "~/Content/themes/Cupertino/jquery-ui.theme.min.css",
                        "~/Content/Site.css",
-                       "~/Content/css/style.css"
+                       "~/Content/css/style.css",
+                       "~/Content/checkbox.css"
                        ));
 
             //bundles.Add(new StyleBundle("~/Modal/css").Include(

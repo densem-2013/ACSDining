@@ -14,7 +14,7 @@ using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "Employee,SuperUser")]
+    [Authorize(Roles = "SuperUser")]
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {

@@ -9,12 +9,13 @@ using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "Employee,SuperUser")]
+    [Authorize(Roles = "SuperUser")]
     [RoutePrefix("api/Dishes")]
     public class DishesController : ApiController
     {
@@ -25,7 +26,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public DishesController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _db = ((UnitOfWork)_unitOfWork).GetContext();
+            _db = _unitOfWork.GetContext();
             _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
         }
 
@@ -91,15 +92,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 {
                     Title = dmodel.Title,
                     Price = dmodel.Price,
+                    Description = dmodel.Description,
                     ProductImage = dmodel.ProductImage,
-                    DishType =
-                        _unitOfWork.Repository<DishType>()
-                            .Queryable()
-                            .FirstOrDefault(dt => string.Equals(dt.Category, dmodel.Category)),
-                    DishDetail = new DishDetail
-                    {
-                        Foods = dmodel.Foods
-                    }
+                    DishType =MapHelper.GetDishCategories(_unitOfWork).Find(dt => string.Equals(dt.Category, dmodel.Category))//,
+                    //DishDetail = new DishDetail
+                    //{
+                    //    Foods = dmodel.Foods
+                    //}
                 };
 
                 _db.Dishes.Add(newdish);
@@ -121,13 +120,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         // DELETE api/Dishes/5
         [HttpDelete]
         [Route("delete/{id}")]
-        [ResponseType(typeof (Dish))]
-        public async Task<bool> DeleteDish(int id)
+        public async Task<IHttpActionResult> DeleteDish(int id)
         {
             Dish dish = _dishService.Find(id);
             _db.Dishes.Remove(dish);
             await _unitOfWork.SaveChangesAsync();
-            return true;
+            return Ok(true);
         }
 
         private bool DishExists(int id)

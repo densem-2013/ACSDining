@@ -21,7 +21,7 @@ using WebGrease.Css.Extensions;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "SuperUser, Employee")]
+    [Authorize(Roles = "SuperUser")]
     [RoutePrefix("api/WeekMenu")]
     //[EnableCors(origins: "http://http://localhost:4229", headers: "*", methods: "*")]
     public class WeekMenuController : ApiController

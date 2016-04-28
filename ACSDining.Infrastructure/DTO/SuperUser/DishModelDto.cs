@@ -9,7 +9,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public string ProductImage { get; set; }
         public double Price { get; set; }
         public string Category { get; set; }
-        public string Foods { get; set; }
+        public string Description { get; set; }
 
         public static DishModelDto MapDto(Dish dish)
         {
@@ -20,7 +20,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 ProductImage = dish.ProductImage,
                 Price = dish.Price,
                 Category = dish.DishType.Category,
-                Foods = dish.DishDetail.Foods
+                Description = dish.Description
             };
         }
     }

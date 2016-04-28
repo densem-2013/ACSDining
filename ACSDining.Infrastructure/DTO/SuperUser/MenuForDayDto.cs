@@ -44,7 +44,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                                 Title = ":",
                                 Price = 0,
                                 Category = firstOrDefault.Category,
-                                Foods = ":"
+                                Description = ":"
                             });
                     }
                 }

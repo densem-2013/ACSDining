@@ -18,7 +18,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 {
-    [Authorize(Roles = "Employee,SuperUser")]
+    [Authorize(Roles = "Employee")]
     [RoutePrefix("api/Employee")]
     public class EmployeeOrderApiController : ApiController
     {

@@ -5,142 +5,150 @@
 
 <div class="row">
     <div class="col-md-9 col-xs-offset-3">
-        <div class="col-md-6">
-            <div class="input-group date">
-                <input type="button" class="btn-lg btn-success" data-bind="value: 'Добавить ' + SelectedCategory(),click: showAddDialog" />
+        <div class="col-md-9" >
+            <div class="input-group date" style="padding-bottom: 10px">
+                <button type="button" class="btn-lg btn-success" style="height: 30px; padding: 1px 16px;" data-bind="click: createPrepare">
+                    <span class="glyphicon glyphicon-plus" data-bind="text: ' Добавить ' + SelectedCategory()" style=" padding-bottom: 5px;"></span>
+                </button>
             </div>
         </div>
-        @*<div class="col-md-6">
-            <nav class="navbar">
-                <div class="container-fluid">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a>
-                        </li>
-
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a>
-                        </li>
-
-                        <li class="active ">
-                            <a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a>
-                        </li>
-                        <li>
-                            <a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>*@
+       
     </div>
 </div>
     <div class="row">
-        <div class="col-md-1 " data-bind="css: { disabled: pageIndex() === maxPageIndex() }">
-            <a href="#" class="btn btn-circle page-scroll" id="pagePrev" data-bind="click: previousPage"><i class="fa fa-angle-double-left animated"></i></a>
-        </div>
-    <div class="col-md-10">
-        <div class="panel panel-default" id="mfwPanel">
-            <table>
-                <tbody>
+        <div class="col-xs-4 col-md-11 pull-left " style="padding-left: 50px">
+            <div class="panel panel-default" id="mfwPanel">
+                <table style="height: 40px;">
+                    <tbody>
                     <tr style="background: #565659;">
                         <!-- ko foreach: Categories-->
-                        <td>
-                            <span>
-                                <input type="radio" name="dishGroup" data-bind="checked: $parent.SelectedCategory,checkedValue : $data, click: $parent.changeSelected" />
-                                <span data-bind="text:$data" style="color: #54ECD2"></span>
-                            </span>
+                        <td style="text-align: center">
+                            <div class="radio-btn">
+                                <input type="radio" data-bind="checked: $parent.SelectedCategory,checkedValue : $data, click: $parent.changeSelected, attr:{id: 'rc' + $index(),name: 'rc' + $index()}"/>
+                                <label data-bind="text:$data, attr:{'for': 'rc' + $index()}" style="color: #54ECD2; font-size: 18px;"></label>
+                            </div>
                         </td>
                         <!--/ko-->
                     </tr>
-                </tbody>
-            </table>
-            <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
-                <thead>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
+                    <thead>
                     <tr>
                         <th class="col-sm-1">№</th>
                         <th class="col-sm-3">Название</th>
-                        <th class="col-sm-2">Продукты</th>
+                        <th class="col-sm-2">Описание</th>
                         <th class="col-sm-2" style="text-align: center">Стоимость</th>
-                        <th class="col-sm-2" style="text-align: center"><span data-bind="text: BeenChanged()?'Сохранить / Отмена':'Изменить / Удалить' "></span></th>
+                        <th class="col-sm-2" style="text-align: center"><span>Удалить</span></th>
                     </tr>
-                </thead>
-                <tbody data-bind="foreach:pagedList">
+                    </thead>
+                    <tbody data-bind="foreach:pagedList">
                     <tr>
-                        <td>
+                        <td data-bind="hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$root.updatePrepare($data);}">
                             <span data-bind="text: $parent.pageIndex() * $parent.pageSize() + $index() + 1"></span>
                         </td>
-                        <td>
-                            <!--ko ifnot: Editing-->
+                        <td data-bind="hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$root.updatePrepare($data);}">
                             <span data-bind="text:Title"></span>
-                            <!--/ko-->
-                            <!--ko if: Editing-->
-                            <input type="text" data-bind="value: Title" />
-                            <!--/ko-->
                         </td>
-                        <td>
-                            <!--ko ifnot: Editing-->
-                            <span data-bind="text:Foods"></span>
-                            <!--/ko-->
-                            <!--ko if: Editing-->
-                            <input type="text" data-bind="value: Foods" />
-                            <!--/ko-->
+                        <td data-bind="hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$root.updatePrepare($data);}">
+                            <span data-bind="text:Description"></span>
                         </td>
-                        <td>
-                            <!--ko ifnot: Editing-->
+                        <td data-bind="hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$root.updatePrepare($data);}">
                             <span data-bind="text:Price"></span>
-                            <!--/ko-->
-                            <!--ko if: Editing-->
-                            <input type="text" data-bind="value: Price" />
-                            <!--/ko-->
                         </td>
                         <td style="vertical-align: middle; text-align: center">
-                            <!-- ko ifnot: Editing -->
-                            <button class="glyphicon glyphicon-pencil btn-success btn-lg" data-bind="click: function(){ $parent.edit($data)} "></button>
-                            <button class="glyphicon glyphicon-remove btn-danger btn-lg" data-bind="click: function(){ $parent.remove($data)} "></button>
-                            <!--/ko-->
-                            <!-- ko if: Editing -->
-                            <button class="glyphicon glyphicon-save btn-warning btn-lg" data-bind="click: function(){ $parent.save($data)} "></button>
-                            <button class="glyphicon glyphicon-adjust btn-danger btn-lg" data-bind="click: function(){ $parent.cancel($data)} "></button>
-                            <!--/ko-->
+                            <button type="button" class="btn btn-default btn-circle" data-bind="click: function(){ $parent.remove($data)} ">
+                                <span class=" glyphicon glyphicon-trash"></span>
+                            </button>
                         </td>
                     </tr>
-                </tbody>
-                <tfoot>
+                    </tbody>
+                    <tfoot>
                     <tr>
-                        <td colspan="5">
-                            <div class="col-sm-6">
-                                <div class="dataTables_paginate paging_simple_numbers">
-                                    <ul class="pagination">
-                                        <li data-bind="css: { disabled: pageIndex() === 0 }" class="paginate_button previous">
-                                            <a href="#" class="btn" data-bind="click: previousPage">Previous</a>
-                                        </li>
+                        <td>
+                            <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
+                                <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
+                            </button>
+                        </td>
+                        <td colspan="3">
+                            <div class="col-md-9">
+                                <div style="text-align: center">
+                                    <ul class="pagination pagination-lg">
                                         <li data-bind=" foreach: allPages">
-                                            <a href="#" class="paginate_button" data-bind="text: $data.pageNumber, click: function() { $parent.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($parent.pageIndex() + 1) }"></a>
-                                        </li>
-                                        <li class="paginate_button next" data-bind="css: { disabled: pageIndex() === maxPageIndex() }">
-                                            <a href="#" data-bind="click: nextPage">Next</a>
+                                            <button type="button" class="btn btn-default btn-circle" data-bind=" click: function() { $parent.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($parent.pageIndex() + 1) }">
+                                                <span class="glyphicon" data-bind="text: $data.pageNumber"></span>
+                                            </button>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </td>
+                        <td>
+                            <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}">
+                                <span class="glyphicon glyphicon-hand-right"> Следующая</span>
+                            </button>
+                        </td>
                     </tr>
-                <tfoot>
-            </table>
+                    <tfoot>
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="col-md-1">
-        <a href="#" class="btn btn-circle page-scroll" id="pageNext" data-bind="click: nextPage"><i class="fa fa-angle-double-right animated"></i></a>
-    </div>
+
 </div>
-    <div id="modalbox" class="modal ">
+<div id="modalbox" class="modal ">
     <div class="modal-dialog">
         <div class="panel panel-default">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1>Добавить <span data-bind="text:SelectedCategory"></span> </h1>
+                    <h1 data-bind="text: ModalTitle() + ' '+ SelectedCategory()"> </h1>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" data-bind="with: ChangingDish">
+                    <table class="table table-condensed table-striped table-bordered pre-scrollable">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <span> Название</span>
+                            </td>
+                            <td>
+                                <textarea id="titleID" data-bind="value: Title"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span> Описание</span>
+                            </td>
+                            <td>
+                                <textarea id="descrID" data-bind="value: Description"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span> Стоимость</span>
+                            </td>
+                            <td>
+                                <input type="text" id="priceID" data-bind="value: Price"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bind="click: create">Добавить</button>
+                    <button class="btn btn-default" data-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalUpdate" class="modal ">
+    <div class="modal-dialog">
+        <div class="panel panel-default">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 data-bind="text: ModalTitle() + ' '+ SelectedCategory()"> </h1>
+                </div>
+                <div class="modal-body" data-bind="with: ChangingDish">
                     <table class="table table-condensed table-striped table-bordered pre-scrollable">
                         <tbody>
                             <tr>
@@ -148,15 +156,15 @@
                                     <span> Название</span>
                                 </td>
                                 <td>
-                                    <input type="text" id="titleID" />
+                                    <textarea  data-bind="value: Title"></textarea>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <span> Продукты</span>
+                                    <span> Описание</span>
                                 </td>
                                 <td>
-                                    <input type="text" id="foodsID" />
+                                    <textarea  data-bind="value: Description"></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -164,14 +172,14 @@
                                     <span> Стоимость</span>
                                 </td>
                                 <td>
-                                    <input type="text" id="priceID" />
+                                    <input type="text" data-bind="value: Price" />
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bind="click: create">Создать</button>
+                    <button class="btn btn-primary" data-bind="click: update">Применить</button>
                     <button class="btn btn-default" data-dismiss="modal">Отмена</button>
                 </div>
             </div>

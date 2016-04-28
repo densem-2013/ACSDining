@@ -24,14 +24,15 @@ namespace ACSDining.Infrastructure.Repositories
         public static Dish UpdateDish(this IRepositoryAsync<Dish> repository, DishModelDto dmodel)
         {
             Dish target = repository.Find(dmodel.DishId);
-            if (!string.Equals(dmodel.Foods, string.Empty))
-            {
-                DishDetail dishDetail = new DishDetail {Foods = dmodel.Foods};
-                target.DishDetail.Foods = dmodel.Foods;
-                target.DishDetail = dishDetail;
-            }
+            //if (!string.Equals(dmodel.Foods, string.Empty))
+            //{
+            //    DishDetail dishDetail = new DishDetail {Foods = dmodel.Foods};
+            //    target.DishDetail.Foods = dmodel.Foods;
+            //    target.DishDetail = dishDetail;
+            //}
             target.Price = dmodel.Price;
             target.Title = dmodel.Title;
+            target.Description = dmodel.Description;
 
             return target;
         }

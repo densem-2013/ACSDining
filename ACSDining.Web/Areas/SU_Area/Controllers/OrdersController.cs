@@ -13,7 +13,7 @@ using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [Authorize(Roles = "Employee,SuperUser")]
+    [Authorize(Roles = "SuperUser")]
     [RoutePrefix("api/Orders")]
     public class OrdersController : ApiController
     {
@@ -78,22 +78,39 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //Изменить фактическую заявку указанного списка пользователей на меню соответствующей недели в году
         [HttpPut]
         [Route("update")]
-        public async Task<IHttpActionResult> UpdateWeekOrders([FromBody] WeekOrderDto weekOrderDto)
+        public async Task<IHttpActionResult> UpdateWeekOrder([FromBody] UserWeekOrderDto userWeekOrderDto)
         {
-            if (weekOrderDto == null)
+            //if (weekOrderDto == null)
+            //{
+            //    return BadRequest("Bad Request Object");
+            //}
+            //int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            //List<UserWeekOrderDto> forUpdateOrders =
+            //    weekOrderDto.UserWeekOrders.Select(uwo => UserWeekOrderDto.MapDto(_unitOfWork,_orderMenuService.Find(uwo.OrderId),catLength,true)).ToList();
+
+            //forUpdateOrders.ForEach(x=>
+            //{
+            //    _orderMenuService.UpdateUserWeekOrder(catLength, x);
+            //});
+
+            //return Ok();
+            if (userWeekOrderDto == null)
             {
                 return BadRequest("Bad Request Object");
             }
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
-            List<UserWeekOrderDto> forUpdateOrders =
-                weekOrderDto.UserWeekOrders.Select(uwo => UserWeekOrderDto.MapDto(_unitOfWork,_orderMenuService.Find(uwo.OrderId),catLength,true)).ToList();
+            WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.OrderId);
 
-            forUpdateOrders.ForEach(x=>
+
+            if (forUpdateOrder == null)
             {
-                _orderMenuService.UpdateUserWeekOrder(catLength, x);
-            });
+                return NotFound();
+            }
 
-            return Ok();
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+
+            int res = await Task.FromResult(_orderMenuService.UpdateUserWeekOrder(catLength, userWeekOrderDto));
+
+            return Ok(res);
         }
         
         protected override void Dispose(bool disposing)

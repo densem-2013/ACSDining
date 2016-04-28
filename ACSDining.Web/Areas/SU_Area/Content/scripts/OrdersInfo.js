@@ -212,7 +212,7 @@
 
             self.CalcSummaryDishQuantyties(daynumber, catnumder);
 
-            app.su_Service.UserWeekUpdateOrder(userweekorder).then(function (res) {
+            app.su_Service.UpdateOrder(userweekorder).then(function (res) {
                 if (res) {
                     wuOrder.BeenChanged(false);
                 }
