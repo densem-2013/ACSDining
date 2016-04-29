@@ -21,16 +21,12 @@ namespace UnitTestProject1
     {
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly ApplicationDbContext _db;
-        private readonly ApplicationUserManager _userManager;
-        private readonly IOrderMenuService _weekOrderMenuService;
         private readonly IMenuForWeekService _weekMenuService;
 
         public TestWeekMenuController()
         {
             _unitOfWork = new UnitOfWork();
             _db = _unitOfWork.GetContext();
-            _userManager = new ApplicationUserManager(new UserStore<User>(_db));
-            _weekOrderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
         }
 
@@ -45,7 +41,7 @@ namespace UnitTestProject1
             MenuForWeek newMenuForWeek = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
             if (newMenuForWeek==null)
             {
-                newMenuForWeek = _weekMenuService.CreateByWeekYear(wyDto);
+                _weekMenuService.CreateByWeekYear(wyDto);
                 
                 newMenuForWeek = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
             }

@@ -35,7 +35,8 @@ namespace UnitTestProject1
                 Year = 2016
             };
 
-            MenuForWeek weekmenu = _weekMenuRepository.CreateMenuForWeekOnWeekYear(wyDto);
+            _weekMenuRepository.CreateMenuForWeekOnWeekYear(wyDto);
+            MenuForWeek weekmenu = _weekMenuRepository.GetWeekMenuByWeekYear(wyDto);
             _unitOfWork.GetContext().MenuForWeeks.Add(weekmenu);
             //_weekMenuRepository.Insert(weekmenu);
             _unitOfWork.SaveChanges();

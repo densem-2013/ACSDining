@@ -231,3 +231,11 @@ E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastruc
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csproj.GenerateResource.Cache
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.dll
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.pdb
+E:\ACSDining\ACSDining.Infrastructure\bin\Debug\LinqKit.dll
+E:\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+E:\ACSDining\ACSDining.Infrastructure\bin\Debug\LinqKit.pdb
+E:\ACSDining\ACSDining.Infrastructure\bin\Debug\LinqKit.xml
+E:\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+E:\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+E:\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.Migrations.Initial.resources
+E:\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csproj.GenerateResource.Cache

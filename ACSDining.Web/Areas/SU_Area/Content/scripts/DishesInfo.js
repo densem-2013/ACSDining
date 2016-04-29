@@ -8,9 +8,24 @@
         self.Description = ko.observable(dish.description);
         self.Title = ko.observable(dish.title);
         self.Price = ko.observable(dish.price.toFixed(2));
+        self.formattedPrice = ko.pureComputed({
+            read: function () {
+                return  self.Price();
+            },
+            write: function (value) {
+                // Strip out unwanted characters, parse as float, then write the 
+                // raw data back to the underlying "price" observable
+                value = value.replace(new RegExp(/(.*)[,](.*)/, "g"), "$1\.$2");
+                value = value.replace(new RegExp(/(.*)(\.)+(.*)(\.)(.*)/, "g"), "$1$2$3");
+                value = value.replace(/[^\.\d]/g, "");
+                value = parseFloat(value);
+                self.Price(isNaN(value) ? 0 : value); // Write to underlying storage
+            },
+            owner: self
+        });
         self.Category = ko.observable(dish.category);
 
-        this.isHovering = ko.observable(false);
+        self.isHovering = ko.observable(false);
     };
 
     var dishesViewModel = function() {
@@ -24,7 +39,8 @@
         self.DishesByCategory = ko.observableArray([]);
         self.ChangingDish = ko.observable();
         self.ModalTitle = ko.observable("");
-// Callback for error responses from the server.
+
+        // Callback for error responses from the server.
         function onError(error) {
             self.Message("Error: " + error.status + " " + error.statusText);
         };
@@ -74,35 +90,17 @@
             }
             return true;
         }
-        self.save = function(item) {
-            app.su_Service.UpdateDish(item).then(
-                function() {
-                    self.BeenChanged(false);
-                }, onError);
-        }
-
-        self.edit = function(item) {
-            self.BeenChanged(true);
-            //item._Undo = ko.mapping.toJS(item);
-            //item.Editing(true);
-        };
-
-
-        //function commitChanges(item) {
-        //    item.Editing(false);
-        //    self.BeenChanged(false);
+        //self.save = function(item) {
+        //    app.su_Service.UpdateDish(item).then(
+        //        function() {
+        //            self.BeenChanged(false);
+        //        }, onError);
         //}
 
-        //function revertChanges(item) {
-        //    item.Editing(false);
-        //    self.BeenChanged(false);
-        //}
-
-        //self.cancel = function(item) {
-        //    item = ko.mapping.fromJS(item._Undo, {}, item);
-        //    revertChanges(item);
-        //    item.Editing(false);
+        //self.edit = function(item) {
+        //    self.BeenChanged(true);
         //};
+
 
         self.remove = function(item) {
             app.su_Service.DeleteDish(item.DishId()).then(function (resp) {
@@ -111,10 +109,6 @@
             }, onError);
         };
 
-        //self.showDishDialog = function() {
-
-        //    $("#modalbox").modal("show");
-        //};
 
         self.loadDishes = function (category) {
             app.su_Service.DishesByCategory(category).then(function (resp) {
@@ -124,7 +118,7 @@
 
             }, onError);
         }
-        self.updatePrepare= function (dish) {
+        self.updatePrepare = function (dish) {
             self.ChangingDish(dish);
             self.ModalTitle("Изменить");
 

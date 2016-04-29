@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
@@ -59,9 +60,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             try
             {
-               Dish updish= _dishService.UpdateDishByDishModel(dish);
-                _db.Dishes.Remove(updish);
-                _db.Dishes.Add(updish);
+               //Dish updish= _dishService.UpdateDishByDishModel(dish);
+                Dish updish = _db.Dishes.Find(dish.DishId);
+                updish.Description = dish.Description;
+                updish.Price = dish.Price;
+                updish.Title = dish.Title;
+                //_db.Dishes.Remove(updish);
+                //_db.Dishes.Add(updish);
+                _db.Entry(updish).State=EntityState.Modified;
+                _db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {

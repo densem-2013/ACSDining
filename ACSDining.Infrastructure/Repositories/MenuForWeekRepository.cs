@@ -4,6 +4,7 @@ using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.Identity;
 using LinqKit;
 
 namespace ACSDining.Infrastructure.Repositories
@@ -101,7 +102,7 @@ namespace ACSDining.Infrastructure.Repositories
         /// <param name="repository"></param>
         /// <param name="weekyear"></param>
         /// <returns></returns>
-        public static MenuForWeek CreateMenuForWeekOnWeekYear(this IRepositoryAsync<MenuForWeek> repository,
+        public static void CreateMenuForWeekOnWeekYear(this IRepositoryAsync<MenuForWeek> repository,
             WeekYearDto weekyear)
         {
             List<WorkingDay> workdays = new List<WorkingDay>();
@@ -165,8 +166,10 @@ namespace ACSDining.Infrastructure.Repositories
                 MenuForDay = mfdays
             };
 
+            ApplicationDbContext _db = repository.Context;
+            _db.MenuForWeeks.Add(weekmenu);
+            _db.SaveChanges();
 
-            return weekmenu;
         }
 
 

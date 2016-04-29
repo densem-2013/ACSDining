@@ -9,7 +9,6 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
-using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
@@ -62,15 +61,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPost]
         [Route("create")]
         [ResponseType(typeof (bool))]
-        public IHttpActionResult Create()
+        public async Task<IHttpActionResult> Create()
         {
             WeekYearDto nextDto = YearWeekHelp.GetNextWeekYear(YearWeekHelp.GetCurrentWeekYearDto());
-            MenuForWeek weekmenu = _weekmenuService.CreateByWeekYear(nextDto);
 
-            _db.MenuForWeeks.Add(weekmenu);
-            _db.SaveChanges();
+             _weekmenuService.CreateByWeekYear(nextDto);
 
-            weekmenu = _weekmenuService.GetWeekMenuByWeekYear(nextDto);
+
+            MenuForWeek weekmenu  = _weekmenuService.GetWeekMenuByWeekYear(nextDto);
+
             bool res = weekmenu != null;
 
             return Ok(res);

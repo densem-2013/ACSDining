@@ -21,7 +21,7 @@ namespace ACSDining.Infrastructure.Services
         IQueryable<MenuForWeek> GetAll();
         
         Task<bool> DeleteMenuForWeek(int menuid);
-        MenuForWeek CreateByWeekYear(WeekYearDto wyDto);
+        void CreateByWeekYear(WeekYearDto wyDto);
         MenuForWeek FindById(int menuid);
 
         WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto);
@@ -38,9 +38,9 @@ namespace ACSDining.Infrastructure.Services
             _repository = repository;
         }
 
-        public MenuForWeek CreateByWeekYear(WeekYearDto wyDto)
+        public void CreateByWeekYear(WeekYearDto wyDto)
         {
-            return _repository.CreateMenuForWeekOnWeekYear(wyDto);
+             _repository.CreateMenuForWeekOnWeekYear(wyDto);
         }
         public double[] GetUnitWeekPricesByWeekYear(WeekYearDto wyDto, int catLenth)
         {

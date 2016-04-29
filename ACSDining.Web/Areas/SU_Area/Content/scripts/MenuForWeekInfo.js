@@ -105,6 +105,8 @@
 
         self.WeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
+        self.NextWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
+
         self.MFD_models = ko.observableArray([]);
 
         self.UpdatedDayMenus = ko.observableArray([]);
@@ -129,22 +131,28 @@
 
         self.IsNextWeekMenuExists = ko.observable();
         
-        self.IsNextWeekYear = ko.observable(false);
+        self.IsNextWeekYear = ko.pureComputed(function () {
+
+            var res=self.NextWeekYear().week === self.WeekYear().week && self.NextWeekYear().year === self.WeekYear().year;
+            console.log("IsNextWeekYear = " + res + " week =" + self.NextWeekYear().week);
+            return res;
+
+        }.bind(self));
 
         self.WorkingWeek = ko.observable();
 
         self.OrderCanBeCreated = ko.observable();
 
         //Сигнализирует, что есть пользователи, которым нужно отправить сообщение об изменении меню
-        self.ForEmailExistsObject = ko.pureComputed(function() {
+        self.ForEmailExistsObject = ko.pureComputed(function () {
             return self.UpdatedDayMenus().length > 0;
-        }, self);
+        }.bind(self));
 
-        self.IsCurrentWeekYear = ko.pureComputed(function() {
+        self.IsCurrentWeekYear = ko.pureComputed(function () {
 
             return self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
 
-        }, self);
+        }.bind(self));
 
         self.BeenChanged = ko.observable(false);
 
@@ -163,11 +171,11 @@
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         }
 
-        self.NextWeekMenuButton = {
-            Message: function() { return self.IsNextWeekYear() ? "Удалить меню на следующую неделю" : (self.IsNextWeekMenuExists() ? "Перейти к меню на следующую неделю" : "Создать меню на следующую неделю") },
-            action: function() { return  self.IsNextWeekYear() ? self.DeleteNextWeekMenu : (self.IsNextWeekMenuExists() ? self.GoToNextWeekMenu : self.CreateNextWeekMenu) },
-            cssclass: function() { return self.IsNextWeekYear() ? "btn-danger" : "btnaddmenu enabled" }
-        };
+        //self.NextWeekMenuButton = {
+        //    Message: function() { return self.IsNextWeekMenuExists() ? "Перейти к меню на следующую неделю" : "Создать меню на следующую неделю" },
+        //    action: function() { return  self.IsNextWeekMenuExists() ? self.GoToNextWeekMenu : self.CreateNextWeekMenu },
+        //    cssclass: function() { return self.IsNextWeekYear() ? "btn-danger" : "btnaddmenu enabled" }
+        //};
 
         self.WeekTitle = ko.computed(function() {
             var options = {
@@ -301,9 +309,9 @@
                 self.OrderCanBeCreated(resp.orderCanBeCreated);
                 self.WorkingWeek(new workWeekModel(resp.workWeek));
 
-                app.su_Service.IsNextWeekYear(wyDto).then(function(resp2) {
-                    self.IsNextWeekYear(resp2);
-                });
+                //app.su_Service.IsNextWeekYear(wyDto).then(function(resp2) {
+                //    self.IsNextWeekYear(resp2);
+                //});
 
             }, onError);
 
@@ -399,9 +407,7 @@
                         self.IsNextWeekMenuExists(respnext);
                     }, onError);
 
-                    app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function(nextDto) {
-                        self.SetMyDateByWeek(nextDto);
-                    }, onError);
+                    self.SetMyDateByWeek(self.NextWeekYear());
                 }
             });
         };
@@ -469,11 +475,14 @@
                 self.Categories.pushAll(resp);
             }, onError);
 
-            //self.loadWeekNumbers();
 
             app.su_Service.GetCurrentWeekYear().then(function(resp) {
 
                 self.CurrentWeekYear(resp);
+
+                app.su_Service.GetNextWeekYear(resp).then(function (nextDto) {
+                    self.NextWeekYear(nextDto);
+                }, onError);
 
             }, onError);
 
@@ -481,6 +490,9 @@
                 self.IsNextWeekMenuExists(respnext);
             }, onError);
 
+            app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function (nextDto) {
+                self.NextWeekYear(nextDto);
+            }, onError);
         };
         self.init();
 

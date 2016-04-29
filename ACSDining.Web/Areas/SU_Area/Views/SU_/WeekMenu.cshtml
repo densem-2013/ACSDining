@@ -3,11 +3,10 @@
 }
 
     <div class="panel panel-default" id="mfwPanel" >
-       
-        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable" style="font-size: 1.2em; text-align: center">
-            <thead>
+        <table class="table table-striped table-bordered table-responsive  table-condensed table-hover">
+            <tbody>
                 <tr style="vertical-align: middle;">
-                    <td  style="white-space: nowrap"><span>Рабочие дни : </span></td>
+                    <td style="white-space: nowrap"><span>Рабочие дни : </span></td>
                     <!--ko foreach: MFD_models-->
                     <td>
                         <div style="vertical-align: middle; white-space: nowrap">
@@ -23,10 +22,20 @@
                         </div>
                     </td>
                 </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable" style="font-size: 1.2em; text-align: center">
+            <thead>
+               
                 <tr style="background: #565659;">
                     <td colspan="2" style="border-right-style: none;">
-                        <div style="vertical-align: middle; width: 100%">
-                            <input type="button" value="Перейти на текущую неделю" class="btn btnaddmenu" data-bind=" click: function(){$root.SetMyDateByWeek($root.CurrentWeekYear())}, visible: !IsCurrentWeekYear(), css:{'btn-danger': IsCurrentWeekYear}" />
+                        <div style="vertical-align: middle; width: 100%; height: 40px;">
+                            <!--ko ifnot: IsCurrentWeekYear-->
+                            <input type="button" value="Перейти на текущую неделю" class="btn btnaddmenu" data-bind=" click: function(){$root.SetMyDateByWeek($root.CurrentWeekYear())}"/>
+                            <!--/ko-->
+                            <!--ko if: IsCurrentWeekYear-->
+                            <label class="label-success" style="font-size: 18px; color: whitesmoke; padding: 5px">Текущая неделя </label>
+                            <!--/ko-->
                         </div>
                     </td>
                     <td colspan="3" style="text-align: center; vertical-align: middle; border-right-style: none; border-left-style: none;">
@@ -41,8 +50,15 @@
                     </td>
                     <td colspan="3" style="text-align: center; vertical-align: middle; border-left-style: none;">
                         <div style="float: right; width: 100%">
-                            <input type="button" class="btn " data-bind="click:NextWeekMenuButton.action(), value: NextWeekMenuButton.Message(), css:NextWeekMenuButton.cssclass()" />
-                        </div>
+                             <!--ko ifnot: IsNextWeekYear-->
+                            <!--ko if: IsNextWeekMenuExists-->
+                            <input type="button" class="btn btnaddmenu enabled" value="Перейти к меню на следующую неделю" data-bind="click:GoToNextWeekMenu"/>
+                            <!--/ko-->
+                            <!--ko ifnot: IsNextWeekMenuExists()-->
+                            <input type="button" class="btn btnaddmenu enabled" value="Создать меню на следующую неделю" data-bind="click:CreateNextWeekMenu" />
+                            <!--/ko--> 
+                            <!--/ko-->
+                        </div> 
                     </td>
                 </tr>
                 <tr>
