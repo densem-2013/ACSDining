@@ -1,6 +1,7 @@
 ﻿(function () {
 
     $("ul.nav.navbar-nav li:nth-child(3)").addClass("active");
+    $(".wrapper").css({ 'margin': "auto" });
 
     var dishInfo = function(dish) {
         var self = this;

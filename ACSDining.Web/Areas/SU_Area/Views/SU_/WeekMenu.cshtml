@@ -2,110 +2,124 @@
     ViewBag.Title = "Index";
 }
 
-    <div class="panel panel-default" id="mfwPanel" >
-        <table class="table table-striped table-bordered table-responsive  table-condensed table-hover">
-            <tbody>
-                <tr style="vertical-align: middle;">
-                    <td style="white-space: nowrap"><span>Рабочие дни : </span></td>
-                    <!--ko foreach: MFD_models-->
-                    <td>
-                        <div style="vertical-align: middle; white-space: nowrap">
-                            <!-- ko text: WorkDay().DayNumber--><!-- /ko-->
-                            <input type="checkbox" data-bind="checked: WorkDay().IsWorking, value: WorkDay().IsWorking" />
-                            <span data-bind="text: WorkDay().DayName"></span>
-                        </div>
-                    </td>
-                    <!-- /ko-->
-                    <td>
-                        <div style="vertical-align: middle; width: 100%">
-                            <input type="button" value="Подтвердить рабочие дни" class="btn btn-info" data-bind=" click: WorkWeekApply , visible: $root.WorkingWeek.CanBeChanged" />
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable" style="font-size: 1.2em; text-align: center">
-            <thead>
-               
-                <tr style="background: #565659;">
-                    <td colspan="2" style="border-right-style: none;">
-                        <div style="vertical-align: middle; width: 100%; height: 40px;">
-                            <!--ko ifnot: IsCurrentWeekYear-->
-                            <input type="button" value="Перейти на текущую неделю" class="btn btnaddmenu" data-bind=" click: function(){$root.SetMyDateByWeek($root.CurrentWeekYear())}"/>
-                            <!--/ko-->
-                            <!--ko if: IsCurrentWeekYear-->
-                            <label class="label-success" style="font-size: 18px; color: whitesmoke; padding: 5px">Текущая неделя </label>
-                            <!--/ko-->
-                        </div>
-                    </td>
-                    <td colspan="3" style="text-align: center; vertical-align: middle; border-right-style: none; border-left-style: none;">
-                        <div style="width: 100%">
-                            <input type="button" class="btn btn-info" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject" />
-                        </div>
-                    </td>
-                    <td colspan="2" style="text-align: center; vertical-align: middle; border-right-style: none; border-left-style: none;">
-                        <div style="width: 100%">
-                            <input type="button" class="btn btn-warning" value="Подтвердить возможность заказа по меню" data-bind="click:SetAsOrderable, visible: !OrderCanBeCreated()" />
-                        </div>
-                    </td>
-                    <td colspan="3" style="text-align: center; vertical-align: middle; border-left-style: none;">
-                        <div style="float: right; width: 100%">
-                             <!--ko ifnot: IsNextWeekYear-->
-                            <!--ko if: IsNextWeekMenuExists-->
-                            <input type="button" class="btn btnaddmenu enabled" value="Перейти к меню на следующую неделю" data-bind="click:GoToNextWeekMenu"/>
-                            <!--/ko-->
-                            <!--ko ifnot: IsNextWeekMenuExists()-->
-                            <input type="button" class="btn btnaddmenu enabled" value="Создать меню на следующую неделю" data-bind="click:CreateNextWeekMenu" />
-                            <!--/ko--> 
-                            <!--/ko-->
-                        </div> 
-                    </td>
-                </tr>
-                <tr>
-                    <th  style="vertical-align: middle; text-align: center">День недели</th>
-                    <th colspan="2" style="vertical-align: middle; text-align: center">Категория блюда</th>
-                    <th colspan="5" style="vertical-align: middle; text-align: center">Название</th>
-                    <th  colspan="2" style="vertical-align: middle; text-align: center">Стоимость</th>
-                </tr>
-            </thead>
-            <tbody data-bind="foreach: MFD_models">
-            <tr>
-                <!--ko if: WorkDay().IsWorking-->
-                <td style="vertical-align: middle; text-align: center">
-                    <span data-bind="text: WorkDay().DayName"></span>
-                </td>
-                <td colspan="2" class="weekmenu" data-bind="foreach: Dishes">
-                    <div style="border-bottom: 1px solid; text-align: right" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
-                        <span data-bind="text: $data.Category() + ' : '"></span>
+<div class="panel panel-default" id="mfwPanel">
+    <table class="table table-striped table-bordered table-responsive  table-condensed table-hover" style="; width: 950px">
+        <tbody>
+            <!--ko ifnot: OrderCanBeCreated-->
+            <tr style="vertical-align: middle;">
+                <td style="white-space: nowrap"><label style="line-height: 24px">Рабочие дни : </label></td>
+                <!--ko foreach: MFD_models-->
+                <td>
+                    <div class="checkbox-btn" style="vertical-align: middle; white-space: nowrap">
+                        <!-- ko text: WorkDay().DayNumber--><!-- /ko-->
+                        <input type="checkbox" data-bind="checked: WorkDay().IsWorking, value: WorkDay().IsWorking, attr:{id: 'rc' + $index(),name: 'rc' + $index()}" />
+                        <label data-bind="text: WorkDay().DayName, attr:{'for': 'rc' + $index()}"></label>
                     </div>
                 </td>
-                <td colspan="5" class="weekmenu" data-bind="foreach: Dishes">
-                    <div style="border-bottom: 1px solid" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
-                        <span data-bind="text: Title"></span>
-                        <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$parents[1].showDishes($data, $parentContext.$index())}" style="float: right; max-height: 25px; width: 70px;"></button>
+                <!-- /ko-->
+            </tr>
+            <tr>
+                <td>
+                    <div style="vertical-align: middle; width: 100%">
+                        <input type="button" value="Подтвердить рабочие дни" class="btn btn-info" data-bind=" click: WorkWeekApply , visible: $root.WorkWeek.CanBeChanged" />
+                    </div>
+                </td>
+            </tr>
+            <!--/ko-->
+            <tr style="background: #565659;">
+                <td colspan="3" style="border-right-style: none;">
+                    <div style="vertical-align: middle; width: 200px; height: 40px;">
+                        <!--ko ifnot: IsCurrentWeekYear-->
+                        <input type="button" value="Перейти на текущую неделю" class="btn btnaddmenu" data-bind=" click: function(){$root.SetMyDateByWeek($root.CurrentWeekYear())}" />
+                        <!--/ko-->
+                        <!--ko if: IsCurrentWeekYear-->
+                        <label class="label-success" style="font-size: 18px; color: whitesmoke; padding: 7px; -ms-border-radius: 5px; border-radius: 5px">Текущая неделя </label>
+                        <!--/ko-->
+                    </div>
+                </td>
 
+                <td colspan="4" style="text-align: center; vertical-align: middle; border-right-style: none; border-left-style: none;">
+                    <div style="width: 100%">
+                        <input type="button" class="btn btn-warning" value="Подтвердить возможность заказа по меню" data-bind="click:SetAsOrderable, visible: !OrderCanBeCreated()" />
                     </div>
                 </td>
-                <td class="weekmenu" data-bind="foreach: Dishes" style="text-align: right; vertical-align: middle">
-                    <div data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
-                        <span data-bind="text: Price" style="border-bottom: 1px solid; padding: 5px;"></span><br/>
+                <td colspan="3" style="text-align: center; vertical-align: middle; border-left-style: none;">
+                    <div style="float: right; width: 100%">
+                        <!--ko ifnot: IsNextWeekYear-->
+                        <!--ko if: IsNextWeekMenuExists-->
+                        <input type="button" class="btn btnaddmenu enabled" value="Перейти к меню на следующую неделю" data-bind="click:GoToNextWeekMenu" />
+                        <!--/ko-->
+                        <!--ko ifnot: IsNextWeekMenuExists-->
+                        <input type="button" class="btn btnaddmenu enabled" value="Создать меню на следующую неделю" data-bind="click:CreateNextWeekMenu" />
+                        <!--/ko-->
+                        <!--/ko-->
                     </div>
                 </td>
-                <td style="text-align: center; vertical-align: middle; height: 100%">
-                    <span data-bind="text: TotalPrice"></span>
-                </td>
-                <!--/ko-->
             </tr>
-            </tbody>
-            <tfoot>
-            <tr>
-                <td colspan="9" style="text-align: right"><span>Итого :</span></td>
-                <td style="text-align: center; vertical-align: middle; height: 100%">
-                    <span data-bind="text: SummaryPrice"></span>
-                </td>
-            </tr>
-            </tfoot>
-        </table>
+        </tbody>
+    </table>
+    <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable" style="font-size: 1.2em; text-align: center; width: 950px">
+        <colgroup>
+            <col class="col-md-1"/>
+            <col class="col-md-2"/>
+            <col class="col-md-3"/>
+            <col class="col-md-1"/>
+            <col class="col-md-1" />
+            <col class="col-md-2"/>
+        </colgroup>
+        <thead style="background-color: #70E7E8">
+
+        <tr>
+            <th style="vertical-align: middle; text-align: center">День недели</th>
+            <th style="vertical-align: middle; text-align: center">Категория блюда</th>
+            <th style="vertical-align: middle; text-align: center">Название</th>
+            <th colspan="2" style="vertical-align: middle; text-align: center">Стоимость</th>
+            <th style="vertical-align: middle; text-align: center">Описание</th>
+        </tr>
+        </thead>
+        <tbody data-bind="foreach: MFD_models">
+        <tr>
+            <!--ko if: WorkDay().IsWorking-->
+            <td style="vertical-align: middle; text-align: center">
+                <span data-bind="text: WorkDay().DayName"></span>
+            </td>
+            <td class="weekmenu" data-bind="foreach: Dishes">
+                <div style="border-bottom: 1px solid; text-align: right" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
+                    <span data-bind="text: $data.Category() + ' : '"></span>
+                </div>
+            </td>
+            <td class="weekmenu" data-bind="foreach: Dishes">
+                <div style="border-bottom: 1px solid" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
+                    <span data-bind="text: Title"></span>
+                    <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$parents[1].showDishes($data, $parentContext.$index())}" style="float: right; max-height: 25px; width: 70px;"></button>
+
+                </div>
+            </td>
+            <td class="weekmenu" data-bind="foreach: Dishes" style="text-align: right; vertical-align: middle">
+                <div data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
+                    <span data-bind="text: Price" style="border-bottom: 1px solid; padding: 5px;"></span><br/>
+                </div>
+            </td>
+            <td style="text-align: center; vertical-align: middle; height: 100%">
+                <span data-bind="text: TotalPrice"></span>
+            </td>
+            <td class="weekmenu" style="text-align: center; vertical-align: middle; height: 100%" data-bind=" foreach: Dishes">
+                <div data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, tooltip: {title: Description, placement: 'right',container: 'body'}">
+                    <span data-bind="text: '...'" style="text-align: left; width: 100%; border-bottom: 1px solid; padding: 5px"></span>
+                </div>
+            </td>
+            <!--/ko-->
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="4" style="text-align: right"><span>Итого :</span></td>
+            <td style="text-align: center; vertical-align: middle; height: 100%">
+                <span data-bind="text: SummaryPrice"></span>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
 </div>
 
 <div id="modalbox" class="modal ">
@@ -137,28 +151,41 @@
                                 <span data-bind="text:Price"></span>
                             </td>
                             <td>
-                                <input type="radio" name="dishGroup" data-bind="checked: $parent.SelectedDish, checkedValue : DishId, click: $parent.changeSelected"/>
+                                <div class="radio-btn">
+                                    <input type="radio" name="dishGroup" data-bind="checked: $parent.SelectedDish,checkedValue : DishId, click: $parent.changeSelected, attr:{id: 'dbc' + $index(),name: 'dbc' + $index()}"/>
+                                    <label data-bind=" attr:{'for': 'dbc' + $index()}" style="color: #54ECD2; font-size: 18px;"></label>
+                                </div>
                             </td>
                         </tr>
                         </tbody>
+                        <tfoot>
+                        <tr>
+                            <td>
+                                <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
+                                    <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
+                                </button>
+                            </td>
+                            <td colspan="2">
+                                <div>
+                                    <div style="text-align: center">
+                                        <ul class="pagination pagination-lg">
+                                            <li data-bind=" foreach: allPages">
+                                                <button type="button" class="btn btn-default btn-circle" data-bind=" click: function() { $parent.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($parent.pageIndex() + 1) }">
+                                                    <span class="glyphicon" data-bind="text: $data.pageNumber"></span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}">
+                                    <span class="glyphicon glyphicon-hand-right"> Следующая</span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tfoot>
                     </table>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="dataTables_paginate paging_simple_numbers">
-                                <ul class="pagination">
-                                    <li data-bind="css: { disabled: pageIndex() === 0 }" class="paginate_button previous">
-                                        <a href="#" class="btn" data-bind="click: previousPage">Previous</a>
-                                    </li>
-                                    <li data-bind=" foreach: allPages">
-                                        <a href="#" class="paginate_button" data-bind="text: $data.pageNumber, click: function() { $parent.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($parent.pageIndex() + 1) }"></a>
-                                    </li>
-                                    <li class="paginate_button next" data-bind="css: { disabled: pageIndex() === maxPageIndex() }">
-                                        <a href="#" data-bind="click: nextPage">Next</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" data-bind="click: applyChanges">Ok</button>

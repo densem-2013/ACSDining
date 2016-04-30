@@ -21,7 +21,7 @@ body
 /*WRAPPER ОСНОВНОЙ РАЗМЕРНЫЙ БЛОК*/
 .wrapper
 {
-    margin: auto;
+    /*margin: auto;*/
     width: 96%;
     min-width: 994px;
     max-width: 1400px;

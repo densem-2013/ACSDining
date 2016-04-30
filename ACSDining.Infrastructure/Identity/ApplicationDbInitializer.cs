@@ -15,7 +15,7 @@ using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 namespace ACSDining.Infrastructure.Identity
 {
     public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
-   // public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
+    //public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
     {
 
         private static readonly Random Rand = new Random();
@@ -37,7 +37,7 @@ namespace ACSDining.Infrastructure.Identity
             CreateWorkingDays(context);
             CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
-            //GetUsersFromXml(context, _path);
+            GetUsersFromXml(context, _path);
             CreateOrders(context);
             base.Seed(context);
         }

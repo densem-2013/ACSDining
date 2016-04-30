@@ -53,10 +53,10 @@ namespace UnitTestProject1
             OrdersController ord = new OrdersController(_unitOfWork);
             WeekYearDto wyDto = new WeekYearDto
             {
-                Week = 15,
+                Week = 17,
                 Year = 2016
             };
-            WeekOrderDto uwoDtos = ord.GetFactMenuOrders(wyDto).Result;
+            WeekOrderDto uwoDtos = ord.GetFactMenuOrders(wyDto,7,1).Result;
 
             Assert.IsNotNull(uwoDtos);
 

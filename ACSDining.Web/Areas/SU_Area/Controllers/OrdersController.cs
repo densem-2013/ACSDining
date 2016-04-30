@@ -28,18 +28,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         //Получить все фактические заявки на неделю
         [HttpPut]
-        [Route("fact")]
-        [ResponseType(typeof(WeekOrderDto))]
-        public async Task<WeekOrderDto> GetFactMenuOrders([FromBody] WeekYearDto wyDto)
+        [Route("fact/{pagesize}/{page}")]
+        [ResponseType(typeof (WeekOrderDto))]
+        public async Task<WeekOrderDto> GetFactMenuOrders([FromBody] WeekYearDto wyDto, [FromUri] int? pagesize,
+            [FromUri] int? page)
         {
-            if (wyDto==null)
+            if (wyDto == null)
             {
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
             int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
-            
-            WeekOrderDto weekOrderDto = WeekOrderDto.GetMapDto(_unitOfWork, wyDto, catLength);
+
+            WeekOrderDto weekOrderDto = WeekOrderDto.GetMapDto(_unitOfWork, wyDto, catLength, pagesize, page);
 
             return await Task.FromResult(weekOrderDto);
         }

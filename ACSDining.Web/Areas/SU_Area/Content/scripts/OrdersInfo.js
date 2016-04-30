@@ -12,6 +12,7 @@
     
     $("ul.nav.navbar-nav li:nth-child(2)").addClass("active");
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
+    //$(".container").css({ 'marginLeft': 0 });
 
     var quantValueModel = function (value) {
 
@@ -99,6 +100,18 @@
 
         self.QuantValues = [0, 1, 2, 3, 4, 5];
 
+        self.PageSizes = ko.pureComputed(function () {
+            var res = [2, 5, 7, 10, 15, 20, 25];
+            var all = self.WeekUserOrderModels().length;
+            if (all>25) {
+                res.push(all);
+            }
+            return res;
+
+        });
+
+        self.TotalCount = ko.observable();
+
         self.BeenChanged = ko.observable(false);
 
         self.SummaryDishQuantities = ko.observableArray([]);
@@ -143,7 +156,8 @@
                     var prices = self.WeekDishPrices();
 
                     ko.utils.arrayForEach(weekuserorder.UserDayOrders(), function(dayorder, dayindex) {
-                        ko.utils.arrayForEach(dayorder.DishQuantities(), function(dishquant, quantindex) {
+                        ko.utils.arrayForEach(dayorder.DishQuantities(), function (dishquant, quantindex) {
+
                             var quant = dishquant.Quantity();
                             ordersum +=  quant * prices[dayindex * catlengh + quantindex];
 
@@ -160,8 +174,8 @@
 
         var factloadWeekOrders = function (wyDto1) {
 
-            app.su_Service.FactLoadWeekOrders(wyDto1).then(function (resp1) {
-                self.WeekUserOrderModels([]);
+            app.su_Service.FactLoadWeekOrders(self.pageSize(),self.pageIndex(), wyDto1).then(function (resp1) {
+                //self.WeekUserOrderModels([]);
 
                 self.WeekYear(resp1.weekYearDto);
                 self.DaysOfWeek([]);
@@ -175,8 +189,9 @@
 
                 }));
 
-                self.WeekDishPrices([]);
-                self.WeekDishPrices.pushAll(resp1.weekDishPrices);
+                self.WeekDishPrices(resp1.weekDishPrices);
+
+                self.TotalCount(resp1.totalCount);
 
                 app.su_Service.IsNextWeekYear(wyDto1).then(function (resp2) {
                     self.IsNextWeekYear(resp2);
@@ -264,18 +279,18 @@
         }, self);
 
 
-        self.pageSize = ko.observable(10);
+        self.pageSize = ko.observable(7);
 
         self.pageIndex = ko.observable(0);
 
-        self.pagedList = ko.dependentObservable(function () {
-            var size = self.pageSize();
-            var start = self.pageIndex() * size;
-            return self.WeekUserOrderModels.slice(start, start + size);
-        });
+        //self.pagedList = ko.dependentObservable(function () {
+        //    var size = self.pageSize();
+        //    var start = self.pageIndex() * size;
+        //    return self.WeekUserOrderModels.slice(start, start + size);
+        //});
 
         self.maxPageIndex = ko.dependentObservable(function () {
-            return Math.ceil(self.WeekUserOrderModels().length / self.pageSize()) - 1;
+            return Math.ceil(self.TotalCount() / self.pageSize()) - 1;
         });
 
         self.previousPage = function () {
@@ -304,8 +319,7 @@
 
         self.init = function () {
             app.su_Service.GetCategories().then(function (resp) {
-                self.Categories([]);
-                self.Categories.pushAll(resp);
+                self.Categories(resp);
             }, onError);
 
              app.su_Service.GetCurrentWeekYear().then(function (resp) {

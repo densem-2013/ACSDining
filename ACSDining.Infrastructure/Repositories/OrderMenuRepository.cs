@@ -84,9 +84,9 @@ namespace ACSDining.Infrastructure.Repositories
         }
 
         public static List<WeekOrderMenu> OrdersMenuByWeekYear(this IRepositoryAsync<WeekOrderMenu> repository,
-            WeekYearDto wyDto)
+            WeekYearDto wyDto, int? pageSize = null, int? page = null)
         {
-            return repository.Query()
+            List<WeekOrderMenu> pagedOrders = repository.Query()
                 .Include(om => om.MenuForWeek.MenuForDay.Select(dm => dm.Dishes.Select(d => d.DishType)))
                 .Include(om => om.User)
                 .Include(om => om.MenuForWeek.WorkingWeek.Year)
@@ -96,6 +96,15 @@ namespace ACSDining.Infrastructure.Repositories
                     om =>
                         om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&
                         om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year).ToList();
+            if (pageSize != null && page != null)
+            {
+                pagedOrders =
+                    pagedOrders.OrderBy(po => po.User.LastName)
+                        .Skip(pageSize.Value*(page.Value - 1))
+                        .Take(pageSize.Value)
+                        .ToList();
+            }
+            return pagedOrders;
         }
 
         /// <summary>
@@ -335,6 +344,15 @@ namespace ACSDining.Infrastructure.Repositories
                     om => om.DayOrderMenus.Select(dom => dom.MenuForDay.ID).Contains(daymenuid)).ToList();
 
             return whohasweekorder.Select(wom => wom.User).ToList();
-        } 
+        }
+
+        public static int GetCountByWeekYear(this IRepositoryAsync<WeekOrderMenu> repository, WeekYearDto wyDto)
+        {
+            return repository.Query()
+                .Include(om => om.MenuForWeek.WorkingWeek.Year).Select().Count(
+                    om =>
+                        om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&
+                        om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year);
+        }
     }
 }

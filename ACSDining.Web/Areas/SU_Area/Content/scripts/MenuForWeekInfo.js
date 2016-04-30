@@ -13,6 +13,12 @@
 
     $("ul.nav.navbar-nav li:first-child").addClass("active"); 
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
+    var sendButtonDiv = $('<div></div>').css({ 'whith': '100%','padding':'10px' });
+    var sendButtonInput = $('<input type="button" id="btSend" class="btn btn-info" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject"/>');
+    sendButtonDiv.append(sendButtonInput);
+    $('#datepick').append(sendButtonDiv);
+    $('.wrapper').css({ 'margin': 'auto' });
+    //sendButtonDiv.insertAfter($('#datepick'));
 
     var dishInfo = function(dinfo) {
 
@@ -20,14 +26,14 @@
 
         self.DishId = ko.observable(dinfo.dishId);
         self.Title = ko.observable(dinfo.title);
-        self.ProductImage = ko.observable(dinfo.productImage);
+        self.Description = ko.observable(dinfo.description);
         self.Price = ko.observable(dinfo.price.toFixed(2));
         self.Category = ko.observable(dinfo.category);
 
         self.UpdateWeekMenu = function(dishupdate) {
             this.DishId(dishupdate.DishId());
             this.Title(dishupdate.Title());
-            this.ProductImage(dishupdate.ProductImage());
+            this.Description(dishupdate.Description());
             this.Price(dishupdate.Price());
 
         };
@@ -63,7 +69,7 @@
             var dish = {
                 dishID: "0",
                 title: ":",
-                productImage: "",
+                description: "...",
                 price: 0.0,
                 category: categs[ind++]
             }
@@ -92,7 +98,9 @@
         var self = this;
 
         self.WorkweekId = ko.observable(weekmodel.workWeekId);
-        self.WorkingDays = ko.observableArray([]);
+        self.WorkingDays = ko.observableArray(ko.utils.arrayMap(weekmodel.workDays, function(item) {
+            return new workDayInfo(item);
+        }));
         self.CanBeChanged = ko.observable(weekmodel.canBeChanged);
     }
 
@@ -139,12 +147,21 @@
 
         }.bind(self));
 
-        self.WorkingWeek = ko.observable();
+        self.WorkWeek = ko.observable();
 
         self.OrderCanBeCreated = ko.observable();
 
-        //Сигнализирует, что есть пользователи, которым нужно отправить сообщение об изменении меню
+        function performEffect() {
+
+            $('#btSend').animate({ opacity: "-=0.8" }, 1000).animate({ opacity: "+=0.8" }, 1000);
+        }
+
+    //Сигнализирует, что есть пользователи, которым нужно отправить сообщение об изменении меню
         self.ForEmailExistsObject = ko.pureComputed(function () {
+            var res = self.UpdatedDayMenus().length > 0;
+            if (res) {
+                setInterval(performEffect, 1000);
+            } 
             return self.UpdatedDayMenus().length > 0;
         }.bind(self));
 
@@ -307,7 +324,7 @@
                 self.WeekYear(resp.workWeek.weekYear);
                 self.SummaryPrice(resp.summaryPrice.toFixed(2));
                 self.OrderCanBeCreated(resp.orderCanBeCreated);
-                self.WorkingWeek(new workWeekModel(resp.workWeek));
+                self.WorkWeek(new workWeekModel(resp.workWeek));
 
                 //app.su_Service.IsNextWeekYear(wyDto).then(function(resp2) {
                 //    self.IsNextWeekYear(resp2);
@@ -454,16 +471,16 @@
 
         self.WorkWeekApply = function() {
             var workWeek = {
-                WorkweekId: self.WorkingWeek().WorkWeekId(),
+                WorkweekId: self.WorkWeek().WorkWeekId(),
                 WorkingDays: ko.utils.arrayMap(self.MFD_models(), function(mfd) {
                     return mfd.WorkDay();
                 }),
-                CanBeChanged: self.WorkingWeek().CanBeChanged()
+                CanBeChanged: self.WorkWeek().CanBeChanged()
             };
 
             app.su_Service.ApplyWorkWeek(workWeek).then(function (res) {
 
-                self.WorkingWeek().CanBeChanged(!res);
+                self.WorkWeek().CanBeChanged(!res);
 
             });
 

@@ -48,29 +48,6 @@ ko.extenders.numeric = function (target, precision) {
     //return the new computed observable
     return result;
 };
-//ko.bindingHandlers.numeric = {
-//    init: function (element, valueAccessor) {
-//        $(element).on("keydown", function (event) {
-//            // Allow: backspace, delete, tab, escape, and enter
-//            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
-//                // Allow: Ctrl+A
-//                (event.keyCode == 65 && event.ctrlKey === true) ||
-//                // Allow: . ,
-//                (event.keyCode == 188 || event.keyCode == 190 || event.keyCode == 110) ||
-//                // Allow: home, end, left, right
-//                (event.keyCode >= 35 && event.keyCode <= 39)) {
-//                // let it happen, don't do anything
-//                return;
-//            }
-//            else {
-//                // Ensure that it is a number and stop the keypress
-//                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
-//                    event.preventDefault();
-//                }
-//            }
-//        });
-//    }
-//};
 
 Date.prototype.getWeek = function () {
     //var onejan = new Date(this.getFullYear(), 0, 1);
@@ -152,25 +129,6 @@ var WeekYear = function(wyObj) {
     self.Year = ko.observable(wyObj.year);
 };
 
- //var weekTitleCalculate = function (weekyear) {
- //    var options = {
- //        weekday: "short",
- //        year: "numeric",
- //        month: "short",
- //        day: "numeric"
- //    };
- //    var weekYearObj = weekyear;
- //    var year = weekYearObj.year;
- //    var firstDay = new Date(year, 0, 1).getDay();
-
- //    var week = weekYearObj.week;
- //    var d = new Date("Jan 01, " + year + " 01:00:00");
- //    var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
- //    var n1 = new Date(w);
- //    var n2 = new Date(w + 345600000);
- //    return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
- //};
-
 window.app.su_Service = (function() {
 
     var baseWeekMenuUri = "/api/WeekMenu/";
@@ -190,8 +148,8 @@ window.app.su_Service = (function() {
 
     var baseOrdersUri = "/api/Orders/";
     var serviceOrdersUrls = {
-        factweekorders: function () { return baseOrdersUri + "fact" },
-        planweekorders: function () { return baseOrdersUri + "plan" },
+        factweekorders: function (pageSize, page) { return baseOrdersUri + "fact/" + pageSize+"/" +page},
+        planweekorders: function (pageSize, page) { return baseOrdersUri + "plan/" + pageSize + "/" + page },
         updateWeekOrder: function () { return baseOrdersUri + "update" },
         createOrder: function () { return baseOrdersUri + "create"  },
         calcsummary: function () { return baseOrdersUri + "summary/"  }
@@ -294,11 +252,11 @@ window.app.su_Service = (function() {
         DeleteDish: function(dishId) {
             return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishId));
         },
-        FactLoadWeekOrders: function (wyDto) {
-            return ajaxRequest("put", serviceOrdersUrls.factweekorders(), wyDto);
+        FactLoadWeekOrders: function (pageSize, page,wyDto) {
+            return ajaxRequest("put", serviceOrdersUrls.factweekorders(pageSize, page), wyDto);
         },
-        PlanLoadWeekOrders: function (wyDto) {
-            return ajaxRequest("put", serviceOrdersUrls.planweekorders(), wyDto);
+        PlanLoadWeekOrders: function (pageSize, page, wyDto) {
+            return ajaxRequest("put", serviceOrdersUrls.planweekorders(pageSize, page), wyDto);
         },
         UpdateOrder: function( item) {
             return ajaxRequest("put", serviceOrdersUrls.updateWeekOrder(), item);

@@ -19,10 +19,13 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public string[] DayNames { get; set; }
         //цены на единицу каждого блюда
         public double[] WeekDishPrices { get; set; }
+        //общее количество клиентов, сделавших заказ на этой неделе
+        public int TotalCount { get; set; }
 
-        public static WeekOrderDto GetMapDto(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto, int catLength)
+        public static WeekOrderDto GetMapDto(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto, int catLength,int? pageSize,int? page)
         {
-            List<WeekOrderMenu> weekOrderMenus = unitOfWork.RepositoryAsync<WeekOrderMenu>().OrdersMenuByWeekYear(wyDto);
+            List<WeekOrderMenu> weekOrderMenus = unitOfWork.RepositoryAsync<WeekOrderMenu>()
+                .OrdersMenuByWeekYear(wyDto, pageSize, page);
 
             MenuForWeek menuForWeek = unitOfWork.RepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
 
@@ -38,7 +41,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                     menuForWeek.WorkingWeek.WorkingDays.Where(wd => wd.IsWorking)
                         .Select(wd => wd.DayOfWeek.Name)
                         .ToArray(),
-                WeekDishPrices = unitOfWork.RepositoryAsync<MenuForWeek>().UnitWeekPricesByWeekYear(wyDto, catLength)
+                WeekDishPrices = unitOfWork.RepositoryAsync<MenuForWeek>().UnitWeekPricesByWeekYear(wyDto, catLength),
+                TotalCount = unitOfWork.RepositoryAsync<WeekOrderMenu>().GetCountByWeekYear(wyDto)
             };
         }
     }
