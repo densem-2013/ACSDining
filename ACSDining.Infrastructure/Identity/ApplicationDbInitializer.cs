@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
+using System.IO;
 using System.Linq;
 using System.Web.Hosting;
 using System.Xml.Linq;
@@ -14,8 +15,8 @@ using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 
 namespace ACSDining.Infrastructure.Identity
 {
-    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
-    //public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
+    //public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+        public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
     {
 
         private static readonly Random Rand = new Random();
@@ -28,9 +29,9 @@ namespace ACSDining.Infrastructure.Identity
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
             //                          @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
-            //string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
+            string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
 
-            string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
+            //string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
 
             InitializeIdentityForEf(context, _path);
             var dishes = GetDishesFromXml(context, _path);
@@ -39,6 +40,8 @@ namespace ACSDining.Infrastructure.Identity
             _path = _path.Replace(@"DishDetails", "Employeers");
             GetUsersFromXml(context, _path);
             CreateOrders(context);
+            _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
+            Utility.CreateStoredFuncs(_path);
             base.Seed(context);
         }
 
@@ -257,27 +260,27 @@ namespace ACSDining.Infrastructure.Identity
             Func<string, double> parseDouble = str =>
             {
                 double val = double.Parse(str);
-                return  val > 30.0 ? val/100 : val;
+                return val > 30.0 ? val/100 : val;
             };
 
             try
             {
-                
+
                 Dish[] dishes = (from el in collection.AsEnumerable()
-                                 select new Dish
-                                 {
-                                     DishType = getDishType(el.Attribute("dishtype").Value),
-                                     Title = el.Attribute("title").Value,
-                                     Description = el.Element("description").Value,
-                                     ProductImage = el.Attribute("image").Value,
-                                     Price = parseDouble(el.Element("cost").Value),
-                                     DishDetail = new DishDetail
-                                     {
-                                         Title = el.Attribute("title").Value,
-                                         Foods = el.Element("foods").Value,
-                                         Recept = el.Element("recept").Value
-                                     }
-                                 }).ToArray();
+                    select new Dish
+                    {
+                        DishType = getDishType(el.Attribute("dishtype").Value),
+                        Title = el.Attribute("title").Value,
+                        Description = el.Element("description").Value,
+                        ProductImage = el.Attribute("image").Value,
+                        Price = parseDouble(el.Element("cost").Value),
+                        DishDetail = new DishDetail
+                        {
+                            Title = el.Attribute("title").Value,
+                            Foods = el.Element("foods").Value,
+                            Recept = el.Element("recept").Value
+                        }
+                    }).ToArray();
 
                 context.Dishes.AddOrUpdate(c => c.Title, dishes);
                 return dishes;
@@ -320,14 +323,14 @@ namespace ACSDining.Infrastructure.Identity
                         {
                             IsWorking = j < 5,
                             DayOfWeek = context.Days.FirstOrDefault(d => d.Id == j + 1)
-                            
+
                         };
                         workingWeek.WorkingDays.Add(workday);
                     }
 
                     year.WorkingWeeks.Add(workingWeek);
                 }
-                
+
             }
             context.SaveChanges();
         }
@@ -444,7 +447,7 @@ namespace ACSDining.Infrastructure.Identity
                     }).ToArray();
                     foreach (User user in users)
                     {
-                        if (role != null) user.Roles.Add(new IdentityUserRole { RoleId = role.Id, UserId = user.Id });
+                        if (role != null) user.Roles.Add(new IdentityUserRole {RoleId = role.Id, UserId = user.Id});
                         context.Users.Add(user);
                     }
                     context.SaveChanges();
@@ -453,8 +456,9 @@ namespace ACSDining.Infrastructure.Identity
                 {
                     foreach (var eve in e.EntityValidationErrors)
                     {
-                        System.Diagnostics.Debug.Print("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        System.Diagnostics.Debug.Print(
+                            "Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
                         foreach (var ve in eve.ValidationErrors)
                         {
                             System.Diagnostics.Debug.Write(ve.ErrorMessage, ve.PropertyName);
@@ -499,10 +503,10 @@ namespace ACSDining.Infrastructure.Identity
                         MenuForWeek = mfw,
                         WeekOrderSummaryPrice = 0.0
                     };
-                    PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu { WeekOrderMenu = weekOrder };
+                    PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu {WeekOrderMenu = weekOrder};
                     context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
 
-                    List<DayOrderMenu> dayOrderMenus=new List<DayOrderMenu>();
+                    List<DayOrderMenu> dayOrderMenus = new List<DayOrderMenu>();
 
                     List<DishType> dishTypes = context.DishTypes.ToList();
                     foreach (MenuForDay daymenu in mfw.MenuForDay)
@@ -511,11 +515,11 @@ namespace ACSDining.Infrastructure.Identity
                         {
                             MenuForDay = daymenu,
                         };
-                        PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu{DayOrderMenu = dayOrderMenu};
+                        PlannedDayOrderMenu plannedDayOrderMenu = new PlannedDayOrderMenu {DayOrderMenu = dayOrderMenu};
 
                         foreach (Dish dish in daymenu.Dishes)
                         {
-                            DishType first = dishTypes.FirstOrDefault(dy => dy.Id== dish.DishType.Id);
+                            DishType first = dishTypes.FirstOrDefault(dy => dy.Id == dish.DishType.Id);
                             if (first != null)
                             {
                                 int catindex = first.Id - 1;
@@ -532,7 +536,7 @@ namespace ACSDining.Infrastructure.Identity
                                     DayOrderMenu = dayOrderMenu,
                                     PlannedDayOrderMenu = plannedDayOrderMenu
                                 };
-                                if (dqu != null) dayOrderMenu.DayOrderSummaryPrice += dqu.Quantity * dish.Price;
+                                if (dqu != null) dayOrderMenu.DayOrderSummaryPrice += dqu.Quantity*dish.Price;
                                 dquaList.Add(dqrs);
                             }
 
@@ -540,11 +544,25 @@ namespace ACSDining.Infrastructure.Identity
                         dayOrderMenus.Add(dayOrderMenu);
                     }
                     weekOrder.DayOrderMenus = dayOrderMenus;
-                    weekOrder.WeekOrderSummaryPrice = weekOrder.DayOrderMenus.Where(dom => dom.MenuForDay.WorkingDay.IsWorking).Sum(dom => dom.DayOrderSummaryPrice);
+                    weekOrder.WeekOrderSummaryPrice =
+                        weekOrder.DayOrderMenus.Where(dom => dom.MenuForDay.WorkingDay.IsWorking)
+                            .Sum(dom => dom.DayOrderSummaryPrice);
                 }
             }
             context.DQRelations.AddRange(dquaList);
             context.SaveChanges();
+        }
+
+        public static void CreateStoredFuncs(ApplicationDbContext context)
+        {
+            string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/storedfunc.sql");
+
+            if (_path != null)
+            {
+                var file = new FileInfo(_path);
+                var script = file.OpenText().ReadToEnd();
+                context.Database.ExecuteSqlCommand(script);
+            }
         }
     }
 }

@@ -16,8 +16,9 @@
             write: function (value) {
                 // Strip out unwanted characters, parse as float, then write the 
                 // raw data back to the underlying "price" observable
-                value = value.replace(new RegExp(/(.*)[,](.*)/, "g"), "$1\.$2");
-                value = value.replace(new RegExp(/(.*)(\.)+(.*)(\.)(.*)/, "g"), "$1$2$3");
+                //value = value.replace(new RegExp(/(.*)[,](.*)/, "g"), "$1\.$2");
+                value = value.replace(",",".");
+                value = value.replace(new RegExp(/(.*)(\.)+(.*)(\.)(.*)/g), "$1$2$3");
                 value = value.replace(/[^\.\d]/g, "");
                 value = parseFloat(value);
                 self.Price(isNaN(value) ? 0 : value); // Write to underlying storage

@@ -1,6 +1,7 @@
 using System;
 using System.Data.Entity.Migrations;
 using System.Web.Hosting;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 
 namespace ACSDining.Infrastructure.Migrations
@@ -20,11 +21,6 @@ namespace ACSDining.Infrastructure.Migrations
 
         protected override void Seed(ApplicationDbContext context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-
-            //
             ApplicationDbInitializer.InitializeIdentityForEf(context, _path);
             var dishes = ApplicationDbInitializer.GetDishesFromXml(context, _path);
             ApplicationDbInitializer.CreateWorkingDays(context);
@@ -32,6 +28,8 @@ namespace ACSDining.Infrastructure.Migrations
             _path = _path.Replace(@"DishDetails", "Employeers");
             // ApplicationDbInitializer.GetUsersFromXml(context, _path);
             ApplicationDbInitializer.CreateOrders(context);
+            _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
+            Utility.CreateStoredFuncs(_path);
 
         }
 

@@ -172,35 +172,6 @@
         };
 
 
-        var factloadWeekOrders = function (wyDto1) {
-
-            app.su_Service.FactLoadWeekOrders(self.pageSize(),self.pageIndex(), wyDto1).then(function (resp1) {
-                //self.WeekUserOrderModels([]);
-
-                self.WeekYear(resp1.weekYearDto);
-                self.DaysOfWeek([]);
-                self.DaysOfWeek.pushAll(resp1.dayNames);
-                self.SummaryDishQuantities([]);
-                self.SummaryDishQuantities.pushAll(resp1.summaryDishQuantities);
-
-                self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function (uwoObject) {
-
-                    return new weekUserOrderModel(uwoObject, self.Categories().length);
-
-                }));
-
-                self.WeekDishPrices(resp1.weekDishPrices);
-
-                self.TotalCount(resp1.totalCount);
-
-                app.su_Service.IsNextWeekYear(wyDto1).then(function (resp2) {
-                    self.IsNextWeekYear(resp2);
-                });
-
-            }, onError);
-
-        }
-
         self.update = function (wuOrder,daynumber,catnumder) {
 
             var weekorddishes = [];
@@ -260,6 +231,76 @@
             return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
 
+
+        self.pageSize = ko.observable(7);
+
+        self.pageIndex = ko.observable(0);
+
+        //self.pagedList = ko.dependentObservable(function () {
+        //    var size = self.pageSize();
+        //    var start = self.pageIndex() * size;
+        //    return self.WeekUserOrderModels.slice(start, start + size);
+        //});
+
+        self.maxPageIndex = ko.dependentObservable(function () {
+            return Math.ceil(self.TotalCount() / self.pageSize()) - 1;
+        });
+
+
+        self.allPages = ko.dependentObservable(function () {
+            var pages = [];
+            for (var i = 0; i <= self.maxPageIndex() ; i++) {
+                pages.push({ pageNumber: (i + 1) });
+            }
+            return pages;
+        });
+
+        self.moveToPage = function (index) {
+            self.pageIndex(index);
+        };
+
+
+        var factloadWeekOrders = function (wyDto1) {
+
+            app.su_Service.FactLoadWeekOrders(self.pageSize(), self.pageIndex()+1, wyDto1).then(function (resp1) {
+                //self.WeekUserOrderModels([]);
+
+                self.WeekYear(resp1.weekYearDto);
+                //self.DaysOfWeek([]);
+                self.DaysOfWeek(resp1.dayNames);
+                //self.SummaryDishQuantities([]);
+
+                self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function (uwoObject) {
+
+                    return new weekUserOrderModel(uwoObject, self.Categories().length);
+
+                }));
+
+                self.WeekDishPrices(resp1.weekDishPrices);
+
+                self.TotalCount(resp1.totalCount);
+
+                app.su_Service.IsNextWeekYear(wyDto1).then(function (resp2) {
+                    self.IsNextWeekYear(resp2);
+                });
+
+            }, onError);
+
+        }
+        self.previousPage = function () {
+            if (self.pageIndex() > 0) {
+                self.pageIndex(self.pageIndex() - 1);
+                factloadWeekOrders(self.WeekYear());
+            }
+        };
+
+        self.nextPage = function () {
+            if (self.pageIndex() < self.maxPageIndex()) {
+                self.pageIndex(self.pageIndex() + 1);
+                factloadWeekOrders(self.WeekYear());
+            }
+        };
+
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
@@ -278,60 +319,38 @@
             };
         }, self);
 
+        self.GetUnitCounts=function() {
 
-        self.pageSize = ko.observable(7);
-
-        self.pageIndex = ko.observable(0);
-
-        //self.pagedList = ko.dependentObservable(function () {
-        //    var size = self.pageSize();
-        //    var start = self.pageIndex() * size;
-        //    return self.WeekUserOrderModels.slice(start, start + size);
-        //});
-
-        self.maxPageIndex = ko.dependentObservable(function () {
-            return Math.ceil(self.TotalCount() / self.pageSize()) - 1;
-        });
-
-        self.previousPage = function () {
-            if (self.pageIndex() > 0) {
-                self.pageIndex(self.pageIndex() - 1);
-            }
-        };
-
-        self.nextPage = function () {
-            if (self.pageIndex() < self.maxPageIndex()) {
-                self.pageIndex(self.pageIndex() + 1);
-            }
-        };
-
-        self.allPages = ko.dependentObservable(function () {
-            var pages = [];
-            for (var i = 0; i <= self.maxPageIndex() ; i++) {
-                pages.push({ pageNumber: (i + 1) });
-            }
-            return pages;
-        });
-
-        self.moveToPage = function (index) {
-            self.pageIndex(index);
-        };
+            app.su_Service.GetSummaryDishOrders(self.CurrentWeekYear()).then(function (unitorders) {
+                if (unitorders !== null) {
+                    //self.SummaryDishQuantities([]);
+                    self.SummaryDishQuantities(unitorders);
+                }
+            });
+        }
 
         self.init = function () {
             app.su_Service.GetCategories().then(function (resp) {
                 self.Categories(resp);
             }, onError);
 
-             app.su_Service.GetCurrentWeekYear().then(function (resp) {
+            app.su_Service.GetCurrentWeekYear().then(function(resp) {
 
                 self.CurrentWeekYear(resp);
 
-            }, onError);
-            
-            self.SetMyDateByWeek(self.CurrentWeekYear());
+                self.SetMyDateByWeek(self.CurrentWeekYear());
+
+
+            }, onError).then(function() {
+                    self.GetUnitCounts();
+                }
+            );
+
+
         }
 
         self.init();
+
     };
 
     ko.applyBindings(new weekOrdersModel());

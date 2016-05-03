@@ -26,7 +26,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
 
-        //Получить все фактические заявки на неделю
+        //Получить все фактические заявки на неделю постранично
         [HttpPut]
         [Route("fact/{pagesize}/{page}")]
         [ResponseType(typeof (WeekOrderDto))]
@@ -47,8 +47,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         //Получить все плановые заявки на неделю
         [HttpPut]
-        [Route("plan")]
-        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromBody] WeekYearDto wyDto)
+        [Route("plan/{pagesize}/{page}")]
+        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromBody] WeekYearDto wyDto,[FromUri] int? pagesize,
+            [FromUri] int? page)
         {
             if (wyDto == null)
             {
@@ -81,24 +82,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("update")]
         public async Task<IHttpActionResult> UpdateWeekOrder([FromBody] UserWeekOrderDto userWeekOrderDto)
         {
-            //if (weekOrderDto == null)
-            //{
-            //    return BadRequest("Bad Request Object");
-            //}
-            //int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
-            //List<UserWeekOrderDto> forUpdateOrders =
-            //    weekOrderDto.UserWeekOrders.Select(uwo => UserWeekOrderDto.MapDto(_unitOfWork,_orderMenuService.Find(uwo.OrderId),catLength,true)).ToList();
-
-            //forUpdateOrders.ForEach(x=>
-            //{
-            //    _orderMenuService.UpdateUserWeekOrder(catLength, x);
-            //});
-
-            //return Ok();
             if (userWeekOrderDto == null)
             {
                 return BadRequest("Bad Request Object");
             }
+
             WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.OrderId);
 
 
@@ -113,7 +101,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             return Ok(res);
         }
-        
+
+        /// <summary>
+        /// Получить суммарные количества звказанных блюд за неделю
+        /// </summary>
+        /// <param name="wyDto"></param>
+        [HttpPut]
+        [Route("weeksummaryorderdishes")]
+        public async Task<double[]> GetWeekSummaryOrders([FromBody] WeekYearDto wyDto)
+        {
+            if (wyDto.Week == 0 || wyDto.Year == 0) return null;
+            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            return await Task.FromResult(_orderMenuService.SummaryWeekDishesOrderQuantities(wyDto, catLength));
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -5,6 +5,7 @@ using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web;
@@ -71,6 +72,18 @@ namespace UnitTestProject1
             IdentityRole admrole = roleManager.FindByName("Administrator");
             List<User> users = _userManager.Users.Where(u=>u.Roles.Any(r=>r.RoleId==admrole.Id)).ToList();
             Assert.IsTrue(users.Count > 0);
+
+        }
+
+        [TestMethod]
+        public void CreatStoredFuncs()
+        {
+            string path = Environment.CurrentDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
+                                      @"ACSDining.Web\App_Data\DBinitial\storedfunc.sql";
+
+            Utility.CreateStoredFuncs(path);
+           // dataContext.Database.
+           // Assert.IsTrue(users.Count > 0);
 
         }
     }

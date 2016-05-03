@@ -17,10 +17,10 @@ namespace ACSDining.Core.Domains
 
     public class DishQuantity 
     {
-        public DishQuantity()
-        {
-            DishQuantityRelations = new List<DishQuantityRelations>();
-        }
+        //public DishQuantity()
+        //{
+        //    DishQuantityRelations = new List<DishQuantityRelations>();
+        //}
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -29,9 +29,9 @@ namespace ACSDining.Core.Domains
         [Required]
         public double Quantity { get; set; }
 
-        public int DishQuantityRelationsID { get; set; }
+       // public int DishQuantityRelationsID { get; set; }
 
-        [JsonIgnore]
-        public virtual ICollection<DishQuantityRelations> DishQuantityRelations { get; set; }
+        //[JsonIgnore]
+        //public virtual ICollection<DishQuantityRelations> DishQuantityRelations { get; set; }
     }
 }

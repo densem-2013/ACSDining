@@ -139,21 +139,22 @@ window.app.su_Service = (function() {
         create: function() { return baseWeekMenuUri + "create" },
         nextWeekYear: function() { return baseWeekMenuUri + "nextWeekYear" },
         isnextweekmenuexists: function() { return baseWeekMenuUri + "isnextweekmenuexists" },
-        //prevWeekYear: function() { return baseWeekMenuUri + "prevWeekYear" },
         deleteWeekMenu: function(menuid) { return baseWeekMenuUri + "delete/" + menuid },
         sendmenuUpdateMessage: function() { return baseWeekMenuUri + "menuupdatemessage" },
-        setasorderable: function () { return baseWeekMenuUri + "setasorderable" },
-        workweekapply: function (){ return baseWeekMenuUri + "workweekapply" }
+        setasorderable: function() { return baseWeekMenuUri + "setasorderable" },
+        workweekapply: function() { return baseWeekMenuUri + "workweekapply" }
     }
 
     var baseOrdersUri = "/api/Orders/";
     var serviceOrdersUrls = {
-        factweekorders: function (pageSize, page) { return baseOrdersUri + "fact/" + pageSize+"/" +page},
-        planweekorders: function (pageSize, page) { return baseOrdersUri + "plan/" + pageSize + "/" + page },
-        updateWeekOrder: function () { return baseOrdersUri + "update" },
-        createOrder: function () { return baseOrdersUri + "create"  },
-        calcsummary: function () { return baseOrdersUri + "summary/"  }
+        factweekorders: function(pageSize, page) { return baseOrdersUri + "fact/" + pageSize + "/" + page },
+        planweekorders: function(pageSize, page) { return baseOrdersUri + "plan/" + pageSize + "/" + page },
+        updateWeekOrder: function() { return baseOrdersUri + "update" },
+        createOrder: function() { return baseOrdersUri + "create" },
+        calcsummary: function() { return baseOrdersUri + "summary/" },
+        weeksummaryorderdishes: function() { return baseOrdersUri + "weeksummaryorderdishes" }
     }
+
     var baseDishesUri = "/api/Dishes/";
     var serviceDishesUrls = {
         byCategory: function(category) { return baseDishesUri + "byCategory/" + category },
@@ -172,10 +173,6 @@ window.app.su_Service = (function() {
         accounts: function() { return baseAccountsUri + "All" },
         deleteAccount: function(id) { return baseAccountsUri + "delete/" + id }
     }
-    //var baseWorkDaysUri = "/api/WorkDays/";
-    //var serviceWorkDaysUrls = {
-    //    updateWorkDays: function () { return baseWorkDaysUri + "update"  }
-    //}
 
     var baseUserWeekOrder = "/api/Employee/";
     var serviceUserWeekOrders= {
@@ -207,9 +204,6 @@ window.app.su_Service = (function() {
         GetNextWeekYear: function(wyDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(), wyDto);
         },
-        //GetPrevWeekYear: function(wyDto) {
-        //    return ajaxRequest("put", serviceWeekMenuUrls.prevWeekYear(), wyDto);
-        //},
         IsNextWeekMenuExists: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.isnextweekmenuexists());
         },
@@ -252,6 +246,7 @@ window.app.su_Service = (function() {
         DeleteDish: function(dishId) {
             return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishId));
         },
+        //Orders
         FactLoadWeekOrders: function (pageSize, page,wyDto) {
             return ajaxRequest("put", serviceOrdersUrls.factweekorders(pageSize, page), wyDto);
         },
@@ -264,6 +259,10 @@ window.app.su_Service = (function() {
         CreateOrdersNextweek: function () {
             return ajaxRequest("post", serviceOrdersUrls.createOrder());
         },
+        GetSummaryDishOrders: function(wydto) {
+            return ajaxRequest("put", serviceOrdersUrls.weeksummaryorderdishes(), wydto);
+        },
+        //Paiments
         GetPaiments: function (wyDto) {
             return ajaxRequest("put", basePaimentsUri, wyDto);
         },
@@ -276,15 +275,9 @@ window.app.su_Service = (function() {
         DeleteAccount: function (accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));
         },
-        //GetWorkDays: function (wyDto) {
-        //    return ajaxRequest("get", baseWorkDaysUri, wyDto);
+        //LoadUserWeekOrder: function(wyDto) {
+        //    return ajaxRequest("put", baseUserWeekOrder, wyDto);
         //},
-        //UpdateWorkDays: function (weekinfo) {
-        //    return ajaxRequest("put", serviceWorkDaysUrls.updateWorkDays(),weekinfo);
-        //},
-        LoadUserWeekOrder: function(wyDto) {
-            return ajaxRequest("put", baseUserWeekOrder, wyDto);
-        },
         IsNextWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceUserWeekOrders.isNextWeekYear(), wyDto);
         },

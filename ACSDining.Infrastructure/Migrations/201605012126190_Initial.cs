@@ -254,7 +254,6 @@ namespace ACSDining.Infrastructure.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Quantity = c.Double(nullable: false),
-                        DishQuantityRelationsID = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
