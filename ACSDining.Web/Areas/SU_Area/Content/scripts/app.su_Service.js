@@ -20,6 +20,7 @@ ko.bindingHandlers.hover = {
     }
 }
 
+
 ko.extenders.numeric = function (target, precision) {
     //create a writable computed observable to intercept writes to our observable
     var result = ko.pureComputed({
@@ -181,6 +182,8 @@ window.app.su_Service = (function() {
         updateuserweek: function () { return baseUserWeekOrder + "update" },
         canCreateOrderOnNextWeek: function () { return baseUserWeekOrder + "canCreateOrderOnNextWeek" }
     }
+    
+           
 
     function ajaxRequest(type, url, data) {
         var options = {
@@ -275,9 +278,9 @@ window.app.su_Service = (function() {
         DeleteAccount: function (accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));
         },
-        //LoadUserWeekOrder: function(wyDto) {
-        //    return ajaxRequest("put", baseUserWeekOrder, wyDto);
-        //},
+        LoadUserWeekOrder: function(wyDto) {
+            return ajaxRequest("put", baseUserWeekOrder, wyDto);
+        },
         IsNextWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceUserWeekOrders.isNextWeekYear(), wyDto);
         },

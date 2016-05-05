@@ -40,7 +40,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 UserDayPaiments = daypaiments,
                 WeekSummaryPaiment = daypaiments.Select(dp => dp.SummaryDayPaiment).Sum(),
                 WeekYear = WeekYearDto.MapDto(weekOrderMenu.MenuForWeek.WorkingWeek),
-                Balance = weekOrderMenu.Balance,
+                Balance = weekOrderMenu.User.Balance,
                 Note = weekOrderMenu.Note
             };
         }

@@ -4,16 +4,7 @@
         <div class="panel panel-default" id="mfwPanel">
 
             <table class="table table-striped table-bordered fixed  table-hover" id="ordesTable">
-                @*<colgroup>
-                    <col class="col-md-1" />
-                    <col class="col-md-2" />
-                    <!--ko foreach: DaysOfWeek-->
-                    <!--ko foreach: $root.Categories-->
-                    <col class="col-md-1"/>
-                    <!--/ko-->
-                    <!--/ko-->
-                    <col class="col-md-2" />
-                </colgroup>*@
+               
                 <thead>
                 <tr>
                     <th rowspan="4"><span>№</span></th>
@@ -109,12 +100,4 @@
             </table>
         </div>
             @Scripts.Render("~/bundles/WeekOrders")
-            <script type="text/javascript">
-
-                //$('.nav.navbar-nav li').eq(1).addClass('active');
-                //$('.menu li ').click(function (e) {
-
-                //    $('.menu li ').removeClass('active');
-                //    $('.menu li ').eq( 1 ).addClass('active');
-                //});
-            </script>
+           

@@ -28,7 +28,6 @@ namespace ACSDining.Core.Domains
 
         public double WeekPaid { get; set; }
         public bool WeekIsPaid { get; set; }
-        public double Balance { get; set; }
         public double WeekOrderSummaryPrice { get; set; }
         public string Note { get; set; }
 

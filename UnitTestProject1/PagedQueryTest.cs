@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
@@ -44,6 +46,22 @@ namespace UnitTestProject1
             List<WeekOrderMenu> needOrders = pagedOrders.OrderBy(po=>po.User.LastName).Skip(pageSize*(page-1)).Take(pageSize).ToList();
 
             Assert.IsNotNull(needOrders);
+        }
+
+        [TestMethod]
+        public void StoredSumTest()
+        {
+            int? week = 17;
+            int? year = 2016;
+            var weekParameter = week.HasValue ?
+                new SqlParameter("@Week", week) :
+                new SqlParameter("@Week", typeof(int));
+            var yearParameter = week.HasValue ?
+                new SqlParameter("@Year", year) :
+                new SqlParameter("@Year", typeof(int));
+
+            var res = _unitOfWork.GetContext().Database.SqlQuery(typeof(double[]),"GetSumDishCounts"/*, weekParameter, yearParameter*/).ToListAsync().Result;
+            Assert.IsNotNull(res);
         }
     }
 }

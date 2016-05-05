@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -11,6 +12,8 @@ using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -22,11 +25,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
+        private readonly ApplicationUserManager UserManager;
 
         public PaimentController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
             _db = ((UnitOfWork)unitOfWorkAsync).GetContext();
+            UserManager = new ApplicationUserManager(new UserStore<User>(_db)); 
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
@@ -110,21 +115,23 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof(double))]
         public async Task<IHttpActionResult> UpdatePaiment( int orderid, double pai)
         {
-            WeekOrderMenu weekOrder = _orderMenuService.Find(orderid);
+            WeekOrderMenu weekOrder = _db.WeekOrderMenus.Find(orderid);
             if (weekOrder == null)
             {
                 return NotFound();
             }
-            weekOrder.Balance += weekOrder.WeekPaid;
+            weekOrder.User.Balance += weekOrder.WeekPaid;
             weekOrder.WeekPaid = pai;
-            weekOrder.Balance -= weekOrder.WeekPaid;
+            weekOrder.User.Balance -= weekOrder.WeekPaid;
 
-            _db.WeekOrderMenus.Remove(weekOrder);
-            _db.WeekOrderMenus.Add(weekOrder);
+            _db.Entry(weekOrder).State=EntityState.Modified;
+            _db.Entry(weekOrder.User).State = EntityState.Modified;
+            _db.WeekOrderMenus.Attach(weekOrder);
+           // _db.WeekOrderMenus.Add(weekOrder);
 
             await _unitOfWork.SaveChangesAsync();
 
-            return Ok(weekOrder.Balance);
+            return Ok(weekOrder.User.Balance);
         }
 
         protected override void Dispose(bool disposing)

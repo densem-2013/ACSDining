@@ -117,30 +117,30 @@ GO
 -- Description:	< Создаёт динамический SQL запрос для занесения в таблицу WeekUserOrdersReport 
 --              данных о заказанных блюдах за неделю >
 -- =============================================
-CREATE FUNCTION "DynSqlWeekOrders"
+CREATE FUNCTION [dbo].[DynSqlWeekOrders]
 (
 	@week integer,
 	@year integer
 )
-RETURNS varchar(max)
+RETURNS nvarchar(max)
 AS
 BEGIN
 	-- Declare the return variable here
-	DECLARE @dynsql varchar(max),@dynforinstitle varchar(512),@dynforsum varchar(max), @cats integer,@dcount integer
+	DECLARE @dynsql nvarchar(max),@dynforinstitle nvarchar(512), @cats integer,@dcount integer
 	DECLARE @DAYCOUNT INTEGER
 	SET @DAYCOUNT=dbo.GetDayCount(@week,@year)
 	DECLARE @CATCOUNT INTEGER
 	SET @CATCOUNT=dbo.GetDishCategoriesCount()
 	-- Add the T-SQL statements to compute the return value here
 	SET @dcount=1
-	SELECT @dynsql='CREATE TABLE WeekUserOrdersReport ([Username] varchar(128),'
+	SELECT @dynsql='CREATE TABLE WeekUserOrdersReport ([Username] nvarchar(128),'
 	SELECT @dynforinstitle='INSERT WeekUserOrdersReport'
 	WHILE @dcount<=@DAYCOUNT
 	BEGIN
 		SET @cats=1
 		WHILE @cats<=@CATCOUNT
 		BEGIN
-			SET @dynsql=@dynsql+'[D'+cast(@dcount as varchar)+'-C'+cast(@cats as varchar)+']'+' float(2),';
+			SET @dynsql=@dynsql+'[D'+cast(@dcount as nvarchar)+'-C'+cast(@cats as nvarchar)+']'+' float(2),';
 			SET @cats=@cats+1;
 		END	
 		SET @dcount=@dcount+1;
@@ -149,7 +149,6 @@ BEGIN
 	SET @dynsql=LEFT(@dynsql,len(@dynsql)-1)
 	SET @dynsql=@dynsql+');'
 	SET @dynforinstitle=@dynforinstitle+' VALUES('
-	SET @dynforsum='IF OBJECT_ID(''SumWeekUnitReport'') IS NOT NULL DROP TABLE SumWeekUnitReport;CREATE TABLE SumWeekUnitReport ([SumQuant] float(2));  DECLARE @VT FLOAT(2);'
 	
 	DECLARE MY_US_CURSOR_2 CURSOR
 	DYNAMIC
@@ -157,7 +156,7 @@ BEGIN
 	
 	OPEN MY_US_CURSOR_2
 	
-    declare @username varchar(128)
+    declare @username nvarchar(128)
     declare @weekordid integer 
 	declare @dqua float(2)
 	
@@ -185,8 +184,6 @@ BEGIN
 				WHILE @@FETCH_STATUS = 0
 				BEGIN
 						SET @dynsql=@dynsql+STR(@dqua,4,2)+','
-						SET @dynforsum=@dynforsum+' SELECT @VT=(SELECT SUM(P.[D'+cast(@dcount as varchar)+'-C'+cast(@cats as varchar)+']) FROM [ACS_Dining].[dbo].[WeekUserOrdersReport] AS P  GROUP BY ());'
-						SET @dynforsum=@dynforsum+' INSERT SumWeekUnitReport VALUES(@VT);'
 						FETCH NEXT FROM DISHQUANT_CURSOR_2 INTO @dqua
 				END				
 				SET @cats=@cats+1;
@@ -201,9 +198,7 @@ BEGIN
 	END;
 	CLOSE MY_US_CURSOR_2
 	DEALLOCATE MY_US_CURSOR_2
-	
-	SET @dynsql=@dynsql+@dynforsum
-		
+			
 	RETURN @dynsql
 END
 GO
@@ -227,7 +222,7 @@ BEGIN
 
 	IF OBJECT_ID('WeekUserOrdersReport') IS NOT NULL DROP TABLE WeekUserOrdersReport;
     -- Insert statements for procedure here
-    declare @dynsql varchar(max)
+    declare @dynsql nvarchar(max)
     set @dynsql=dbo.DynSqlWeekOrders(@week,@year)
     exec(@dynsql)
     set @dynsql=dbo.DynSqlSumWeekOrdersByWeekYear(@week,@year)
@@ -309,7 +304,7 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Возвращает суммарные количества блюд на неделе>
 -- =============================================
-CREATE PROCEDURE [dbo].[GetSumDishCounts]
+CREATE PROCEDURE "GetSumDishCounts"
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -327,16 +322,16 @@ GO
 -- Description:	<Возвращает sql для обновления таблицы SumWeekUnitReport 
 --	значениями суммарных количеств блюд за указанную неделю>
 -- =============================================
-ALTER FUNCTION [dbo].[DynSqlSumWeekOrdersByWeekYear]
+CREATE FUNCTION "DynSqlSumWeekOrdersByWeekYear"
 (
 	@week integer,
 	@year integer
 )
-RETURNS varchar(max)
+RETURNS nvarchar(max)
 AS
 BEGIN
 	-- Declare the return variable here
-	DECLARE @dynsql varchar(max), @cats integer,@dcount integer
+	DECLARE @dynsql nvarchar(max), @cats integer,@dcount integer
 	DECLARE @DAYCOUNT INTEGER
 	SET @DAYCOUNT=dbo.GetDayCount(@week,@year)
 	DECLARE @CATCOUNT INTEGER
@@ -351,7 +346,7 @@ BEGIN
 			SET @cats=1
 			WHILE @cats<=@CATCOUNT
 			BEGIN
-					SET @dynsql=@dynsql+' SET @VT=(SELECT SUM(P.[D'+cast(@dcount as varchar)+'-C'+cast(@cats as varchar)+']) FROM [ACS_Dining].[dbo].[WeekUserOrdersReport] AS P  GROUP BY ());'
+					SET @dynsql=@dynsql+' SET @VT=(SELECT SUM(P.[D'+cast(@dcount as nvarchar)+'-C'+cast(@cats as nvarchar)+']) FROM [ACS_Dining].[dbo].[WeekUserOrdersReport] AS P  GROUP BY ());'
 					SET @dynsql=@dynsql+' INSERT SumWeekUnitReport VALUES(@VT);'
 				SET @cats=@cats+1;
 			END	

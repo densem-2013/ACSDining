@@ -16,7 +16,7 @@ using DayOfWeek = ACSDining.Core.Domains.DayOfWeek;
 namespace ACSDining.Infrastructure.Identity
 {
     //public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
-        public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
+        public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
 
         private static readonly Random Rand = new Random();
@@ -29,9 +29,9 @@ namespace ACSDining.Infrastructure.Identity
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
             //                          @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
-            string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
+            //string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
 
-            //string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
+            string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
 
             InitializeIdentityForEf(context, _path);
             var dishes = GetDishesFromXml(context, _path);

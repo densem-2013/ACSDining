@@ -75,7 +75,7 @@
 
         self.allPages = ko.dependentObservable(function() {
             var pages = [];
-            for (i = 0; i <= self.maxPageIndex(); i++) {
+            for (var i = 0; i <= self.maxPageIndex(); i++) {
                 pages.push({ pageNumber: (i + 1) });
             }
             return pages;
@@ -151,17 +151,17 @@
         }
 
         self.create = function() {
-                    app.su_Service.CreateDish(self.ChangingDish()).then(function (resp) {
-                        self.loadDishes(self.SelectedCategory());
-                        $("#modalbox").modal("hide");
-                    }, onError);
+
+            app.su_Service.CreateDish(self.ChangingDish()).then(function (resp) {
+                  self.loadDishes(self.SelectedCategory());
+            }, onError);
 
         };
 
         self.init = function() {
             app.su_Service.GetCategories().then(function(resp) {
-                self.Categories([]);
-                self.Categories.pushAll(resp);
+               // self.Categories([]);
+                self.Categories(resp);
                 self.SelectedCategory(self.Categories()[0]);
                 self.loadDishes(self.Categories()[0]);
             }, onError);

@@ -30,7 +30,7 @@ namespace ACSDining.Web
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/AccountsInfo").Include(
-                        "~/Areas/AdminArea/Content/scripts/AccountsInfo.js"
+                        "~/Areas/SU_Area/Content/scripts/AccountsInfo.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/WeekOrders").Include(
@@ -61,7 +61,8 @@ namespace ACSDining.Web
                         "~/Scripts/bootstrap-datetimepicker.js",
                         "~/Scripts/knockout-3.2.0.js",
                         "~/Scripts/knockout.mapping-latest.js",
-                        "~/Scripts/knockout-bootstrap.min.js"
+                        "~/Scripts/knockout-bootstrap.min.js",
+                       "~/Scripts/jquery.loading-indicator.js"
             ));
 
             //bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
@@ -88,7 +89,8 @@ namespace ACSDining.Web
                        "~/Content/themes/Cupertino/jquery-ui.theme.min.css",
                        "~/Content/Site.css",
                        "~/Content/css/style.css",
-                       "~/Content/checkbox.css"
+                       "~/Content/checkbox.css",
+                       "~/Content/jquery.loading-indicator.css"
                        ));
 
             bundles.Add(new StyleBundle("~/Modal/css").Include(

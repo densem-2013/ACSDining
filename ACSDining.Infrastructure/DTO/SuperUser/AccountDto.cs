@@ -8,7 +8,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public string Email { get; set; }
         public string FullName { get; set; }
         public string LastLoginTime { get; set; }
-
+        public double Balance { get; set; }
         public string RegistrationDate { get; set; }
         //Пользователь может делать заказ
         public bool CanMakeBooking { get; set; }
@@ -25,7 +25,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 LastLoginTime = user.LastLoginTime.ToShortDateString(),
                 RegistrationDate = user.RegistrationDate.ToShortDateString(),
                 CanMakeBooking = user.CanMakeBooking,
-                IsExisting = user.IsExisting
+                IsExisting = user.IsExisting,
+                Balance = user.Balance
             };
         }
     }

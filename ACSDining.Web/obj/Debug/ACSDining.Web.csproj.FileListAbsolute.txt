@@ -698,3 +698,5 @@ E:\ACSDining\ACSDining.Web\bin\zh-Hant\System.Spatial.resources.dll
 E:\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
 E:\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.dll
 E:\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\RdlCompile.cache
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\obj\Debug\RdlCompile.compiled

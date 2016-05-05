@@ -70,16 +70,16 @@
                     <td style="vertical-align: middle; text-align: center;">
                         <!--ko foreach: Dishes--> 
                         <!--ko with: OrderQuantity-->
-                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseenter: $data.onmouseenter , mouseleave:function(){$data.onFocusOut();; $root.CalcSummary($data.beenChanged())}}">
+                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}">
                             <!--ko ifnot: isEditMode -->
                             <span data-bind="text: Quantity"></span>
                             <!--/ko-->
                             <!-- ko if: isEditMode -->
                             <!-- ko if: ($index() % 4 === 0) -->
-                            <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())} }"></select>
+                            <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())}, mouseenter: $data.onmouseenter , mouseleave:function(){$data.onFocusOut();; $root.CalcSummary($data.beenChanged())} }"></select>
                             <!--/ko-->
                             <!-- ko ifnot: ($index() % 4 === 0) -->
-                            <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())} }"></select>
+                            <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())},mouseenter: $data.onmouseenter , mouseleave:function(){$data.onFocusOut();; $root.CalcSummary($data.beenChanged())} }"></select>
                             <!--/ko-->
                             <!--/ko-->
                         </div> 
@@ -120,7 +120,15 @@
 
         $("#pageTable").height("350px");
         $("#modalbox").offset({ top: 100 });
-
+        
+            //var homeLoader = $('body').loadingIndicator({
+            //    useImage: false,
+            //}).data("loadingIndicator");
+				
+            //setTimeout(function() {
+            //    homeLoader.hide();
+            //}, 2500);
+				
     })();
 </script>
 

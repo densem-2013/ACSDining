@@ -39,6 +39,8 @@ namespace ACSDining.Core.Domains
         [DataType(DataType.DateTime)]
         public virtual DateTime LastLoginTime { get; set; }
 
+        public double Balance { get; set; }
+
         [Required]
         [DataType(DataType.DateTime)]
         public virtual DateTime RegistrationDate { get; set; }

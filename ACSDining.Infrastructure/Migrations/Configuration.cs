@@ -26,7 +26,7 @@ namespace ACSDining.Infrastructure.Migrations
             ApplicationDbInitializer.CreateWorkingDays(context);
             ApplicationDbInitializer.CreateMenuForWeek(context, dishes);
             _path = _path.Replace(@"DishDetails", "Employeers");
-            // ApplicationDbInitializer.GetUsersFromXml(context, _path);
+             ApplicationDbInitializer.GetUsersFromXml(context, _path);
             ApplicationDbInitializer.CreateOrders(context);
             _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
             Utility.CreateStoredFuncs(_path);

@@ -956,12 +956,12 @@ background-color: #E5D5E5;
     transition: background 1.3s ease-in-out;
 }
 .btn-circle:hover, .btn-circle:focus {
-    outline: 0;
+    /*outline: 0;
     outline-color: initial;
     outline-style: initial;
     outline-width: 0px;
     color: #fff;
-    background: rgba(255,255,255,.1);
+    background: rgba(255,255,255,.1);*/
 }
 a:hover,
 a:focus {
@@ -970,9 +970,9 @@ a:focus {
 }
 .btn-circle:hover,
 .btn-circle:focus {
-    outline: 0;
+    /*outline: 0;
     color: #fff;
-    background: rgba(255,255,255,.1);
+    background: rgba(255,255,255,.1);*/
 }
 
 .btn-circle i.animated {
