@@ -1,5 +1,15 @@
-﻿(function () {
+﻿/// <reference path="../jquery-2.1.3.min.js" />
+/// <reference path="../knockout-3.2.0.js" />
+/// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
+/// <reference path="~/Scripts/knockout-3.2.0.js" />
+/// <reference path="~/Scripts/bootstrap.js" />
+/// <reference path="~/Scripts/knockout-3.3.0.debug.js" />
+/// <reference path="~/Scripts/knockout.mapping-latest.debug.js" />
+/// <reference path="~/Content/app/jquery-1.10.2.js" />
+(function () {
 
+    $("#infoTitle span").text("Управление пользователями")
+        .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
     $("ul.nav.navbar-nav li:last-child").addClass("active");
     var accountInfo = function(account) {
         var self = this;
@@ -16,7 +26,7 @@
     var accountsViewModel = function() {
         var self = this;
         self.Accounts = ko.observableArray([]);
-
+        self.isSelected = ko.observable(false);
         self.Message = ko.observable("");
 
         self.myDate = ko.observable(new Date());
@@ -30,16 +40,6 @@
             return res;
 
         });
-
-        self.TotalCount = ko.observable();
-        self.loadAccounts = function () {
-            app.su_Service.GetAccounts().then(function (resp) {
-                //self.Accounts([]);
-                self.Accounts(ko.utils.arrayMap(resp, function (item) {
-                    return new accountInfo(item);
-                }));
-            }, onError);
-        }
 
         function onError(error) {
             self.Message("Error: " + error.status + " " + error.statusText);
@@ -88,6 +88,50 @@
 
         self.moveToPage = function (index) {
             self.pageIndex(index);
+        };
+        self.loadAccounts = function () {
+            app.su_Service.GetAccounts().then(function (resp) {
+                //self.Accounts([]);
+                self.Accounts(ko.utils.arrayMap(resp, function (item) {
+                    return new accountInfo(item);
+                }));
+            }, onError);
+        }
+        self.search = ko.observable();
+        self.filterList = ko.observableArray([]);
+        self.handledSearch = ko.pureComputed({
+            read: function () {
+                return self.search();
+            },
+            write: function (value) {
+
+                value = value.replace(new RegExp(/[^\w]/g), "");
+                self.search(value);
+            },
+            owner: self
+        });
+
+        var stringStartsWith = function(string, startsWith) {
+            string = string || "";
+            if (startsWith.length > string.length)
+                return false;
+            return string.substring(0, startsWith.length) === startsWith;
+        };
+        self.onkeydown = function (data, event) {
+            self.filterList([]);
+            if (self.isSelected()) {
+                var searchval = self.search();
+                if (searchval) {
+                    var filterarray = ko.utils.arrayFilter(self.Accounts(), function(item) {
+                        return stringStartsWith(item.FullName(), searchval);
+                    });
+                    self.filterList.pushAll(filterarray);
+                }
+            } else {
+                var size = self.pageSize();
+                var start = self.pageIndex() * size;
+                self.filterList(self.Accounts().slice(start, start + size));
+            }
         };
 
         self.init = function () {

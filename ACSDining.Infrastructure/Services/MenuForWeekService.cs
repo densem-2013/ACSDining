@@ -3,29 +3,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Repositories;
-using LinqKit;
 
 namespace ACSDining.Infrastructure.Services
 {
     public interface IMenuForWeekService: IService<MenuForWeek>
     {
         //Получить цены на каждое блюдо в меню на указанной неделе
-        double[] GetUnitWeekPricesByWeekYear(WeekYearDto wyDto, int catLenth);
+        //double[] GetUnitWeekPricesByWeekYear(WeekYearDto wyDto, int catLenth);
         
         MenuForWeek GetWeekMenuByWeekYear(WeekYearDto wyDto);
 
-        List<int> WeekNumbers();
+        //List<int> WeekNumbers();
         
         IQueryable<MenuForWeek> GetAll();
         
         Task<bool> DeleteMenuForWeek(int menuid);
-        void CreateByWeekYear(WeekYearDto wyDto);
+        //void CreateByWeekYear(WeekYearDto wyDto);
         MenuForWeek FindById(int menuid);
 
         WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto);
-        WorkingWeek UpdateWorkDays(WorkWeekDto weekModel);
+        //WorkingWeek UpdateWorkDays(WorkWeekDto weekModel);
     }
 
     public class MenuForWeekService : Service<MenuForWeek>, IMenuForWeekService
@@ -38,19 +36,19 @@ namespace ACSDining.Infrastructure.Services
             _repository = repository;
         }
 
-        public void CreateByWeekYear(WeekYearDto wyDto)
-        {
-             _repository.CreateMenuForWeekOnWeekYear(wyDto);
-        }
-        public double[] GetUnitWeekPricesByWeekYear(WeekYearDto wyDto, int catLenth)
-        {
-            return _repository.UnitWeekPricesByWeekYear(wyDto, catLenth);
-        }
+        //public void CreateByWeekYear(WeekYearDto wyDto)
+        //{
+        //     _repository.CreateMenuForWeekOnWeekYear(wyDto);
+        //}
+        //public double[] GetUnitWeekPricesByWeekYear(WeekYearDto wyDto, int catLenth)
+        //{
+        //    return _repository.UnitWeekPricesByWeekYear(wyDto, catLenth);
+        //}
 
-        public List<int> WeekNumbers()
-        {
-            return _repository.GetWeekNumbers();
-        }
+        //public List<int> WeekNumbers()
+        //{
+        //    return _repository.GetWeekNumbers();
+        //}
 
         public MenuForWeek FindById(int menuid)
         {
@@ -77,17 +75,17 @@ namespace ACSDining.Infrastructure.Services
                 _repository.WorkWeekByWeekYear(wyDto);
         }
 
-        public WorkingWeek UpdateWorkDays(WorkWeekDto weekModel)
-        {
-            WorkingWeek week = GetWorkWeekByWeekYear(weekModel.WeekYear);
+        //public WorkingWeek UpdateWorkDays(WorkWeekDto weekModel)
+        //{
+        //    WorkingWeek week = GetWorkWeekByWeekYear(weekModel.WeekYear);
 
-            week.WorkingDays.ForEach(x =>
-            {
-                var firstOrDefault = weekModel.WorkDays.FirstOrDefault(wd => wd.WorkdayId == x.Id);
-                var isWorking = firstOrDefault != null && firstOrDefault.IsWorking;
-                x.IsWorking = isWorking;
-            });
-            return week;
-        }
+        //    week.WorkingDays.ForEach(x =>
+        //    {
+        //        var firstOrDefault = weekModel.WorkDays.FirstOrDefault(wd => wd.WorkdayId == x.Id);
+        //        var isWorking = firstOrDefault != null && firstOrDefault.IsWorking;
+        //        x.IsWorking = isWorking;
+        //    });
+        //    return week;
+        //}
     }
 }

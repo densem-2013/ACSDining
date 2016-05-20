@@ -1,5 +1,6 @@
 ﻿window.app = window.todoApp || {};
 
+
 ko.observableArray.fn.pushAll = function (valuesToPush) {
     var underlyingArray = this();
     this.valueWillMutate();
@@ -19,7 +20,6 @@ ko.bindingHandlers.hover = {
         });
     }
 }
-
 
 ko.extenders.numeric = function (target, precision) {
     //create a writable computed observable to intercept writes to our observable
@@ -148,7 +148,7 @@ window.app.su_Service = (function() {
 
     var baseOrdersUri = "/api/Orders/";
     var serviceOrdersUrls = {
-        factweekorders: function(pageSize, page) { return baseOrdersUri + "fact/" + pageSize + "/" + page },
+        factweekorders: function( /*pageSize, page*/) {return baseOrdersUri + "fact"}, // "fact/" + pageSize + "/" + page },
         planweekorders: function(pageSize, page) { return baseOrdersUri + "plan/" + pageSize + "/" + page },
         updateWeekOrder: function() { return baseOrdersUri + "update" },
         createOrder: function() { return baseOrdersUri + "create" },
@@ -166,8 +166,8 @@ window.app.su_Service = (function() {
 
     var basePaimentsUri = "/api/Paiment/";
     var servicePaimentsUrls = {
-        updatePaiment: function(orderid) { return basePaimentsUri + "updatePaiment/" + orderid },
-        totalPaimentsbyDish: function (wyDto) { return basePaimentsUri + "paimentsByDish/"  }
+        weekPaiments: function () { return basePaimentsUri },
+        updatePaiment: function() { return basePaimentsUri + "updatePaiment"}
     }
     var baseAccountsUri = "/api/Account/";
     var serviceAccountsUrls = {
@@ -176,14 +176,22 @@ window.app.su_Service = (function() {
     }
 
     var baseUserWeekOrder = "/api/Employee/";
-    var serviceUserWeekOrders= {
-        nextWeekOrderExists: function () { return baseUserWeekOrder + "nextWeekOrderExists" },
+    var serviceUserWeekOrders = {
+        currentweek: function () { return baseUserWeekOrder + "curWeekYear"; },
+        nextWeekOrderExists: function() { return baseUserWeekOrder + "nextWeekOrderExists" },
         isNextWeekYear: function () { return baseUserWeekOrder + "isNextWeekYear" },
-        updateuserweek: function () { return baseUserWeekOrder + "update" },
-        canCreateOrderOnNextWeek: function () { return baseUserWeekOrder + "canCreateOrderOnNextWeek" }
+        isCurWeekYear: function () { return baseUserWeekOrder + "isCurWeekYear" },
+        updateuserweek: function() { return baseUserWeekOrder + "update" },
+        canCreateOrderOnNextWeek: function() { return baseUserWeekOrder + "canCreateOrderOnNextWeek" },
+        nextWeekYear: function () { return baseUserWeekOrder + "nextWeekYear" }
     }
-    
-           
+
+    var baseExcelUri = "/api/GetExcel/";
+    var serviceGetExcel= {
+        paiments: function () { return baseExcelUri + "paiments" },
+        menu: function () { return baseExcelUri + "menu" },
+        orders: function () { return baseExcelUri + "orders" }
+    }
 
     function ajaxRequest(type, url, data) {
         var options = {
@@ -204,8 +212,8 @@ window.app.su_Service = (function() {
         LoadWeekMenu: function(wyDto) {
             return ajaxRequest("put", baseWeekMenuUri, wyDto);
         },
-        GetNextWeekYear: function(wyDto) {
-            return ajaxRequest("put", serviceWeekMenuUrls.nextWeekYear(), wyDto);
+        GetNextWeekYear: function() {
+            return ajaxRequest("get", serviceWeekMenuUrls.nextWeekYear());
         },
         IsNextWeekMenuExists: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.isnextweekmenuexists());
@@ -214,7 +222,7 @@ window.app.su_Service = (function() {
             return ajaxRequest("get", serviceWeekMenuUrls.currentweek());
         },
         ApplyWorkWeek: function(wwDto) {
-            return ajaxRequest("put", workweekapply, wwDto);
+            return ajaxRequest("put", serviceWeekMenuUrls.workweekapply(), wwDto);
         },
         LoadWeekNumbers: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.weekNumbers());
@@ -250,8 +258,8 @@ window.app.su_Service = (function() {
             return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishId));
         },
         //Orders
-        FactLoadWeekOrders: function (pageSize, page,wyDto) {
-            return ajaxRequest("put", serviceOrdersUrls.factweekorders(pageSize, page), wyDto);
+        FactLoadWeekOrders: function (wyDto) {
+            return ajaxRequest("put", serviceOrdersUrls.factweekorders(), wyDto);
         },
         PlanLoadWeekOrders: function (pageSize, page, wyDto) {
             return ajaxRequest("put", serviceOrdersUrls.planweekorders(pageSize, page), wyDto);
@@ -267,10 +275,13 @@ window.app.su_Service = (function() {
         },
         //Paiments
         GetPaiments: function (wyDto) {
-            return ajaxRequest("put", basePaimentsUri, wyDto);
+            return ajaxRequest("put", servicePaimentsUrls.weekPaiments(), wyDto);
         },
-        UpdatePaiment: function(orderid, pai) {
-            return ajaxRequest("put", servicePaimentsUrls.updatePaiment(orderid), pai);
+        UpdatePaiment: function(uwp) {
+            return ajaxRequest("put", servicePaimentsUrls.updatePaiment(), uwp);
+        },
+        GetExcelPaiments: function(wyDto) {
+            return ajaxRequest("put", serviceGetExcel.paiments(), wyDto);
         },
         GetAccounts: function() {
              return ajaxRequest("get", serviceAccountsUrls.accounts());
@@ -278,11 +289,21 @@ window.app.su_Service = (function() {
         DeleteAccount: function (accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));
         },
+        //Employee
+        GetCurrentWeekYearForEmployee: function () {
+            return ajaxRequest("get", serviceUserWeekOrders.currentweek());
+        },
         LoadUserWeekOrder: function(wyDto) {
             return ajaxRequest("put", baseUserWeekOrder, wyDto);
         },
+        GetUserNextWeekYear: function() {
+            return ajaxRequest("get", serviceUserWeekOrders.nextWeekYear());
+        },
         IsNextWeekYear: function (wyDto) {
             return ajaxRequest("put", serviceUserWeekOrders.isNextWeekYear(), wyDto);
+        },
+        IsCurWeekYear: function (wyDto) {
+            return ajaxRequest("put", serviceUserWeekOrders.isCurWeekYear(), wyDto);
         },
         NextWeekOrderExists: function () {
             return ajaxRequest("get", serviceUserWeekOrders.nextWeekOrderExists());

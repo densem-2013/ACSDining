@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Repositories;
@@ -7,8 +9,7 @@ namespace ACSDining.Infrastructure.Services
 {
     public interface IGetExcelService : IService<WeekOrderMenu>
     {
-        string GetExcelFileFromPaimentsModel(List<UserWeekPaimentDto> paimentList,
-            string[] dishCategories, WorkingWeek workingWeek);
+        string/*Task<FileStream> */GetExcelFileFromPaimentsModel(WeekPaimentDto wpDto);
     }
 
     public class GetExcelService : Service<WeekOrderMenu>, IGetExcelService
@@ -21,10 +22,9 @@ namespace ACSDining.Infrastructure.Services
             _repository = repository;
         }
 
-        public string GetExcelFileFromPaimentsModel(List<UserWeekPaimentDto> paimentList,
-            string[] dishCategories, WorkingWeek workingWeek)
+        public string/*Task<FileStream> */ GetExcelFileFromPaimentsModel(WeekPaimentDto wpDto)
         {
-            return _repository.GetExcelFileFromPaimentsModel(paimentList, dishCategories, workingWeek);
+            return _repository.GetExcelFileFromPaimentsModel(wpDto);
         }
     }
 }

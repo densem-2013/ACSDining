@@ -15,7 +15,7 @@ namespace ACSDining.Infrastructure.DTO
 
     public class MenuCanBeOrderedMessageDto
     {
+        public int WeekMenuId { get; set; }
         public string DateTime { get; set; }
-        
     }
 }

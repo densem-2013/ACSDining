@@ -28,6 +28,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         private readonly IDishQuantityRelationsService _dishQuantityService;
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly ApplicationUserManager _userManager;
+        private readonly IWeekPaimentService _weekPaimentService;
 
         public EmployeeOrderApiController(IUnitOfWorkAsync unitOfWorkAsync)
         {
@@ -37,6 +38,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _dishQuantityService = new DishQuantityRelationsService(_unitOfWork.RepositoryAsync<DishQuantityRelations>());
             _userManager = new ApplicationUserManager(new UserStore<User>(_db));
+            _weekPaimentService=new WeekPaimentService(_unitOfWork.RepositoryAsync<WeekPaiment>());
         }
         
         /// <summary>
@@ -46,7 +48,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("")]
-        [ResponseType(typeof (UserWeekOrderDto))]
+        [ResponseType(typeof(EmployeeWeekOrderDto))]
         public async Task<IHttpActionResult> GetUserWeekOrderDto([FromBody] WeekYearDto wyDto)
         {
             string userid = RequestContext.Principal.Identity.GetUserId();
@@ -54,47 +56,50 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             {
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
-            WeekMenuDto weekmodel = WeekMenuDto.MapDto(_unitOfWork as UnitOfWork,
-                _weekMenuService.GetWeekMenuByWeekYear(wyDto));
+            //WeekMenuDto weekmodel = WeekMenuDto.MapDto(_unitOfWork as UnitOfWork,
+            //    _weekMenuService.GetWeekMenuByWeekYear(wyDto));
 
             //Меню на запрашиваемую неделю не было создано или заказ сделать ещё нельзя
-            if (weekmodel == null || !weekmodel.OrderCanBeCreated)
+
+            //int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+
+
+            //WeekOrderMenu ordmenu = _orderMenuService.FindByUserIdWeekYear(userid, wyDto);
+            WeekPaiment weekPaiment = _weekPaimentService.GetByUseridWeekYear(userid, wyDto);
+
+            if (weekPaiment == null)
             {
                 return Content(HttpStatusCode.BadRequest,
-                    string.Format(" menu on week {0} year {1} not created",wyDto.Week,wyDto.Year));
+                    string.Format(" menu on week {0} year {1} not created", wyDto.Week, wyDto.Year));
             }
 
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            EmployeeWeekOrderDto model = EmployeeWeekOrderDto.MapDto(_db, weekPaiment, wyDto);
 
-            UserWeekOrderDto model = null;
+            //if (ordmenu != null)
+            //{
+            //    model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu/*, catLength*/);
+            //}
+            //else
+            //{
+            //    User user =
+            //        await _userManager.FindByIdAsync(userid);
 
-            WeekOrderMenu ordmenu = _orderMenuService.FindByUserIdWeekYear(userid, wyDto);
+            //    if (!YearWeekHelp.WeekIsCurrentOrNext(wyDto))
+            //    {
+            //        return Content(HttpStatusCode.BadRequest,
+            //            string.Format(" order on week {0} year {1} not can be created", wyDto.Week, wyDto.Year));
+            //    }
+            //    ordmenu = _orderMenuService.CreateNew(user, wyDto);
 
-            if (ordmenu != null)
-            {
-                model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu, catLength);
-            }
-            else
-            {
-                User user =
-                    await _userManager.FindByIdAsync(userid);
-
-                if (!YearWeekHelp.WeekIsCurrentOrNext(wyDto))
-                {
-                    return Content(HttpStatusCode.BadRequest,
-                        string.Format(" order on week {0} year {1} not can be created", wyDto.Week, wyDto.Year));
-                }
-                ordmenu = _orderMenuService.CreateNew(user, wyDto);
-
-                model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu, catLength);
-            }
+            //    model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu/*, catLength*/);
+            //}
 
             return Ok(model);
         }
 
 
         [HttpGet]
-        [Route("CurrentWeekYear")]
+        [Route("curWeekYear")]
         [ResponseType(typeof (WeekYearDto))]
         public async Task<WeekYearDto> CurrentWeekNumber()
         {
@@ -104,30 +109,22 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// <summary>
         /// Обновляем пользовательскую заявку на неделю
         /// </summary>
-        /// <param name="userWeekOrderDto"></param>
+        /// <param name="userOrderDto"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("update")]
-        [ResponseType(typeof (int))]
-        public async Task<IHttpActionResult> UpdateUserWeekOrder([FromBody] UserWeekOrderDto userWeekOrderDto)
+        [ResponseType(typeof (bool))]
+        public async Task<IHttpActionResult> UpdateUserWeekOrder([FromBody] UpdateUserOrderDto userOrderDto)
         {
-            if (userWeekOrderDto == null)
+            if (userOrderDto == null)
             {
                 return BadRequest("Bad Request Object");
             }
-            WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.OrderId);
 
+            _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
 
-            if (forUpdateOrder == null)
-            {
-                return NotFound();
-            }
+            return Ok(true);
 
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
-
-            int res = await Task.FromResult(_orderMenuService.UpdateUserWeekOrder(catLength, userWeekOrderDto));
-
-            return Ok(res);
         }
 
         /// <summary>
@@ -162,7 +159,21 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             return Ok(wyDto.Week == nextWeekYearDto.Week && wyDto.Year == nextWeekYearDto.Year);
         }
+        /// <summary>
+        /// 
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("isCurWeekYear")]
+        [ResponseType(typeof(bool))]
+        public async Task<IHttpActionResult> IsCurWeek([FromBody] WeekYearDto wyDto)
+        {
+            WeekYearDto curWeekYearDto = YearWeekHelp.GetCurrentWeekYearDto();
+           // WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
 
+            return Ok(wyDto.Week == curWeekYearDto.Week && wyDto.Year == curWeekYearDto.Year);
+        }
         /// <summary>
         /// Возвращает уведомление о созданном заказе на следующую неделю
         /// </summary>
@@ -182,5 +193,12 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             return Ok(wom != null);
         }
 
+        [HttpGet]
+        [Route("nextWeekYear")]
+        [ResponseType(typeof(WeekYearDto))]
+        public Task<WeekYearDto> GetNextWeekYear()
+        {
+            return Task.FromResult(YearWeekHelp.GetNextWeekYear(YearWeekHelp.GetCurrentWeekYearDto()));
+        }
     }
 }

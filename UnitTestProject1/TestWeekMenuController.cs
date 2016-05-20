@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ACSDining.Core.Domains;
+﻿using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
-using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Infrastructure.UnitOfWork;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTestProject1
@@ -30,33 +21,33 @@ namespace UnitTestProject1
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
         }
 
-        [TestMethod]
-        public void TestCreateWeekMenuOnRepository()
-        {
-            WeekYearDto wyDto = new WeekYearDto
-            {
-                Week = 17,
-                Year = 2016
-            };
-            MenuForWeek newMenuForWeek = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
-            if (newMenuForWeek==null)
-            {
-                _weekMenuService.CreateByWeekYear(wyDto);
+        //[TestMethod]
+        //public void TestCreateWeekMenuOnRepository()
+        //{
+        //    WeekYearDto wyDto = new WeekYearDto
+        //    {
+        //        Week = 17,
+        //        Year = 2016
+        //    };
+        //    MenuForWeek newMenuForWeek = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
+        //    if (newMenuForWeek==null)
+        //    {
+        //        _weekMenuService.CreateByWeekYear(wyDto);
                 
-                newMenuForWeek = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
-            }
-            newMenuForWeek.MenuForDay.ToList().ForEach(x =>
-            {
-                if (!x.Dishes.Any())
-                {
-                    x.Dishes = TestHelper.GetDishes(_unitOfWork);
-                }
-            });
-            _unitOfWork.GetContext().Entry(newMenuForWeek).State = EntityState.Modified;
-            _unitOfWork.SaveChanges();
+        //        newMenuForWeek = _weekMenuService.GetWeekMenuByWeekYear(wyDto);
+        //    }
+        //    newMenuForWeek.MenuForDay.ToList().ForEach(x =>
+        //    {
+        //        if (!x.Dishes.Any())
+        //        {
+        //            x.Dishes = TestHelper.GetDishes(_unitOfWork);
+        //        }
+        //    });
+        //    _unitOfWork.GetContext().Entry(newMenuForWeek).State = EntityState.Modified;
+        //    _unitOfWork.SaveChanges();
 
-            Assert.IsNotNull(newMenuForWeek);
-        }
+        //    Assert.IsNotNull(newMenuForWeek);
+        //}
 
     }
 }

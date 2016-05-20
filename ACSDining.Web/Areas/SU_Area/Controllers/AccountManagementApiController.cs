@@ -39,7 +39,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (List<AccountDto>))]
         public async Task<List<AccountDto>> GetAccounts()
         {
-            return await Task.FromResult(UserManager.Users.Select(AccountDto.MapDto).ToList());
+            return await Task.FromResult(UserManager.Users.OrderBy(u=>u.UserName).Select(AccountDto.MapDto).ToList());
         }
 
         // DELETE api/Dishes/5

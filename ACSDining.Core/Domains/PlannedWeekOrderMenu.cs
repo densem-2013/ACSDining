@@ -16,9 +16,13 @@ namespace ACSDining.Core.Domains
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        
+        public double WeekOrderSummaryPrice { get; set; }
+        [JsonIgnore]
+        public User User { get; set; }
 
         [JsonIgnore]
-        public WeekOrderMenu WeekOrderMenu { get; set; }
+        public  MenuForWeek MenuForWeek { get; set; }
 
         [JsonIgnore]
         public ICollection<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; }

@@ -39,6 +39,19 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void CreateWeekMenuTestApi()
+        {
+            WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork);
+            WeekYearDto wyDto = new WeekYearDto
+            {
+                Week = 22,
+                Year = 2016
+            };
+            // weekMenuApi.GetWeekMenu(wyDto).Result;
+            Assert.IsNotNull(wyDto);
+        }
+
+        [TestMethod]
         public void GetCategoriesTest()
         {
             WeekMenuController weekMenuApi = new WeekMenuController(_unitOfWork);
@@ -56,7 +69,7 @@ namespace UnitTestProject1
                 Week = 17,
                 Year = 2016
             };
-            WeekOrderDto uwoDtos = ord.GetFactMenuOrders(wyDto,7,1).Result;
+            WeekOrderDto uwoDtos = ord.GetFactMenuOrders(wyDto).Result;
 
             Assert.IsNotNull(uwoDtos);
 
@@ -103,6 +116,18 @@ namespace UnitTestProject1
         public void EmployeDtoGetTest()
         {
             EmployeeOrderApiController emplorderapi=new EmployeeOrderApiController(_unitOfWork);
+        }
+        [TestMethod]
+        public void GetExcellTestApi()
+        {
+            GetExcelController excelApi = new GetExcelController(_unitOfWork);
+            WeekYearDto wyDto = new WeekYearDto
+            {
+                Week = 18,
+                Year = 2016
+            };
+            var result = excelApi.GetExelFromWeekPaimentstDto(wyDto);
+            Assert.IsNotNull(result);
         }
     }
 }

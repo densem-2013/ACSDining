@@ -334,11 +334,13 @@
     <Content Include="App_Data\DBinitial\DishDetails.xml" />
     <Content Include="App_Data\DBinitial\Employeers.xml" />
     <Content Include="App_Data\DBinitial\storedfunc.sql" />
+    <Content Include="App_Data\DBinitial\storedtriggers.sql" />
+    <Content Include="App_Data\DBinitial\storedview.sql" />
+    <Content Include="App_Data\DBinitial\TestProc.sql" />
     <Content Include="Areas\SU_Area\Content\scripts\AccountsInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\app.su_Service.js" />
     <Content Include="Areas\SU_Area\Content\scripts\DishesInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\PaimentInfo.js" />
-    <Content Include="Areas\SU_Area\Content\scripts\WorkDaysInfo.js" />
     <Content Include="Areas\SU_Area\Views\SU_\EmailTemplates\MenuCreateCompleted.html" />
     <Content Include="Content\app\custom.js" />
     <Content Include="Content\app\jquery-1.10.2.js" />
@@ -487,6 +489,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="ExcelFiles\Paiments.xlsx" />
     <None Include="Properties\PublishProfiles\Dining_package.pubxml" />
     <None Include="Properties\PublishProfiles\Dining_profile.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

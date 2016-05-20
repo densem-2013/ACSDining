@@ -28,15 +28,19 @@
                 </tr>
                 </thead>
                 <tbody>
-                <!--ko foreach: WeekUserOrderModels-->
+                <!--ko foreach: pagedList-->
                 <tr>
                     <td>
                         <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
                     </td>
                     <td class="rights"><span data-bind="text: UserName"></span></td>
-                    <!--ko foreach: UserDayOrders-->
-                    <!--ko foreach: DishQuantities-->
-                    <td class="orderquant" data-bind="singleClick: function(){$data.clicked($element, $parent.OrderCanBeChanged())}, event : { mouseenter: function(){ $data.onmouseenter($parent.OrderCanBeChanged());} , mouseleave:function(){$data.onFocusOut($parent.OrderCanBeChanged()); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$parentContext.$index(),$index()); } }}">
+                   
+                    <!--ko foreach: UserWeekOrderDishes-->
+                    <td class="orderquant" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseenter: onmouseenter , mouseleave:function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parent,$index()+1,$data.Quantity()); } }}">
+                        <!--ko ifnot: $root.SUCanChangeOrder-->
+                        <span data-bind="text: Quantity"></span>
+                        <!--/ko-->
+                        <!--ko if: $root.SUCanChangeOrder-->
                         <!--ko ifnot: $data.isEditMode()-->
                         <span data-bind="text: Quantity"></span>
                         <!--/ko-->
@@ -47,10 +51,11 @@
                         <!-- ko ifnot: ($index() % 4 === 0) -->
                         <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity"></select>
                         <!--/ko-->
+                        <!--/ko--> 
                         <!--/ko-->
                     </td>
                     <!--/ko-->
-                    <!--/ko-->
+
                     <th style="text-align: center"><span data-bind="text: WeekSummaryPrice"></span></th>
                 </tr>
                 <!--/ko-->
@@ -72,16 +77,7 @@
                                 <span class="label-info " data-bind=" text: pageIndex()+1"></span>
                                 <span> из </span>
                                 <span class="label-info " data-bind=" text: maxPageIndex()+1"></span>
-                                @*<div style="text-align: center">
-                                    <ul class="pagination pagination-lg">
-                                        <li data-bind=" foreach: allPages">
-                                            <button type="button" class="btn btn-default btn-circle" data-bind=" click: function() { $parent.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($parent.pageIndex() + 1) }">
-                                                <span class="glyphicon" data-bind="text: $data.pageNumber"></span>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>*@
-                            </div>
+                           </div>
                         </td>
                         <td colspan="3">
                             <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">

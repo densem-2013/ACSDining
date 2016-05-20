@@ -12,17 +12,22 @@ namespace ACSDining.Infrastructure.HelpClasses
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ApplicationDbContext"].ConnectionString;
 
-
-            //string path = Environment.CurrentDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-            //                          @"ACSDining.Web\App_Data\DBinitial\storedfunc.sql";
-
-            //var path = Environment.CurrentDirectory.Replace("bin\\Debug", "Sql\\instnwnd.sql");
             var file = new FileInfo(path);
             var script = file.OpenText().ReadToEnd();
 
             using (var connection = new SqlConnection(connectionString))
             {
                 var server = new Server(new ServerConnection(connection));
+                server.ConnectionContext.ExecuteNonQuery(script);
+
+                var _path = path.Replace("storedfunc", "storedview");
+                file = new FileInfo(_path);
+                script = file.OpenText().ReadToEnd();
+                server.ConnectionContext.ExecuteNonQuery(script);
+
+                _path = _path.Replace("storedview", "storedtriggers");
+                file = new FileInfo(_path);
+                script = file.OpenText().ReadToEnd();
                 server.ConnectionContext.ExecuteNonQuery(script);
             }
         }

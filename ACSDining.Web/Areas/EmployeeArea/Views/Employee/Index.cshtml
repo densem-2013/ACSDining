@@ -12,101 +12,101 @@
         <div class="panel panel-default" id="mfwPanel">
             <table>
                 <tbody>
-                <tr style="background: #565659;">
-                    <td >
-                        <div class="col-md-3" style="height: 40px; white-space: nowrap; vertical-align: middle; color: white; ">
-                            <!--ko ifnot: IsCurrentWeek-->
-                            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:SetMyDateByWeek((CurrentWeekYear())) , css:{ disabled: IsCurrentWeek}"/>
-                            <!--/ko-->
-                            <!--ko if: IsCurrentWeek-->
-                            <label>Текущая неделя</label>
-                            <!--/ko-->
-                        </div>
-                    </td>
-                    <td>
-                        <div class="col-md-4">
-                            <input type="button" value="Сохранить изменения" id="beenChanged" class="btn btn-warning" data-bind=" click:update , visible: BeenChanged" />
-                        </div>
-                    </td>
-                    <td >
-                        <div class="col-md-3 "style="float: right; margin-right: 170px;">
-                            <input type="button" id="btnaddmenu" class="btn" data-bind=" click: GoToNextWeekOrder ,value: MessageOnNextWeekButton,css:{disabled: IsNextWeekYear}, visible: CanCreateOrderOnNextWeek" />
-                        </div>
-                    </td>
-                </tr>
+                    <tr style="background: #565659;">
+                        <td>
+                            <div class="col-md-3" style="height: 40px; white-space: nowrap; vertical-align: middle; color: white; width: 200px">
+                                <!--ko ifnot: IsCurrentWeek-->
+                                <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn" data-bind=" click:SetMyDateByWeek((CurrentWeekYear())) , css:{ disabled: IsCurrentWeek}" />
+                                <!--/ko-->
+                                <!--ko if: IsCurrentWeek-->
+                                <label class="label-success" style="font-size: 18px; color: whitesmoke; padding: 7px; -ms-border-radius: 5px; border-radius: 5px">Текущая неделя </label>
+                                <!--/ko-->
+                            </div>
+                        </td>
+                        <td>
+                            <div class="col-md-4">
+                                <input type="button" value="Сохранить изменения" id="beenChanged" class="btn btn-warning" data-bind=" click:update , visible: BeenChanged" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="col-md-3 " style="float: right; margin-right: 170px;">
+                                <input type="button" id="btnaddmenu" class="btn btnaddmenu enabled" value="Редактировать заказ на следующую неделю" data-bind=" click: GoToNextWeekOrder , visible: CanCreateOrderOnNextWeek" />
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
                 <thead>
-                <tr>
-                    <th class="col-sm-1">День недели</th>
-                    <th class="col-sm-2">Категория блюда</th>
-                    <th class="col-sm-7">Название</th>
-                    <th class="col-sm-1">Заказать</th>
-                    <th class="col-sm-2" colspan="2">Стоимость</th>
-                </tr>
+                    <tr>
+                        <th class="col-sm-1">День недели</th>
+                        <th class="col-sm-2">Категория блюда</th>
+                        <th class="col-sm-7">Название</th>
+                        <th class="col-sm-1">Заказать</th>
+                        <th class="col-sm-2" colspan="2">Стоимость</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <!--ko foreach: UserDayOrders -->
-                <tr>
-                    <!--ko with: MenuForDay-->
-                    <td style="vertical-align: middle; text-align: center">
-                        <span data-bind="text: DayOfWeek"></span>
-                    </td>
-                    <td>
-                        <!-- ko foreach: Dishes-->
-                        <div style="border-bottom: 1px solid; text-align: right">
-                            <span data-bind="text: $data.Category() + ' : '"></span>
-                        </div>
-                        <!--/ko-->
-                    </td>
-                    <td>
-                        <!-- ko foreach: Dishes-->
-                        <div style="border-bottom: 1px solid;">
-                            <span data-bind="text: $data.Title"></span>
-                        </div>
-                        <!--/ko-->
-                    </td>
-                    <td style="vertical-align: middle; text-align: center;">
-                        <!--ko foreach: Dishes--> 
-                        <!--ko with: OrderQuantity-->
-                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}">
-                            <!--ko ifnot: isEditMode -->
-                            <span data-bind="text: Quantity"></span>
+                    <!--ko foreach: UserDayOrders -->
+                    <tr>
+                        <td style="vertical-align: middle; text-align: center">
+                            <span data-bind="text: $root.DaysOfWeek()[$index()]"></span>
+                        </td>
+                        <td>
+                            <!-- ko foreach: Dishes-->
+                            <div style="border-bottom: 1px solid; text-align: right">
+                                <span data-bind="text: Category() + ' : '"></span>
+                            </div>
                             <!--/ko-->
-                            <!-- ko if: isEditMode -->
-                            <!-- ko if: ($index() % 4 === 0) -->
-                            <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, event:{focusout: function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())}, mouseenter: $data.onmouseenter , mouseleave:function(){$data.onFocusOut();; $root.CalcSummary($data.beenChanged())} }"></select>
+                        </td>
+                        <td>
+                            <!-- ko foreach: Dishes-->
+                            <div style="border-bottom: 1px solid;">
+                                <span data-bind="text: $data.Title"></span>
+                            </div>
                             <!--/ko-->
-                            <!-- ko ifnot: ($index() % 4 === 0) -->
-                            <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, event:{focusout:  function(){$data.onFocusOut(); $root.CalcSummary($data.beenChanged())},mouseenter: $data.onmouseenter , mouseleave:function(){$data.onFocusOut();; $root.CalcSummary($data.beenChanged())} }"></select>
+                        </td>
+                        <td style="vertical-align: middle; text-align: center;">
+                            <!--ko foreach: Dishes-->
+                            <!--ko with: OrderQuantity-->
+                            <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseenter: onmouseenter , mouseleave:function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}">
+                              
+                               
+                                <!--ko ifnot: isEditMode -->
+                                <span data-bind="text: Quantity"></span>
+                                <!--/ko-->
+                                <!-- ko if: isEditMode -->
+                                <!-- ko if: ($index() % 4 === 0) -->
+                                <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity"></select>
+                                <!--/ko-->
+                                <!-- ko ifnot: ($index() % 4 === 0) -->
+                                <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity"></select>
+                                <!--/ko-->
+                                <!--/ko-->
+                            </div>
                             <!--/ko-->
                             <!--/ko-->
-                        </div> 
-                        <!--/ko-->
-                        <!--/ko-->
-                    </td>
-                    <td style="text-align: right">
-                        <!--ko foreach: Dishes-->
-                        <div>
-                            <span data-bind="text:  Price" style="border-bottom: 1px solid"></span><br/>
-                        </div>
-                        <!--/ko-->
-                    </td>
-                    <!--/ko-->
-                    <td style="text-align: right; vertical-align: middle; height: 100%">
-                        <span data-bind="text: DayOrderSummary"></span>
-                    </td>
+                        </td>
+                        <td style="text-align: right">
+                            <!--ko foreach: Dishes-->
+                            <div>
+                                <span data-bind="text:  Price" style="border-bottom: 1px solid"></span><br/>
+                            </div>
+                            <!--/ko-->
+                        </td>
+                        <td style="text-align: right; vertical-align: middle; height: 100%">
+                            <span data-bind="text: DayOrderSummary"></span>
+                        </td>
 
-                </tr>
-                <!--/ko-->
+                    </tr>
+                    <!--/ko-->
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="5" style=" text-align: right"><span style="font-weight: bold">Итого</span></td>
-                        <td ><span data-bind="text: WeekSummaryPrice" style="font-weight: bold"></span></td>
+                        <td><span data-bind="text: WeekSummaryPrice" style="font-weight: bold"></span></td>
                     </tr>
-</tfoot>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -120,15 +120,15 @@
 
         $("#pageTable").height("350px");
         $("#modalbox").offset({ top: 100 });
-        
+
             //var homeLoader = $('body').loadingIndicator({
             //    useImage: false,
             //}).data("loadingIndicator");
-				
+
             //setTimeout(function() {
             //    homeLoader.hide();
             //}, 2500);
-				
+
     })();
 </script>
 

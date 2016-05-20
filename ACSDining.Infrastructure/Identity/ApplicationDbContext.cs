@@ -7,13 +7,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Data.Entity.Core.Objects;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
+using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.Migrations;
+using CodeFirstStoreFunctions;
 
 namespace ACSDining.Infrastructure.Identity
 {
@@ -43,15 +47,24 @@ namespace ACSDining.Infrastructure.Identity
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            modelBuilder.Entity<MenuForDay>()
-                .HasMany(mfd => mfd.Dishes).WithMany(m => m.MenusForDay)
-                .Map(t => t.MapLeftKey("MenuID")
-                    .MapRightKey("DishID")
-                    .ToTable("MFD_Dishes"));
-
+            //modelBuilder.Entity<MenuForDay>()
+            //    .HasMany(mfd => mfd.Dishes).WithMany(m => m.MenusForDay)
+            //    .Map(t => t.MapLeftKey("MenuID")
+            //        .MapRightKey("DishID")
+            //        .ToTable("MFD_Dishes"));
+            modelBuilder.Conventions.Add(new FunctionsConvention<ApplicationDbContext>("dbo"));
             base.OnModelCreating(modelBuilder);
         }
 
+        //public virtual ObjectResult<WeekUserOrder> GetWeekUserOrderDishQuantyties(WeekYearDto wyDto)
+        //{
+        //    var weekParameter = new ObjectParameter("week", wyDto.Week);
+        //    var yearParameter = new ObjectParameter("year", wyDto.Year);
+        //    return
+        //        ((IObjectContextAdapter) this).ObjectContext.ExecuteFunction<WeekUserOrder>(
+        //            "GetUserWeekOrderDishes week,year", weekParameter, yearParameter);
+        //}
+ 
         public static ApplicationDbContext Create()
         {
              return new ApplicationDbContext();
@@ -68,6 +81,7 @@ namespace ACSDining.Infrastructure.Identity
         public virtual DbSet<ACSDining.Core.Domains.DayOfWeek> Days { get; set; }
         public virtual DbSet<Year> Years { get; set; }
         public virtual DbSet<DishQuantityRelations> DQRelations { get; set; }
+        public virtual DbSet<PlanDishQuantityRelations> PlanDQRelations { get; set; }
         public virtual DbSet<FoodQuantityRelations> FQRelations { get; set; }
         public virtual DbSet<Food> Foods { get; set; }
         public virtual DbSet<FoodCategory> FoodCategories { get; set; }
@@ -75,6 +89,10 @@ namespace ACSDining.Infrastructure.Identity
         public virtual DbSet<WorkingWeek> WorkingWeeks { get; set; }
         public virtual DbSet<WorkingDay> WorkingDays { get; set; }
         public virtual DbSet<DayOrderMenu> DayOrderMenus { get; set; }
-        public virtual DbSet<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; } 
+        public virtual DbSet<PlannedDayOrderMenu> PlannedDayOrderMenus { get; set; }
+        public virtual DbSet<WeekPaiment> WeekPaiments { get; set; }
+        public virtual DbSet<MfdDishPriceRelations> MfdDishPriceRelations { get; set; }
+        public virtual DbSet<DishPrice> DishPrices { get; set; }
+
     }
 }

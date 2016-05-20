@@ -1043,3 +1043,17 @@ select.input-small {
 .btn-default.active {
     background-color: #6CEDD5;
 }
+.modal-body {
+    font-size: 18px;
+    color: brown;
+}
+.modal-body input{
+    -moz-min-width: 500px;
+    -ms-min-width: 500px;
+    -o-min-width: 500px;
+    -webkit-min-width: 500px;
+    min-width: 500px;
+ }
+ .modal-body th {
+     color: darkcyan;
+ }

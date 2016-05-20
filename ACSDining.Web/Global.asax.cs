@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Web;
+﻿using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -22,7 +20,7 @@ namespace ACSDining.Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-           // TimerHandler.Init();
+            TimerHandler.Init();
         }
 
     }

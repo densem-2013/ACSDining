@@ -10,13 +10,13 @@ namespace ACSDining.Infrastructure.Services
     public interface IOrderMenuService : IService<WeekOrderMenu>
     {
         //Возвращает массив, хранящий количества каждого блюда, заказанного каждый день на неделе всеми клиентами
-        double[] SummaryWeekDishesOrderQuantities(WeekYearDto wyDto, int catLenth);
+        //double[] SummaryWeekDishesOrderQuantities(WeekYearDto wyDto, int catLenth);
         void UpdateOrderMenu(WeekOrderMenu weekOrder);
         WeekOrderMenu Find(int orderid);
         WeekOrderMenu FindByUserIdWeekYear(string userid, WeekYearDto wyDto);
         List<WeekOrderMenu> GetOrderMenuByWeekYear(WeekYearDto wyDto, int? pageSize = null, int? page = null);
-        WeekOrderMenu CreateNew( User user, WeekYearDto wyDto);
-        int UpdateUserWeekOrder(int catcount, UserWeekOrderDto userWeekOrderDto);
+        //WeekOrderMenu CreateNew( User user, WeekYearDto wyDto);
+       // int UpdateUserWeekOrder(int catcount, UserWeekOrderDto userWeekOrderDto);
         //Возвращает список пользователей, которые уже сделали заказ на указанное дневное меню для отправки им сообщения
         List<User> GetUsersMedeBooking(int daymenuid);
         int GetCountByWeekYear(WeekYearDto wyDto);
@@ -32,15 +32,15 @@ namespace ACSDining.Infrastructure.Services
             _repository = repository;
         }
 
-        public double[] SummaryWeekDishesOrderQuantities(WeekYearDto wyDto, int catLenth)
-        {
-            return _repository.SummaryDishesQuantities(wyDto,catLenth);
-        }
+        //public double[] SummaryWeekDishesOrderQuantities(WeekYearDto wyDto, int catLenth)
+        //{
+        //    return _repository.SummaryDishesQuantities(wyDto,catLenth);
+        //}
 
-        public double[] GetUserWeekOrderDishes(WeekOrderMenu wom, int daycount, int catlength)
-        {
-            return _repository.UserWeekOrderDishes(wom, daycount, catlength);
-        }
+        //public double[] GetUserWeekOrderDishes(WeekOrderMenu wom, int daycount, int catlength)
+        //{
+        //    return _repository.UserWeekOrderDishes(wom, daycount, catlength);
+        //}
 
         public void UpdateOrderMenu(WeekOrderMenu weekOrder)
         {
@@ -70,15 +70,15 @@ namespace ACSDining.Infrastructure.Services
                         om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&
                         om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year);
         }
-        public int UpdateUserWeekOrder(int catcount, UserWeekOrderDto userWeekOrderDto)
-        {
-            return _repository.UserWeekOrderUpdate(catcount, userWeekOrderDto);
-        }
+        //public int UpdateUserWeekOrder(int catcount, UserWeekOrderDto userWeekOrderDto)
+        //{
+        //    return _repository.UserWeekOrderUpdate(catcount, userWeekOrderDto);
+        //}
 
-        public WeekOrderMenu CreateNew( User user, WeekYearDto wyDto)
-        {
-            return _repository.CreateWeekOrderMenu( user, wyDto);
-        }
+        //public WeekOrderMenu CreateNew( User user, WeekYearDto wyDto)
+        //{
+        //    return _repository.CreateWeekOrderMenu( user, wyDto);
+        //}
 
         public List<User> GetUsersMedeBooking(int daymenuid)
         {

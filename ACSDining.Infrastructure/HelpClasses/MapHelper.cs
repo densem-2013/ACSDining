@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.HelpClasses
@@ -44,6 +45,15 @@ namespace ACSDining.Infrastructure.HelpClasses
                 .AsQueryable()
                 .ToArrayAsync().Result;
             return categories;
+        }
+        /// <summary>
+        /// Получить массив категорий блюд
+        /// </summary>
+        /// <param name="unitOfWorkAsync"></param>
+        /// <returns></returns>
+        public static string[] GetCategoriesStrings(ApplicationDbContext _db)
+        {
+            return _db.DishTypes.Select(dt => dt.Category).ToArray();
         }
     }
 }

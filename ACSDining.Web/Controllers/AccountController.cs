@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity.Owin;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Models.ViewModels;
 using ACSDining.Core.Domains;
+using Microsoft.AspNet.Identity.EntityFramework;
 using NLog;
 
 namespace ACSDining.Web.Controllers
@@ -80,13 +81,13 @@ namespace ACSDining.Web.Controllers
                     var user = UserManager.FindByName(model.LogIn);
                     if (user != null)
                     {
-                        result =
+                        var passres =
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
-                        if (result == SignInStatus.Success)
+                        if (passres == SignInStatus.Success)
                         {
-                            if (await UserManager.IsInRoleAsync(user.Id, "Employee"))
+                            if (await UserManager.IsInRoleAsync(user.Id, "Employee") )
                             {
                                 user.LastLoginTime = DateTime.UtcNow;
                                 Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
@@ -110,19 +111,23 @@ namespace ACSDining.Web.Controllers
                                     _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                         shouldLockout: false);
 
-                                return RedirectToAction("WeekMenu", "SU_", new { Area = "SU_Area" });
+                                return RedirectToAction("WeekMenu", "SU_", new {Area = "SU_Area"});
                             }
 
                         }
                         else
                         {
                             User userchangePass = UserManager.FindByName(model.LogIn);
-                                if (userchangePass != null)
-                                {
-                                    userchangePass.PasswordHash = _userManager.PasswordHasher.HashPassword(model.Password);
-                                    _userManager.Update(userchangePass);
-                                    await Login(model, returnUrl);
+                            if (userchangePass != null)
+                            {
+                                userchangePass.PasswordHash = _userManager.PasswordHasher.HashPassword(model.Password);
+                               var  updateres=_userManager.Update(userchangePass);
+                               if (updateres==IdentityResult.Success)
+                               {
+                                   await Login(model, returnUrl);
+                                    
                                 }
+                            }
                         }
                     }
                     else
@@ -165,7 +170,7 @@ namespace ACSDining.Web.Controllers
                         return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
                     }
                     return RedirectToLocal(returnUrl);
-                    //return RedirectToLocal("Login");
+                //return RedirectToLocal("Login");
 
                 case SignInStatus.LockedOut:
                     ModelState.AddModelError("", "Ваша учётная запись заблокирована.");
@@ -181,7 +186,7 @@ namespace ACSDining.Web.Controllers
                             Session["FullName"] = specuser.LastName + " " + specuser.FirstName;
                             //Session["Fname"] = user.FirstName;
                             //Session["Lname"] = user.LastName;
-                            specuser.LastLoginTime=DateTime.Now;
+                            specuser.LastLoginTime = DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
@@ -212,7 +217,7 @@ namespace ACSDining.Web.Controllers
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
                                     shouldLockout: false);
 
-                            return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
+                            return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         }
                     }
                     ModelState.AddModelError("", "Неудачная попытка входа.");

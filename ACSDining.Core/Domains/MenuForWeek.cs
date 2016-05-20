@@ -23,8 +23,6 @@ namespace ACSDining.Core.Domains
         {
             MenuForDay = new List<MenuForDay>();
             Orders = new List<WeekOrderMenu>();
-            //PlannedOrderMenus = new List<PlannedWeekOrderMenu>();
-            MenuCanBeChanged = true;
         }
 
         [Key]
@@ -32,10 +30,12 @@ namespace ACSDining.Core.Domains
         public int ID { get; set; }
 
         public double SummaryPrice { get; set; }
-        //Это меню может быть изменено
-        public bool MenuCanBeChanged { get; set; }
+        //СуперЮзер может изменить фактическую заявку на любой день из этой недели
+        public bool SUCanChangeOrder { get; set; }
         //На это недельное меню может быть сделан заказ
         public bool OrderCanBeCreated { get; set; }
+        //Рабочие дни установлены
+        public bool WorkingDaysAreSelected { get; set; }
         [Required]
         public virtual WorkingWeek WorkingWeek { get; set; }
 
@@ -44,8 +44,6 @@ namespace ACSDining.Core.Domains
 
         [JsonIgnore]
         public virtual ICollection<WeekOrderMenu> Orders { get; set; }
-
-        //[JsonIgnore]
-        //public virtual ICollection<PlannedWeekOrderMenu> PlannedOrderMenus { get; set; }
+        
     }
 }

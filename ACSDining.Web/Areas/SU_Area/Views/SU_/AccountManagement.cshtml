@@ -2,12 +2,23 @@
 @{
     ViewBag.Title = "AccountManagement";
 }
-<div  style="background: transparent"><h2>Управление пользователями</h2></div>
+@*<div  style="background: transparent"><h2>Управление пользователями</h2></div>*@
 <div class="panel panel-default" id="mfwPanel">
 
     <table class="table table-striped table-bordered fixed  table-hover" id="accountsTable" style="text-align: center">
-       
+
         <tbody>
+        <tr>
+            <td colspan="6">
+                <div>
+                    <span>Поиск</span>
+                    <span class="glyphicon glyphicon-search"></span>
+                    <input type="text" data-bind="value: search, hasFocus: isSelected, valueUpdate: 'keyup', event: { keyup: onkeydown}" />
+                </div>
+            </td>
+            <td colspan="6"></td>
+            <td colspan="6"></td>
+        </tr>
         <tr>
             <th>№</th>
             <th colspan="4">Ф.И.О.</th>
@@ -18,6 +29,7 @@
             <th colspan="2">Может делать заказ</th>
             <th colspan="2">Удалён из системы</th>
         </tr>
+            <!--ko ifnot: isSelected-->
         <!-- ko foreach: pagedList-->
         <tr>
             <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
@@ -28,22 +40,46 @@
             <td colspan="2"><span data-bind="text: Balance"></span></td>
             <td colspan="2">
                 <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="checked: CanMakeBooking, value: CanMakeBooking, attr:{id: 'acc' + $index(),name: 'acc' + $index()}" />
+                    <input type="checkbox" data-bind="checked: CanMakeBooking, value: CanMakeBooking, attr:{id: 'acc' + $index(),name: 'acc' + $index()}"/>
                     <label data-bind=" attr:{'for': 'acc' + $index()}"></label>
                 </div>
             </td>
             <td colspan="2">
                 <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="checked: !IsExisting(), value: !IsExisting, attr:{id: 'accex' + $index(), name: 'accex' + $index()}" />
+                    <input type="checkbox" data-bind="checked: !IsExisting(), value: !IsExisting, attr:{id: 'accex' + $index(), name: 'accex' + $index()}"/>
                     <label data-bind="attr:{'for': 'accex' + $index()}"></label>
                 </div>
             </td>
         </tr>
-         <!--/ko-->
+        <!--/ko-->
+        <!--/ko-->
+            <!--ko if: isSelected-->
+        <!-- ko foreach: filterList-->
+            <tr>
+                <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
+                <td colspan="4"><span data-bind="text: FullName"></span></td>
+                <td colspan="3"><span data-bind="text: Email"></span></td>
+                <td colspan="2"><span data-bind="text: LastLoginTime"></span></td>
+                <td colspan="2"><span data-bind="text: RegistrationDate"></span></td>
+                <td colspan="2"><span data-bind="text: Balance"></span></td>
+                <td colspan="2">
+                    <div class="checkbox-btn" style="vertical-align: middle">
+                        <input type="checkbox" data-bind="checked: CanMakeBooking, value: CanMakeBooking, attr:{id: 'acc' + $index(),name: 'acc' + $index()}" />
+                        <label data-bind=" attr:{'for': 'acc' + $index()}"></label>
+                    </div>
+                </td>
+                <td colspan="2">
+                    <div class="checkbox-btn" style="vertical-align: middle">
+                        <input type="checkbox" data-bind="checked: !IsExisting(), value: !IsExisting, attr:{id: 'accex' + $index(), name: 'accex' + $index()}" />
+                        <label data-bind="attr:{'for': 'accex' + $index()}"></label>
+                    </div>
+                </td>
+            </tr>
+        <!--/ko-->
+            <!--/ko-->
         </tbody>
         <tfoot>
         <tr>
-            @*<td></td>*@
             <td >
                 <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
                     <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>

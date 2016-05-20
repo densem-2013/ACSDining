@@ -9,6 +9,7 @@ using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -28,19 +29,20 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
         //Получить все фактические заявки на неделю постранично
         [HttpPut]
-        [Route("fact/{pagesize}/{page}")]
+        //[Route("fact/{pagesize}/{page}")]
+        [Route("fact")]
         [ResponseType(typeof (WeekOrderDto))]
-        public async Task<WeekOrderDto> GetFactMenuOrders([FromBody] WeekYearDto wyDto, [FromUri] int? pagesize,
-            [FromUri] int? page)
+        public async Task<WeekOrderDto> GetFactMenuOrders([FromBody] WeekYearDto wyDto/*, [FromUri] int? pagesize,
+            [FromUri] int? page*/)
         {
             if (wyDto == null)
             {
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            //int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-            WeekOrderDto weekOrderDto = WeekOrderDto.GetMapDto(_unitOfWork, wyDto, catLength, pagesize, page);
+            WeekOrderDto weekOrderDto = WeekOrderDto.GetMapDto(_unitOfWork, wyDto/*, catLength, pagesize, page*/);
 
             return await Task.FromResult(weekOrderDto);
         }
@@ -64,11 +66,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             List<PlannedWeekOrderMenu> planOrderList = _unitOfWork.RepositoryAsync<PlannedWeekOrderMenu>()
                 .Query()
-                .Include(pom => pom.WeekOrderMenu)
-                .Include(
-                    pom =>
-                        pom.PlannedDayOrderMenus.Select(pdo => pdo.DayOrderMenu)
-                            .Where(pdo => womIds.Contains(pdo.WeekOrderMenu.Id)))
+               // .Include(pom => pom.WeekOrderMenu)
+                //.Include(
+                //    pom =>
+                //        pom.PlannedDayOrderMenus.Select(pdo => pdo.DayOrderMenu)
+                //            .Where(pdo => womIds.Contains(pdo.WeekOrderMenu.Id)))
                 .Select().ToList();
 
             List<PlanUserWeekOrderDto> planUserWeekOrderDtos =
@@ -80,26 +82,28 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //Изменить фактическую заявку указанного списка пользователей на меню соответствующей недели в году
         [HttpPut]
         [Route("update")]
-        public async Task<IHttpActionResult> UpdateWeekOrder([FromBody] UserWeekOrderDto userWeekOrderDto)
+        public async Task<IHttpActionResult> UpdateWeekOrder([FromBody] UpdateUserOrderDto userOrderDto)
         {
-            if (userWeekOrderDto == null)
+            if (userOrderDto == null)
             {
                 return BadRequest("Bad Request Object");
             }
 
-            WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.OrderId);
+            //WeekOrderMenu forUpdateOrder = _orderMenuService.Find(userWeekOrderDto.OrderId);
 
 
-            if (forUpdateOrder == null)
-            {
-                return NotFound();
-            }
+            //if (forUpdateOrder == null)
+            //{
+            //    return NotFound();
+            //}
 
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            //int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
 
-            int res = await Task.FromResult(_orderMenuService.UpdateUserWeekOrder(catLength, userWeekOrderDto));
+            //int res = await Task.FromResult(_orderMenuService.UpdateUserWeekOrder(catLength, userWeekOrderDto));
 
-            return Ok(res);
+             _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
+
+            return Ok(true);
         }
 
         /// <summary>
@@ -111,8 +115,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public async Task<double[]> GetWeekSummaryOrders([FromBody] WeekYearDto wyDto)
         {
             if (wyDto.Week == 0 || wyDto.Year == 0) return null;
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
-            return await Task.FromResult(_orderMenuService.SummaryWeekDishesOrderQuantities(wyDto, catLength));
+            //int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            //return await Task.FromResult(_orderMenuService.SummaryWeekDishesOrderQuantities(wyDto, catLength));
+            return await _unitOfWork.GetContext().GetFactSumWeekUserCounts(wyDto);
         }
         protected override void Dispose(bool disposing)
         {

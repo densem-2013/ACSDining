@@ -14,7 +14,7 @@ namespace ACSDining.Infrastructure.HelpClasses
         public static void Init()
         {
             //StartChecking();
-            FakeStartChecking();
+            //FakeStartChecking();
             // In some constructor or method that runs when the app starts.
             // 1st parameter is the callback to be run every iteration.
             // 2nd parameter is optional parameters for the callback.
@@ -32,17 +32,15 @@ namespace ACSDining.Infrastructure.HelpClasses
                 WeekYearDto wyDto = YearWeekHelp.GetCurrentWeekYearDto();
                 using (ApplicationDbContext _db = new ApplicationDbContext())
                 {
-                    int dayNum = (int) DateTime.Now.DayOfWeek;
-                    MenuForDay dayMenu =
-                        _db.MenuForDays.FirstOrDefault(
-                            mfd =>
-                                mfd.WorkingDay.WorkingWeek.Year.YearNumber == wyDto.Year &&
-                                mfd.WorkingDay.WorkingWeek.WeekNumber == wyDto.Week &&
-                                mfd.WorkingDay.DayOfWeek.Id == dayNum);
-
-                    if (dayMenu != null)
+                    WorkingDay workday =
+                        _db.WorkingDays.Include(wd => wd.WorkingWeek.Year)
+                            .FirstOrDefault(
+                                wd =>
+                                    wd.WorkingWeek.WeekNumber == wyDto.Week &&
+                                    wd.WorkingWeek.Year.YearNumber == wyDto.Year);
+                    if (workday != null && workday.IsWorking)
                     {
-                        dayMenu.DayMenuCanBeChanged = false;
+                        _db.DayFactToPlan();
                     }
                 }
             }
@@ -67,7 +65,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                         (x.WorkingWeek.WeekNumber == week || x.WorkingWeek.WeekNumber == week + 1))
                     {
                         x.OrderCanBeCreated = true;
-                        x.MenuCanBeChanged = true;
+                       // x.MenuCanBeChanged = true;
                         context.Entry(x).State = EntityState.Modified;
                         x.MenuForDay.ToList().ForEach(y =>
                         {
@@ -89,7 +87,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                     else
                     {
                         x.OrderCanBeCreated = false;
-                        x.MenuCanBeChanged = false;
+                       // x.MenuCanBeChanged = false;
                         context.Entry(x).State = EntityState.Modified;
                         x.MenuForDay.ToList().ForEach(y =>
                         {
@@ -112,7 +110,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                 weekmenus.ForEach(x =>
                 {
                     x.OrderCanBeCreated = true;
-                    x.MenuCanBeChanged = true;
+                   // x.MenuCanBeChanged = true;
                     x.MenuForDay.ToList().ForEach(y =>
                     {
                         y.DayMenuCanBeChanged = true;

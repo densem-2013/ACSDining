@@ -128,7 +128,7 @@ namespace UnitTestProject1
                 MenuForWeek = weekmenu,
                 WeekOrderSummaryPrice = 0.0
             };
-            PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu { WeekOrderMenu = weekOrder };
+            //PlannedWeekOrderMenu plannedWeekOrderMenu = new PlannedWeekOrderMenu { WeekOrderMenu = weekOrder };
             //context.PlannedWeekOrderMenus.Add(plannedWeekOrderMenu);
 
             List<DayOrderMenu> dayOrderMenus = new List<DayOrderMenu>();
@@ -165,7 +165,7 @@ namespace UnitTestProject1
                         {
                             DishQuantity = dqu,
                             DishType = first,
-                            MenuForDay = daymenu,
+                            //MenuForDay = daymenu,
                             DayOrderMenu = dayOrderMenu//,
                             //PlannedDayOrderMenu = plannedDayOrderMenu
                         };

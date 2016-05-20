@@ -102,6 +102,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domains\DishPrice.cs" />
+    <Compile Include="Domains\MfdDishPriceRelations.cs" />
+    <Compile Include="Domains\PlanDishQuantityRelations.cs" />
     <Compile Include="Domains\DayOfWeek.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -116,6 +119,7 @@
     <Compile Include="Domains\FoodQuantityRelations.cs" />
     <Compile Include="Domains\MenuForDay.cs" />
     <Compile Include="Domains\MenuForWeek.cs" />
+    <Compile Include="Domains\WeekPaiment.cs" />
     <Compile Include="Domains\WeekOrderMenu.cs" />
     <Compile Include="Domains\DishQuantity.cs" />
     <Compile Include="Domains\PlannedDayOrderMenu.cs" />
@@ -134,9 +138,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx" />

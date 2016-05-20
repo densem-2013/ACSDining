@@ -21,14 +21,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class DishesController : ApiController
     {
         private ApplicationDbContext _db;
-        private readonly IDishService _dishService;
+        private readonly IMfdDishPriceService _mfdDishPriceService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
         public DishesController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _db = _unitOfWork.GetContext();
-            _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
+            _mfdDishPriceService = new MfdDishPriceService(_unitOfWork.RepositoryAsync<MfdDishPriceRelations>());
         }
 
 
@@ -43,7 +43,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return NotFound();
             }
 
-            List<DishModelDto> dmodels = _dishService.GetDishModelDtoByCategory(category);
+            List<DishModelDto> dmodels = _mfdDishPriceService.GetDishModelDtoByCategory(category);
 
             return Ok(dmodels);
         }

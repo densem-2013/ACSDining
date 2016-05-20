@@ -11,7 +11,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
     {
         public int DayOrderId { get; set; }
         public MenuForDayDto MenuForDay { get; set; }
-        //public double[] DishQuantities { get; set; }
+        public double[] DishQuantities { get; set; }
         public double DayOrderSummary { get; set; }
         public bool OrderCanBeChanged { get; set; }
         /// <summary>
@@ -22,7 +22,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
         /// <param name="catlength"></param>
         /// <param name="forWeekOrders">Если преобразование происходит для OrderApiController</param>
         /// <returns></returns>
-        public static UserDayOrderDto MapUserDayOrderDto(IUnitOfWorkAsync unitOfWork, DayOrderMenu dayOrderMenu, bool forWeekOrders = false)
+        public static UserDayOrderDto MapUserDayOrderDto(/*IUnitOfWorkAsync unitOfWork, */DayOrderMenu dayOrderMenu/*, bool forWeekOrders = false*/)
         {
             //WorkingDay workday = dayOrderMenu.MenuForDay.WorkingDay;
 
@@ -51,7 +51,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
             return new UserDayOrderDto
             {
                 DayOrderId = dayOrderMenu.Id,
-                MenuForDay = MenuForDayDto.MapDto(unitOfWork, dayOrderMenu.MenuForDay, forWeekOrders),
+                //MenuForDay = MenuForDayDto.MapDto(unitOfWork, dayOrderMenu.MenuForDay, forWeekOrders),
                 //DishQuantities = dquantities,
                 DayOrderSummary = dayOrderMenu.DayOrderSummaryPrice,
                 OrderCanBeChanged = dayOrderMenu.MenuForDay.OrderCanBeChanged

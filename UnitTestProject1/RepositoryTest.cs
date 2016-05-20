@@ -44,18 +44,5 @@ namespace UnitTestProject1
             Assert.IsNotNull(weekmenu);
         }
 
-        [TestMethod]
-        public void NewUserWeekOrderTest()
-        {
-            User user = _userManager.FindByNameAsync("employee").Result;
-            WeekYearDto wyDto = new WeekYearDto
-            {
-                Week = 17,
-                Year = 2016
-            };
-
-            WeekOrderMenu newOrderMenu = _weekOrderMenuRepository.CreateWeekOrderMenu(user,wyDto);//NewWeekOrdersMenuByWeekYearUser(wyDto, user);
-            Assert.IsNotNull(newOrderMenu);
-        }
     }
 }

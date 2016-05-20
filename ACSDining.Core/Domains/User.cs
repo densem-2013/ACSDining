@@ -23,10 +23,11 @@ namespace ACSDining.Core.Domains
 
     public partial class User : IdentityUser
     {
-        public User():base()
+        public User()
+            : base()
         {
-            OrderMenus = new List<WeekOrderMenu>();
-            PlannedOrderMenus = new List<PlannedWeekOrderMenu>();
+            CanMakeBooking = true;
+            IsExisting = true;
         }
         
         [Required]
@@ -46,11 +47,6 @@ namespace ACSDining.Core.Domains
         public virtual DateTime RegistrationDate { get; set; }
         public virtual bool CanMakeBooking { get; set; }
         public virtual bool IsExisting { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<WeekOrderMenu> OrderMenus { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<PlannedWeekOrderMenu> PlannedOrderMenus { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, string> manager)
         {

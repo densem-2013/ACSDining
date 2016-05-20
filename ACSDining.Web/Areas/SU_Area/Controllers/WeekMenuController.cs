@@ -53,7 +53,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(wyDto);
             if (weekmenu != null)
             {
-                return await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu));
+                return await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu,wyDto));
             }
             return null;
         }
@@ -61,18 +61,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [HttpPost]
         [Route("create")]
         [ResponseType(typeof (bool))]
-        public async Task<IHttpActionResult> Create()
+        public async Task<WeekYearDto> Create()
         {
             WeekYearDto nextDto = YearWeekHelp.GetNextWeekYear(YearWeekHelp.GetCurrentWeekYearDto());
-
-             _weekmenuService.CreateByWeekYear(nextDto);
-
-
-            MenuForWeek weekmenu  = _weekmenuService.GetWeekMenuByWeekYear(nextDto);
-
-            bool res = weekmenu != null;
-
-            return Ok(res);
+            _db.CreateNewWeekMenu(nextDto);
+         
+            return await Task.FromResult(nextDto);
         }
 
         [HttpGet]
@@ -88,20 +82,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
 
-        [HttpPut]
+        [HttpGet]
         [Route("nextWeekYear")]
         [ResponseType(typeof(WeekYearDto))]
-        public Task<WeekYearDto> GetNextWeekYear([FromBody] WeekYearDto weekyear)
+        public Task<WeekYearDto> GetNextWeekYear()
         {
-            return Task.FromResult(YearWeekHelp.GetNextWeekYear(weekyear));
-        }
-
-        [HttpPut]
-        [Route("prevWeekYear")]
-        [ResponseType(typeof (WeekYearDto))]
-        public Task<WeekYearDto> GetPrevWeekYear([FromBody] WeekYearDto weekyear)
-        {
-            return Task.FromResult(YearWeekHelp.GetPrevWeekYear(weekyear));
+            return Task.FromResult(YearWeekHelp.GetNextWeekYear(YearWeekHelp.GetCurrentWeekYearDto()));
         }
 
         [HttpGet]
@@ -119,18 +105,10 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         {
 
             string[] categories = MapHelper.GetCategoriesStrings(_unitOfWork);
-
             return categories;
 
         }
-
-        [HttpGet]
-        [Route("WeekNumbers")]
-        public async Task<List<int>> GetWeekNumbers()
-        {
-            return await Task.FromResult(_weekmenuService.WeekNumbers());
-        }
-
+        
         [HttpPut]
         [Route("menuupdatemessage")]
         public async Task<IHttpActionResult> SendEmailUpdateMenu([FromBody] MenuUpdateMessageDto messageDto)
@@ -142,9 +120,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             int[] daymenusid = messageDto.UpdatedDayMenu;
             List<User> userBooking =
                 daymenusid.SelectMany(dmi => _orderMenuService.GetUsersMedeBooking(dmi)).Distinct().ToList();
-            await
-                MessageService.SendEmailAsync(userBooking, MessageTopic.MenuChanged, messageDto.DateTime,
-                    messageDto.Message);
+            //await
+            //    MessageService.SendEmailAsync(userBooking, MessageTopic.MenuChanged, messageDto.DateTime,
+            //        messageDto.Message);
 
             return Ok(true);
         }
@@ -162,12 +140,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest();
             }
-
+            MenuForWeek menu = _weekmenuService.FindById(messageDto.WeekMenuId);
+            menu.OrderCanBeCreated = true;
+            _db.Entry(menu).State=EntityState.Modified;
+            await _db.SaveChangesAsync();
             ApplicationUserManager userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
 
             List<User> users = userManager.Users.ToList();
 
-            await MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
+            //await MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
 
             return Ok(true);
         }
@@ -175,24 +156,32 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         /// <summary>
         /// Подтверждает выбор рабочих дней в неделе
         /// </summary>
-        /// <param name="wwDto"></param>
+        /// <param name="wwUpDto"></param>
         /// <returns></returns>
         /// 
         [HttpPut]
         [Route("workweekapply")]
-        public async Task<IHttpActionResult> WorkWeekCommit([FromBody] WorkWeekDto wwDto)
+        public async Task<IHttpActionResult> WorkWeekCommit([FromBody] WorkDaysUpdateDto wwUpDto)
         {
-            if (wwDto == null)
+            if (wwUpDto == null)
             {
                 return BadRequest();
             }
 
-            WorkingWeek week = _weekmenuService.UpdateWorkDays(wwDto);
+            WorkingWeek week = _weekmenuService.FindById(wwUpDto.MenuId).WorkingWeek;
+            for (int i = 0; i < wwUpDto.WorkDays.Length; i++)
+            {
+                WorkingDay workday = week.WorkingDays.ElementAt(i);
+                workday.IsWorking = wwUpDto.WorkDays[i];
+                _db.Entry(workday).State=EntityState.Modified;
+            }
+
+            MenuForWeek menu = _weekmenuService.FindById(wwUpDto.MenuId);
+            menu.WorkingDaysAreSelected = true;
+            _db.Entry(menu).State = EntityState.Modified;
 
             week.CanBeChanged = false;
-
-            _db.WorkingWeeks.AddOrUpdate(week);
-
+            await _db.SaveChangesAsync();
             return Ok(true);
         }
 
@@ -210,8 +199,12 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return NotFound();
             }
-            menuFd.Dishes =
-                menuforday.Dishes.Select(d =>  _db.Dishes.FirstOrDefault(dbd => dbd.DishID == d.DishId)).ToList();
+            int[] dishidarray = menuforday.Dishes.Select(d => d.DishId).ToArray();
+            menuFd.Dishes =new List<Dish>();
+            dishidarray.ForEach(x =>
+            {
+                menuFd.Dishes.Add(_db.Dishes.FirstOrDefault(dbd => dbd.DishID == x));
+            });
 
             menuFd.TotalPrice = menuforday.TotalPrice;
 
@@ -220,25 +213,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 if (x!=null)
                 {
                     _db.Entry(x).State = EntityState.Modified;
-                    _db.Dishes.Attach(x);
                 }
             });
-
-
-            MenuForWeek mfwModel =
-                _weekmenuService.GetAll()
-                    .ToList()
-                    .FirstOrDefault(mfw => mfw.MenuForDay.Any(mfd => mfd.ID == menuforday.Id));
-
-            if (mfwModel != null)
-            {
-                mfwModel.SummaryPrice = mfwModel.MenuForDay.Sum(mfd => mfd.TotalPrice);
-
-                _db.Entry(mfwModel).State = EntityState.Modified;
-                _db.MenuForWeeks.Attach(mfwModel);
-                _db.SaveChanges();
-            }
-
+            _db.SaveChanges();
             return StatusCode(HttpStatusCode.OK);
         }
         
