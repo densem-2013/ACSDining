@@ -59,12 +59,12 @@ IF NOT @OCBCRES = 1 RETURN
 	ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'	
 	INNER JOIN MenuForDay
 	ON MenuForDay.MenuForWeek_ID=MenuForWeek.ID 
-	INNER JOIN MFD_Dishes
-	ON MenuForDay.ID=MFD_Dishes.MenuID
+	join [ACS_Dining].[dbo].[MfdDishPriceRelations] mfddprice
+	on mfddprice.MenuForDayId=MenuForDay.ID
 	INNER JOIN DayOrderMenu
 	ON DayOrderMenu.MenuForDay_ID=MenuForDay.ID AND DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id
 	INNER JOIN Dish
-	ON MFD_Dishes.DishID=Dish.DishID
+	ON mfddprice.DishID=Dish.DishID
 	INNER JOIN DishType
 	ON DishType.Id=Dish.DishType_Id 
 	INNER JOIN WorkingWeek

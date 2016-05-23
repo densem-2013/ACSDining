@@ -29,6 +29,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly IMenuForWeekService _weekmenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IOrderMenuService _orderMenuService;
+        private readonly IMfdDishPriceService _mfdDishPriceService;
 
         public WeekMenuController(IUnitOfWorkAsync unitOfWork)
         {
@@ -36,6 +37,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _db = _unitOfWork.GetContext();
             _weekmenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
+            _mfdDishPriceService=new MfdDishPriceService(_unitOfWork.RepositoryAsync<MfdDishPriceRelations>());
         }
 
         // GET api/WeekMenu
@@ -190,32 +192,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [Route("update")]
         public async Task<IHttpActionResult> UpdateMenuForDay([FromBody] MenuForDayDto menuforday)
         {
-            MenuForDay menuFd = _unitOfWork.RepositoryAsync<MenuForDay>().Find(menuforday.Id);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (menuFd == null)
-            {
-                return NotFound();
-            }
-            int[] dishidarray = menuforday.Dishes.Select(d => d.DishId).ToArray();
-            menuFd.Dishes =new List<Dish>();
-            dishidarray.ForEach(x =>
-            {
-                menuFd.Dishes.Add(_db.Dishes.FirstOrDefault(dbd => dbd.DishID == x));
-            });
+            _mfdDishPriceService.UpdateMenuForDay(menuforday);
 
-            menuFd.TotalPrice = menuforday.TotalPrice;
+            _unitOfWork.SaveChanges();
 
-            menuFd.Dishes.ForEach(x =>
-            {
-                if (x!=null)
-                {
-                    _db.Entry(x).State = EntityState.Modified;
-                }
-            });
-            _db.SaveChanges();
             return StatusCode(HttpStatusCode.OK);
         }
         

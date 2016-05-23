@@ -64,52 +64,34 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //}
         [System.Web.Http.HttpPut]
         [System.Web.Http.Route("paiments")]
-        public FilePathResult GetExelFromWeekPaimentstDto([FromBody] WeekYearDto wyDto)
+        public FilePathResult GetExelFromWeekPaimentstDto([FromBody] ForExcelDataDto feDto)
         {
-            WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork, wyDto);
+            WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork.RepositoryAsync<WeekPaiment>(), feDto.WeekYear);
             string _path = "/ExcelFiles/Paiments.xlsx";
-            string filename = _getExcelService.GetExcelFileFromPaimentsModel(dto);
+            string filename = _getExcelService.GetExcelFileFromPaimentsModel(feDto);
 
             return new FilePathResult(_path, "multipart/form-data");
         }
 
-        //[System.Web.Http.HttpPut]
-        //[System.Web.Http.Route("paiments")]
-        //public HttpResponseMessage GetExelFromWeekPaimentstDto([FromBody] WeekYearDto wyDto)
-        //{
-        //    HttpResponseMessage result = null;
-        //    var localFilePath = HttpContext.Current.Server.MapPath("~/ExcelFiles/Paiments.xlsx");
-        //    //string localFilePath = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-        //    //                                 @"ACSDining.Web\App_Data\DBinitial\Paiments.xls";
-        //    WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork, wyDto);
-        //    //FileStream fstream = _getExcelService.GetExcelFileFromPaimentsModel(dto).Result;
-        //    string _path = _getExcelService.GetExcelFileFromPaimentsModel(dto);
-        //    FileStream fs = new FileStream(localFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-        //    // check if parameter is valid
-        //    if (String.IsNullOrEmpty(localFilePath))
-        //    {
-        //        result = Request.CreateResponse(HttpStatusCode.BadRequest);
-        //    }
-        //    // check if file exists on the server
-        //    //else if (String.IsNullOrEmpty(_path))
-        //    //{
-        //    //    result = Request.CreateResponse(HttpStatusCode.Gone);
-        //    //}
-        //    else
-        //    {// serve the file to the client
-        //        result = Request.CreateResponse(HttpStatusCode.OK);
-        //        result.Content = new StreamContent(fs);
-        //        result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-        //        {
-        //            FileName = "Paiments.xlsx"
-        //        };
-        //        result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/ms-excel");
-        //        result.Content.Headers.ContentLength = fs.Length;
-        //    }
+        [System.Web.Http.HttpPut]
+        [System.Web.Http.Route("factorders")]
+        public FilePathResult GetExelFromWeekOrdersDto([FromBody] ForExcelDataDto feDto)
+        {
+            WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork.RepositoryAsync<WeekPaiment>(), feDto.WeekYear);
+            string _path = "/ExcelFiles/Orders.xlsx";
+            try
+            {
+                string filename = _getExcelService.GetExcelFileFromOrdersModel(feDto);
 
-        //    return result;
-        //}
+            }
+            catch (Exception)
+            {
+                    
+                throw;
+            }
 
+            return new FilePathResult(_path, "multipart/form-data");
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

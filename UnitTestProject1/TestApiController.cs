@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.EmployeeArea.Controllers;
 using ACSDining.Web.Areas.SU_Area.Controllers;
@@ -16,13 +18,11 @@ namespace UnitTestProject1
     {
         private readonly UnitOfWork _unitOfWork;
         private readonly IMenuForWeekService _menuForWeekService;
-        private readonly IDishService _dishService;
 
         public TestApiController()
         {
             _unitOfWork = new UnitOfWork();
             _menuForWeekService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
-            _dishService = new DishService(_unitOfWork.RepositoryAsync<Dish>());
         }
 
         [TestMethod]
@@ -120,14 +120,16 @@ namespace UnitTestProject1
         [TestMethod]
         public void GetExcellTestApi()
         {
-            GetExcelController excelApi = new GetExcelController(_unitOfWork);
+            //GetExcelController excelApi = new GetExcelController(_unitOfWork);
+            GetExcelService excelService=new GetExcelService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             WeekYearDto wyDto = new WeekYearDto
             {
                 Week = 18,
                 Year = 2016
             };
-            var result = excelApi.GetExelFromWeekPaimentstDto(wyDto);
+            string result = excelService.GetExcelFileFromOrdersModel(wyDto);
             Assert.IsNotNull(result);
+            Process.Start(result);
         }
     }
 }

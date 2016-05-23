@@ -297,15 +297,6 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Areas\AdminArea\AdminAreaAreaRegistration.cs" />
-    <Compile Include="Areas\AdminArea\Controllers\AccountsController.cs" />
-    <Compile Include="Areas\AdminArea\Controllers\AdminController.cs" />
-    <Compile Include="Areas\AdminArea\Controllers\BaseApiController.cs" />
-    <Compile Include="Areas\AdminArea\Controllers\RolesController.cs" />
-    <Compile Include="Areas\AdminArea\Models\AccountBindingModels.cs" />
-    <Compile Include="Areas\AdminArea\Models\ClaimBindingModel.cs" />
-    <Compile Include="Areas\AdminArea\Models\ModelFactory.cs" />
-    <Compile Include="Areas\AdminArea\Models\RoleBindingModels.cs" />
     <Compile Include="Areas\EmployeeArea\Controllers\EmployeeController.cs" />
     <Compile Include="Areas\EmployeeArea\Controllers\EmployeeOrderApiController.cs" />
     <Compile Include="Areas\EmployeeArea\EmployeeAreaAreaRegistration.cs" />
@@ -347,9 +338,6 @@
     <Content Include="Content\app\jquery.metisMenu.js" />
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
-    <Content Include="Areas\AdminArea\Content\scripts\AccountsInfo.js" />
-    <Content Include="Areas\AdminArea\Content\scripts\app.service.js" />
-    <Content Include="Areas\AdminArea\Content\scripts\RolesInfo.js" />
     <Content Include="Areas\EmployeeArea\Content\scripts\template.js" />
     <Content Include="Areas\EmployeeArea\Content\scripts\EmployeeOrderInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\MenuForWeekInfo.js" />
@@ -445,9 +433,6 @@
     <Content Include="Scripts\app\common.js" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Areas\AdminArea\Views\Shared\_Index.cshtml" />
-    <Content Include="Areas\AdminArea\Views\web.config" />
-    <Content Include="Areas\AdminArea\Views\_ViewStart.cshtml" />
     <Content Include="Areas\EmployeeArea\Views\Employee\Index.cshtml" />
     <Content Include="Areas\EmployeeArea\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\EmployeeArea\Views\web.config" />
@@ -460,8 +445,6 @@
     <Content Include="Areas\SU_Area\Views\SU_\WeekMenu.cshtml" />
     <Content Include="Areas\SU_Area\Views\SU_\Orders.cshtml" />
     <Content Include="Areas\SU_Area\Views\SU_\Dishes.cshtml" />
-    <Content Include="Areas\AdminArea\Views\Admin\Roles.cshtml" />
-    <Content Include="Areas\AdminArea\Views\Admin\Accounts.cshtml" />
     <Content Include="Content\bootstrap-datetimepicker-build.less" />
     <Content Include="Content\_bootstrap-datetimepicker.less" />
     <Content Include="App_Code\GlyphIcon.cshtml" />
@@ -541,7 +524,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />

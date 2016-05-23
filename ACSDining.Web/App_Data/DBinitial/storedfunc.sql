@@ -146,7 +146,7 @@ BEGIN
 	ORDER BY WDAYS.DayOfWeek_Id
 	
 	INSERT  @userweekord 
-	SELECT SUM(DQUA.[Quantity]*DISHES.[Price]) FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
+	SELECT SUM(DQUA.[Quantity]*DP.[Price]) FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
 	INNER JOIN [ACS_Dining].[dbo].[DishQuantityRelations] RELS
 	ON  RELS.[DishQuantityId]=DQUA.[Id]
 	INNER JOIN [ACS_Dining].[dbo].[DishType] DISHTYPES
@@ -159,15 +159,16 @@ BEGIN
 	ON  WORDMENU.[ID]=@weekordid AND dayordmenus.[WeekOrderMenu_Id]=WORDMENU.[ID] 
 	inner join [ACS_Dining].[dbo].[MenuForDay] as daymenu
 	ON daymenu.ID=dayordmenus.MenuForDay_ID
-	INNER JOIN [ACS_Dining].[dbo].[MFD_Dishes] AS MFD_Dishes
-	ON MFD_Dishes.DishID=DISHES.DishID AND daymenu.ID=MFD_Dishes.MenuID
+	INNER JOIN [ACS_Dining].[dbo].[MfdDishPriceRelations] AS MPRELS
+	ON MPRELS.DishID=DISHES.DishID AND daymenu.ID=MPRELS.[MenuForDayId]
+	INNER JOIN [ACS_Dining].[dbo].[DishPrice] DP
+	ON DP.Id=MPRELS.[DishPriceId]
 	INNER JOIN [ACS_Dining].[dbo].[WorkingDay] AS WDAYS
 	ON WDAYS.Id=daymenu.WorkingDay_Id AND WDAYS.IsWorking=1	
 	INNER JOIN [ACS_Dining].[dbo].[WorkingWeek] WORKINGWEEKS
 	ON WORKINGWEEKS.ID=WDAYS.WorkingWeek_ID 
 	INNER JOIN [ACS_Dining].[dbo].[Year] YEARS
 	ON YEARS.Id=WORKINGWEEKS.Year_Id 	
-	GROUP BY ()
 	RETURN 
 END
 GO
@@ -205,7 +206,7 @@ BEGIN
 	ORDER BY WDAYS.DayOfWeek_Id
 	
 	INSERT @userweekord 
-	SELECT SUM(DQUA.[Quantity]*DISHES.[Price]) FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
+	SELECT SUM(DQUA.[Quantity]*DP.[Price]) FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
 	INNER JOIN [ACS_Dining].[dbo].[PlanDishQuantityRelations] PLANRELS
 	ON  PLANRELS.[DishQuantityId]=DQUA.[Id]
 	INNER JOIN [ACS_Dining].[dbo].[DishType] DISHTYPES
@@ -218,15 +219,16 @@ BEGIN
 	ON PLANWORDMENU.[ID]=@planweekordid AND plandayordmenus.[PlannedWeekOrderMenu_Id]=PLANWORDMENU.[ID]  
 	inner join [ACS_Dining].[dbo].[MenuForDay] as daymenu
 	ON daymenu.ID=plandayordmenus.MenuForDay_ID
-	INNER JOIN [ACS_Dining].[dbo].[MFD_Dishes] AS MFD_Dishes
-	ON MFD_Dishes.DishID=DISHES.DishID AND daymenu.ID=MFD_Dishes.MenuID
+	INNER JOIN [ACS_Dining].[dbo].[MfdDishPriceRelations] AS MPRELS
+	ON MPRELS.DishID=DISHES.DishID AND daymenu.ID=MPRELS.[MenuForDayId]
+	INNER JOIN [ACS_Dining].[dbo].[DishPrice] DP
+	ON DP.Id=MPRELS.[DishPriceId]
 	INNER JOIN [ACS_Dining].[dbo].[WorkingDay] AS WDAYS
 	ON WDAYS.Id=daymenu.WorkingDay_Id AND WDAYS.IsWorking=1	
 	INNER JOIN [ACS_Dining].[dbo].[WorkingWeek] WORKINGWEEKS
 	ON WORKINGWEEKS.ID=WDAYS.WorkingWeek_ID 
 	INNER JOIN [ACS_Dining].[dbo].[Year] YEARS
 	ON YEARS.Id=WORKINGWEEKS.Year_Id 	
-	GROUP BY ()
 	RETURN 
 END
 GO
@@ -248,13 +250,15 @@ AS
 BEGIN
 INSERT @WeekDishPrices
 
-	SELECT [Price] FROM [ACS_Dining].[dbo].[Dish] DISHES
+	SELECT DP.[Price] FROM [ACS_Dining].[dbo].[Dish] DISHES
 	INNER JOIN [ACS_Dining].[dbo].[DishType] DISHTYPES
 	ON DISHTYPES.Id=DISHES.DishType_Id
-	INNER JOIN [ACS_Dining].[dbo].[MFD_Dishes] AS MFD_Dishes
-	ON MFD_Dishes.DishID=DISHES.DishID
+	INNER JOIN [ACS_Dining].[dbo].[MfdDishPriceRelations] AS MPRELS
+	ON MPRELS.DishID=DISHES.DishID 
+	INNER JOIN [ACS_Dining].[dbo].[DishPrice] DP
+	ON DP.Id=MPRELS.[DishPriceId]
 	INNER JOIN [ACS_Dining].[dbo].[MenuForDay] DAYMENUS
-	ON DAYMENUS.ID=MFD_Dishes.MenuID
+	ON DAYMENUS.ID=MPRELS.[MenuForDayId]
 	INNER JOIN [ACS_Dining].[dbo].[WorkingDay] WORKINGDAYS
 	ON WORKINGDAYS.Id=DAYMENUS.WorkingDay_Id AND WORKINGDAYS.IsWorking=1
 	INNER JOIN [ACS_Dining].[dbo].[WorkingWeek] WORKINGWEEKS
@@ -364,7 +368,7 @@ RETURNS @userweekpaiment TABLE
 AS
 BEGIN
 	INSERT @userweekpaiment 	
-	SELECT [Quantity]*DISHES.[Price] FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
+	SELECT [Quantity]*DP.[Price] FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
 	INNER JOIN [ACS_Dining].[dbo].[DishQuantityRelations] RELS
 	ON  RELS.[DishQuantityId]=DQUA.[Id]
 	INNER JOIN [ACS_Dining].[dbo].[DishType] DISHTYPES
@@ -377,8 +381,10 @@ BEGIN
 	ON  WORDMENU.[ID]=@weekordid AND dayordmenus.[WeekOrderMenu_Id]=WORDMENU.[ID] 
 	inner join [ACS_Dining].[dbo].[MenuForDay] as daymenu
 	ON daymenu.ID=dayordmenus.MenuForDay_ID
-	INNER JOIN [ACS_Dining].[dbo].[MFD_Dishes] AS MFD_Dishes
-	ON MFD_Dishes.DishID=DISHES.DishID AND daymenu.ID=MFD_Dishes.MenuID
+	INNER JOIN [ACS_Dining].[dbo].[MfdDishPriceRelations] AS MPRELS
+	ON MPRELS.DishID=DISHES.DishID AND MPRELS.[MenuForDayId]=daymenu.ID
+	INNER JOIN [ACS_Dining].[dbo].[DishPrice] DP
+	ON DP.Id=MPRELS.[DishPriceId]
 	INNER JOIN [ACS_Dining].[dbo].[WorkingDay] AS WDAYS
 	ON WDAYS.Id=daymenu.WorkingDay_Id AND WDAYS.IsWorking=1	
 	INNER JOIN [ACS_Dining].[dbo].[WorkingWeek] WORKINGWEEKS
@@ -409,7 +415,7 @@ RETURNS @sumbydishes TABLE
 AS
 BEGIN
 	INSERT @sumbydishes 	
-	SELECT SUM([Quantity]*DISHES.[Price]) FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
+	SELECT SUM([Quantity]*DP.[Price]) FROM [ACS_Dining].[dbo].[DishQuantity] DQUA
 	INNER JOIN [ACS_Dining].[dbo].[DishQuantityRelations] RELS
 	ON  RELS.[DishQuantityId]=DQUA.[Id]
 	INNER JOIN [ACS_Dining].[dbo].[DishType] DISHTYPES
@@ -422,8 +428,10 @@ BEGIN
 	ON  dayordmenus.[WeekOrderMenu_Id]=WORDMENU.[ID] 
 	inner join [ACS_Dining].[dbo].[MenuForDay] as daymenu
 	ON daymenu.ID=dayordmenus.MenuForDay_ID
-	INNER JOIN [ACS_Dining].[dbo].[MFD_Dishes] AS MFD_Dishes
-	ON MFD_Dishes.DishID=DISHES.DishID AND daymenu.ID=MFD_Dishes.MenuID
+	INNER JOIN [ACS_Dining].[dbo].[MfdDishPriceRelations] AS MPRELS
+	ON MPRELS.DishID=DISHES.DishID AND MPRELS.[MenuForDayId]=daymenu.ID
+	INNER JOIN [ACS_Dining].[dbo].[DishPrice] DP
+	ON DP.Id=MPRELS.[DishPriceId]
 	INNER JOIN [ACS_Dining].[dbo].[WorkingDay] AS WDAYS
 	ON WDAYS.Id=daymenu.WorkingDay_Id AND WDAYS.IsWorking=1	
 	INNER JOIN [ACS_Dining].[dbo].[WorkingWeek] WORKINGWEEKS
@@ -558,12 +566,12 @@ BEGIN
 	ON WeekOrderMenu.MenuForWeek_ID=MenuForWeek.ID AND MenuForWeek.ID=@MENUID AND WeekOrderMenu.[User_Id]=@userid
 	INNER JOIN MenuForDay
 	ON MenuForDay.MenuForWeek_ID=MenuForWeek.ID 
-	INNER JOIN MFD_Dishes
-	ON MenuForDay.ID=MFD_Dishes.MenuID
+	INNER JOIN [ACS_Dining].[dbo].[MfdDishPriceRelations] AS MPRELS
+	ON MPRELS.[MenuForDayId]=MenuForDay.ID
 	INNER JOIN DayOrderMenu
 	ON DayOrderMenu.MenuForDay_ID=MenuForDay.ID AND DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id
 	INNER JOIN Dish
-	ON MFD_Dishes.DishID=Dish.DishID
+	ON MPRELS.DishID=Dish.DishID
 	INNER JOIN DishType
 	ON DishType.Id=Dish.DishType_Id 
 	INNER JOIN WorkingWeek
@@ -683,11 +691,13 @@ BEGIN
 	 where WorkingWeek_ID=@workweekid
 	 order by Id
 	 --Заполняем дневные меню пустыми блюдами
-	 declare @nulldishid int
-	 select @nulldishid=DishID from [ACS_Dining].[dbo].[Dish] where DishType_Id is null
-	 insert [ACS_Dining].[dbo].[MFD_Dishes]
-	 select id, @nulldishid 
-	 from [ACS_Dining].[dbo].[MenuForDay]
+	 insert [ACS_Dining].[dbo].[MfdDishPriceRelations]
+	 select dishes.CurrentPrice_Id, dishes.DishID, mfd.id
+	 from [ACS_Dining].[dbo].[MenuForDay] mfd
+	 inner join [ACS_Dining].[dbo].[Dish] dishes
+	 on dishes.Title is null
+	 inner join [ACS_Dining].[dbo].[DishType] dt
+	 on dt.Id=dishes.DishType_Id
 	 where MenuForWeek_ID=@weekmenuid
 END
 GO
@@ -744,9 +754,9 @@ BEGIN
 	delete from [ACS_Dining].[dbo].[PlannedWeekOrderMenu]
 	where [MenuForWeek_ID]=@weekmenuid
 	--удаляем связи между блюдами и дневные меню этой недели
-	delete mfddishes from [ACS_Dining].[dbo].[MFD_Dishes] mfddishes
+	delete mfddprels from [ACS_Dining].[dbo].[MfdDishPriceRelations] mfddprels
 	inner join [ACS_Dining].[dbo].[MenuForDay] daymenu
-	on daymenu.MenuForWeek_ID=@weekmenuid and mfddishes.MenuID=daymenu.ID
+	on daymenu.MenuForWeek_ID=@weekmenuid and mfddprels.MenuForDayId=daymenu.ID
 	--удаляем дневные меню
 	delete  from [ACS_Dining].[dbo].[MenuForDay] 
 	where MenuForWeek_ID=@weekmenuid
@@ -778,13 +788,15 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 	update dordmenu
-	set dordmenu.[DayOrderSummaryPrice]=( select sum(dishes.Price*dqua.Quantity) from [ACS_Dining].[dbo].[DishQuantityRelations] rels
-	join [ACS_Dining].[dbo].[MFD_Dishes] mfddishes
-	on mfddishes.MenuID=dordmenu.MenuForDay_ID
+	set dordmenu.[DayOrderSummaryPrice]=( select sum(dprice.Price*dqua.Quantity) from [ACS_Dining].[dbo].[DishQuantityRelations] rels
+	join [ACS_Dining].[dbo].[MfdDishPriceRelations] mfddprice
+	on mfddprice.MenuForDayId=dordmenu.MenuForDay_ID
+	inner join [ACS_Dining].[dbo].[DishPrice] dprice
+	on dprice.Id=mfddprice.DishPriceId
 	inner join [ACS_Dining].[dbo].[Dish] dishes
-	on dishes.DishID=mfddishes.DishID
+	on dishes.DishID=mfddprice.DishID
 	inner join [ACS_Dining].[dbo].[MenuForDay] mfd
-	on mfd.ID=dordmenu.MenuForDay_ID and mfddishes.MenuID=mfd.ID
+	on mfd.ID=dordmenu.MenuForDay_ID and mfddprice.MenuForDayId=mfd.ID
 	inner join [ACS_Dining].[dbo].[DishQuantity] dqua
 	on dqua.Id=rels.DishQuantityId
 	inner join  [ACS_Dining].[dbo].[DishType] dtypes
@@ -950,13 +962,15 @@ BEGIN
 	DECLARE @curbalance float
 	--Обновляем суммы дневных оплат для данного недельного заказа
 	update dordmenu
-	set dordmenu.[DayOrderSummaryPrice]=( select sum(dishes.Price*dqua.Quantity) from [ACS_Dining].[dbo].[DishQuantityRelations] rels
-	join [ACS_Dining].[dbo].[MFD_Dishes] mfddishes
-	on mfddishes.MenuID=dordmenu.MenuForDay_ID
+	set dordmenu.[DayOrderSummaryPrice]=( select sum(dprice.Price*dqua.Quantity) from [ACS_Dining].[dbo].[DishQuantityRelations] rels
+	join [ACS_Dining].[dbo].[MfdDishPriceRelations] mfddprice
+	on mfddprice.MenuForDayId=dordmenu.MenuForDay_ID
+	inner join [ACS_Dining].[dbo].[DishPrice] dprice
+	on dprice.Id=mfddprice.DishPriceId
 	inner join [ACS_Dining].[dbo].[Dish] dishes
-	on dishes.DishID=mfddishes.DishID
+	on dishes.DishID=mfddprice.DishID
 	inner join [ACS_Dining].[dbo].[MenuForDay] mfd
-	on mfd.ID=dordmenu.MenuForDay_ID and mfddishes.MenuID=mfd.ID
+	on mfd.ID=dordmenu.MenuForDay_ID and mfddprice.MenuForDayId=mfd.ID
 	inner join [ACS_Dining].[dbo].[DishQuantity] dqua
 	on dqua.Id=rels.DishQuantityId
 	inner join  [ACS_Dining].[dbo].[DishType] dtypes

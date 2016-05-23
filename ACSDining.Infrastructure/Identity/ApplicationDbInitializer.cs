@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
 using System.IO;
 using System.Linq;
+using System.Web.Configuration;
 using System.Web.Hosting;
 using System.Xml.Linq;
 using ACSDining.Core.Domains;
@@ -24,7 +26,7 @@ namespace ACSDining.Infrastructure.Identity
         public double Price { get; set; }
         public DishDetail DishDetail { get; set; }
     }
-    //public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+    //public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
         public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
 
@@ -50,7 +52,7 @@ namespace ACSDining.Infrastructure.Identity
             GetUsersFromXml(context, _path);
             CreateOrders(context);
             _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
-            //Utility.CreateStoredFuncs(_path);
+            Utility.CreateStoredFuncs(_path);
             base.Seed(context);
         }
 
@@ -120,27 +122,18 @@ namespace ACSDining.Infrastructure.Identity
                 new DayOfWeek {Name = "Воскресенье"}
                 );
 
-            List<DishType> dishTypes = context.DishTypes.OrderBy(dt => dt.Id).ToList();
-            //пустые блюда для каждой категории
-            context.Dishes.AddOrUpdate(dishTypes.Select(dt=>new Dish
-            {
-                //Title = " ",
-                //Description = " ",
-                DishType = dt
-                //Price = 0.00
-            }).ToArray());
 
             var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
-            if (!roleManager.RoleExists("Administrator"))
-            {
-                roleManager.Create(new UserRole
-                {
-                    Name = "Administrator",
-                    Description = "All Rights in Application"
-                });
-            }
+            //if (!roleManager.RoleExists("Administrator"))
+            //{
+            //    roleManager.Create(new UserRole
+            //    {
+            //        Name = "Administrator",
+            //        Description = "All Rights in Application"
+            //    });
+            //}
 
             if (!roleManager.RoleExists("SuperUser"))
             {
@@ -150,14 +143,14 @@ namespace ACSDining.Infrastructure.Identity
                     Description = "Can Update List Employee and DiningEmployee"
                 });
             }
-            if (!roleManager.RoleExists("DiningEmployee"))
-            {
-                roleManager.Create(new UserRole
-                {
-                    Name = "DiningEmployee",
-                    Description = "Сan edit the list of dishes in the dining room"
-                });
-            }
+            //if (!roleManager.RoleExists("DiningEmployee"))
+            //{
+            //    roleManager.Create(new UserRole
+            //    {
+            //        Name = "DiningEmployee",
+            //        Description = "Сan edit the list of dishes in the dining room"
+            //    });
+            //}
             if (!roleManager.RoleExists("Employee"))
             {
                 roleManager.Create(new UserRole
@@ -167,44 +160,44 @@ namespace ACSDining.Infrastructure.Identity
                 });
             }
 
-            User useradmin = userManager.FindByName("admin");
-            if (useradmin == null)
-            {
-                useradmin = new User
-                {
-                    UserName = "admin",
-                    Email = "test@test.com",
-                    FirstName = "Admin",
-                    LastName = "User",
-                    LastLoginTime = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
-                };
-                var adminresult = userManager.Create(useradmin, "777123");
-                if (adminresult.Succeeded)
-                {
-                    //userManager.AddToRole(useradmin.Id, "Administrator");
-                    //userManager.AddToRole(useradmin.Id, "Employee");
-                    //userManager.AddToRole(useradmin.Id, "DiningEmployee");
-                    userManager.AddToRole(useradmin.Id, "SuperUser");
-                }
-            }
-
-            User usersu = userManager.FindByName("su");
+            //User useradmin = userManager.FindByName("admin");
+            //if (useradmin == null)
+            //{
+            //    useradmin = new User
+            //    {
+            //        UserName = "admin",
+            //        Email = "test@test.com",
+            //        FirstName = "Admin",
+            //        LastName = "User",
+            //        LastLoginTime = DateTime.UtcNow,
+            //        RegistrationDate = DateTime.UtcNow,
+            //        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+            //    };
+            //    var adminresult = userManager.Create(useradmin, "777123");
+            //    if (adminresult.Succeeded)
+            //    {
+            //        //userManager.AddToRole(useradmin.Id, "Administrator");
+            //        //userManager.AddToRole(useradmin.Id, "Employee");
+            //        //userManager.AddToRole(useradmin.Id, "DiningEmployee");
+            //        userManager.AddToRole(useradmin.Id, "SuperUser");
+            //    }
+            //}
+            string sulogin = WebConfigurationManager.AppSettings["sulogin"];
+            User usersu = userManager.FindByName(sulogin);
             if (usersu == null)
             {
                 usersu = new User
                 {
-                    UserName = "su",
+                    UserName = sulogin,
                     Email = "test@test.com",
                     FirstName = "Super",
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                   // PasswordHash = userManager.PasswordHasher.HashPassword(WebConfigurationManager.AppSettings["supass"])
                 };
 
-                var suresult = userManager.Create(usersu, "777123");
+                var suresult = userManager.Create(usersu, WebConfigurationManager.AppSettings["supass"]);
 
                 if (suresult.Succeeded)
                 {
@@ -213,26 +206,26 @@ namespace ACSDining.Infrastructure.Identity
                 ;
             }
 
-            User userdinEmpl = userManager.FindByName("diningemployee");
-            if (userdinEmpl == null)
-            {
-                userdinEmpl = new User
-                {
-                    UserName = "diningemployee",
-                    Email = "test@test.com",
-                    FirstName = "DiningEmployee",
-                    LastName = "User",
-                    LastLoginTime = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
-                };
-                var deresult = userManager.Create(userdinEmpl, "777123");
-                if (deresult.Succeeded)
-                {
-                    userManager.AddToRole(userdinEmpl.Id, "DiningEmployee");
-                    userManager.AddToRole(userdinEmpl.Id, "Employee");
-                }
-            }
+            //User userdinEmpl = userManager.FindByName("diningemployee");
+            //if (userdinEmpl == null)
+            //{
+            //    userdinEmpl = new User
+            //    {
+            //        UserName = "diningemployee",
+            //        Email = "test@test.com",
+            //        FirstName = "DiningEmployee",
+            //        LastName = "User",
+            //        LastLoginTime = DateTime.UtcNow,
+            //        RegistrationDate = DateTime.UtcNow,
+            //        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+            //    };
+            //    var deresult = userManager.Create(userdinEmpl, "777123");
+            //    if (deresult.Succeeded)
+            //    {
+            //        userManager.AddToRole(userdinEmpl.Id, "DiningEmployee");
+            //        userManager.AddToRole(userdinEmpl.Id, "Employee");
+            //    }
+            //}
 
             User userEmpl = userManager.FindByName("employee");
             if (userEmpl == null)
@@ -245,7 +238,8 @@ namespace ACSDining.Infrastructure.Identity
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
                     RegistrationDate = DateTime.UtcNow,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    AllowableDebt = 200
+                    //PasswordHash = userManager.PasswordHasher.HashPassword("777123")
                 };
                 var empresult = userManager.Create(userEmpl, "777123");
                 if (empresult.Succeeded)
@@ -255,85 +249,94 @@ namespace ACSDining.Infrastructure.Identity
             }
         }
 
-        public static DishHelp[] GetDishesFromXml(ApplicationDbContext context, string userspath)
-        {
+            public static DishHelp[] GetDishesFromXml(ApplicationDbContext context, string userspath)
+            {
 
-            var xml = XDocument.Load(userspath);
-            var collection = xml.Root.Descendants("dish");
+                var xml = XDocument.Load(userspath);
+                var collection = xml.Root.Descendants("dish");
 
-            List<DishType> dtList = context.DishTypes.ToList();
+                List<DishType> dtList = context.DishTypes.ToList();
 
-            Func<string, DishType> getDishType =
-                el1 =>
+                Func<string, DishType> getDishType =
+                    el1 =>
+                    {
+                        DishType dtype = dtList.FirstOrDefault(dt => string.Equals(el1, dt.Category));
+
+                        return dtype;
+                    };
+
+                Func<string, double> parseDouble = str =>
                 {
-                    DishType dtype = dtList.FirstOrDefault(dt => string.Equals(el1, dt.Category));
-
-                    return dtype;
+                    double val = double.Parse(str);
+                    return val > 30.0 ? val/100 : val;
                 };
 
-            Func<string, double> parseDouble = str =>
-            {
-                double val = double.Parse(str);
-                return val > 30.0 ? val/100 : val;
-            };
-
-            try
-            {
-
-                DishHelp[] dishes = collection.AsEnumerable().Select(el =>
+               
+                try
                 {
-                    DishHelp dish = new DishHelp
+
+                    DishHelp[] dishes = collection.AsEnumerable().Select(el =>
                     {
-                        DishType = getDishType(el.Attribute("dishtype").Value),
-                        Title = el.Attribute("title").Value,
-                        Description = el.Element("description").Value,
-                        ProductImage = el.Attribute("image").Value,
-                        DishDetail = new DishDetail
+                        DishHelp dish = new DishHelp
                         {
+                            DishType = getDishType(el.Attribute("dishtype").Value),
                             Title = el.Attribute("title").Value,
-                            Foods = el.Element("foods").Value,
-                            Recept = el.Element("recept").Value
-                        },
-                        Price = parseDouble(el.Element("cost").Value)
-                    };
-                    return dish;
-                }).ToArray();
-                    //(from el in collection.AsEnumerable()
-                    //select new Dish
-                    //{
-                    //    DishType = getDishType(el.Attribute("dishtype").Value),
-                    //    Title = el.Attribute("title").Value,
-                    //    Description = el.Element("description").Value,
-                    //    ProductImage = el.Attribute("image").Value,
-                    //    Price = parseDouble(el.Element("cost").Value),
-                    //    DishDetail = new DishDetail
-                    //    {
-                    //        Title = el.Attribute("title").Value,
-                    //        Foods = el.Element("foods").Value,
-                    //        Recept = el.Element("recept").Value
-                    //    }
-                    //}).ToArray();
+                            Description = el.Element("description").Value,
+                            ProductImage = el.Attribute("image").Value,
+                            DishDetail = new DishDetail
+                            {
+                                Title = el.Attribute("title").Value,
+                                Foods = el.Element("foods").Value,
+                                Recept = el.Element("recept").Value
+                            },
+                            Price = parseDouble(el.Element("cost").Value)
+                        };
+                        return dish;
+                    }).ToArray();
 
-                context.Dishes.AddOrUpdate(c => c.Title, dishes.Select(d=>new Dish
-                {
+                    double[] prices = dishes.Select(d => d.Price).Distinct().ToArray();
+                    context.DishPrices.AddRange(prices.Select(pr => new DishPrice { Price = pr })
+                            .Concat(new[] { new DishPrice { Price = 0.00 } })
+                            .ToArray());
+
+                    context.SaveChanges();
+
+                    DishPrice[] dishPrices = context.DishPrices.ToArray();
+
+                    Func<double, DishPrice> getDishPrice = (price) =>
+                    {
+                        return dishPrices.FirstOrDefault(d => Math.Abs(price - d.Price) < 0.001);
+                    };
+
+                    List<DishType> dishTypes = context.DishTypes.OrderBy(dt => dt.Id).ToList();
+                    //пустые блюда для каждой категории
+                    context.Dishes.AddRange(dishTypes.Select(dt => new Dish
+                    {
+                        DishType = dt,
+                        CurrentPrice = getDishPrice(0.00)
+                    }).ToArray());
+                    context.SaveChanges();
+
+                    context.Dishes.AddRange(dishes.Select(d => new Dish
+                    {
                         DishType = d.DishType,
                         Title = d.Title,
                         Description = d.Description,
                         ProductImage = d.ProductImage,
-                        DishDetail = d.DishDetail
-                }).ToArray());
-                context.DishPrices.AddOrUpdate(price => price.Price,
-                    dishes.Select(d => new DishPrice { Price = d.Price }).Distinct().ToArray());
-                return dishes;
-            }
-            catch (NullReferenceException ex)
-            {
-                throw;
+                        DishDetail = d.DishDetail,
+                        CurrentPrice = getDishPrice(d.Price)
+                    }).ToArray());
+                    context.SaveChanges();
+                    return dishes;
+                }
+                catch (NullReferenceException ex)
+                {
+                    throw;
+                }
+
             }
 
-        }
-
-        public static void CreateWorkingDays(ApplicationDbContext context)
+            public static void CreateWorkingDays(ApplicationDbContext context)
         {
             for (int i = 0; i < 2; i++)
             {
@@ -379,7 +382,7 @@ namespace ACSDining.Infrastructure.Identity
         public static void CreateMenuForWeek(ApplicationDbContext context, DishHelp[] dishArray)
         {
             string[] categories = context.DishTypes.OrderBy(t => t.Id).Select(dt => dt.Category).ToArray();
-            Dish[] darray = context.Dishes.ToArray();
+            Dish[] darray = context.Dishes.Where(d => d.Title != null).ToArray();
             DishPrice[] dishPrices = context.DishPrices.ToArray();
             Func<string, IEnumerable<DishHelp>, int> countDish = (str, list) =>
             {
@@ -395,9 +398,9 @@ namespace ACSDining.Infrastructure.Identity
                             darray.Where(d => string.Equals(d.DishType.Category, pair.Key))
                                 .ElementAt(Rand.Next(pair.Value))).ToList();
             };
-            Func<DishHelp,DishPrice> getDishPrice=(dh) =>
+            Func<double,DishPrice> getDishPrice=(price) =>
             {
-                return dishPrices.FirstOrDefault(d => Math.Abs(dh.Price - d.Price) < 0.001);
+                return dishPrices.FirstOrDefault(d => Math.Abs(price - d.Price) < 0.001);
             };
 
             Year year = context.Years.FirstOrDefault(y => y.YearNumber == DateTime.Now.Year);
@@ -443,11 +446,11 @@ namespace ACSDining.Infrastructure.Identity
                         {
                             Dish = d,
                             MenuForDay = dayMenu,
-                            DishPrice = getDishPrice( dishArray.FirstOrDefault(dp=>string.Equals(dp.Title,d.Title)))
+                            DishPrice = d.CurrentPrice
                         }));
                         dayMenu.TotalPrice =
                             mfdDishPriceRelationses.Where(mdr => mdr.MenuForDay == dayMenu)
-                                .Sum(mdr => mdr.DishPrice.Price);
+                                .Sum(mdr => mdr.Dish.CurrentPrice.Price);
                         mfdays.Add(dayMenu);
 
                     }
@@ -472,6 +475,10 @@ namespace ACSDining.Infrastructure.Identity
             var xml = XDocument.Load(userpath);
             if (xml.Root != null)
             {
+                //System.Configuration.ConfigurationFileMap fileMap = new ConfigurationFileMap(HostingEnvironment.MapPath("~/Web.config")); //Path to your config file
+                //System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedMachineConfiguration(fileMap);
+                double defaultDebt;
+                double.TryParse(WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.MapPath("~/Web.config")).AppSettings.Settings["defaultCreditValue"].Value, out defaultDebt);
                 var collection = xml.Root.Descendants("Employeer");
                 try
                 {
@@ -497,7 +504,8 @@ namespace ACSDining.Infrastructure.Identity
                                     RegistrationDate = DateTime.UtcNow,
                                     LastLoginTime = DateTime.UtcNow,
                                     IsExisting = true,
-                                    CanMakeBooking = true
+                                    CanMakeBooking = true,
+                                    AllowableDebt = defaultDebt
                                 };
                         }
                         return null;

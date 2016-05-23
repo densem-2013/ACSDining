@@ -1057,3 +1057,10 @@ select.input-small {
  .modal-body th {
      color: darkcyan;
  }
+ #searchItems  {
+     display: inline-flex;
+     padding: 5px;
+ }
+ #searchItems > * {
+     padding: 5px;
+ }

@@ -12,6 +12,10 @@
     
     $("ul.nav.navbar-nav li:nth-child(2)").addClass("active");
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
+    var excelButtonDiv = $('<div></div>').css({ 'whith': '100%', 'padding': '10px' });
+    var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
+    excelButtonDiv.append(sendButtonInput);
+    $('#datepick').append(excelButtonDiv);
     //$(".container").css({ 'marginLeft': 0 });
 
     var quantValueModel = function (value) {
@@ -66,6 +70,8 @@
     var weekOrdersModel = function () {
         var self = this;
 
+        self.Title = ko.observable("");
+
         self.Message = ko.observable("");
 
         self.myDate = ko.observable(new Date());
@@ -106,8 +112,18 @@
 
         self.PlanWeekDishPrices = ko.observableArray([]);
 
+        // Callback for error responses from the server.
+        function modalShow(title, message) {
+
+            self.Title(title);
+            self.Message(message);
+            $("#modalMessage").modal("show");
+
+        }
+        // Callback for error responses from the server.
         function onError(error) {
-            self.Message("Error: " + error.status + " " + error.statusText);
+
+            modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         }
 
         self.CalcSummaryDishQuantyties = function(wuord, daynum, catnum) {
@@ -205,18 +221,21 @@
         var factloadWeekOrders = function (wyDto1) {
 
             app.su_Service.FactLoadWeekOrders(wyDto1).then(function (resp1) {
+                if (resp1 != null) {
+                    self.WeekYear(resp1.weekYearDto);
+                    self.DaysOfWeek(resp1.dayNames);
 
-                self.WeekYear(resp1.weekYearDto);
-                self.DaysOfWeek(resp1.dayNames);
+                    self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function (uwoObject) {
+                        var summaryprice = uwoObject.userWeekOrderDishes.pop();
+                        return new weekUserOrderModel(uwoObject, summaryprice);
+                    }));
 
-                self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function (uwoObject) {
-                    var summaryprice = uwoObject.userWeekOrderDishes.pop();
-                    return new weekUserOrderModel(uwoObject, summaryprice);
-
-                }));
-
-                self.WeekDishPrices(resp1.weekDishPrices);
-                self.SUCanChangeOrder(resp1.suCanChangeOrder);
+                    self.SummaryDishQuantities(resp1.summaryDishQuantities);
+                    self.WeekDishPrices(resp1.weekDishPrices);
+                    self.SUCanChangeOrder(resp1.suCanChangeOrder);
+                } else {
+                    modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                };
 
             }, onError);
 
@@ -251,14 +270,16 @@
             };
         }, self);
 
-        self.GetUnitCounts=function() {
-
-            app.su_Service.GetSummaryDishOrders(self.WeekYear()).then(function (unitorders) {
-                if (unitorders !== null) {
-                    self.SummaryDishQuantities(unitorders);
-                }
-            });
-        }
+        self.GetExcel = function () {
+            var forexcel = {
+                WeekYear: self.WeekYear(),
+                DataString: self.WeekTitle()
+            }
+            app.su_Service.GetExcelFactOrders(forexcel)
+                .then(function (res) {
+                    window.location.assign(res.fileName);
+                });
+        };
 
         self.init = function () {
             app.su_Service.GetCategories().then(function (resp) {
@@ -269,7 +290,7 @@
                     self.WeekYear(resp);
                 self.CurrentWeekYear(resp);
 
-                self.GetUnitCounts();
+                //self.GetUnitCounts();
 
             }, onError)
                 .then(function () {

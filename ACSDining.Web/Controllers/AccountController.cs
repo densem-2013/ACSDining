@@ -2,6 +2,8 @@
 using System.DirectoryServices.AccountManagement;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Configuration;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
@@ -138,6 +140,9 @@ namespace ACSDining.Web.Controllers
                         UserPrincipal usprincrezult = (UserPrincipal)search.FindOne();
                         search.Dispose();
                         if (usprincrezult != null)
+                        {
+                            double defaultDebt;
+                            double.TryParse(WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.MapPath("~/Web.config")).AppSettings.Settings["defaultCreditValue"].Value, out defaultDebt);
                             user = new User
                             {
                                 FirstName = usprincrezult.GivenName,
@@ -147,11 +152,12 @@ namespace ACSDining.Web.Controllers
                                 LastLoginTime = DateTime.UtcNow,
                                 RegistrationDate = DateTime.UtcNow,
                                 EmailConfirmed = true,
-                                PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
+                                AllowableDebt = defaultDebt
+                                // PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
                             };
+                        }
 
-
-                        var res = UserManager.CreateAsync(user).Result;
+                        var res = UserManager.CreateAsync(user, model.Password).Result;
                         if (res == IdentityResult.Success)
                         {
                             if (user != null) await UserManager.AddToRoleAsync(user.Id, "Employee");
@@ -180,19 +186,7 @@ namespace ACSDining.Web.Controllers
                     var specuser = UserManager.FindByName(model.LogIn);
                     if (specuser != null)
                     {
-                        if (await UserManager.IsInRoleAsync(specuser.Id, "Administrator"))
-                        {
-                            specuser.LastLoginTime = DateTime.UtcNow;
-                            Session["FullName"] = specuser.LastName + " " + specuser.FirstName;
-                            //Session["Fname"] = user.FirstName;
-                            //Session["Lname"] = user.LastName;
-                            specuser.LastLoginTime = DateTime.Now;
-                            await
-                                _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                                    shouldLockout: false);
 
-                            return RedirectToAction("Accounts", "Admin", new {Area = "AdminArea"});
-                        }
                         if (await UserManager.IsInRoleAsync(specuser.Id, "SuperUser"))
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;

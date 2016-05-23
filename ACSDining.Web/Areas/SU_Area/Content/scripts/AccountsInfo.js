@@ -25,8 +25,8 @@
 
     var accountsViewModel = function() {
         var self = this;
+        self.query = ko.observable("");
         self.Accounts = ko.observableArray([]);
-        self.isSelected = ko.observable(false);
         self.Message = ko.observable("");
 
         self.myDate = ko.observable(new Date());
@@ -91,48 +91,42 @@
         };
         self.loadAccounts = function () {
             app.su_Service.GetAccounts().then(function (resp) {
-                //self.Accounts([]);
+
                 self.Accounts(ko.utils.arrayMap(resp, function (item) {
                     return new accountInfo(item);
                 }));
             }, onError);
         }
-        self.search = ko.observable();
-        self.filterList = ko.observableArray([]);
-        self.handledSearch = ko.pureComputed({
-            read: function () {
-                return self.search();
-            },
-            write: function (value) {
-
-                value = value.replace(new RegExp(/[^\w]/g), "");
-                self.search(value);
-            },
-            owner: self
-        });
-
-        var stringStartsWith = function(string, startsWith) {
+        var stringStartsWith = function (string, startsWith) {
             string = string || "";
             if (startsWith.length > string.length)
                 return false;
             return string.substring(0, startsWith.length) === startsWith;
         };
-        self.onkeydown = function (data, event) {
-            self.filterList([]);
-            if (self.isSelected()) {
-                var searchval = self.search();
-                if (searchval) {
-                    var filterarray = ko.utils.arrayFilter(self.Accounts(), function(item) {
-                        return stringStartsWith(item.FullName(), searchval);
-                    });
-                    self.filterList.pushAll(filterarray);
-                }
+        self.handledSearch = ko.pureComputed({
+            read: function () {
+                return self.query();
+            },
+            write: function (value) {
+
+                value = value.replace(new RegExp(/[^a-zA-Zа-яА-Я]/g), "");
+                self.query(value);
+            },
+            owner: self
+        });
+
+        self.filterList = ko.dependentObservable(function () {
+            var filter = self.query().toLowerCase();
+
+            if (!filter) {
+                return self.pagedList();
             } else {
-                var size = self.pageSize();
-                var start = self.pageIndex() * size;
-                self.filterList(self.Accounts().slice(start, start + size));
+                return ko.utils.arrayFilter(self.Accounts(), function (item) {
+                    return stringStartsWith(item.FullName().toLowerCase(), filter);
+                });
             }
-        };
+        });
+
 
         self.init = function () {
 

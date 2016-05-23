@@ -14,10 +14,15 @@ namespace ACSDining.Infrastructure.Services
         //Получить блюда по категориям
         List<DishModelDto> GetDishModelDtoByCategory(string category,int? menufordayid=null);
         //Обновить блюдо
+        void UpdateDish(DishModelDto dish);
         //Создать блюдо
+        void InsertDish(DishModelDto dish);
         //Удалить блюдо
+        void DeleteDish(int dishid);
         //Преобразовать блюдо в DishModelDto
         DishModelDto GetDishModelDto(Dish dish, int menufordayid);
+        //Обновить дневное меню
+        void UpdateMenuForDay(MenuForDayDto dayMenuDto);
     }
     public class MfdDishPriceService : Service<MfdDishPriceRelations>, IMfdDishPriceService
     {
@@ -37,6 +42,25 @@ namespace ACSDining.Infrastructure.Services
         public DishModelDto GetDishModelDto(Dish dish, int menufordayid)
         {
             return _repository.GetDishModelDto(dish, menufordayid);
+        }
+
+        public void UpdateDish(DishModelDto dish)
+        {
+            _repository.UpdateDish(dish);
+        }
+        public void DeleteDish(int dishid)
+        {
+            _repository.DeleteDish(dishid);
+        }
+
+        public void InsertDish(DishModelDto dish)
+        {
+            _repository.InsertDish(dish);
+        }
+
+        public void UpdateMenuForDay(MenuForDayDto dayMenuDto)
+        {
+            _repository.UpdateMfdDishes(dayMenuDto);
         }
     }
 }

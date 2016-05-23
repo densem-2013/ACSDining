@@ -28,7 +28,7 @@ namespace ACSDining.Infrastructure.Migrations
              ApplicationDbInitializer.GetUsersFromXml(context, _path);
             ApplicationDbInitializer.CreateOrders(context);
             _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
-           // Utility.CreateStoredFuncs(_path);
+            Utility.CreateStoredFuncs(_path);
 
         }
 

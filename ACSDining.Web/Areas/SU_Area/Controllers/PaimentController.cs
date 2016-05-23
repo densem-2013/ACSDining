@@ -41,7 +41,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
-            WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork, wyDto);
+            WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork.RepositoryAsync<WeekPaiment>(), wyDto);
 
             return await  Task.FromResult(dto);
         }

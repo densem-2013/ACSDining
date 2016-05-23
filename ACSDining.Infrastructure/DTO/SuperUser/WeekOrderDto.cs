@@ -2,6 +2,7 @@
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.Employee;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
@@ -25,19 +26,24 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public static  WeekOrderDto GetMapDto(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto)
         {
             ApplicationDbContext context = unitOfWork.GetContext();
+
+            MenuForWeek menuForWeek = unitOfWork.RepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
+
+            if (menuForWeek == null) return null;
+
             List<WeekOrderMenu> weekOrderMenus = unitOfWork.RepositoryAsync<WeekOrderMenu>()
                 .OrdersMenuByWeekYear(wyDto);
 
-            MenuForWeek menuForWeek = unitOfWork.RepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
 
             return new WeekOrderDto
             {
                 WeekYearDto = wyDto,
                 SuCanChangeOrder = menuForWeek.SUCanChangeOrder,
                 UserWeekOrders =
-                    weekOrderMenus.Select(woDto => UserWeekOrderDto.MapDto(unitOfWork, woDto)).ToList(),
+                    weekOrderMenus.Select(woDto => UserWeekOrderDto.MapDto(context, woDto)).ToList(),
                 DayNames = context.GetDayNames(wyDto, true).Result,
-                WeekDishPrices = context.GetWeekDishPrices(wyDto).Result
+                WeekDishPrices = context.GetWeekDishPrices(wyDto).Result,
+                SummaryDishQuantities = context.GetFactSumWeekUserCounts(wyDto).Result
             };
         }
     }

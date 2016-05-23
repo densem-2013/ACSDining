@@ -26,7 +26,8 @@
         var self = this;
 
         self.DishId = ko.observable(dinfo.dishId);
-        self.Title = ko.observable(dinfo.title);
+        var titleval = dinfo.title || "Блюдо не выбрано";
+        self.Title = ko.observable(titleval);
         self.Description = ko.observable(dinfo.description);
         self.Price = ko.observable(dinfo.price.toFixed(2));
         self.Category = ko.observable(dinfo.category);
@@ -41,33 +42,17 @@
         self.isHovering = ko.observable(false);
     }
     
-    var menuForDayInfo = function(object, categs,isworking) {
+    var menuForDayInfo = function(object, isworking) {
 
         var self = this;
 
         object = object || {};
-        categs = categs || [];
 
         self.Id = ko.observable(object.id);
-        self.IsWorking = ko.observable(/*new workDayInfo(object.workDay)*/isworking);
+        self.IsWorking = ko.observable(isworking);
         var ind = 0;
-        self.Dishes = ko.observableArray(ko.utils.arrayMap(categs, function(item) {
-            var first = ko.utils.arrayFirst(object.dishes, function(element) {
-
-                return element.category!=null && element.category === item;
-            });
-            if (first != null) {
-                return new dishInfo(first);
-            }
-            var dish = {
-                dishID: "0",
-                title: ":",
-                description: "...",
-                price: 0.0,
-                category: item
-            }
-            return new dishInfo(dish);
-            //return null;
+        self.Dishes = ko.observableArray(ko.utils.arrayMap(object.dishes, function (item) {
+            return new dishInfo(item);
         }));
 
         self.Editing = ko.observable(false);
@@ -168,24 +153,19 @@
 
         self.ChangeSaved = ko.observable(false);
 
+
         function modalShow(title, message) {
 
             self.Title(title);
             self.Message(message);
             $("#modalMessage").modal("show");
 
-        }
+        };
         // Callback for error responses from the server.
         function onError(error) {
 
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
-        }
-
-        //self.NextWeekMenuButton = {
-        //    Message: function() { return self.IsNextWeekMenuExists() ? "Перейти к меню на следующую неделю" : "Создать меню на следующую неделю" },
-        //    action: function() { return  self.IsNextWeekMenuExists() ? self.GoToNextWeekMenu : self.CreateNextWeekMenu },
-        //    cssclass: function() { return self.IsNextWeekYear() ? "btn-danger" : "btnaddmenu enabled" }
-        //};
+        };
 
         self.WeekTitle = ko.computed(function() {
             var options = {
@@ -312,27 +292,31 @@
 
         var loadWeekMenu = function (wyDto) {
 
-            app.su_Service.LoadWeekMenu(wyDto).then(function (resp) {
+            app.su_Service.LoadWeekMenu(wyDto).then(function(resp) {
+                    if (resp != null) {
+                        self.MFD_models(ko.utils.arrayMap(resp.mfdModels, function(item, ind) {
+                            return new menuForDayInfo(item, resp.workWeekDays[ind]);
+                        }));
 
-                self.MFD_models(ko.utils.arrayMap(resp.mfdModels, function(item,ind) {
-                    return new menuForDayInfo(item, self.Categories(), resp.workWeekDays[ind]);
-                }));
-
-                self.MenuId(resp.id);
-                self.WeekYear(resp.weekYear);
-                self.SummaryPrice(resp.summaryPrice.toFixed(2));
-                self.OrderCanBeCreated(resp.orderCanBeCreated);
-                //self.WorkWeek(new workWeekModel(resp.workWeek));
-                self.WorkingDaysAreSelected(resp.workingDaysAreSelected);
-                //self.WorkWeekDays(ko.utils.arrayMap(resp.workWeekDays,function(item) {
-                //    return new workDayInfo(item);
-                //}));
-                self.DayNames(resp.dayNames);
-                app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
-                    self.IsNextWeekMenuExists(respnext);
-                }, onError);
-            }, onError);
-
+                        self.MenuId(resp.id);
+                        self.WeekYear(resp.weekYear);
+                        self.SummaryPrice(resp.summaryPrice.toFixed(2));
+                        self.OrderCanBeCreated(resp.orderCanBeCreated);
+                        //self.WorkWeek(new workWeekModel(resp.workWeek));
+                        self.WorkingDaysAreSelected(resp.workingDaysAreSelected);
+                        //self.WorkWeekDays(ko.utils.arrayMap(resp.workWeekDays,function(item) {
+                        //    return new workDayInfo(item);
+                        //}));
+                        self.DayNames(resp.dayNames);
+                        app.su_Service.IsNextWeekMenuExists().then(function(respnext) {
+                            self.IsNextWeekMenuExists(respnext);
+                        }, onError);
+                    } else {
+                        modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                    }
+                },
+                onError);
+            
         }
 
 
@@ -343,6 +327,12 @@
                 self.SetMyDateByWeek(nextWeekYear);
 
             });
+        };
+
+
+        self.GoToNexCurrentWeekMenu = function () {
+
+            self.SetMyDateByWeek(self.CurrentWeekYear());
         };
 
         self.myDate.subscribe = ko.computed(function() {

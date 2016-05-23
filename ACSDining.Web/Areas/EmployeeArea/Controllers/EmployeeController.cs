@@ -2,7 +2,7 @@
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 {
-    [System.Web.Http.Authorize(Roles = "Employee,Administrator,DiningEmployee")]
+    [System.Web.Http.Authorize(Roles = "Employee")]
     public class EmployeeController : Controller
     {
         public ActionResult Index()

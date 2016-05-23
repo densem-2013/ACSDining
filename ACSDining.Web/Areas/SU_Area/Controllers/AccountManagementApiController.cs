@@ -8,7 +8,9 @@ using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.UnitOfWork;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -18,10 +20,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     public class AccountManagementApiController : ApiController
     {
         private ApplicationUserManager _userManager;
+        private readonly ApplicationRoleManager _roleManager;
+        private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public AccountManagementApiController(ApplicationUserManager userManager)
+        public AccountManagementApiController(/*ApplicationUserManager userManager*/IUnitOfWorkAsync unitOfWork)
         {
-            _userManager = userManager;
+            _unitOfWork = unitOfWork;
+            //_userManager = userManager;
+            _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
+            _roleManager = new ApplicationRoleManager(new RoleStore<UserRole>(_unitOfWork.GetContext()));
         }
         public ApplicationUserManager UserManager
         {
@@ -39,7 +46,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         [ResponseType(typeof (List<AccountDto>))]
         public async Task<List<AccountDto>> GetAccounts()
         {
-            return await Task.FromResult(UserManager.Users.OrderBy(u=>u.UserName).Select(AccountDto.MapDto).ToList());
+            UserRole employrole = await _roleManager.FindByNameAsync("Employee");
+            return
+                await
+                    Task.FromResult(
+                        UserManager.Users.Where(u => u.Roles.Select(r => r.RoleId).Contains(employrole.Id))
+                            .OrderBy(u => u.UserName)
+                            .Select(AccountDto.MapDto)
+                            .ToList());
         }
 
         // DELETE api/Dishes/5

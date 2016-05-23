@@ -2,22 +2,19 @@
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
-using System.Web;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 {
+    [EmplSessionExpireFilter]
     [Authorize(Roles = "Employee")]
     [RoutePrefix("api/Employee")]
     public class EmployeeOrderApiController : ApiController
@@ -25,9 +22,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekMenuService;
         private readonly IOrderMenuService _orderMenuService;
-        private readonly IDishQuantityRelationsService _dishQuantityService;
         private readonly IUnitOfWorkAsync _unitOfWork;
-        private readonly ApplicationUserManager _userManager;
         private readonly IWeekPaimentService _weekPaimentService;
 
         public EmployeeOrderApiController(IUnitOfWorkAsync unitOfWorkAsync)
@@ -36,8 +31,6 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             _db = ((UnitOfWork) unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
-            _dishQuantityService = new DishQuantityRelationsService(_unitOfWork.RepositoryAsync<DishQuantityRelations>());
-            _userManager = new ApplicationUserManager(new UserStore<User>(_db));
             _weekPaimentService=new WeekPaimentService(_unitOfWork.RepositoryAsync<WeekPaiment>());
         }
         
@@ -56,43 +49,18 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             {
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
-            //WeekMenuDto weekmodel = WeekMenuDto.MapDto(_unitOfWork as UnitOfWork,
-            //    _weekMenuService.GetWeekMenuByWeekYear(wyDto));
 
-            //Меню на запрашиваемую неделю не было создано или заказ сделать ещё нельзя
-
-            //int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
-
-
-            //WeekOrderMenu ordmenu = _orderMenuService.FindByUserIdWeekYear(userid, wyDto);
             WeekPaiment weekPaiment = _weekPaimentService.GetByUseridWeekYear(userid, wyDto);
 
-            if (weekPaiment == null)
+            EmployeeWeekOrderDto model = null;
+
+            if (weekPaiment != null)
             {
-                return Content(HttpStatusCode.BadRequest,
-                    string.Format(" menu on week {0} year {1} not created", wyDto.Week, wyDto.Year));
+                model = EmployeeWeekOrderDto.MapDto(_db, weekPaiment, wyDto);
+                //return Content(HttpStatusCode.BadRequest,
+                //    string.Format(" menu on week {0} year {1} not created", wyDto.Week, wyDto.Year));
             }
 
-            EmployeeWeekOrderDto model = EmployeeWeekOrderDto.MapDto(_db, weekPaiment, wyDto);
-
-            //if (ordmenu != null)
-            //{
-            //    model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu/*, catLength*/);
-            //}
-            //else
-            //{
-            //    User user =
-            //        await _userManager.FindByIdAsync(userid);
-
-            //    if (!YearWeekHelp.WeekIsCurrentOrNext(wyDto))
-            //    {
-            //        return Content(HttpStatusCode.BadRequest,
-            //            string.Format(" order on week {0} year {1} not can be created", wyDto.Week, wyDto.Year));
-            //    }
-            //    ordmenu = _orderMenuService.CreateNew(user, wyDto);
-
-            //    model = UserWeekOrderDto.MapDto(_unitOfWork, ordmenu/*, catLength*/);
-            //}
 
             return Ok(model);
         }

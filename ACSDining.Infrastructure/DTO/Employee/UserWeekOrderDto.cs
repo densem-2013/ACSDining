@@ -14,10 +14,10 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public int[] DayOrdIdArray { get; set; }
         public double[] UserWeekOrderDishes { get; set; }
 
-        /// <param name="unitOfWork"></param>
+        /// <param name="context"></param>
         /// <param name="weekOrderMenu"></param>
         /// <returns></returns>
-        public static UserWeekOrderDto MapDto(IUnitOfWorkAsync unitOfWork, WeekOrderMenu weekOrderMenu)
+        public static UserWeekOrderDto MapDto(ApplicationDbContext context, WeekOrderMenu weekOrderMenu)
         {
             return new UserWeekOrderDto
             {
@@ -25,7 +25,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
                 UserName = string.Format("{0} {1}", weekOrderMenu.User.LastName, weekOrderMenu.User.FirstName),
                 OrderId = weekOrderMenu.Id,
                 DayOrdIdArray = weekOrderMenu.DayOrderMenus.Where(dord => dord.MenuForDay.WorkingDay.IsWorking).Select(dord=>dord.Id).ToArray(),
-                UserWeekOrderDishes = unitOfWork.GetContext().FactDishQuantByWeekOrderId(weekOrderMenu.Id).Result
+                UserWeekOrderDishes = context.FactDishQuantByWeekOrderId(weekOrderMenu.Id).Result
             };
         }
     }

@@ -16,7 +16,9 @@ namespace ACSDining.Infrastructure.Repositories
                 .Include(wp => wp.WeekOrderMenu.User)
                 .Include(wp => wp.WeekOrderMenu.MenuForWeek.WorkingWeek.Year)
                 .Include(wp => wp.WeekOrderMenu.MenuForWeek.WorkingWeek.WorkingDays.Select(wd => wd.DayOfWeek))
-                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.SelectMany(mfd => mfd.DishPriceMfdRelations.Select(dpr=>dpr.Dish.DishType)))
+                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.Select(mfd => mfd.DishPriceMfdRelations.Select(dpr => dpr.Dish.DishType)))
+                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.Select(mfd => mfd.DishPriceMfdRelations.Select(dpr => dpr.DishPrice)))
+                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.Select(mfd => mfd.DishPriceMfdRelations.Select(dpr => dpr.Dish.DishDetail)))
                 .Select()
                 .FirstOrDefault(
                     wp =>
@@ -31,7 +33,9 @@ namespace ACSDining.Infrastructure.Repositories
                 .Include(wp => wp.WeekOrderMenu.User)
                 .Include(wp => wp.WeekOrderMenu.MenuForWeek.WorkingWeek.Year)
                 .Include(wp => wp.WeekOrderMenu.MenuForWeek.WorkingWeek.WorkingDays.Select(wd => wd.DayOfWeek))
-                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.SelectMany(mfd => mfd.DishPriceMfdRelations.Select(dpr => dpr.Dish.DishType)))
+                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.Select(mfd => mfd.DishPriceMfdRelations.Select(dpr => dpr.Dish.DishType)))
+                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.Select(mfd => mfd.DishPriceMfdRelations.Select(dpr => dpr.DishPrice)))
+                .Include(wpai => wpai.WeekOrderMenu.MenuForWeek.MenuForDay.Select(mfd => mfd.DishPriceMfdRelations.Select(dpr => dpr.Dish.DishDetail)))
                 .Select().Where(
                     wp =>
                         wp.WeekOrderMenu.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&

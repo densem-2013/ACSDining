@@ -90,7 +90,9 @@
 
         self.WeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
+        self.Title = ko.observable("");
         self.Message = ko.observable();
+
         self.CurrentWeekYear = ko.observable();
         self.myDate = ko.observable(new Date());
         self.BeenChanged = ko.observable(false);
@@ -111,8 +113,17 @@
 
         });
         // Callback for error responses from the server.
+        function modalShow(title, message) {
+
+            self.Title(title);
+            self.Message(message);
+            $("#modalMessage").modal("show");
+
+        }
+        // Callback for error responses from the server.
         function onError(error) {
-            self.Message("Error: " + error.status + " " + error.statusText);
+
+            modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         }
 
         self.DaysOfWeek = ko.observableArray([]);
@@ -197,8 +208,12 @@
                 self.BeenChanged(!res);
             });
         };
-        self.GetExcel = function() {
-            app.su_Service.GetExcelPaiments(self.WeekYear())
+        self.GetExcel = function () {
+            var forexcel= {
+                WeekYear: self.WeekYear(),
+                DataString:self.WeekTitle()
+            }
+            app.su_Service.GetExcelPaiments(forexcel)
                 .then(function (res) {
                     window.location.assign(res.fileName);
                 });
@@ -216,7 +231,9 @@
                         self.UserPaiments(ko.utils.arrayMap(resp.userWeekPaiments,function(item) {
                             return new userPaimentModel(item);
                         }));
-                    }
+                } else {
+                    modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                };
                 }, onError);
         }
 
@@ -238,6 +255,7 @@
                 };
             };
         }, self);
+
         self.SetMyDateByWeek = function (wyDto) {
             var firstDay = new Date(wyDto.year, 0, 1).getDay();
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
@@ -263,8 +281,7 @@
             var n2 = new Date(w + 345600000);
             return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
-
-
+        
 
         self.init = function () {
 
@@ -277,7 +294,7 @@
 
                 self.CurrentWeekYear(resp);
 
-                self.SetMyDateByWeek(self.CurrentWeekYear());
+                //self.SetMyDateByWeek(self.CurrentWeekYear());
 
 
             }, onError).then(function () {

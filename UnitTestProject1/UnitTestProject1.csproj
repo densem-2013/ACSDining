@@ -124,11 +124,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="TestWeekMenuController.cs" />
-    <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestApiController.cs" />
     <Compile Include="MigrationTest.cs" />
-    <Compile Include="RepositoryTest.cs" />
     <Compile Include="TestEmployeerOrderApiController.cs" />
     <Compile Include="StoredQueryTest.cs" />
   </ItemGroup>

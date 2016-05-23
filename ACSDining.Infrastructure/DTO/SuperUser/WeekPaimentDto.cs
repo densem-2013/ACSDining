@@ -21,11 +21,13 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         //su может редактировать заявку и оплату
         public bool SuCanChangeOrder { get; set; }
 
-        public static WeekPaimentDto GetMapDto(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto)
+        public static WeekPaimentDto GetMapDto(IRepositoryAsync<WeekPaiment> repository , WeekYearDto wyDto)
         {
-             ApplicationDbContext context = unitOfWork.GetContext();
-             List<WeekPaiment> weekPaiments = unitOfWork.RepositoryAsync<WeekPaiment>().WeekPaiments(wyDto);
-             MenuForWeek menuForWeek = unitOfWork.RepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
+            ApplicationDbContext context = repository.Context;
+            MenuForWeek menuForWeek = repository.GetRepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
+
+            if (menuForWeek == null) return null;
+            List<WeekPaiment> weekPaiments = repository.WeekPaiments(wyDto);
 
             return new WeekPaimentDto
             {

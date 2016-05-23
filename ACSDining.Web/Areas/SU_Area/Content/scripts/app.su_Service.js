@@ -152,8 +152,8 @@ window.app.su_Service = (function() {
         planweekorders: function(pageSize, page) { return baseOrdersUri + "plan/" + pageSize + "/" + page },
         updateWeekOrder: function() { return baseOrdersUri + "update" },
         createOrder: function() { return baseOrdersUri + "create" },
-        calcsummary: function() { return baseOrdersUri + "summary/" },
-        weeksummaryorderdishes: function() { return baseOrdersUri + "weeksummaryorderdishes" }
+        calcsummary: function() { return baseOrdersUri + "summary/" }//,
+       // weeksummaryorderdishes: function() { return baseOrdersUri + "weeksummaryorderdishes" }
     }
 
     var baseDishesUri = "/api/Dishes/";
@@ -190,7 +190,7 @@ window.app.su_Service = (function() {
     var serviceGetExcel= {
         paiments: function () { return baseExcelUri + "paiments" },
         menu: function () { return baseExcelUri + "menu" },
-        orders: function () { return baseExcelUri + "orders" }
+        factorders: function () { return baseExcelUri + "factorders" }
     }
 
     function ajaxRequest(type, url, data) {
@@ -270,8 +270,8 @@ window.app.su_Service = (function() {
         CreateOrdersNextweek: function () {
             return ajaxRequest("post", serviceOrdersUrls.createOrder());
         },
-        GetSummaryDishOrders: function(wydto) {
-            return ajaxRequest("put", serviceOrdersUrls.weeksummaryorderdishes(), wydto);
+        GetExcelFactOrders: function (feDto) {
+            return ajaxRequest("put", serviceGetExcel.factorders(), feDto);
         },
         //Paiments
         GetPaiments: function (wyDto) {
