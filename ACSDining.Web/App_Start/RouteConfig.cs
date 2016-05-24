@@ -21,20 +21,25 @@ namespace ACSDining.Web
                 defaults: new { area = "", controller = "Account", action = "Login" },
                 namespaces: new string[] { "ACSDining.Web.Controllers" }
             );
-            
-            routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
-            );
+            //routes.MapRoute(
+            //    name: "LogOff",
+            //    url: "Account/LogOff",
+            //    defaults: new { area = "", controller = "Account", action = "Login" },
+            //    namespaces: new string[] { "ACSDining.Web.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "Default",
+            //    url: "{controller}/{action}/{id}",
+            //    defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+            //);
 
 
-            routes.MapRoute(
-                name: "Default_Area",
-                url: "{area}/{controller}/{action}/{id}",
-                defaults: new { area = "", controller = "Home", action = "Index", id = UrlParameter.Optional },
-                namespaces: new string[] { "ACSDining.Web.Controllers" }
-            );
+            //routes.MapRoute(
+            //    name: "Default_Area",
+            //    url: "{area}/{controller}/{action}/{id}",
+            //    defaults: new { area = "", controller = "Home", action = "Index", id = UrlParameter.Optional },
+            //    namespaces: new string[] { "ACSDining.Web.Controllers" }
+            //);
        }
     }
 }

@@ -55,6 +55,7 @@ namespace ACSDining.Web.Controllers
 
         //
         // GET: /Account/Login
+        //[SessionExpireFilter]
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -75,8 +76,8 @@ namespace ACSDining.Web.Controllers
 
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
-            //var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
+            //var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
+            var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -191,8 +192,6 @@ namespace ACSDining.Web.Controllers
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["FullName"] = specuser.LastName + " " + specuser.FirstName;
-                            //Session["Fname"] = user.FirstName;
-                            //Session["Lname"] = user.LastName;
                             specuser.LastLoginTime = DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
@@ -204,7 +203,6 @@ namespace ACSDining.Web.Controllers
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["EmployeeFullname"] = specuser.LastName + " " + specuser.FirstName;
-                            //Session["Fname"] = user.FirstName;
                             //Session["Lname"] = user.LastName;
                             specuser.LastLoginTime = DateTime.Now;
                             await
@@ -213,6 +211,43 @@ namespace ACSDining.Web.Controllers
 
                             return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         }
+                    }
+                    else
+                    {
+                        double defaultDebt;
+                        double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
+                        user = new User
+                        {
+                            FirstName = DateTime.Now.Second.ToString(),
+                            LastName = "NewUser",
+                            Email = "test.test@test",
+                            UserName = model.LogIn,
+                            LastLoginTime = DateTime.UtcNow,
+                            RegistrationDate = DateTime.UtcNow,
+                            EmailConfirmed = true,
+                            AllowableDebt = defaultDebt,
+                            SecurityStamp = Guid.NewGuid().ToString(),
+                            PasswordHash = (new PasswordHasher()).HashPassword(model.Password)
+                        };
+
+                        var res = UserManager.CreateAsync(user, model.Password).Result;
+                        if (res == IdentityResult.Success)
+                        {
+                            await UserManager.AddToRoleAsync(user.Id, "Employee");
+                        }
+
+                        await
+                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                shouldLockout: false);
+
+                        user.LastLoginTime = DateTime.UtcNow;
+                        Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
+                        user.LastLoginTime = DateTime.Now;
+                        await
+                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                shouldLockout: false);
+
+                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
                     }
                     ModelState.AddModelError("", "Неудачная попытка входа.");
                     return View(model);
@@ -230,10 +265,8 @@ namespace ACSDining.Web.Controllers
         public ActionResult LogOff()
         {
             Session["FullName"] = null;
-            //Session["Fname"] = null;
-            //Session["Lname"] = null;
             AuthenticationManager.SignOut();
-            return RedirectToAction("Index", "Home", new { area = "" });
+            return RedirectToAction("Login", "Account", new { area = "" });
         }
 
         protected override void Dispose(bool disposing)

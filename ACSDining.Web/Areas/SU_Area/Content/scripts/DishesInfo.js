@@ -92,16 +92,6 @@
             }
             return true;
         }
-        //self.save = function(item) {
-        //    app.su_Service.UpdateDish(item).then(
-        //        function() {
-        //            self.BeenChanged(false);
-        //        }, onError);
-        //}
-
-        //self.edit = function(item) {
-        //    self.BeenChanged(true);
-        //};
 
 
         self.remove = function(item) {
@@ -114,8 +104,11 @@
 
         self.loadDishes = function (category) {
             app.su_Service.DishesByCategory(category).then(function (resp) {
-                self.DishesByCategory(ko.utils.arrayMap(resp, function (item) {
-                    return new dishInfo(item);
+                var arrayfilter=ko.utils.arrayFilter(resp, function (item) {
+                    return item.title != null;
+                });
+                self.DishesByCategory(ko.utils.arrayMap(arrayfilter, function (item) {
+                        return new dishInfo(item);
                 }));
 
             }, onError);

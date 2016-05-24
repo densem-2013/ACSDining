@@ -56,7 +56,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                             .ToList());
         }
 
-        // DELETE api/Dishes/5
+        //[HttpPut]
+        //[Route("update")]
+        //public async Task<IHttpActionResult> UpdateAccount()
+        //{
+            
+        //}
+            // DELETE api/Dishes/5
         [HttpDelete]
         [Route("delete/{id}")]
         public async Task<IHttpActionResult> DeleteAccount(string id)

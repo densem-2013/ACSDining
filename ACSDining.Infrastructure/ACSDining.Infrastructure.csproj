@@ -149,7 +149,6 @@
     <Compile Include="DTO\WeekUserOrder.cs" />
     <Compile Include="DTO\WeekYearDTO.cs" />
     <Compile Include="HelpClasses\MapHelper.cs" />
-    <Compile Include="HelpClasses\OrderCalculationHelp.cs" />
     <Compile Include="HelpClasses\TestHelper.cs" />
     <Compile Include="HelpClasses\Utility.cs" />
     <Compile Include="HelpClasses\YearWeekHelp.cs" />

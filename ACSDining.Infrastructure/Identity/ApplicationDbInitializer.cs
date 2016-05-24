@@ -56,37 +56,44 @@ namespace ACSDining.Infrastructure.Identity
             base.Seed(context);
         }
 
-        public static void AddUser(ApplicationUserManager userManager, ApplicationDbContext context)
+        public static void AddUser( ApplicationDbContext context)
         {
-            //var userManager = new ApplicationUserManager(new UserStore<User>(context));
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
-            if (!roleManager.RoleExists("Administrator"))
+            var userManager = new ApplicationUserManager(new UserStore<User>(context));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            if (!roleManager.RoleExists("SuperUser"))
             {
                 roleManager.Create(new UserRole
                 {
-                    Name = "Administrator",
-                    Description = "All Rights in Application"
+                    Name = "SuperUser",
+                    Description = "Can Update List Employee and DiningEmployee"
                 });
             }
-
-            User useradmin = userManager.FindByName("admin");
-            if (useradmin == null)
+           // WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.MapPath("~/Web.config")).AppSettings.Settings["defaultCreditValue"].Value
+            
+            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
+            //                          @"ACSDining.Web\Web.config";
+            //var config = ConfigurationManager.AppSettings.(_path);
+            string sulogin = ConfigurationManager.AppSettings["sulogin"];
+            User usersu = userManager.FindByName(sulogin);
+            if (usersu == null)
             {
-                useradmin = new User
+                usersu = new User
                 {
-                    UserName = "admin",
+                    UserName = sulogin,
                     Email = "test@test.com",
-                    FirstName = "Admin",
+                    FirstName = "Super",
                     LastName = "User",
+                    SecurityStamp = Guid.NewGuid().ToString(),
                     LastLoginTime = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow
+                    RegistrationDate = DateTime.UtcNow,
+                    PasswordHash = userManager.PasswordHasher.HashPassword(ConfigurationManager.AppSettings["supass"])
                 };
-                var adminresult = userManager.Create(useradmin, "777123");
-                if (adminresult.Succeeded)
-                {
-                    userManager.AddToRole(useradmin.Id, "Administrator");
-                }
+                IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "SuperUser"));
+                usersu.Roles.Add(new IdentityUserRole { RoleId = role.Id, UserId = usersu.Id });
+               // var suresult = userManager.Create(usersu, ConfigurationManager.AppSettings["supass"]);
+                context.Entry(usersu).State=EntityState.Added;
+                context.SaveChanges();
             }
 
         }
@@ -126,14 +133,6 @@ namespace ACSDining.Infrastructure.Identity
             var userManager = new ApplicationUserManager(new UserStore<User>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
-            //if (!roleManager.RoleExists("Administrator"))
-            //{
-            //    roleManager.Create(new UserRole
-            //    {
-            //        Name = "Administrator",
-            //        Description = "All Rights in Application"
-            //    });
-            //}
 
             if (!roleManager.RoleExists("SuperUser"))
             {
@@ -143,14 +142,6 @@ namespace ACSDining.Infrastructure.Identity
                     Description = "Can Update List Employee and DiningEmployee"
                 });
             }
-            //if (!roleManager.RoleExists("DiningEmployee"))
-            //{
-            //    roleManager.Create(new UserRole
-            //    {
-            //        Name = "DiningEmployee",
-            //        Description = "Сan edit the list of dishes in the dining room"
-            //    });
-            //}
             if (!roleManager.RoleExists("Employee"))
             {
                 roleManager.Create(new UserRole
@@ -160,72 +151,27 @@ namespace ACSDining.Infrastructure.Identity
                 });
             }
 
-            //User useradmin = userManager.FindByName("admin");
-            //if (useradmin == null)
-            //{
-            //    useradmin = new User
-            //    {
-            //        UserName = "admin",
-            //        Email = "test@test.com",
-            //        FirstName = "Admin",
-            //        LastName = "User",
-            //        LastLoginTime = DateTime.UtcNow,
-            //        RegistrationDate = DateTime.UtcNow,
-            //        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
-            //    };
-            //    var adminresult = userManager.Create(useradmin, "777123");
-            //    if (adminresult.Succeeded)
-            //    {
-            //        //userManager.AddToRole(useradmin.Id, "Administrator");
-            //        //userManager.AddToRole(useradmin.Id, "Employee");
-            //        //userManager.AddToRole(useradmin.Id, "DiningEmployee");
-            //        userManager.AddToRole(useradmin.Id, "SuperUser");
-            //    }
-            //}
-            string sulogin = WebConfigurationManager.AppSettings["sulogin"];
-            User usersu = userManager.FindByName(sulogin);
-            if (usersu == null)
-            {
-                usersu = new User
+           
+                string sulogin = WebConfigurationManager.AppSettings["sulogin"];
+                User usersu = userManager.FindByName(sulogin);
+                if (usersu == null)
                 {
-                    UserName = sulogin,
-                    Email = "test@test.com",
-                    FirstName = "Super",
-                    LastName = "User",
-                    LastLoginTime = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow,
-                   // PasswordHash = userManager.PasswordHasher.HashPassword(WebConfigurationManager.AppSettings["supass"])
-                };
-
-                var suresult = userManager.Create(usersu, WebConfigurationManager.AppSettings["supass"]);
-
-                if (suresult.Succeeded)
-                {
-                    userManager.AddToRole(usersu.Id, "SuperUser");
+                    usersu = new User
+                    {
+                        UserName = sulogin,
+                        Email = "test@test.com",
+                        FirstName = "Super",
+                        LastName = "User",
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        LastLoginTime = DateTime.UtcNow,
+                        RegistrationDate = DateTime.UtcNow,
+                        PasswordHash = userManager.PasswordHasher.HashPassword(WebConfigurationManager.AppSettings["supass"])
+                    };
+                    IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "SuperUser"));
+                    usersu.Roles.Add(new IdentityUserRole { RoleId = role.Id, UserId = usersu.Id });
+                    context.Entry(usersu).State = EntityState.Added;
                 }
-                ;
-            }
 
-            //User userdinEmpl = userManager.FindByName("diningemployee");
-            //if (userdinEmpl == null)
-            //{
-            //    userdinEmpl = new User
-            //    {
-            //        UserName = "diningemployee",
-            //        Email = "test@test.com",
-            //        FirstName = "DiningEmployee",
-            //        LastName = "User",
-            //        LastLoginTime = DateTime.UtcNow,
-            //        RegistrationDate = DateTime.UtcNow,
-            //        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
-            //    };
-            //    var deresult = userManager.Create(userdinEmpl, "777123");
-            //    if (deresult.Succeeded)
-            //    {
-            //        userManager.AddToRole(userdinEmpl.Id, "DiningEmployee");
-            //        userManager.AddToRole(userdinEmpl.Id, "Employee");
-            //    }
-            //}
 
             User userEmpl = userManager.FindByName("employee");
             if (userEmpl == null)
@@ -237,16 +183,16 @@ namespace ACSDining.Infrastructure.Identity
                     FirstName = "Employee",
                     LastName = "User",
                     LastLoginTime = DateTime.UtcNow,
+                    SecurityStamp = Guid.NewGuid().ToString(),
                     RegistrationDate = DateTime.UtcNow,
-                    AllowableDebt = 200
-                    //PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    AllowableDebt = 200,
+                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
                 };
-                var empresult = userManager.Create(userEmpl, "777123");
-                if (empresult.Succeeded)
-                {
-                    userManager.AddToRole(userEmpl.Id, "Employee");
-                }
+                IdentityRole emplrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
+                userEmpl.Roles.Add(new IdentityUserRole { RoleId = emplrole.Id, UserId = userEmpl.Id });
+                context.Entry(userEmpl).State = EntityState.Added;
             }
+            context.SaveChanges();
         }
 
             public static DishHelp[] GetDishesFromXml(ApplicationDbContext context, string userspath)
@@ -475,10 +421,12 @@ namespace ACSDining.Infrastructure.Identity
             var xml = XDocument.Load(userpath);
             if (xml.Root != null)
             {
-                //System.Configuration.ConfigurationFileMap fileMap = new ConfigurationFileMap(HostingEnvironment.MapPath("~/Web.config")); //Path to your config file
+                //System.Configuration.ConfigurationFileMap fileMap = new ConfigurationFileMap(HostingEnvironment.MapPath("~/Web.config")); //Path to your config fileWebConfigurationManager.AppSettings["sulogin"]
                 //System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedMachineConfiguration(fileMap);
+                string configpath = userpath.Replace("App_Data/DBinitial/DishDetails.xml", "Web.config");
                 double defaultDebt;
-                double.TryParse(WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.MapPath("~/Web.config")).AppSettings.Settings["defaultCreditValue"].Value, out defaultDebt);
+                //double.TryParse(WebConfigurationManager.OpenWebConfiguration(configpath).AppSettings.Settings["defaultCreditValue"].Value, out defaultDebt);double defaultDebt;
+                double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
                 var collection = xml.Root.Descendants("Employeer");
                 try
                 {

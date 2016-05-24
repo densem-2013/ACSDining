@@ -67,9 +67,9 @@ namespace UnitTestProject1
         [TestMethod]
         public void CreateAdminUsers()
         {
-            ApplicationDbInitializer.AddUser(_userManager,dataContext);
+            ApplicationDbInitializer.AddUser(dataContext);
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(dataContext));
-            IdentityRole admrole = roleManager.FindByName("Administrator");
+            IdentityRole admrole = roleManager.FindByName("SuperUser");
             List<User> users = _userManager.Users.Where(u=>u.Roles.Any(r=>r.RoleId==admrole.Id)).ToList();
             Assert.IsTrue(users.Count > 0);
 

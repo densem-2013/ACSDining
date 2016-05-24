@@ -343,3 +343,6 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.Servi
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Bytescout.Spreadsheet.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\CodeFirstStoreFunctions.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Bytescout.Spreadsheet.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Bytescout.Spreadsheet.xml

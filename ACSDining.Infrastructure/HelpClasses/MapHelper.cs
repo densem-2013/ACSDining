@@ -49,7 +49,7 @@ namespace ACSDining.Infrastructure.HelpClasses
         /// <summary>
         /// Получить массив категорий блюд
         /// </summary>
-        /// <param name="unitOfWorkAsync"></param>
+        /// <param name="_db"></param>
         /// <returns></returns>
         public static string[] GetCategoriesStrings(ApplicationDbContext _db)
         {

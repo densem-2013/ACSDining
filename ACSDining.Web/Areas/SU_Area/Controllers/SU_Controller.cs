@@ -6,7 +6,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
-    [SessionExpireFilter]
+    //[SessionExpireFilter]
     [System.Web.Http.Authorize(Roles = "SuperUser")]
     public class SU_Controller : Controller
     {

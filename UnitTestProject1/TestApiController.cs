@@ -127,7 +127,12 @@ namespace UnitTestProject1
                 Week = 18,
                 Year = 2016
             };
-            string result = excelService.GetExcelFileFromOrdersModel(wyDto);
+            ForExcelDataDto feDto = new ForExcelDataDto
+            {
+                WeekYear = wyDto,
+                DataString = "test string"
+            };
+            string result = excelService.GetExcelFileFromOrdersModel(feDto);
             Assert.IsNotNull(result);
             Process.Start(result);
         }

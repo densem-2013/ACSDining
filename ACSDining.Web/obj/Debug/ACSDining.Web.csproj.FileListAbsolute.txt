@@ -1086,3 +1086,8 @@ E:\Столовка\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\CodeFirstStoreFunctions.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.xml
+E:\GitProjects\ACSDining\ACSDining.Web\bin\CodeFirstStoreFunctions.dll
+E:\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.dll
+E:\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.xml
+E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\RdlCompile.cache
+E:\GitProjects\ACSDining\ACSDining.Web\obj\Debug\RdlCompile.compiled

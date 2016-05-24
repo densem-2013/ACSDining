@@ -14,7 +14,7 @@ using Microsoft.AspNet.Identity;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 {
-    [EmplSessionExpireFilter]
+    //[EmplSessionExpireFilter]
     [Authorize(Roles = "Employee")]
     [RoutePrefix("api/Employee")]
     public class EmployeeOrderApiController : ApiController

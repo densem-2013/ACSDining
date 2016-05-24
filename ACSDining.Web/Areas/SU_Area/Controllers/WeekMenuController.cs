@@ -123,8 +123,8 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             List<User> userBooking =
                 daymenusid.SelectMany(dmi => _orderMenuService.GetUsersMedeBooking(dmi)).Distinct().ToList();
             //await
-            //    MessageService.SendEmailAsync(userBooking, MessageTopic.MenuChanged, messageDto.DateTime,
-            //        messageDto.Message);
+                MessageService.SendEmailAsync(userBooking, MessageTopic.MenuChanged, messageDto.DateTime,
+                    messageDto.Message);
 
             return Ok(true);
         }
@@ -150,7 +150,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             List<User> users = userManager.Users.ToList();
 
-            //await MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
+            MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
 
             return Ok(true);
         }

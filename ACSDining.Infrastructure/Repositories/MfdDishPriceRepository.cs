@@ -55,7 +55,7 @@ namespace ACSDining.Infrastructure.Repositories
             dto = new DishModelDto
             {
                 DishId = dish.DishID,
-                Title = dish.Title ?? "Блюдо не выбрано",
+                Title = dish.Title /*?? "Блюдо не выбрано"*/,
                 ProductImage = dish.ProductImage,
                 Price = price,
                 Category = dish.DishType.Category,
