@@ -103,8 +103,22 @@ ko.bindingHandlers.datepicker = {
         $(element).datepicker("setDate", value);
     }
 };
-
-    ko.bindingHandlers.singleClick = {
+ko.bindingHandlers.checkedRadioToBool = {
+    init: function(element, valueAccessor, allBindingsAccessor) {
+        var observable = valueAccessor(),
+            interceptor = ko.computed({
+                read: function() {
+                    return observable().toString();
+                },
+                write: function(newValue) {
+                    observable(newValue === "true");
+                },
+                owner: this
+            });
+        ko.applyBindingsToNode(element, { checked: interceptor });
+    }
+};
+ko.bindingHandlers.singleClick = {
         init: function (element, valueAccessor) {
             var handler = valueAccessor(),
                 delay = 400,
@@ -171,7 +185,8 @@ window.app.su_Service = (function() {
     }
     var baseAccountsUri = "/api/Account/";
     var serviceAccountsUrls = {
-        accounts: function() { return baseAccountsUri + "All" },
+        accounts: function () { return baseAccountsUri + "All" },
+        updateAccount: function () { return baseAccountsUri + "update"},
         deleteAccount: function(id) { return baseAccountsUri + "delete/" + id }
     }
 
@@ -283,8 +298,12 @@ window.app.su_Service = (function() {
         GetExcelPaiments: function(wyDto) {
             return ajaxRequest("put", serviceGetExcel.paiments(), wyDto);
         },
+        //Accounts
         GetAccounts: function() {
              return ajaxRequest("get", serviceAccountsUrls.accounts());
+        },
+        UpdateAccount: function(account) {
+            return ajaxRequest("get", serviceAccountsUrls.updateAccount(), account);
         },
         DeleteAccount: function (accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));

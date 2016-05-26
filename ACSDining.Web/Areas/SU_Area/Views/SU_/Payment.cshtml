@@ -11,11 +11,11 @@
             <!--ko foreach: DaysOfWeek-->
             <th colspan="4" style="text-align: center"><span data-bind="text:$data"></span></th>
             <!--/ko-->
-            <th class="rotate" rowspan="4"><span class="intact_last">Сумма за неделю</span></th>
-            <th class="rotate" rowspan="4"><span class="intact_last">Оплата за неделю</span></th>
-            <th class="rotate" rowspan="4"><span class="intact_last">Баланс</span></th>
+            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Сумма за неделю</span></th>
+            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Оплата за неделю</span></th>
+            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Баланс</span></th>
             @*<th class="rotate" rowspan="4"><span class="intact_last">Возможен заказ удаленно</span></th>*@
-            <th class="rotate" rowspan="4"><span class="intact_last">Примечание</span></th>
+            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Примечание</span></th>
         </tr>
         <tr data-bind="foreach: DaysOfWeek" id="groups">
             <!--ko foreach: $root.Categories-->
@@ -75,6 +75,8 @@
             <!--/ko-->
             <td><span data-bind="text: TotalWeekPaiment" style="font-weight: bold"></span></td>
             <td><span data-bind="text: TotalBalance" style="font-weight: bold"></span></td>
+            <td></td>
+            <td></td>
         </tr>
         <tr>
             <td colspan="3">

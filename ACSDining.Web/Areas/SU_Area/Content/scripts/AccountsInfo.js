@@ -11,11 +11,25 @@
     $("#infoTitle span").text("Управление пользователями")
         .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
     $("ul.nav.navbar-nav li:last-child").addClass("active");
-    var accountInfo = function(account) {
+    var emailValueModel = function (email) {
+        var self = this;
+        self.isEditMode = ko.observable(false);
+        self.Email = ko.observable(email);
+        self.clicked = function (item) {
+            $(item).siblings("input").first().focusin();
+        };
+        self.doubleClick = function () {
+            self.isEditMode(true);
+        };
+        self.onFocusOut = function () {
+            self.isEditMode(false);
+        };
+    }
+    var accountInfo = function (account) {
         var self = this;
         self.UserId = ko.observable(account.userId);
         self.FullName = ko.observable(account.fullName);
-        self.Email = ko.observable(account.email);
+        self.Email = ko.observable(new emailValueModel(account.email));
         self.LastLoginTime = ko.observable(account.lastLoginTime);
         self.RegistrationDate = ko.observable(account.registrationDate);
         self.Balance = ko.observable(account.balance);
@@ -126,7 +140,17 @@
                 });
             }
         });
+        self.update= function(account) {
+            var forupdate = {
+                UserId: account.UserId(),
+                Email: account.Email().Email(),
+                CanMakeBooking: account.CanMakeBooking(),
+                IsExisting: account.IsExisting()
+            }
+            app.su_Service.UpdateAccount(forupdate).then(function(res) {
 
+            });
+        }
 
         self.init = function () {
 

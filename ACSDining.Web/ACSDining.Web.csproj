@@ -353,6 +353,7 @@
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\css\Images\background.jpg" />
     <Content Include="Content\css\Images\Infocom.png" />
+    <Content Include="Content\css\Images\sprite.png" />
     <Content Include="Content\css\Images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\css\Images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\css\Images\ui-bg_glass_55_fbf9ee_1x400.png" />

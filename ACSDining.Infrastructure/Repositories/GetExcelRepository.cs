@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Hosting;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
@@ -16,7 +10,6 @@ using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using Microsoft.Office.Interop.Excel;
 using Bytescout.Spreadsheet;
 using Bytescout.Spreadsheet.Constants;
 using Font = System.Drawing.Font;
@@ -55,14 +48,18 @@ namespace ACSDining.Infrastructure.Repositories
             unitPricesTotal[dishcount] = dto.SummaryDishPaiments.Sum();
 
             // Load Excel application
-            Application excel = new Application();
+            //Application excel = new Application();
 
-            // Create empty workbook
-            excel.Workbooks.Add();
+            //// Create empty workbook
+            //excel.Workbooks.Add();
 
-            // Create Worksheet from active sheet
-            _Worksheet workSheet = excel.ActiveSheet as _Worksheet;
+            //// Create Worksheet from active sheet
+            //_Worksheet workSheet = excel.ActiveSheet as _Worksheet;
 
+            Spreadsheet document = new Spreadsheet();
+
+            // Get worksheet by name
+            Worksheet workSheet = document.Workbook.Worksheets.Add("Заявки фактические");
             // I created Application and Worksheet objects before try/catch,
             // so that i can close them in finnaly block.
             // It's IMPORTANT to release these COM objects!!
@@ -73,10 +70,10 @@ namespace ACSDining.Infrastructure.Repositories
                 // ------------------------------------------------
                 if (workSheet != null)
                 {
-                    workSheet.Cells[1, "A"] = "№";
-                    workSheet.Range["A1:A4"].Merge();
-                    workSheet.Cells[1, "B"] = "Ф.И.О.";
-                    workSheet.Range["B1:B4"].Merge();
+                    workSheet.Cell(1, 0).Value = "№";
+                    workSheet.Range("A1:A4").Merge();
+                    workSheet.Cell(1, 1).Value = "Ф.И.О.";
+                    workSheet.Range("B1:B4").Merge();
                     int i = 0;
                     string str;
                     string colname;
@@ -87,34 +84,34 @@ namespace ACSDining.Infrastructure.Repositories
                         colname_2 = GetExcelColumnName(j[0] * catLength + 6);
                         var elementAtOrDefault = workWeek.WorkingDays.Where(wd=>wd.IsWorking).ElementAtOrDefault(j[0]);
                         if (elementAtOrDefault != null)
-                            workSheet.Cells[1, colname] = elementAtOrDefault.DayOfWeek.Name;
+                            workSheet.Cell(1, j[0] * catLength + 3).Value = elementAtOrDefault.DayOfWeek.Name;
                         str = String.Format("{0}1:{1}1", colname, colname_2);
-                        workSheet.Range[str].Merge();
+                        workSheet.Range(str).Merge();
                     }
                     i += dishcount + 3;
                     colname = GetExcelColumnName(i);
-                    workSheet.Cells[1, colname] = "Сумма за неделю";
+                    workSheet.Cell(1, i).Value = "Сумма за неделю";
                     str = String.Format("{0}1:{1}4", colname, colname);
-                    workSheet.Range[str].Merge();
-                    workSheet.Range[str].Orientation = 90;
+                    workSheet.Range(str).Merge();
+                    workSheet.Range(str).Rotation = 90;
                     i++;
                     colname = GetExcelColumnName(i);
-                    workSheet.Cells[1, colname] = "Оплата за неделю";
+                    workSheet.Cell(1, i).Value = "Оплата за неделю";
                     str = String.Format("{0}1:{1}4", colname, colname);
-                    workSheet.Range[str].Merge();
-                    workSheet.Range[str].Orientation = 90;
+                    workSheet.Range(str).Merge();
+                    workSheet.Range(str).Rotation = 90;
                     i++;
                     colname = GetExcelColumnName(i);
-                    workSheet.Cells[1, colname] = "Баланс";
+                    workSheet.Cell(1, i).Value = "Баланс";
                     str = String.Format("{0}1:{1}4", colname, colname);
-                    workSheet.Range[str].Merge();
-                    workSheet.Range[str].Orientation = 90;
+                    workSheet.Range(str).Merge();
+                    workSheet.Range(str).Rotation = 90;
                     i++;
                     colname = GetExcelColumnName(i);
-                    workSheet.Cells[1, colname] = "Примечание";
+                    workSheet.Cell(1, i).Value = "Примечание";
                     str = String.Format("{0}1:{1}4", colname, colname);
-                    workSheet.Range[str].Merge();
-                    workSheet.Range[str].Orientation = 90;
+                    workSheet.Range(str).Merge();
+                    workSheet.Range(str).Rotation = 90;
 
                     i = 3;
                     for (int j = 0; j < workDayCount; j++)
@@ -122,78 +119,79 @@ namespace ACSDining.Infrastructure.Repositories
                         for (int k = 0; k < catLength; k++)
                         {
                             colname = GetExcelColumnName(i + j * catLength + k);
-                            workSheet.Cells[2, colname] = dishCategories[k];
-                            workSheet.Range[colname + "2"].Orientation = 90;
+                            workSheet.Cell(2, i + j * catLength + k).Value = dishCategories[k];
+                            workSheet.Range(colname + "2").Rotation = 90;
                         }
                     }
                     colname = GetExcelColumnName(dishcount + 2);
-                    workSheet.Cells[i, "C"] = "Цена за одну порцию, грн";
+                    workSheet.Cell(i, 2).Value = "Цена за одну порцию, грн";
                     str = String.Format("C3:{0}3", colname);
-                    workSheet.Range[str].Merge();
-                    workSheet.Range[str].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                    workSheet.Range(str).Merge();
+                    workSheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
                     double[] dishprices = unitPrices;
                     for (int j = 0; j < dishcount; j++)
                     {
                         colname = GetExcelColumnName(i + j);
-                        workSheet.Cells[4, colname] = dishprices[j];
+                        workSheet.Cell(4, i+j).Value = dishprices[j];
                     }
                     i = 5;
                     string endcolname = GetExcelColumnName(dishcount + 6);
+                    Color contentColor = Color.FromArgb(24, 107, 208);
                     for (int j = 0; j < paimentList.Count; j++)
                     {
                         UserWeekPaimentDto userpai = paimentList[j];
-                        workSheet.Cells[i + j, "A"] = j + 1;
-                        workSheet.Cells[i + j, "B"] = userpai.UserName;
+                        workSheet.Cell(i + j, 0).Value = j + 1;
+                        workSheet.Cell(i + j, 1).Value = userpai.UserName;
 
                         for (int k = 0; k < workDayCount * catLength; k++)
                         {
 
                             colname = GetExcelColumnName(k  + 3);
-                            workSheet.Cells[i + j, colname] = userpai.WeekPaiments[k];
+                            workSheet.Cell(i + j, k+3).Value = userpai.WeekPaiments[k];
                         }
 
                         colname = GetExcelColumnName(dishcount + 3);
-                        workSheet.Cells[i + j, colname] = paimentList[j].WeekPaiments[workDayCount * catLength];
+                        workSheet.Cell(i + j, dishcount + 3).Value = paimentList[j].WeekPaiments[workDayCount * catLength];
                         colname = GetExcelColumnName(dishcount + 4);
-                        workSheet.Cells[i + j, colname] = paimentList[j].Paiment;
+                        workSheet.Cell(i + j, dishcount + 4).Value = paimentList[j].Paiment;
                         colname = GetExcelColumnName(dishcount + 5);
-                        workSheet.Cells[i + j, colname] = paimentList[j].Balance;
+                        workSheet.Cell(i + j, dishcount + 5).Value = paimentList[j].Balance;
                         colname = GetExcelColumnName(dishcount + 6);
-                        workSheet.Cells[i + j, colname] = paimentList[j].Note;
+                        workSheet.Cell(i + j, dishcount + 6).Value = paimentList[j].Note;
 
                         if ((i + j)%2 == 0) continue;
                         var striprangestr = string.Format("A{0}:{2}{1}", i + j, i + j, endcolname);
-                        workSheet.Range[striprangestr].Interior.Color = XlRgbColor.rgbLightSteelBlue;
+                        workSheet.Range(striprangestr).FillPatternBackColor = contentColor;
                     }
                     i += paimentList.Count;
-                    workSheet.Cells[i, "A"] = "Итого";
+                    workSheet.Cell(i, 0).Value = "Итого";
                     str = String.Format("A{0}:B{1}", i, i);
-                    workSheet.Range[str].Merge();
+                    workSheet.Range(str).Merge();
                     for (int j = 0; j < dishcount; j++)
                     {
                         colname = GetExcelColumnName(j + 3);
-                        workSheet.Cells[i, colname] = unitPricesTotal[j];
+                        workSheet.Cell(i, j+3).Value = unitPricesTotal[j];
                     }
                     colname = GetExcelColumnName(dishcount+3);
-                    workSheet.Cells[i, colname] = unitPricesTotal[dishcount];
+                    workSheet.Cell(i, dishcount + 3).Value = unitPricesTotal[dishcount];
                     colname = GetExcelColumnName(dishcount + 4);
-                    workSheet.Cells[i, colname] = paimentList.Sum(up => up.Paiment);
+                    workSheet.Cell(i, dishcount + 4).Value = paimentList.Sum(up => up.Paiment);
                     colname = GetExcelColumnName(dishcount + 5);
-                    workSheet.Cells[i, colname] = paimentList.Sum(up => up.Balance);
+                    workSheet.Cell(i, dishcount + 5).Value = paimentList.Sum(up => up.Balance);
 
                     string headerstr = string.Format("C{0}:{2}{1}", 1, 2, endcolname);
-                    workSheet.Range[headerstr].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                    workSheet.Range(headerstr).AlignmentHorizontal = AlignmentHorizontal.Centered;
                     string headerusnamesstr = string.Format("A{0}:B{1}", 1, 4);
-                    workSheet.Range[headerusnamesstr].HorizontalAlignment = XlHAlign.xlHAlignCenter;
-                    workSheet.Range[headerusnamesstr].VerticalAlignment = XlVAlign.xlVAlignCenter;
+                    workSheet.Range(headerusnamesstr).AlignmentHorizontal = AlignmentHorizontal.Centered;
+                    workSheet.Range(headerusnamesstr).AlignmentVertical = AlignmentVertical.Centered;
                     string usernames = string.Format("A{0}:B{1}", 5, paimentList.Count + 5);
-                    workSheet.Range[usernames].HorizontalAlignment = XlHAlign.xlHAlignRight;
+                    workSheet.Range(usernames).AlignmentHorizontal = AlignmentHorizontal.Right;
                     string userpaistr = string.Format("C{0}:{2}{1}", 4, paimentList.Count + 5, endcolname);
-                    workSheet.Range[userpaistr].NumberFormat = "#,##0.00";
-                    workSheet.Range[userpaistr].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                    workSheet.Range(userpaistr).NumberFormatString = "#,##0.00";
+                    workSheet.Range(userpaistr).AlignmentHorizontal = AlignmentHorizontal.Centered;
 
                     string allstr = string.Format("A{0}:{2}{1}", 1, paimentList.Count + 5, endcolname);
-                    workSheet.Range[allstr].Columns.AutoFit();
+                    //workSheet.Range(allstr).Columns.AutoFit();
                     // Define filename
                     //string fileName = string.Format(@"{0}\ExcelData.xlsx",
                     //    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
@@ -201,40 +199,21 @@ namespace ACSDining.Infrastructure.Repositories
                     //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
                     //                          @"ACSDining.Web\App_Data\DBinitial\Paiments.xlsx";
 
-                    string _path = HostingEnvironment.MapPath("~/ExcelFiles/Paiments.xlsx");
+                    string _path = HostingEnvironment.MapPath("~/ExcelFiles/Paiments.xls");
+                    //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
+                    //                          @"ACSDining.Web\ExcelFiles\Orders.xlsx";
                     // Save this data as a file
-                    excel.DisplayAlerts = false;
+                    //worksheet.DisplayAlerts = false;
                     // delete output file if exists already
-                    if (File.Exists(_path)){
-
+                    if (File.Exists(_path))
+                    {
                         File.Delete(_path);
                     }
+                    document.SaveAs(_path);
 
-                    workSheet.SaveAs(_path);
-                    //Task savetask = Task.Run(() =>
-                    //{
-                    //    workSheet.SaveAs(_path);
-                    //    // Quit Excel application
-                    //    excel.Quit();
+                    // Close document
+                    document.Close();
 
-                    //    //    // Release COM objects (very important!)
-                    //    Marshal.ReleaseComObject(excel);
-
-                    //    //    if (workSheet != null)
-                    //    Marshal.ReleaseComObject(workSheet);
-
-                    //    //    // Empty variables
-
-                    //    //    // Force garbage collector cleaning
-                    //    GC.Collect();
-                    //    //foreach (var process in Process.GetProcessesByName("EXCEL.EXE"))
-                    //    //{
-                    //    //    process.Kill();
-                    //    //}
-                    //});
-                    //await savetask;
-                    //FileStream fs = new FileStream(_path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-                    //return await Task.FromResult(fs);
                     return _path;
                 }
             }
@@ -245,18 +224,18 @@ namespace ACSDining.Infrastructure.Repositories
             finally
             {
                 // Quit Excel application
-                excel.Quit();
+                //excel.Quit();
 
-                // Release COM objects (very important!)
-                Marshal.ReleaseComObject(excel);
+                //// Release COM objects (very important!)
+                //Marshal.ReleaseComObject(excel);
 
-                if (workSheet != null)
-                    Marshal.ReleaseComObject(workSheet);
+                //if (workSheet != null)
+                //    Marshal.ReleaseComObject(workSheet);
 
-                // Empty variables
+                //// Empty variables
 
-                // Force garbage collector cleaning
-                GC.Collect();
+                //// Force garbage collector cleaning
+                //GC.Collect();
             }
             return null;
         }
@@ -360,10 +339,9 @@ namespace ACSDining.Infrastructure.Repositories
             i = 5;
             string endcolname = GetExcelColumnName(dishcount + 3);
             Color contentColor = Color.FromArgb(24, 107, 208);
-            bool itsevenrow = false;
             for (int j = 0; j < userWeekOrders.Count; j++)
             {
-                itsevenrow = (i + j)%2 == 0;
+                var itsevenrow = (i + j)%2 == 0;
                 UserWeekOrderDto userweekorder = userWeekOrders[j];
                 worksheet.Cell(i + j, 0).Value = j + 1;
                 worksheet.Cell(i + j, 1).Value = userweekorder.UserName;
@@ -414,7 +392,7 @@ namespace ACSDining.Infrastructure.Repositories
             worksheet.Range(allstr).Font = new Font("Arial", 12, FontStyle.Bold);
 
            // worksheet.AutoFitRows();
-            string _path = HostingEnvironment.MapPath("~/ExcelFiles/Orders.xlsx");
+            string _path = HostingEnvironment.MapPath("~/ExcelFiles/Orders.xls");
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //                          @"ACSDining.Web\ExcelFiles\Orders.xlsx";
             // Save this data as a file

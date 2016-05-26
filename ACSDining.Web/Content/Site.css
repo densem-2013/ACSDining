@@ -87,18 +87,16 @@ h1.logo
 }
 .tophead .blockinform
 {
+   background: #e8f6fc url("/Content/css/Images/blockinform.png") repeat-x scroll 0 -83px;
     overflow: hidden;
-    /*background: #e8f6fc url("../Content/Images/blockinform.png") repeat-x 0 -83px;*/
-    background-color: rgba(0, 0, 0, 0);
 }
-.tophead .blockinform .dleft
-{
-    /*background: url("../Content/Images/blockinform.png") no-repeat 0 0;*/
+.tophead .blockinform .dleft {
+    background: rgba(0, 0, 0, 0) url("/Content/css/Images/blockinform.png") no-repeat scroll 0 0;
     padding-left: 40px;
 }
 .tophead .blockinform .dright
 {
-    /*background: url("../Content/Images/blockinform.png") no-repeat 100% -166px;*/
+    background: url("/Content/css/Images/blockinform.png") no-repeat 100% -166px;
     padding-right: 10px;
     background-color: rgba(0, 0, 0, 0);
 }

@@ -111,10 +111,19 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //                          @"ACSDining.Web\Areas\SU_Area\Views\SU_\EmailTemplates\";
             //var templateFilePath = _path + template + ".html";
-            StreamReader objstreamreaderfile = new StreamReader(templateFilePath);
-            var body = await objstreamreaderfile.ReadToEndAsync();
-            objstreamreaderfile.Close();
-            return body;
+            string body;
+            try
+            {
+                StreamReader objstreamreaderfile = new StreamReader(templateFilePath);
+                body = objstreamreaderfile.ReadToEndAsync().Result;
+                objstreamreaderfile.Close();
+            }
+            catch (Exception)
+            {
+                    
+                throw;
+            }
+            return await Task.FromResult(body);
         }
     }
 }

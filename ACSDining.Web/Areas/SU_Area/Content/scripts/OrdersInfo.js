@@ -1,7 +1,6 @@
 ﻿/// <reference path="../jquery-2.1.3.min.js" />
 /// <reference path="../knockout-3.2.0.js" />
 /// <reference path="~/Scripts/jquery-ui-i18n.min.js" />
-/// <reference path="~/Areas/AdminArea/Content/scripts/app.service.js" />
 /// <reference path="~/Scripts/knockout-3.3.0.debug.js" />
 /// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
 (function () {
@@ -89,7 +88,8 @@
         self.FirstCourseValues = [0, 0.5, 1, 2, 3, 4, 5];
 
         self.QuantValues = [0, 1, 2, 3, 4, 5];
-
+        self.PlanFactValues = ["fact", "plan"];
+        self.ItsFact = ko.observable("fact");
         self.PageSizes = ko.pureComputed(function () {
             var res = [2, 5, 7, 10, 15, 20, 25];
             var all = self.WeekUserOrderModels().length;
@@ -252,6 +252,17 @@
             }
         };
 
+        self.changeSelected = function (checkval) {
+
+            console.log("checkval= ", checkval);
+            self.ItsFact(checkval);
+            console.log("ItsFact= ", self.ItsFact());
+            //if (self.SelectedCategory() === category) {
+            //    self.loadDishes(category);
+            //    self.SelectedCategory(category);
+            //}
+            return true;
+        }
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();

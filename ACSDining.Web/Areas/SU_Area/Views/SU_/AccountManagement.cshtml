@@ -32,19 +32,29 @@
         <tr>
             <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
             <td colspan="4"><span data-bind="text: FullName"></span></td>
-            <td colspan="3"><span data-bind="text: Email"></span></td>
+            @*<td colspan="3"><span data-bind="text: Email"></span></td>*@
+            <!--ko with: Email-->
+            <td class="lastTD" colspan="3" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                <!--ko if: isEditMode-->
+                <input type="text" data-bind="value:Email,hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.update($parent);} }">
+                <!--/ko-->
+                <!--ko ifnot: isEditMode-->
+                <span data-bind="text: Email"></span>
+                <!--/ko-->
+            </td>
+            <!--/ko-->
             <td colspan="2"><span data-bind="text: LastLoginTime"></span></td>
             <td colspan="2"><span data-bind="text: RegistrationDate"></span></td>
             <td colspan="2"><span data-bind="text: Balance"></span></td>
             <td colspan="2">
                 <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="checked: CanMakeBooking, value: CanMakeBooking, attr:{id: 'acc' + $index(),name: 'acc' + $index()}"/>
+                    <input type="checkbox" data-bind="click: function(){ $root.update($parent);},checked: CanMakeBooking, value: CanMakeBooking, attr:{id: 'acc' + $index(),name: 'acc' + $index()}" />
                     <label data-bind=" attr:{'for': 'acc' + $index()}"></label>
                 </div>
             </td>
             <td colspan="2">
                 <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="checked: !IsExisting(), value: !IsExisting, attr:{id: 'accex' + $index(), name: 'accex' + $index()}"/>
+                    <input type="checkbox" data-bind="click: function(){ $root.update($parent);},checked: !IsExisting(), value: !IsExisting, attr:{id: 'accex' + $index(), name: 'accex' + $index()}" />
                     <label data-bind="attr:{'for': 'accex' + $index()}"></label>
                 </div>
             </td>

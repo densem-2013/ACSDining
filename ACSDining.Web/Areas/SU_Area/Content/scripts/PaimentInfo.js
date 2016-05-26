@@ -237,6 +237,13 @@
                 }, onError);
         }
 
+        self.SetMyDateByWeek = function (wyDto) {
+            var firstDay = new Date(wyDto.year, 0, 1).getDay();
+            var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week);
+            self.myDate(new Date(w));
+        }.bind(self);
+
 
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() - 1;
@@ -250,18 +257,12 @@
                     };
                     if (!isNaN(weekyear.Week) && !isNaN(weekyear.Year)) {
 
-                        self.LoadPaiments(weekyear);
+                        //self.LoadPaiments(weekyear);
+                        self.SetMyDateByWeek(weekyear);
                     }
                 };
             };
         }, self);
-
-        self.SetMyDateByWeek = function (wyDto) {
-            var firstDay = new Date(wyDto.year, 0, 1).getDay();
-            var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week);
-            self.myDate(new Date(w));
-        }.bind(self);
 
         self.WeekTitle = ko.computed(function () {
             var options = {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -56,12 +57,18 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                             .ToList());
         }
 
-        //[HttpPut]
-        //[Route("update")]
-        //public async Task<IHttpActionResult> UpdateAccount()
-        //{
-            
-        //}
+        [HttpPut]
+        [Route("update")]
+        public async Task<IHttpActionResult> UpdateAccount([FromBody]UpdateAccountDto accountDto)
+        {
+            User user = await UserManager.FindByIdAsync(accountDto.UserId);
+            user.Email = accountDto.Email;
+            user.CanMakeBooking = accountDto.CanMakeBooking;
+            user.IsExisting = accountDto.IsExisting;
+            _unitOfWork.GetContext().Entry(user).State=EntityState.Modified;
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(true);
+        }
             // DELETE api/Dishes/5
         [HttpDelete]
         [Route("delete/{id}")]

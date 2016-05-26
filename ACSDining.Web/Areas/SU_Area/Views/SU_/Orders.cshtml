@@ -7,6 +7,18 @@
 
         <thead>
         <tr>
+            <th style="text-align: center" colspan="7">
+                <div class="radio-btn">
+                    <!--ko foreach: PlanFactValues-->
+                    <input type="radio" style="margin: 5px;" data-bind="checked: $parent.ItsFact, checkedValue: $data, click: $parent.changeSelected, attr:{id: 'dbc' + $index(),name: 'dbc' + $index()}"/>
+                    <label data-bind=" attr:{'for': 'dbc' + $index()},text:$index()%2==0?'Фактические  &nbsp;&nbsp;&nbsp; ':'Плановые'" style="color: #54ECD2; font-size: 18px; margin: 5px;"></label>
+                    <!--/ko-->
+                </div>
+            </th>
+            <th style="text-align: center" data-bind="attr:{colspan: (WeekDishPrices().length+3)/3}"></th>
+            <th style="text-align: center" data-bind="attr:{colspan: (WeekDishPrices().length+3)/3}"></th>
+        </tr>
+        <tr>
             <th rowspan="4"><span>№</span></th>
             <th rowspan="4" style="text-align: center"><span>Ф.И.О</span></th>
             <!--ko foreach: DaysOfWeek-->
@@ -21,7 +33,10 @@
             </th>
             <!--/ko-->
         </tr>
-        <tr><th style="text-align: center" data-bind="attr:{colspan: WeekDishPrices().length}"><span>Цена за одну порцию, грн</span></th></tr><tr>
+        <tr>
+            <th style="text-align: center" data-bind="attr:{colspan: WeekDishPrices().length}"><span>Цена за одну порцию, грн</span></th>
+        </tr>
+        <tr>
             <!--ko foreach: WeekDishPrices-->
             <th><span data-bind="text: $data.toFixed(2)"></span></th>
             <!--/ko-->
@@ -64,24 +79,25 @@
             <!--ko foreach: SummaryDishQuantities-->
             <th><span data-bind="text: $data"></span></th>
             <!--/ko-->
+            <th></th>
         </tr>
         <tr>
-            <td colspan="3">
+            <td colspan="6">
                 <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
                     <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
                 </button>
             </td>
-            <td data-bind="attr:{colspan:(DaysOfWeek().length*$root.Categories().length-15)}">
-                <div>
-                    <span class="glyphicon " >Страница </span>
+            <td data-bind="attr:{colspan:($root.DaysOfWeek().length*$root.Categories().length-15)}">
+                <div style="text-align: center">
+                    <span class="glyphicon ">Страница </span>
                     <span class="label-info " data-bind=" text: pageIndex()+1"></span>
                     <span> из </span>
-                    <span class="label-info " data-bind=" text: maxPageIndex()+1"></span>
+                    <span class="label-info" data-bind=" text: maxPageIndex()+1"></span>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="6">
                 <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
-                    <span class="glyphicon glyphicon-hand-right"> Следующая</span>
+                    <span class="glyphicon glyphicon-hand-right">Следующая</span>
                 </button>
             </td>
             <td colspan="6">

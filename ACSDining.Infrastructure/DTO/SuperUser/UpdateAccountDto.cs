@@ -9,7 +9,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
     public class UpdateAccountDto
     {
         public string UserId { get; set; }
-        public double Balance { get; set; }
+        public string Email { get; set; }
         //Пользователь может делать заказ
         public bool CanMakeBooking { get; set; }
         //Пользователь существует( не удалён из Active Directory)

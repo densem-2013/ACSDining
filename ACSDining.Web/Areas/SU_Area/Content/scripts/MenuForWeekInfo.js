@@ -290,7 +290,7 @@
             self.myDate(new Date(w));
         }.bind(self);
 
-        var loadWeekMenu = function (wyDto) {
+        self.loadWeekMenu = function (wyDto) {
 
             app.su_Service.LoadWeekMenu(wyDto).then(function(resp) {
                     if (resp != null) {
@@ -302,11 +302,7 @@
                         self.WeekYear(resp.weekYear);
                         self.SummaryPrice(resp.summaryPrice.toFixed(2));
                         self.OrderCanBeCreated(resp.orderCanBeCreated);
-                        //self.WorkWeek(new workWeekModel(resp.workWeek));
                         self.WorkingDaysAreSelected(resp.workingDaysAreSelected);
-                        //self.WorkWeekDays(ko.utils.arrayMap(resp.workWeekDays,function(item) {
-                        //    return new workDayInfo(item);
-                        //}));
                         self.DayNames(resp.dayNames);
                         app.su_Service.IsNextWeekMenuExists().then(function(respnext) {
                             self.IsNextWeekMenuExists(respnext);
@@ -347,7 +343,7 @@
                     };
                     if (!isNaN(weekyear.Week) && !isNaN(weekyear.Year)) {
 
-                        loadWeekMenu(weekyear);
+                        self.loadWeekMenu(weekyear);
                     }
                 };
             };
@@ -461,13 +457,6 @@
         }
 
         self.WorkWeekApply = function() {
-            //var workWeek = {
-            //    WorkweekId: self.WorkWeek().WorkWeekId(),
-            //    WorkingDays: ko.utils.arrayMap(self.MFD_models(), function(mfd) {
-            //        return mfd.WorkDay();
-            //    }),
-            //    CanBeChanged: self.WorkWeek().CanBeChanged()
-            //};
             var wwdaysarray = ko.utils.arrayMap(self.MFD_models(), function(item) {
                 return item.IsWorking();
             });
@@ -492,11 +481,6 @@
             app.su_Service.GetCurrentWeekYear().then(function (resp) {
 
                 self.CurrentWeekYear(resp);
-
-                //app.su_Service.GetNextWeekYear(resp).then(function (nextDto) {
-                //    self.NextWeekYear(nextDto);
-                //}, onError);
-
             }, onError);
 
             app.su_Service.IsNextWeekMenuExists().then(function (respnext) {

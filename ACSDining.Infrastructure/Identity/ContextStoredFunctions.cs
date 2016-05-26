@@ -194,7 +194,7 @@ namespace ACSDining.Infrastructure.Identity
         }
     #endregion
 
-    #region Меню
+        #region Меню
         /// <summary>
         /// Создаёт новое меню на неделю и заполняет его пустыми блюдами
         /// </summary>
@@ -209,6 +209,6 @@ namespace ACSDining.Infrastructure.Identity
             context.Database.ExecuteSqlCommand("exec CreateNewWeekMenu @Week,@Year",
                 weekParameter, yearParameter);
         }
-    #endregion
+        #endregion
     }
 }

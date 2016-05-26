@@ -67,7 +67,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public FilePathResult GetExelFromWeekPaimentstDto([FromBody] ForExcelDataDto feDto)
         {
             WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork.RepositoryAsync<WeekPaiment>(), feDto.WeekYear);
-            string _path = "/ExcelFiles/Paiments.xlsx";
+            string _path = "/ExcelFiles/Paiments.xls";
             string filename = _getExcelService.GetExcelFileFromPaimentsModel(feDto);
 
             return new FilePathResult(_path, "multipart/form-data");
@@ -78,7 +78,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public FilePathResult GetExelFromWeekOrdersDto([FromBody] ForExcelDataDto feDto)
         {
             WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork.RepositoryAsync<WeekPaiment>(), feDto.WeekYear);
-            string _path = "/ExcelFiles/Orders.xlsx";
+            string _path = "/ExcelFiles/Orders.xls";
             try
             {
                 string filename = _getExcelService.GetExcelFileFromOrdersModel(feDto);

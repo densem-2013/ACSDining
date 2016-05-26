@@ -22,7 +22,25 @@ AS
 	return
 	end
 GO
-
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Возвращает номер недели и год для следующей недели>
+-- =============================================
+CREATE FUNCTION GetNextWeekYear 
+(	)
+RETURNS @nextweekyear TABLE 
+(
+	[WEEK] integer,
+	[YEAR] integer
+)
+AS
+	begin
+	-- Add the SELECT statement with parameter references here
+	INSERT @nextweekyear SELECT DATEPART(WEEK,DATEADD(DAY,-1,GETDATE())) , DATEPART(YEAR,GETDATE()) ;
+	return
+	end
+GO
 /****** Object:  UserDefinedFunction [dbo].[GetDishQuantity]    Script Date: 05/03/2016 17:31:53 ******/
 -- =============================================
 -- Author:		<Author,,Name>
@@ -547,7 +565,7 @@ BEGIN
 	SET NOCOUNT ON;
 	--добавляем фактическую недельную заявку на это меню
 	INSERT INTO WeekOrderMenu
-	VALUES( 0.00,@MENUID,@userid)
+	VALUES( 0.00, @MENUID, @userid)
 	--добавляем фактические дневные заявки на дневные меню из этого недельного меню
 	INSERT INTO DayOrderMenu
 	SELECT 0.00,MenuForDay.ID,WeekOrderMenu.Id FROM MenuForWeek 
@@ -588,6 +606,49 @@ BEGIN
 	ON WeekOrderMenu.[User_Id]=AspNetUsers.Id
 	WHERE WeekOrderMenu.MenuForWeek_ID = @MENUID AND WeekOrderMenu.[User_Id]=@userid
 	
+	--добавляем плановую заявку на это меню для данного сотрудника
+	INSERT INTO PlannedWeekOrderMenu
+	SELECT WeekOrderMenu.WeekOrderSummaryPrice, @MENUID, @userid
+	FROM WeekOrderMenu
+	WHERE WeekOrderMenu.MenuForWeek_ID=@MENUID AND WeekOrderMenu.[User_Id]=@userid
+	
+	--добавляем плановые дневные заявки на дневные меню из этого недельного меню
+	INSERT INTO PlannedDayOrderMenu 
+	SELECT DayOrderMenu.[DayOrderSummaryPrice], @MENUID, PlannedWeekOrderMenu.Id
+	FROM DayOrderMenu 
+	INNER JOIN AspNetUsers AS USERS 
+	ON USERS.Id =@userid
+	INNER JOIN PlannedWeekOrderMenu
+	ON PlannedWeekOrderMenu.MenuForWeek_ID=@MENUID AND PlannedWeekOrderMenu.[User_Id]=USERS.Id
+	INNER JOIN WeekOrderMenu
+	ON DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id 
+	AND  WeekOrderMenu.MenuForWeek_ID=PlannedWeekOrderMenu.MenuForWeek_ID
+	AND WeekOrderMenu.[User_Id]= USERS.Id
+	
+	--ДОБАВЛЯЕМ ПЛАНОВЫЕ НЕДЕЛЬНЫЕ ЗАЯВКИ НА ЭТО НЕДЕЛЬНОЕ МЕНЮ ДЛЯ ДАННОГО ПОЛЬЗОВАТЕЛЯ
+	--С НУЛЕВЫМИ КОЛИЧЕСТВАМИ ЗАКАЗАННЫХ БЛЮД
+	INSERT INTO PlanDishQuantityRelations
+	SELECT DishQuantity.Id ,DishQuantityRelations.DishTypeId,PlannedDayOrderMenu.Id
+	FROM DishQuantityRelations
+	INNER JOIN DayOrderMenu
+	ON DayOrderMenu.Id=DishQuantityRelations.DayOrderMenuId
+	INNER JOIN WeekOrderMenu
+	ON DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id
+	INNER JOIN MenuForWeek
+	ON MenuForWeek.ID=WeekOrderMenu.MenuForWeek_ID AND MenuForWeek.ID=@MENUID
+	INNER JOIN PlannedWeekOrderMenu
+	ON PlannedWeekOrderMenu.MenuForWeek_ID=MenuForWeek.ID AND PlannedWeekOrderMenu.MenuForWeek_ID=WeekOrderMenu.MenuForWeek_ID
+	INNER JOIN DishType
+	ON DishType.Id=DishQuantityRelations.DishTypeId
+	INNER JOIN MenuForDay
+	ON MenuForDay.ID=DayOrderMenu.MenuForDay_ID AND MenuForDay.MenuForWeek_ID=MenuForWeek.ID
+	INNER JOIN PlannedDayOrderMenu
+	ON PlannedDayOrderMenu.MenuForDay_ID=DayOrderMenu.MenuForDay_ID AND PlannedDayOrderMenu.MenuForDay_ID=MenuForDay.ID AND PlannedDayOrderMenu.PlannedWeekOrderMenu_Id=PlannedWeekOrderMenu.Id
+	INNER JOIN DishQuantity
+	ON DishQuantity.Quantity=0.00
+	INNER JOIN	AspNetUsers AS USERS 
+	ON USERS.Id=WeekOrderMenu.[User_Id] AND USERS.Id=PlannedWeekOrderMenu.[User_Id]
+	AND USERS.Id=@userid
 END
 GO
 -- =============================================
@@ -855,10 +916,11 @@ BEGIN
 END
 GO
 -- =============================================
--- Author:		<Author,,Name>
 -- Create date: <Create Date,,>
--- Description:	<Переводит все существующие фактические заявки на меню текущего дня в плановые
--- и закрывает возможность редактирования заказа на этот день для клиентов>
+-- Description:	<Обновляет все плановые заявки на меню текущего дня по
+-- текущему на 9.00 значению фактических заявок
+-- и закрывает возможность редактирования заказа на этот день для клиентов,
+-- редактирование меню на этот день для пользователя>
 -- =============================================
 CREATE PROCEDURE [dbo].[DayFactToPlan] 
 	-- Add the parameters for the stored procedure here
@@ -867,82 +929,80 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-	DECLARE @WDAYID INT,@MENUID INT
+	DECLARE @WDAYID INT,@DAYMENUID INT,@WEEKMENUID INT, @ISWORKING BIT
+	
 	SET @WDAYID=dbo.GetCurrentWorkDayId();
-	SELECT @MENUID=MenuForWeek_ID FROM MenuForDay WHERE MenuForDay.ID=@WDAYID
-	UPDATE MenuForDay
-	SET [OrderCanBeChanged]=0
-	FROM MenuForDay 
-	INNER JOIN WorkingWeek
-	ON WorkingWeek.ID =(SELECT WorkingDay.WorkingWeek_ID FROM WorkingDay WHERE Id=@WDAYID)
-	INNER JOIN WorkingDay
-	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
-	WHERE MenuForDay.WorkingDay_Id<=@WDAYID
-	--добавляем плановые недельные заявки, если они ещё не существуют 
-	IF NOT EXISTS(SELECT * FROM PlannedWeekOrderMenu WHERE MenuForWeek_ID=@MENUID)
-	BEGIN
-		INSERT INTO PlannedWeekOrderMenu
-		SELECT WeekOrderMenu.WeekOrderSummaryPrice,@MENUID,USERS.ID
-		FROM AspNetUsers AS USERS 
+	
+	--ЕСЛИ ТЕКУЩИЙ ДЕНЬ НЕ РАБОЧИЙ или РАБОЧЕГО ДНЯ НЕ СУЩЕСТВУЕТ(т.е. меню не создано)- ВЫХОДИМ
+	SELECT @ISWORKING=WorkingDay.IsWorking FROM WorkingDay WHERE WorkingDay.Id=@WDAYID
+	IF @ISWORKING is null or @ISWORKING=0 RETURN
+	
+	SELECT @WEEKMENUID=MenuForWeek_ID, @DAYMENUID=ID  FROM MenuForDay WHERE MenuForDay.WorkingDay_Id=@WDAYID
+		
+	--обновляем плановые недельные заявки по сумме заказа
+		UPDATE PLANWOMENU
+		SET 	PLANWOMENU.WeekOrderSummaryPrice=WeekOrderMenu.WeekOrderSummaryPrice
+		FROM PlannedWeekOrderMenu AS PLANWOMENU
 		INNER JOIN WeekOrderMenu
-		ON WeekOrderMenu.MenuForWeek_ID=@MENUID
+		ON WeekOrderMenu.MenuForWeek_ID=PLANWOMENU.MenuForWeek_ID
+		INNER JOIN  AspNetUsers AS USERS 
+		ON USERS.Id=PLANWOMENU.[User_Id] AND PLANWOMENU.[User_Id]=WeekOrderMenu.[User_Id]
 		INNER JOIN AspNetUserRoles AS USROLES 
 		ON USROLES.UserId = USERS.Id and USERS.IsExisting=1
 		INNER JOIN AspNetRoles AS ROLES 
 		ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'
-	END
-	--добавляем плановые дневные заявки на дневные меню из этого недельного меню
-	INSERT INTO PlannedDayOrderMenu 
-	SELECT DayOrderMenu.[DayOrderSummaryPrice]
-      ,MenuForWeek.ID
-      ,PlannedWeekOrderMenu.Id
-	  FROM DayOrderMenu
+		WHERE PLANWOMENU.MenuForWeek_ID=@WEEKMENUID
+		
+	--обновляем плановые дневные заявки на дневные меню из этого недельного меню
+	--по сумме заказа
+	  UPDATE PLANDOMENU
+	  SET PLANDOMENU.[DayOrderSummaryPrice]=DayOrderMenu.[DayOrderSummaryPrice]
+	  FROM PlannedDayOrderMenu PLANDOMENU
+	  INNER JOIN DayOrderMenu
+	  ON  DayOrderMenu.MenuForDay_ID=PLANDOMENU.MenuForDay_ID 
+	 INNER JOIN MenuForDay
+	 ON  MenuForDay.ID=DayOrderMenu.MenuForDay_ID 
+	 AND MenuForDay.OrderCanBeChanged=1  AND MenuForDay.DayMenuCanBeChanged=1
+	 AND MenuForDay.WorkingDay_Id<=@WDAYID
 	  INNER JOIN WeekOrderMenu
 	  ON DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id 
-	  INNER JOIN MenuForWeek 
-	  ON WeekOrderMenu.MenuForWeek_ID=MenuForWeek.ID 
-	  INNER JOIN MenuForDay
-	  ON MenuForDay.ID=DayOrderMenu.MenuForDay_ID AND MenuForDay.MenuForWeek_ID=MenuForWeek.ID
-	  INNER JOIN WorkingWeek
-	  ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
-	  INNER JOIN WorkingDay
-	  ON WorkingDay.Id=@WDAYID AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID AND MenuForDay.WorkingDay_Id=WorkingDay.Id
+	  AND PLANDOMENU.PlannedWeekOrderMenu_Id=WeekOrderMenu.Id
+	 AND  WeekOrderMenu.MenuForWeek_ID=@WEEKMENUID
 	  INNER JOIN AspNetUsers AS USERS 
 	  ON WeekOrderMenu.[User_Id]=USERS.Id 
 	  INNER JOIN AspNetUserRoles AS USROLES 
 	  ON USROLES.UserId = USERS.Id and USERS.IsExisting=1
 	  INNER JOIN AspNetRoles AS ROLES 
 	  ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'
-	  INNER JOIN PlannedWeekOrderMenu
-	  ON PlannedWeekOrderMenu.MenuForWeek_ID=MenuForWeek.ID AND PlannedWeekOrderMenu.[User_Id]=USERS.Id
-	
-	--ПЕРЕВОДИМ ДНЕВНЫЕ ФАКТИЧЕСКИЕ ЗАКАЗЫ В ПЛАНОВЫЕ ДНЕВНЫЕ ЗАКАЗЫ
-	--ИЗ ЭТОГО ПЛАНОВОГО НЕДЕЛЬНОГО ЗАКАЗА
-	INSERT INTO PlanDishQuantityRelations
-	SELECT DishQuantity.Id ,DishQuantityRelations.DishTypeId,PlannedDayOrderMenu.Id
-	FROM DishQuantityRelations
-	INNER JOIN DayOrderMenu
-	ON DayOrderMenu.Id=DishQuantityRelations.DayOrderMenuId
-	INNER JOIN WeekOrderMenu
-	ON DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id
-	INNER JOIN MenuForWeek
-	ON MenuForWeek.ID=WeekOrderMenu.MenuForWeek_ID 
-	INNER JOIN PlannedWeekOrderMenu
-	ON PlannedWeekOrderMenu.MenuForWeek_ID=MenuForWeek.ID AND PlannedWeekOrderMenu.MenuForWeek_ID=WeekOrderMenu.MenuForWeek_ID
-	INNER JOIN DishType
-	ON DishType.Id=DishQuantityRelations.DishTypeId
+	--ОБНОВЛЯЕМ ПЛАНОВЫЕ ДНЕВНЫЕ ЗАКАЗЫ
+	 UPDATE planrels
+	SET planrels.DishQuantityId= DishQuantityRelations.DishQuantityId 
+	FROM PlanDishQuantityRelations planrels
+	INNER JOIN PlannedDayOrderMenu 
+	ON PlannedDayOrderMenu.Id=planrels.PlannedDayOrderMenuId
 	INNER JOIN MenuForDay
-	ON MenuForDay.ID=DayOrderMenu.MenuForDay_ID AND MenuForDay.MenuForWeek_ID=MenuForWeek.ID
-	INNER JOIN WorkingWeek
-	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID
-	INNER JOIN WorkingDay
-	ON WorkingDay.Id=@WDAYID AND MenuForDay.WorkingDay_Id=WorkingDay.Id AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
-	INNER JOIN PlannedDayOrderMenu
-	ON PlannedDayOrderMenu.MenuForDay_ID=DayOrderMenu.MenuForDay_ID AND PlannedDayOrderMenu.MenuForDay_ID=MenuForDay.ID AND PlannedDayOrderMenu.PlannedWeekOrderMenu_Id=PlannedWeekOrderMenu.Id
-	INNER JOIN DishQuantity
-	ON DishQuantity.Id=DishQuantityRelations.DishQuantityId
+	ON MenuForDay.ID=PlannedDayOrderMenu.MenuForDay_ID 
+	AND MenuForDay.OrderCanBeChanged=1  AND MenuForDay.DayMenuCanBeChanged=1
+	AND MenuForDay.WorkingDay_Id<=@WDAYID
+	INNER JOIN PlannedWeekOrderMenu
+	ON PlannedDayOrderMenu.PlannedWeekOrderMenu_Id=PlannedWeekOrderMenu.Id
+	AND  PlannedWeekOrderMenu.MenuForWeek_ID=@WEEKMENUID
+	INNER JOIN DayOrderMenu
+	ON DayOrderMenu.MenuForDay_ID=MenuForDay.ID
+	INNER JOIN DishQuantityRelations
+	ON DishQuantityRelations.DayOrderMenuId= DayOrderMenu.Id AND DishQuantityRelations.DishTypeId=planrels.DishTypeId
 	INNER JOIN	AspNetUsers AS USERS 
-	ON USERS.Id=WeekOrderMenu.[User_Id] AND USERS.Id=PlannedWeekOrderMenu.[User_Id]
+	ON USERS.Id=PlannedWeekOrderMenu.[User_Id] 
+	INNER JOIN AspNetUserRoles AS USROLES 
+	ON USROLES.UserId = USERS.Id and USERS.IsExisting=1
+	INNER JOIN AspNetRoles AS ROLES 
+	ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'
+	
+	--ЗАКРЫВАЕМ ВОЗМОЖНОСТЬ РЕДАКТИРОВАНИЯ МЕНЮ ДЛЯ ПОЛЬЗОВАТЕЛЯ 
+	--И ЗАКАЗОВ ДЛЯ КЛИЕНТОВ
+	UPDATE MenuForDay
+	SET [OrderCanBeChanged]=0,  [DayMenuCanBeChanged]=0
+	WHERE MenuForDay.MenuForWeek_ID=@WEEKMENUID AND MenuForDay.WorkingDay_Id<=@WDAYID
 END
 GO
 -- =============================================
