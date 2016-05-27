@@ -30,50 +30,44 @@
 
                             <div class="dleft">
                                 <div class="dright">
-                                    <div class="logOnGreeting">
-                                        <div id="infoTitle"><span></span></div>
-                                        <div style="text-align: right;">
-                                            @if (Session["EmployeeFullname"] != null)
-                                            {
-                                                <span> Вы вошли как, @Session["EmployeeFullname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
-                                            }
-                                            else
-                                            {
-                                                <span>
+                                    <div class="logOnGreeting"></div>
+                                    <div style="text-align: right;">
+                                        @if (Session["EmployeeFullname"] != null)
+                                        {
+                                            <span> Вы вошли как, @Session["EmployeeFullname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
+                                        }
+                                        else
+                                        {
+                                            <span>
                                                     Пожалуйста,
                                                     авторизируйтесь
                                                 </span>
-                                            }
-                                        </div>
+                                        }
                                     </div>
                                 </div>
-
                             </div>
-
                         </div>
                     </div>
-                </div>
+                    <div id="menucontainer"><span></span>
+                    <div id="infoTitle"></div></div>
+                    </div>
+                
             </div>
         </div>
-    </div>
-    <div class="page">
-        <div class="dleft">
-            <div class="dright">
-            </div>
-            <div class="main_content_background">
-                <div class="main_content">
+        <div class="page">
+            <div class="dleft">
+                <div class="dright">
 
 
-                    @RenderBody()
+                            @RenderBody()
 
 
+                    <div id="footer">
+                        Copyright 2016 INFOCOM Ltd. Все права защищены.&nbsp;
+                        <br />
+
+                    </div>
                 </div>
-            </div>
-            <div id="footer">
-                Copyright 2015 INFOCOM Ltd. Все права защищены.&nbsp;
-                <br />
-                <small>192.168.56.17</small>
-
             </div>
         </div>
     </div>

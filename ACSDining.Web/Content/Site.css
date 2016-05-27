@@ -12,40 +12,56 @@ body
     font-size: 15px; /*font-style: normal;        font-weight: normal;*/
     line-height: 17px;
 }
+#menucontainer span {
+    margin: 0;
+    padding: 0 0 2px;
+    position: relative;
+    /*background: rgba(119, 222, 228, 0.61);
+    color: rgb(232, 34, 208);
+    border: 3px solid rgb(50, 235, 213);*/   
+    color: #3f3f3f;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.4em;
+    margin-right: 10px;
+    padding: 7px 50px;
+    text-align: right;
+}
 .pagebg
 {
     padding: 0;
     margin: 0;
-    background: #ffffff url("../Content/Images/background.jpg") repeat-x fixed 0 top ; /*background-attachment: fixed;*/ 
+    background: #ffffff url("../Content/Images/background.jpg") repeat-x fixed 0 top ;
+     /*background-attachment: fixed;*/ 
 }
 /*WRAPPER ОСНОВНОЙ РАЗМЕРНЫЙ БЛОК*/
 .wrapper
 {
-    /*margin: auto;*/
+    margin: auto;
     width: 96%;
     min-width: 994px;
     max-width: 1400px;
     text-align: left;
 }
 /*TOPHEAD*/
-/*.tophead, .tophead .dleft, .tophead .dright
+.tophead, .tophead .dleft, .tophead .dright
 {
     height: 120px;
-}*/
+}
 .tophead
 {
     overflow: hidden;
-    /*background: #e2f8fe url("../Content/Images/tophead_bg.png") repeat-x 0 0;*/
+    background: #e2f8fe url("/Content/css/Images/tophead_bg.png") repeat-x 0 0;
 }
 .tophead .dleft
 {
-    /*background: url("../Content/Images/tophead_left.jpg") no-repeat 0 0;*/
+    background: url("/Content/css/Images/tophead_left.jpg") no-repeat 0 0;
     padding-left: 322px;
     position: relative;
 }
 .tophead .dright
 {
-    /*background: url("../Content/Images/tophead_right.png") no-repeat 100% 0;*/
+   background: rgba(0, 0, 0, 0) url("/Content/css/Images/tophead_right.png") no-repeat scroll 100% 0;
     padding-right: 5px;
 }
 /*Логотип*/
@@ -259,21 +275,21 @@ page width. Or, you can specify an exact pixel width. */
 }
 .page .dleft
 {
-    /*background: url("../Content/Images/left_border.png") repeat-y 0 0;*/
+    background: url("/Content/css/Images/left_border.png") repeat-y 0 0;
     width: 100%;
     height: 100%;
     padding-right: 0px;
 }
 .page .dright
 {
-    /*background: url("../Content/Images/right_border.png") repeat-y right;*/
+    background: url("/Content/css/Images/right_border.png") repeat-y right;
     width: 100%;
     height: 100%;
     margin-left: auto;
 }
 #footer
 {
-    /*background: url("../Content/Images/footer.png") repeat 0 0;*/
+    background: url("/Content/css/Images/footer.png") repeat 0 0;
     color: #999;
     padding: 10px 0;
     text-align: center;
@@ -339,7 +355,7 @@ ul#menu li.selected a
 
 #submenu
 {
-    /*background: url("../Content/Images/submenu.png") repeat 0 0;*/
+    background: url("/Content/css/Images/submenu.png") repeat 0 0;
     width: 99%;
     height: 45px;
     margin-left: auto;

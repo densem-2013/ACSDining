@@ -6,51 +6,43 @@ using System.Web.Security;
 
 namespace ACSDining.Web
 {
-    //[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    //public class SessionExpireFilterAttribute : ActionFilterAttribute
-    //{
-    //    public override void OnActionExecuting(ActionExecutingContext filterContext)
-    //    {
-    //        HttpContext ctx = HttpContext.Current;
+    [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+    public class CheckSessionOutAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            HttpContext context = HttpContext.Current;
+            if (context.Session != null)
+            {
+                if (!context.Session.IsNewSession)
+                {
+                    var session = context.Session["EmployeeFullname"];
 
-    //        // If the browser session has expired...
-    //        if (ctx.Session["FullName"] == null /*|| !filterContext.HttpContext.Request.IsAuthenticated*/)
-    //        {
-    //            filterContext.Result = new RedirectToRouteResult(
-    //                     new RouteValueDictionary {
-    //                    { "Controller", "Account" },
-    //                    { "Action", "Login" }
-    //            });
-    //        }
-    //        base.OnActionExecuting(filterContext);
-    //    }
-    //}
-    //[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    //public class EmplSessionExpireFilterAttribute : ActionFilterAttribute
-    //{
-    //    public override void OnActionExecuting(ActionExecutingContext filterContext)
-    //    {
-    //        HttpContext ctx = HttpContext.Current;
+                    if ((session == null) /*&& (sessionCookie.IndexOf("ASP.NET_SessionId") >= 0)*/)
+                    {
+                        FormsAuthentication.SignOut();
+                        string redirectTo = "~/Account/Login";
+                        if (!string.IsNullOrEmpty(context.Request.RawUrl))
+                        {
+                            redirectTo = string.Format("~/Account/Login?ReturnUrl={0}", HttpUtility.UrlEncode(context.Request.RawUrl));
+                            filterContext.Result = new RedirectResult(redirectTo);
+                            return;
+                        }
 
-    //        // If the browser session has expired...
-    //        if (ctx.Session["EmployeeFullname"] == null /*|| !filterContext.HttpContext.Request.IsAuthenticated*/)
-    //        {
-    //            filterContext.Result = new RedirectToRouteResult(
-    //                     new RouteValueDictionary {
-    //                    { "Controller", "Account" },
-    //                    { "Action", "Login" }
-    //            });
-    //        }
-    //        base.OnActionExecuting(filterContext);
-    //    }
-    //}
+                    }
+                }
+            }
+
+            base.OnActionExecuting(filterContext);
+        }
+    }
     public class FilterConfig
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
             filters.Add(new AuthorizeAttribute());
-            //filters.Add(new SessionExpireFilterAttribute());
+            filters.Add(new CheckSessionOutAttribute());
             //filters.Add(new EmplSessionExpireFilterAttribute());
         }
     }

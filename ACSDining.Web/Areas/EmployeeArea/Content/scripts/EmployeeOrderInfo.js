@@ -1,16 +1,13 @@
 ﻿/// <reference path="../jquery-2.1.3.min.js" />
 /// <reference path="../knockout-3.2.0.js" />
 /// <reference path="~/Scripts/knockout-3.2.0.js" />
-/// <reference path="~/Areas/AdminArea/Content/scripts/app.service.js" />
 /// <reference path="~/Scripts/knockout-2.2.1.debug.js" />
 /// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
 /// <reference path="~/Content/app/jquery-1.10.2.js" />
 (function() {
 
-    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
-        .css({ 'background': 'rgba(119, 222, 228, 0.61)', 'color': 'rgb(232, 34, 208)', 'border': '3px solid rgb(50, 235, 213)' });
-
-
+    $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
+   
     var quantValueModel = function(value) {
 
         var self = this;
@@ -22,7 +19,7 @@
                 $(item).focusin();
         };
 
-        self.onmouseenter = function() {
+        self.doubleClick = function () {
                 self.beenChanged(false);
                 self.Store(self.Quantity());
                 self.isEditMode(true);
@@ -124,7 +121,7 @@
         }.bind(self));
 
         self.NextWeekOrderExist = ko.observable();
-        
+       
         // Callback for error responses from the server.
         function modalShow(title, message) {
 
@@ -148,7 +145,7 @@
 
         self.WeekTitle =  ko.computed(function () {
             var options = {
-                weekday: "short",
+                weekday: "long",
                 year: "numeric",
                 month: "short",
                 day: "numeric"
@@ -161,7 +158,7 @@
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
             var n1 = new Date(w);
             var n2 = new Date(w + 345600000);
-            return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+            return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
 
 
@@ -231,8 +228,10 @@
             self.CalcSummary();
 
             app.su_Service.UserWeekUpdateOrder(userweekorder).then(function (res) {
-                if (res) {
-                    self.BeenChanged(false);
+                self.BeenChanged(false);
+                if (!res) {
+                    dayord.OrderCanByChanged(false);
+                    modalShow("Внимание!","Редактирование заявки на этот день уже закрыто. Если Вам необходио внести изменения в заказ на этот день, обратитесь к администрации столовой.")
                 }
             });
         };
@@ -266,7 +265,7 @@
 
                 }, onError)
                 .then(function () {
-                    self.SetMyDateByWeek(self.CurrentWeekYear());
+                   // self.SetMyDateByWeek(self.CurrentWeekYear());
                 }
             );
             }, onError);

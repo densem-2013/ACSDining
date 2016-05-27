@@ -65,6 +65,7 @@ namespace ACSDining.Web.Controllers
 
 
         [HttpPost]
+        [CheckSessionOut]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
@@ -76,8 +77,8 @@ namespace ACSDining.Web.Controllers
 
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-            //var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
-            var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
+            //var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -138,7 +139,7 @@ namespace ACSDining.Web.Controllers
                         if (usprincrezult != null)
                         {
                             double defaultDebt;
-                            double.TryParse(WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.MapPath("~/Web.config")).AppSettings.Settings["defaultCreditValue"].Value, out defaultDebt);
+                            double.TryParse(WebConfigurationManager./*OpenWebConfiguration(HostingEnvironment.MapPath("/Web.config")).*/AppSettings["defaultCreditValue"], out defaultDebt);
                             user = new User
                             {
                                 FirstName = usprincrezult.GivenName,

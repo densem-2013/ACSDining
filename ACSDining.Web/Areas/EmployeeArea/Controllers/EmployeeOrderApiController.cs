@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
@@ -88,7 +89,15 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             {
                 return BadRequest("Bad Request Object");
             }
-
+            DayOrderMenu dayord = _unitOfWork.RepositoryAsync<DayOrderMenu>().Query().Include(dord=>dord.MenuForDay).Select().FirstOrDefault(dord=>dord.Id==userOrderDto.DayOrderId);
+            if (dayord==null)
+            {
+                return BadRequest("Bad Request Object");
+            }
+            if (!dayord.MenuForDay.OrderCanBeChanged)
+            {
+                return Ok(false);
+            }
             _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
 
             return Ok(true);

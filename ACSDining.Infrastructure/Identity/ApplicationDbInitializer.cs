@@ -386,7 +386,7 @@ namespace ACSDining.Infrastructure.Identity
                             //TotalPrice = dishes.Select(d => d.Price).Sum(),
                             DayMenuCanBeChanged =
                                 week == 0 && ((int) DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9,
-                            OrderCanBeChanged = week == 0 && ((int)DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9
+                            OrderCanBeChanged = true//week == 0 && ((int)DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9
                         };
                         mfdDishPriceRelationses.AddRange(dishes.Select(d=>new MfdDishPriceRelations
                         {

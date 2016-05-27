@@ -24,7 +24,6 @@ namespace ACSDining.Infrastructure.DTO.Employee
                 WeekOrderId = weekPaiment.WeekOrderMenu.Id,
                 DayOrders = weekPaiment.WeekOrderMenu.DayOrderMenus.Where(dom => dom.MenuForDay.WorkingDay.IsWorking).Select(OrderDayMenuDto.MapDto).ToList(),
                 DayNames = context.GetDayNames(wyDto).Result,
-               // WeekDishPrices = context.GetWeekDishPrices(wyDto).Result,
                 WeekOrderDishes = context.FactDishQuantByWeekOrderId(weekPaiment.WeekOrderMenu.Id).Result,
                 WeekIsPaid = weekPaiment.WeekIsPaid,
                 Balance = weekPaiment.WeekOrderMenu.User.Balance,

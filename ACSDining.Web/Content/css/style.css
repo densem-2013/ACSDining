@@ -189,10 +189,22 @@ table th,table td {
     border-width: 0 1px 1px 0;
     font-weight: normal;
     overflow: hidden;
-    padding: 0.3em 0.6em;
+    padding: 0.3em 0.6em !important;
     text-overflow: ellipsis;
     text-align: left;
     white-space: normal;
     background: #a6d9f4 url("/Content/css/Images/sprite.png") repeat-x scroll 0 -752px !important;
-    border-color: #a7bac5;
+    border-color: #a7bac5;    
+    border-collapse: separate;
+    empty-cells: show;
+    line-height: 17px !important;  
+    vertical-align: middle !important;
+    text-align: center !important;
+    height: 50px;
+}
+.t-header span {
+    font-family: Tahoma,Verdana,Arial,sans-serif;
+    font-weight: bold;   
+    color: Black;
+    font-size: 11px;
 }
