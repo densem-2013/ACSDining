@@ -52,6 +52,7 @@ namespace ACSDining.Infrastructure.Identity
             GetUsersFromXml(context, _path);
             CreateOrders(context);
             _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
+            //_path = _path.Replace(@"DishDetails.xml", "storedfunc.sql");
             Utility.CreateStoredFuncs(_path);
             base.Seed(context);
         }
@@ -98,60 +99,60 @@ namespace ACSDining.Infrastructure.Identity
 
         }
 
-        public static void InitializeIdentityForEf(ApplicationDbContext context, string path)
-        {
-
-            context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
-                new DishQuantity {Quantity = 0.0},
-                new DishQuantity {Quantity = 0.5},
-                new DishQuantity {Quantity = 1.0},
-                new DishQuantity {Quantity = 2.0},
-                new DishQuantity {Quantity = 3.0},
-                new DishQuantity {Quantity = 4.0},
-                new DishQuantity {Quantity = 5.0}
-                );
-
-
-            context.DishTypes.AddOrUpdate(dt => dt.Category,
-                new DishType {Category = "Первое блюдо"},
-                new DishType {Category = "Второе блюдо"},
-                new DishType {Category = "Салат"},
-                new DishType {Category = "Напиток"}
-                );
-
-            context.Days.AddOrUpdate(d => d.Name,
-                new DayOfWeek {Name = "Понедельник"},
-                new DayOfWeek {Name = "Вторник"},
-                new DayOfWeek {Name = "Среда"},
-                new DayOfWeek {Name = "Четверг"},
-                new DayOfWeek {Name = "Пятница"},
-                new DayOfWeek {Name = "Суббота"},
-                new DayOfWeek {Name = "Воскресенье"}
-                );
-
-
-            var userManager = new ApplicationUserManager(new UserStore<User>(context));
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-
-
-            if (!roleManager.RoleExists("SuperUser"))
+            public static void InitializeIdentityForEf(ApplicationDbContext context, string path)
             {
-                roleManager.Create(new UserRole
-                {
-                    Name = "SuperUser",
-                    Description = "Can Update List Employee and DiningEmployee"
-                });
-            }
-            if (!roleManager.RoleExists("Employee"))
-            {
-                roleManager.Create(new UserRole
-                {
-                    Name = "Employee",
-                    Description = "Сan order food in the dining room"
-                });
-            }
 
-           
+                context.DishQuantities.AddOrUpdate(dq => dq.Quantity,
+                    new DishQuantity {Quantity = 0.0},
+                    new DishQuantity {Quantity = 0.5},
+                    new DishQuantity {Quantity = 1.0},
+                    new DishQuantity {Quantity = 2.0},
+                    new DishQuantity {Quantity = 3.0},
+                    new DishQuantity {Quantity = 4.0},
+                    new DishQuantity {Quantity = 5.0}
+                    );
+
+
+                context.DishTypes.AddOrUpdate(dt => dt.Category,
+                    new DishType {Category = "Первое блюдо"},
+                    new DishType {Category = "Второе блюдо"},
+                    new DishType {Category = "Салат"},
+                    new DishType {Category = "Напиток"}
+                    );
+
+                context.Days.AddOrUpdate(d => d.Name,
+                    new DayOfWeek {Name = "Понедельник"},
+                    new DayOfWeek {Name = "Вторник"},
+                    new DayOfWeek {Name = "Среда"},
+                    new DayOfWeek {Name = "Четверг"},
+                    new DayOfWeek {Name = "Пятница"},
+                    new DayOfWeek {Name = "Суббота"},
+                    new DayOfWeek {Name = "Воскресенье"}
+                    );
+
+
+                var userManager = new ApplicationUserManager(new UserStore<User>(context));
+                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+
+
+                if (!roleManager.RoleExists("SuperUser"))
+                {
+                    roleManager.Create(new UserRole
+                    {
+                        Name = "SuperUser",
+                        Description = "Can Update List Employee and DiningEmployee"
+                    });
+                }
+                if (!roleManager.RoleExists("Employee"))
+                {
+                    roleManager.Create(new UserRole
+                    {
+                        Name = "Employee",
+                        Description = "Сan order food in the dining room"
+                    });
+                }
+
+
                 string sulogin = WebConfigurationManager.AppSettings["sulogin"];
                 User usersu = userManager.FindByName(sulogin);
                 if (usersu == null)
@@ -160,40 +161,51 @@ namespace ACSDining.Infrastructure.Identity
                     {
                         UserName = sulogin,
                         Email = "test@test.com",
-                        FirstName = "Super",
-                        LastName = "User",
+                        FirstName = "admin",
+                        LastName = "super",
                         SecurityStamp = Guid.NewGuid().ToString(),
                         LastLoginTime = DateTime.UtcNow,
                         RegistrationDate = DateTime.UtcNow,
-                        PasswordHash = userManager.PasswordHasher.HashPassword(WebConfigurationManager.AppSettings["supass"])
+                        PasswordHash =
+                            userManager.PasswordHasher.HashPassword(WebConfigurationManager.AppSettings["supass"])
                     };
                     IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "SuperUser"));
-                    usersu.Roles.Add(new IdentityUserRole { RoleId = role.Id, UserId = usersu.Id });
+                    usersu.Roles.Add(new IdentityUserRole {RoleId = role.Id, UserId = usersu.Id});
                     context.Entry(usersu).State = EntityState.Added;
                 }
 
 
-            User userEmpl = userManager.FindByName("employee");
-            if (userEmpl == null)
-            {
-                userEmpl = new User
+                User userEmpl = userManager.FindByName("employee");
+                if (userEmpl == null)
                 {
-                    UserName = "employee",
-                    Email = "densem-2013@yandex.ua",
-                    FirstName = "Employee",
-                    LastName = "User",
-                    LastLoginTime = DateTime.UtcNow,
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    RegistrationDate = DateTime.UtcNow,
-                    AllowableDebt = 200,
-                    PasswordHash = userManager.PasswordHasher.HashPassword("777123")
-                };
-                IdentityRole emplrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
-                userEmpl.Roles.Add(new IdentityUserRole { RoleId = emplrole.Id, UserId = userEmpl.Id });
-                context.Entry(userEmpl).State = EntityState.Added;
+                    userEmpl = new User
+                    {
+                        UserName = "employee",
+                        Email = "densem-2013@yandex.ua",
+                        FirstName = "Employee",
+                        LastName = "User",
+                        LastLoginTime = DateTime.UtcNow,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        RegistrationDate = DateTime.UtcNow,
+                        AllowableDebt = 200,
+                        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    };
+                    IdentityRole emplrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
+                    userEmpl.Roles.Add(new IdentityUserRole {RoleId = emplrole.Id, UserId = userEmpl.Id});
+                    context.Entry(userEmpl).State = EntityState.Added;
+                }
+
+                //пустые блюда для каждой категории
+                List<DishType> dishTypes = context.DishTypes.OrderBy(dt => dt.Id).ToList();
+                //пустые блюда для каждой категории
+                DishPrice nulldp = new DishPrice {Price = 0.00};
+                context.Dishes.AddRange(dishTypes.Select(dt => new Dish
+                {
+                    DishType = dt,
+                    CurrentPrice = nulldp
+                }).ToArray());
+                context.SaveChanges();
             }
-            context.SaveChanges();
-        }
 
             public static DishHelp[] GetDishesFromXml(ApplicationDbContext context, string userspath)
             {
@@ -220,7 +232,6 @@ namespace ACSDining.Infrastructure.Identity
                
                 try
                 {
-
                     DishHelp[] dishes = collection.AsEnumerable().Select(el =>
                     {
                         DishHelp dish = new DishHelp
@@ -254,16 +265,7 @@ namespace ACSDining.Infrastructure.Identity
                         return dishPrices.FirstOrDefault(d => Math.Abs(price - d.Price) < 0.001);
                     };
 
-                    List<DishType> dishTypes = context.DishTypes.OrderBy(dt => dt.Id).ToList();
-                    //пустые блюда для каждой категории
-                    context.Dishes.AddRange(dishTypes.Select(dt => new Dish
-                    {
-                        DishType = dt,
-                        CurrentPrice = getDishPrice(0.00)
-                    }).ToArray());
-                    context.SaveChanges();
-
-                    context.Dishes.AddRange(dishes.Select(d => new Dish
+                   context.Dishes.AddRange(dishes.Select(d => new Dish
                     {
                         DishType = d.DishType,
                         Title = d.Title,

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Infrastructure.UnitOfWork;
 
 namespace ACSDining.Infrastructure.DTO.Employee
 {
@@ -24,8 +23,11 @@ namespace ACSDining.Infrastructure.DTO.Employee
                 UserId = weekOrderMenu.User.Id,
                 UserName = string.Format("{0} {1}", weekOrderMenu.User.LastName, weekOrderMenu.User.FirstName),
                 OrderId = weekOrderMenu.Id,
-                DayOrdIdArray = weekOrderMenu.DayOrderMenus.Where(dord => dord.MenuForDay.WorkingDay.IsWorking).Select(dord=>dord.Id).ToArray(),
-                UserWeekOrderDishes = context.FactDishQuantByWeekOrderId(weekOrderMenu.Id).Result
+                DayOrdIdArray =
+                    weekOrderMenu.DayOrderMenus.Where(dord => dord.MenuForDay.WorkingDay.IsWorking)
+                        .Select(dord => dord.Id)
+                        .ToArray(),
+                UserWeekOrderDishes = context.FactDishQuantByWeekOrderId(weekOrderMenu.Id).Result 
             };
         }
     }

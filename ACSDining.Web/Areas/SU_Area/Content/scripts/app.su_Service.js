@@ -162,12 +162,11 @@ window.app.su_Service = (function() {
 
     var baseOrdersUri = "/api/Orders/";
     var serviceOrdersUrls = {
-        factweekorders: function( /*pageSize, page*/) {return baseOrdersUri + "fact"}, // "fact/" + pageSize + "/" + page },
-        planweekorders: function(pageSize, page) { return baseOrdersUri + "plan/" + pageSize + "/" + page },
+        weekorders: function (factorplan) { return baseOrdersUri + factorplan },
+       // planweekorders: function() { return baseOrdersUri + "plan"  },
         updateWeekOrder: function() { return baseOrdersUri + "update" },
         createOrder: function() { return baseOrdersUri + "create" },
-        calcsummary: function() { return baseOrdersUri + "summary/" }//,
-       // weeksummaryorderdishes: function() { return baseOrdersUri + "weeksummaryorderdishes" }
+        calcsummary: function() { return baseOrdersUri + "summary/" } 
     }
 
     var baseDishesUri = "/api/Dishes/";
@@ -180,32 +179,34 @@ window.app.su_Service = (function() {
 
     var basePaimentsUri = "/api/Paiment/";
     var servicePaimentsUrls = {
-        weekPaiments: function () { return basePaimentsUri },
-        updatePaiment: function() { return basePaimentsUri + "updatePaiment"}
+        weekPaiments: function() { return basePaimentsUri },
+        updatePaiment: function() { return basePaimentsUri + "updatePaiment" }
     }
     var baseAccountsUri = "/api/Account/";
     var serviceAccountsUrls = {
-        accounts: function () { return baseAccountsUri + "All" },
-        updateAccount: function () { return baseAccountsUri + "update"},
+        accounts: function() { return baseAccountsUri + "All" },
+        updateAccount: function() { return baseAccountsUri + "update" },
         deleteAccount: function(id) { return baseAccountsUri + "delete/" + id }
     }
 
     var baseUserWeekOrder = "/api/Employee/";
     var serviceUserWeekOrders = {
-        currentweek: function () { return baseUserWeekOrder + "curWeekYear"; },
+        currentweek: function() { return baseUserWeekOrder + "curWeekYear"; },
         nextWeekOrderExists: function() { return baseUserWeekOrder + "nextWeekOrderExists" },
-        isNextWeekYear: function () { return baseUserWeekOrder + "isNextWeekYear" },
-        isCurWeekYear: function () { return baseUserWeekOrder + "isCurWeekYear" },
+        isNextWeekYear: function() { return baseUserWeekOrder + "isNextWeekYear" },
+        isCurWeekYear: function() { return baseUserWeekOrder + "isCurWeekYear" },
         updateuserweek: function() { return baseUserWeekOrder + "update" },
         canCreateOrderOnNextWeek: function() { return baseUserWeekOrder + "canCreateOrderOnNextWeek" },
-        nextWeekYear: function () { return baseUserWeekOrder + "nextWeekYear" }
+        nextWeekYear: function() { return baseUserWeekOrder + "nextWeekYear" },
+        emailexists: function() { return baseUserWeekOrder + "emailexists" },
+        setemail: function() { return baseUserWeekOrder + "setemai" }
     }
 
     var baseExcelUri = "/api/GetExcel/";
-    var serviceGetExcel= {
-        paiments: function () { return baseExcelUri + "paiments" },
-        menu: function () { return baseExcelUri + "menu" },
-        factorders: function () { return baseExcelUri + "factorders" }
+    var serviceGetExcel = {
+        paiments: function() { return baseExcelUri + "paiments" },
+        menu: function() { return baseExcelUri + "menu" },
+        orders: function() { return baseExcelUri + "orders" }
     }
 
     function ajaxRequest(type, url, data) {
@@ -248,13 +249,13 @@ window.app.su_Service = (function() {
         DeleteNextWeekMenu: function(menuid) {
             return ajaxRequest("delete", serviceWeekMenuUrls.deleteWeekMenu(menuid));
         },
-        CreateNextWeekMenu: function () {
+        CreateNextWeekMenu: function() {
             return ajaxRequest("post", serviceWeekMenuUrls.create());
         },
         SendMenuUpdateMessage: function(message) {
             return ajaxRequest("put", serviceWeekMenuUrls.sendmenuUpdateMessage(), message);
         },
-        SetAsOrderable: function (message) {
+        SetAsOrderable: function(message) {
             return ajaxRequest("put", serviceWeekMenuUrls.setasorderable(), message);
         },
         GetCategories: function() {
@@ -273,23 +274,20 @@ window.app.su_Service = (function() {
             return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishId));
         },
         //Orders
-        FactLoadWeekOrders: function (wyDto) {
-            return ajaxRequest("put", serviceOrdersUrls.factweekorders(), wyDto);
+        LoadWeekOrders: function(wyDto,factorplan) {
+            return ajaxRequest("put", serviceOrdersUrls.weekorders(factorplan), wyDto);
         },
-        PlanLoadWeekOrders: function (pageSize, page, wyDto) {
-            return ajaxRequest("put", serviceOrdersUrls.planweekorders(pageSize, page), wyDto);
-        },
-        UpdateOrder: function( item) {
+        UpdateOrder: function(item) {
             return ajaxRequest("put", serviceOrdersUrls.updateWeekOrder(), item);
         },
-        CreateOrdersNextweek: function () {
+        CreateOrdersNextweek: function() {
             return ajaxRequest("post", serviceOrdersUrls.createOrder());
         },
-        GetExcelFactOrders: function (feDto) {
-            return ajaxRequest("put", serviceGetExcel.factorders(), feDto);
+        GetExcelOrders: function(feDto) {
+            return ajaxRequest("put", serviceGetExcel.orders(), feDto);
         },
         //Paiments
-        GetPaiments: function (wyDto) {
+        GetPaiments: function(wyDto) {
             return ajaxRequest("put", servicePaimentsUrls.weekPaiments(), wyDto);
         },
         UpdatePaiment: function(uwp) {
@@ -300,16 +298,16 @@ window.app.su_Service = (function() {
         },
         //Accounts
         GetAccounts: function() {
-             return ajaxRequest("get", serviceAccountsUrls.accounts());
+            return ajaxRequest("get", serviceAccountsUrls.accounts());
         },
         UpdateAccount: function(account) {
             return ajaxRequest("get", serviceAccountsUrls.updateAccount(), account);
         },
-        DeleteAccount: function (accountId) {
+        DeleteAccount: function(accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));
         },
         //Employee
-        GetCurrentWeekYearForEmployee: function () {
+        GetCurrentWeekYearForEmployee: function() {
             return ajaxRequest("get", serviceUserWeekOrders.currentweek());
         },
         LoadUserWeekOrder: function(wyDto) {
@@ -318,20 +316,26 @@ window.app.su_Service = (function() {
         GetUserNextWeekYear: function() {
             return ajaxRequest("get", serviceUserWeekOrders.nextWeekYear());
         },
-        IsNextWeekYear: function (wyDto) {
+        IsNextWeekYear: function(wyDto) {
             return ajaxRequest("put", serviceUserWeekOrders.isNextWeekYear(), wyDto);
         },
-        IsCurWeekYear: function (wyDto) {
+        IsCurWeekYear: function(wyDto) {
             return ajaxRequest("put", serviceUserWeekOrders.isCurWeekYear(), wyDto);
         },
-        NextWeekOrderExists: function () {
+        NextWeekOrderExists: function() {
             return ajaxRequest("get", serviceUserWeekOrders.nextWeekOrderExists());
         },
-        UserWeekUpdateOrder: function (item) {
+        UserWeekUpdateOrder: function(item) {
             return ajaxRequest("put", serviceUserWeekOrders.updateuserweek(), item);
         },
-        CanCreateOrderOnNextWeek: function () {
+        CanCreateOrderOnNextWeek: function() {
             return ajaxRequest("get", serviceUserWeekOrders.canCreateOrderOnNextWeek());
+        },
+        IsEmailExists: function() {
+            return ajaxRequest("get", serviceUserWeekOrders.emailexists());
+        },
+        SetEmail: function(email) {
+            return ajaxRequest("put", serviceUserWeekOrders.setemail(), email);
         }
     };
 

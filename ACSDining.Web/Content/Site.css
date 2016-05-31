@@ -31,7 +31,7 @@ body
 {
     padding: 0;
     margin: 0;
-    background: #ffffff url("../Content/Images/background.jpg") repeat-x fixed 0 top ;
+    background: #ffffff url("/Content/Images/background.jpg") repeat-x fixed 0 top ;
      /*background-attachment: fixed;*/ 
 }
 /*WRAPPER ОСНОВНОЙ РАЗМЕРНЫЙ БЛОК*/
@@ -40,7 +40,7 @@ body
     margin: auto;
     width: 96%;
     min-width: 994px;
-    max-width: 1400px;
+    max-width: 1500px;
     text-align: left;
 }
 /*TOPHEAD*/
@@ -53,7 +53,7 @@ body
     overflow: hidden;
     background: #e2f8fe url("/Content/css/Images/tophead_bg.png") repeat-x 0 0;
 }
-.tophead .dleft
+.wrapper.toppad>.tophead>.dleft
 {
     background: url("/Content/css/Images/tophead_left.jpg") no-repeat 0 0;
     padding-left: 322px;
@@ -436,7 +436,7 @@ table th
 {
     padding: 6px 5px;
     text-align: left;
-    background-color: #e8eef4;
+    /*background-color: #D8EBF4;*/
     border: solid 1px #e8eef4;
 }
 .menucontainer
@@ -573,7 +573,7 @@ div#title
     border-style: solid;
     border-width: 1px;
     border-collapse: separate;
-    /*background: url("Vista/sprite.png") repeat-x scroll 0 -96px #E8E8E8;*/
+    background: url("/Content/css/Images/sprite.png") repeat-x scroll 0 -96px #E8E8E8;
     
     color: #627A9D;
     cursor: pointer;
@@ -637,11 +637,11 @@ div#title
 
 .logOnGreeting
 {
-    font-size: 20px;
+    /*font-size: 20px;*/
     padding: 30px 30px;
     top: 20px;
     font-style: italic;
-    color: #CC7C12;
+    /*color: #CC7C12;*/
     white-space: nowrap;
 }
 
@@ -890,7 +890,7 @@ background-color: #E5D5E5;
     background-color: rgba(200, 236, 245, 0.51)
 }
 #titleID, #foodsID {
-    width: 450px;
+    /*width: 450px;*/
 }
 #pagePrev, #pageNext {
     border-color: #91E4A4;
@@ -1059,7 +1059,7 @@ select.input-small {
 }
 .modal-body {
     font-size: 18px;
-    color: brown;
+    color: #436A73;;
 }
 .modal-body input{
     -moz-min-width: 500px;
@@ -1078,3 +1078,46 @@ select.input-small {
  #searchItems > * {
      padding: 5px;
  }
+ #submenu ul{
+     list-style: none;
+     display: flex;
+ }
+ #submenu ul li{
+    float: left;
+    position: relative;
+ }
+ .modal-content {
+    background-color: #e2f8fe;
+    width: 650px;
+ }
+ .glyphicon {
+     padding: 3px;
+ }
+ #logForm .row{
+     margin-bottom: 100px;
+     margin-top: 55px;
+ }
+.thvert {
+    /*background-color: grey;
+    color: white;*/
+    text-align: center;
+    vertical-align: bottom;
+    height: 120px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.verticalText {
+    text-align: center;
+    vertical-align: middle;
+    width: 20px;   
+    margin-top: 180px;
+    /*margin: 0px;
+    padding: 0px;*/
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 10px;
+    white-space: nowrap;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+}

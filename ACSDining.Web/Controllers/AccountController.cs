@@ -1,5 +1,6 @@
 ﻿using System;
 using System.DirectoryServices.AccountManagement;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Configuration;
@@ -65,7 +66,6 @@ namespace ACSDining.Web.Controllers
 
 
         [HttpPost]
-        [CheckSessionOut]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
@@ -285,6 +285,13 @@ namespace ACSDining.Web.Controllers
             base.Dispose(disposing);
         }
 
+        //private void CheckSUCridentCorrect()
+        //{
+        //    ApplicationDbContext context = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
+        //    IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "SuperUser"));
+        //    User suUser = UserManager.Users.FirstOrDefault(u => u.Roles.Select(r => r.RoleId).Contains(role.Id));
+        //}
+
         #region Вспомогательные приложения
         // Используется для защиты от XSRF-атак при добавлении внешних имен входа
         private const string XsrfKey = "XsrfId";
@@ -311,7 +318,7 @@ namespace ACSDining.Web.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult

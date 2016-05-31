@@ -24,10 +24,9 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private readonly ApplicationRoleManager _roleManager;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
-        public AccountManagementApiController(/*ApplicationUserManager userManager*/IUnitOfWorkAsync unitOfWork)
+        public AccountManagementApiController(IUnitOfWorkAsync unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            //_userManager = userManager;
             _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
             _roleManager = new ApplicationRoleManager(new RoleStore<UserRole>(_unitOfWork.GetContext()));
         }

@@ -1,139 +1,147 @@
 ﻿@{
     ViewBag.Title = "Orders";
 }
-<div class="panel panel-default" id="mfwPanel">
+<div class="col-md-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0; padding-left: 0; width:80%" id="paimentsObject">
+    <div class="panel panel-default" id="mfwPanel">
 
-    <table class="table table-striped table-bordered fixed  table-hover" id="ordesTable">
-        <thead>
-        <tr>
-            <th rowspan="4"><span>№</span></th>
-            <th rowspan="4" style="text-align: center"><span>Ф.И.О</span></th>
-            <!--ko foreach: DaysOfWeek-->
-            <th colspan="4" style="text-align: center"><span data-bind="text:$data"></span></th>
-            <!--/ko-->
-            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Сумма за неделю</span></th>
-            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Оплата за неделю</span></th>
-            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Баланс</span></th>
-            @*<th class="rotate" rowspan="4"><span class="intact_last">Возможен заказ удаленно</span></th>*@
-            <th class="rotate" rowspan="4"><span class="intact" style="margin-left: -130px;">Примечание</span></th>
-        </tr>
-        <tr data-bind="foreach: DaysOfWeek" id="groups">
-            <!--ko foreach: $root.Categories-->
-            <th class="rotate">
-                <span class="intact" data-bind="text: $data"></span>
-            </th>
-            <!--/ko-->
-        </tr>
-        <tr><th colspan="20" style="text-align: center"><span>Цена за одну порцию, грн</span></th></tr>
-        <tr>
-            <!--ko foreach: UnitPrices-->
-            <th><span data-bind="text: $data.toFixed(2)"></span></th>
-            <!--/ko-->
-        </tr>
-        </thead>
-        <tbody>
-        <!--ko foreach: pagedList-->
-        <tr>
-            <td>
-                <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
-            </td>
-            <td class="rights"><span data-bind="text: UserName"></span></td>
-            <!--ko foreach: DishPaiments-->
-            <td>
-                <span data-bind="text:$data.toFixed(2)"></span>
-            </td>
-            <!--/ko-->
-            <td class="lastTD"><span data-bind="text: Summary"></span></td>
-            <!--ko with:Paiment-->
-            <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
-                <!--ko if: isEditMode-->
-                <input type="text" data-bind="value:formattedPaiment, event:{focusout: function(){$data.onFocusOut(); $root.update($parent); } }">
+        <table class="table table-striped table-bordered fixed  table-responsive table-condensed table-hover" id="ordesTable">
+            <thead>
+                <tr>
+                    <th class="t-header" style="padding: 2px !important" rowspan="4"><span>№</span></th>
+                    <th class="t-header" style="padding: 2px !important" rowspan="4" style="text-align: center"><span>Ф.И.О</span></th>
+                    <!--ko foreach: DaysOfWeek-->
+                    <th class="t-header" style="padding: 2px !important" colspan="4" style="text-align: center"><span data-bind="text:$data"></span></th>
+                    <!--/ko-->
+                    <th class="thvert t-header" rowspan="4">
+                        <div class="verticalText">Сумма за неделю</div>
+                    </th>
+                    <th class="thvert t-header" rowspan="4">
+                        <div class="verticalText">Оплата за неделю</div>
+                    </th>
+                    <th class="thvert t-header" rowspan="4">
+                        <div class="verticalText">Баланс</div>
+                    </th>
+                    <th class="thvert t-header" rowspan="4">
+                        <div class="verticalText">Примечание</div>
+                    </th>
+                </tr>
+                <tr data-bind="foreach: DaysOfWeek" id="groups">
+                    <!--ko foreach: $root.Categories-->
+                    <th class="thvert">
+                        <div class="verticalText" data-bind="text: $data"></div>
+                    </th>
+                    <!--/ko-->
+                </tr>
+                <tr><th colspan="20" style="text-align: center"><span>Цена за одну порцию, грн</span></th></tr>
+                <tr>
+                    <!--ko foreach: UnitPrices-->
+                    <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data.toFixed(2)"></span></th>
+                    <!--/ko-->
+                </tr>
+            </thead>
+            <tbody>
+                <!--ko foreach: pagedList-->
+                <tr>
+                    <td>
+                        <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
+                    </td>
+                    <td class="rights"><span data-bind="text: UserName"></span></td>
+                    <!--ko foreach: DishPaiments-->
+                    <td>
+                        <span data-bind="text:$data.toFixed(2)"></span>
+                    </td>
+                    <!--/ko-->
+                    <td class="lastTD"><span data-bind="text: Summary"></span></td>
+                    <!--ko with:Paiment-->
+                    <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                        <!--ko if: isEditMode-->
+                        <input type="text" data-bind="value:formattedPaiment, event:{focusout: function(){$data.onFocusOut(); $root.update($parent); } }">
+                        <!--/ko-->
+                        <!--ko ifnot: isEditMode-->
+                        <span data-bind="text: Paiment"></span>
+                        <!--/ko-->
+                    </td>
+                    <!--/ko-->
+                    <td class="lastTD"><span data-bind="text: Balance"></span></td>
+                    @*<td class="lastTD"><input type="checkbox" data-bind="checked: IsDinningRoomClient, checkedValue : true" /></td>*@
+                    <!--ko with: Note-->
+                    <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                        <!--ko if: isEditMode-->
+                        <input type="text" data-bind="value:Note,event:{focusout: function(){$data.onFocusOut()} }">
+                        <!--/ko-->
+                        <!--ko ifnot: isEditMode-->
+                        <span data-bind="text: Note"></span>
+                        <!--/ko-->
+                    </td>
+                    <!--/ko-->
+                </tr>
                 <!--/ko-->
-                <!--ko ifnot: isEditMode-->
-                <span data-bind="text: Paiment"></span>
-                <!--/ko-->
-            </td>
-            <!--/ko-->
-            <td class="lastTD"><span data-bind="text: Balance"></span></td>
-            @*<td class="lastTD"><input type="checkbox" data-bind="checked: IsDinningRoomClient, checkedValue : true" /></td>*@
-            <!--ko with: Note-->
-            <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
-                <!--ko if: isEditMode-->
-                <input type="text" data-bind="value:Note,event:{focusout: function(){$data.onFocusOut()} }">
-                <!--/ko-->
-                <!--ko ifnot: isEditMode-->
-                <span data-bind="text: Note"></span>
-                <!--/ko-->
-            </td>
-            <!--/ko-->
-        </tr>
-        <!--/ko-->
-        <tr>
-            <td colspan="2"><span>Итого</span></td>
-            <!--ko foreach: UnitPricesTotal-->
-            <td><span data-bind="text:$data.toFixed(2)" style="font-weight: bold"></span></td>
-            <!--/ko-->
-            <td><span data-bind="text: TotalWeekPaiment" style="font-weight: bold"></span></td>
-            <td><span data-bind="text: TotalBalance" style="font-weight: bold"></span></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
-                    <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
-                </button>
-            </td>
-            <td data-bind="attr:{colspan:(DaysOfWeek().length*$root.Categories().length-15)}">
-                <div>
-                    <span class="glyphicon ">Страница </span>
-                    <span class="label-info " data-bind=" text: pageIndex()+1"></span>
-                    <span> из </span>
-                    <span class="label-info " data-bind=" text: maxPageIndex()+1"></span>
-                </div>
-            </td>
-            <td colspan="3">
-                <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
-                    <span class="glyphicon glyphicon-hand-right"> Следующая</span>
-                </button>
-            </td>
-            <td colspan="6">
-                <div>
-                    <span> Отображать </span>
-                    <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>
-                    <span> элементов на странице</span>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <tr>
+                    <td class="footheader" colspan="2"><span>Итого</span></td>
+                    <!--ko foreach: UnitPricesTotal-->
+                    <td class="footheader"><span data-bind="text:$data.toFixed(2)" style="font-weight: bold"></span></td>
+                    <!--/ko-->
+                    <td class="footheader"><span data-bind="text: TotalWeekPaiment" style="font-weight: bold"></span></td>
+                    <td class="footheader"><span data-bind="text: TotalBalance" style="font-weight: bold"></span></td>
+                    <td class="footheader"></td>
+                    <td class="footheader"></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
+                            <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
+                        </button>
+                    </td>
+                    <td data-bind="attr:{colspan:(DaysOfWeek().length*$root.Categories().length-15)}">
+                        <div>
+                            <span class="glyphicon ">Страница </span>
+                            <span class="label-info " data-bind=" text: pageIndex()+1"></span>
+                            <span> из </span>
+                            <span class="label-info " data-bind=" text: maxPageIndex()+1"></span>
+                        </div>
+                    </td>
+                    <td colspan="3">
+                        <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
+                            <span class="glyphicon glyphicon-hand-right"> Следующая</span>
+                        </button>
+                    </td>
+                    <td colspan="6">
+                        <div>
+                            <span> Отображать </span>
+                            <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>
+                            <span> элементов на странице</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+    <div id="modalMessage" class="modal">
 
-<div id="modalMessage" class="modal">
-
-    <div class="modal-dialog">
-        <div class="panel panel-default">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 data-bind="text: Title"></h1>
-                </div>
-                <div class="modal-body">
-                    <span data-bind="text: Message"></span>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+        <div class="modal-dialog">
+            <div class="panel panel-default">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 data-bind="text: Title"></h1>
+                    </div>
+                    <div class="modal-body">
+                        <span data-bind="text: Message"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@Scripts.Render("~/bundles/WeekPaiments")
-<script type="text/javascript">
+    @Scripts.Render("~/bundles/WeekPaiments")
+    <script type="text/javascript">
 
-    //$('.nav.navbar-nav li').eq(1).addClass('active');
-    //$('.menu li ').click(function (e) {
+        //$('.nav.navbar-nav li').eq(1).addClass('active');
+        //$('.menu li ').click(function (e) {
 
-    //    $('.menu li ').removeClass('active');
-    //    $('.menu li ').eq( 1 ).addClass('active');
-    //});
-</script>
+        //    $('.menu li ').removeClass('active');
+        //    $('.menu li ').eq( 1 ).addClass('active');
+        //});
+    </script>

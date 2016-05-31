@@ -10,8 +10,9 @@ namespace ACSDining.Infrastructure.Services
 {
     public interface IGetExcelService : IService<WeekOrderMenu>
     {
-        string/*Task<FileStream> */GetExcelFileFromPaimentsModel(ForExcelDataDto feDto);
+        string GetExcelFileFromPaimentsModel(ForExcelDataDto feDto);
         string GetExcelFileFromOrdersModel(ForExcelDataDto feDto);
+        string GetExcelFromPlanOrdersModel(ForExcelDataDto feDto);
     }
 
     public class GetExcelService : Service<WeekOrderMenu>, IGetExcelService
@@ -31,6 +32,10 @@ namespace ACSDining.Infrastructure.Services
         public string GetExcelFileFromOrdersModel(ForExcelDataDto feDto)
         {
             return _repository.GetFactOrdersExcelFileWeekYearDto(feDto);
+        }
+        public string GetExcelFromPlanOrdersModel(ForExcelDataDto feDto)
+        {
+            return _repository.GetPlanOrdersExcelFileWeekYearDto(feDto);
         }
     }
 }

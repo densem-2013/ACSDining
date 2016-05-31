@@ -131,9 +131,9 @@
     <Compile Include="DTO\SuperUser\DishModelDto.cs" />
     <Compile Include="DTO\SuperUser\ForExcelDataDto.cs" />
     <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />
-    <Compile Include="DTO\Employee\PlanUserDayOrderDto.cs" />
-    <Compile Include="DTO\Employee\PlanUserWeekOrderDto.cs" />
     <Compile Include="DTO\Employee\UserDayOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\PlanUserWeekOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\PlanWeekOrderDto.cs" />
     <Compile Include="DTO\SuperUser\UpdateAccountDto.cs" />
     <Compile Include="DTO\SuperUser\UpdateDishDto.cs" />
     <Compile Include="DTO\SuperUser\UpdateWeekPaimentDto.cs" />
@@ -156,9 +156,9 @@
     <Compile Include="Identity\ApplicationDbInitializer.cs" />
     <Compile Include="Identity\ContextStoredFunctions.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201605231314310_Initial.cs" />
-    <Compile Include="Migrations\201605231314310_Initial.Designer.cs">
-      <DependentUpon>201605231314310_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201605291303139_Initial.cs" />
+    <Compile Include="Migrations\201605291303139_Initial.Designer.cs">
+      <DependentUpon>201605291303139_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -171,6 +171,7 @@
     <Compile Include="Repositories\MfdDishPriceRepository.cs" />
     <Compile Include="Repositories\OrderMenuRepository.cs" />
     <Compile Include="HelpClasses\TimerHandler.cs" />
+    <Compile Include="Repositories\PlanOrderMenuRepository.cs" />
     <Compile Include="Repositories\RelationsRepository.cs" />
     <Compile Include="Repositories\WeekPaimentRepository.cs" />
     <Compile Include="Services\DishQuantityRelationsService.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Services\MenuForWeekService.cs" />
     <Compile Include="Services\MfdDishPriceService.cs" />
     <Compile Include="Services\OrderMenuService.cs" />
+    <Compile Include="Services\PlanOrderMenuService.cs" />
     <Compile Include="Services\Service.cs" />
     <Compile Include="Services\WeekPaimentService.cs" />
     <Compile Include="UnitOfWork\IUnitOfWork.cs" />
@@ -197,8 +199,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201605231314310_Initial.resx">
-      <DependentUpon>201605231314310_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201605291303139_Initial.resx">
+      <DependentUpon>201605291303139_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

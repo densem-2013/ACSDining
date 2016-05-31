@@ -3,6 +3,30 @@
     $("ul.nav.navbar-nav li:nth-child(3)").addClass("active");
     $(".wrapper").css({ 'margin': "auto" });
 
+    var adddishbut = $("<input/>")
+    .attr({ 'data-bind': "click: createPrepare, value: ' Добавить ' + SelectedCategory()", "id": "adddish", "type": "button" })
+    .addClass("btn btnaddmenu").css({'margin': '0',"padding":'2px 10px 0 7px'});
+    $("#menucontainer span ").prepend(adddishbut);
+    $("#submenu td:first-child ").css({ "width": "24%" });
+    $("#submenu td:nth-child(2)").remove();
+    $("#submenu td:nth-child(2)").remove();
+    $("#submenu td:nth-child(2)").remove();
+
+    var trforadd = $("#submenu tbody tr:first-child");
+    trforadd.append($("<!--ko foreach: Categories-->"));
+    var tdadd = $("<td>");
+    trforadd.append(tdadd);
+    var divadd = $("<div>").addClass("radio-btn");
+    tdadd.append(divadd);
+    var factordersinput = $("<input/>")
+    .attr({ 'data-bind': "checked: $parent.SelectedCategory,checkedValue : $data, click: $parent.changeSelected, attr:{id: 'rc' + $index(),name: 'rc' + $index()}", "type": "radio" });
+    divadd.append(factordersinput);
+    var factorderslabel = $("<label></label>").addClass("navlink")
+        .attr({ "data-bind": "text:$data, attr:{'for': 'rc' + $index()}" });//.css({ "padding-right": "35px" });
+    divadd.append(factorderslabel);
+
+    trforadd.append($("<!--/ko-->"));
+
     var dishInfo = function(dish) {
         var self = this;
         self.DishId = ko.observable(dish.dishId);

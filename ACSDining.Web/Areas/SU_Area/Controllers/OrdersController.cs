@@ -38,7 +38,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
             
-            WeekOrderDto weekOrderDto = WeekOrderDto.GetMapDto(_unitOfWork, wyDto);
+            WeekOrderDto weekOrderDto = WeekOrderDto.GetMapDto(_unitOfWork, wyDto );
 
             return await Task.FromResult(weekOrderDto);
         }
@@ -46,32 +46,17 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         //Получить все плановые заявки на неделю
         [HttpPut]
         [Route("plan")]
-        public async Task<List<PlanUserWeekOrderDto>> GetPlanMenuOrders([FromBody] WeekYearDto wyDto)
+        [ResponseType(typeof(PlanWeekOrderDto))]
+        public async Task<PlanWeekOrderDto> GetPlanMenuOrders([FromBody] WeekYearDto wyDto)
         {
             if (wyDto == null)
             {
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
-            int catLength = MapHelper.GetDishCategoriesCount(_unitOfWork);
+            PlanWeekOrderDto weekOrderDto = PlanWeekOrderDto.GetMapDto(_unitOfWork, wyDto);
 
-            List<WeekOrderMenu> weekOrderMenus = _orderMenuService.GetOrderMenuByWeekYear(wyDto);
-
-            int[] womIds = weekOrderMenus.OrderBy(wom=>wom.User.FirstName).Select(wom => wom.Id).ToArray();
-
-            List<PlannedWeekOrderMenu> planOrderList = _unitOfWork.RepositoryAsync<PlannedWeekOrderMenu>()
-                .Query()
-               // .Include(pom => pom.WeekOrderMenu)
-                //.Include(
-                //    pom =>
-                //        pom.PlannedDayOrderMenus.Select(pdo => pdo.DayOrderMenu)
-                //            .Where(pdo => womIds.Contains(pdo.WeekOrderMenu.Id)))
-                .Select().ToList();
-
-            List<PlanUserWeekOrderDto> planUserWeekOrderDtos =
-                planOrderList.Select(planuwo => PlanUserWeekOrderDto.MapDto(_unitOfWork, planuwo, catLength)).ToList();
-
-            return await Task.FromResult(planUserWeekOrderDtos);
+            return await Task.FromResult(weekOrderDto);
         }
 
         //Изменить фактическую заявку указанного списка пользователей на меню соответствующей недели в году

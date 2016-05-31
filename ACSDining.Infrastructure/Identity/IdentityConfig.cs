@@ -108,8 +108,7 @@ namespace ACSDining.Infrastructure.Identity
         private PrincipalContext _ad;
 
         public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
-            :
-                base(userManager, authenticationManager)
+            : base(userManager, authenticationManager)
         {
             _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
         }

@@ -32,7 +32,7 @@
         self.Email = ko.observable(new emailValueModel(account.email));
         self.LastLoginTime = ko.observable(account.lastLoginTime);
         self.RegistrationDate = ko.observable(account.registrationDate);
-        self.Balance = ko.observable(account.balance);
+        self.Balance = ko.observable(account.balance.toFixed(2));
         self.CanMakeBooking = ko.observable(account.canMakeBooking);
         self.IsExisting = ko.observable(account.isExisting);
     };
@@ -140,6 +140,8 @@
                 });
             }
         });
+
+       
         self.update= function(account) {
             var forupdate = {
                 UserId: account.UserId(),
@@ -150,6 +152,11 @@
             app.su_Service.UpdateAccount(forupdate).then(function(res) {
 
             });
+            //account.CanMakeBooking(!account.CanMakeBooking());
+            //account.IsExisting(!)
+            //return true;
+            console.log("IsExisting= " + account.IsExisting());
+            console.log("CanMakeBooking= " + account.CanMakeBooking());
         }
 
         self.init = function () {

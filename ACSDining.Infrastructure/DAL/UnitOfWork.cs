@@ -27,12 +27,17 @@ namespace ACSDining.Infrastructure.DAL
 
         #region Constuctor/Dispose
 
-        public UnitOfWork()
+        //public UnitOfWork()
+        //{
+        //    _dataContext = new ApplicationDbContext();
+        //    _repositories = new Dictionary<string, dynamic>();
+        //}
+
+        public UnitOfWork(ApplicationDbContext dataContext)
         {
-            _dataContext = new ApplicationDbContext();
+            _dataContext = dataContext;
             _repositories = new Dictionary<string, dynamic>();
         }
-
         public ApplicationDbContext GetContext()
         {
             return _dataContext;

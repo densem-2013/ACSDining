@@ -34,7 +34,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                 PaiId = weekPaiment.Id,
                 Paiment = weekPaiment.Paiment,
                 WeekIsPaid = weekPaiment.WeekIsPaid,
-                UserName = weekPaiment.WeekOrderMenu.User.UserName,
+                UserName = weekPaiment.WeekOrderMenu.User.LastName + " " + weekPaiment.WeekOrderMenu.User.FirstName,
                 WeekPaiments = _db.WeekPaimentByOrderId(weekPaiment.WeekOrderMenu.Id).Result,
                 Balance = weekPaiment.WeekOrderMenu.User.Balance,
                 Note = weekPaiment.Note,

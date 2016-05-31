@@ -495,3 +495,9 @@ C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\CodeFirstStoreFunctions
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Bytescout.Spreadsheet.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\System.Web.Helpers.xml
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Bytescout.Spreadsheet.xml
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebGrease.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.dll
+E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebGrease.dll
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.dll
+C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb

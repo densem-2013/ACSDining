@@ -12,8 +12,6 @@ namespace ACSDining.Core.Domains
         public double DayOrderSummaryPrice { get; set; }
         [JsonIgnore]
         public virtual MenuForDay MenuForDay { get; set; }
-        //[JsonIgnore]
-        //public virtual DayOrderMenu DayOrderMenu { get; set; }
         [JsonIgnore]
         public virtual PlannedWeekOrderMenu PlannedWeekOrderMenu { get; set; }
     }

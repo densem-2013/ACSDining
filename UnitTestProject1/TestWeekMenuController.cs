@@ -21,7 +21,7 @@ namespace UnitTestProject1
 
         public TestWeekMenuController()
         {
-            _unitOfWork = new UnitOfWork();
+            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
             _db = _unitOfWork.GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));

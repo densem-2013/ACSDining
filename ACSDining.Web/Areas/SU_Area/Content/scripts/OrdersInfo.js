@@ -5,13 +5,27 @@
 /// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
 (function () {
 
-    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
-        .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
+    $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
+    $("#submenu >table td:first-child").attr({ 'data-bind': "text: CurNextTitle" });
 
-    
+    $("#submenu td:nth-child(2)").removeClass("t-label").addClass("navlink").text("Заявки");
+
+    var radiobutdiv = $("<div>").attr({ "class": "radio-btn" }).css({ "padding-top": "5px", "float": "left", "display": "inline-flex" });
+    radiobutdiv.append($("<!--ko foreach: PlanFactValues-->"));
+    var factordersinput = $("<input/>")
+    .attr({ 'data-bind': "checked: $parent.ItsFact, checkedValue: $data, click: $parent.changeSelected, attr:{id: 'dbc' + $index(),name: 'dbc' + $index()}","type": "radio" });
+    radiobutdiv.append(factordersinput);
+    var factorderslabel = $("<label></label>").addClass("navlink")
+        .attr({ "data-bind": " attr:{'for': 'dbc' + $index()},text:$index()%2==0?'Фактические  ':'Плановые'" }).css({"padding-right": "35px"});
+    radiobutdiv.append(factorderslabel);
+
+    radiobutdiv.append($("<!--/ko-->"));
+
+    $("#submenu td:nth-child(3)").append(radiobutdiv);
+
     $("ul.nav.navbar-nav li:nth-child(2)").addClass("active");
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
-    var excelButtonDiv = $('<div></div>').css({ 'whith': '100%', 'padding': '10px' });
+    var excelButtonDiv = $('<div></div>').css({ 'whith': "100%", 'padding': "10px" });
     var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
     excelButtonDiv.append(sendButtonInput);
     $('#datepick').append(excelButtonDiv);
@@ -29,7 +43,7 @@
                 $(item).focusin();
         };
 
-        self.onmouseenter = function () {
+        self.doubleClick = function () {
                 self.beenChanged(false);
                 self.Store(self.Quantity());
                 self.isEditMode(true);
@@ -112,6 +126,22 @@
 
         self.PlanWeekDishPrices = ko.observableArray([]);
 
+        self.IsCurrentWeek = ko.pureComputed(function () {
+
+            var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
+            return res;
+
+        }.bind(self));
+
+        self.CurNextTitle = ko.pureComputed(function () {
+            if (self.IsCurrentWeek()) {
+                return "Текущая неделя";
+            } else if (self.IsNextWeekYear()) {
+                return "Следующая неделя";
+            } else {
+                return "";
+            };
+        });
         // Callback for error responses from the server.
         function modalShow(title, message) {
 
@@ -140,6 +170,14 @@
             });
             self.SummaryDishQuantities.replace(self.SummaryDishQuantities()[catlengh * (daynum-1) + catnum -1], sumbydish);
         };
+
+        self.WeekTotal = ko.pureComputed(function() {
+            var sum = 0;
+            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(object, ind) {
+                sum += parseFloat(object.WeekSummaryPrice());
+            });
+            return sum.toFixed(2);
+        });
 
         self.update = function (wuOrder, index, quantity) {
 
@@ -172,12 +210,11 @@
 
         self.WeekTitle = ko.computed(function () {
             var options = {
-                weekday: "short",
+                weekday: "long",
                 year: "numeric",
                 month: "short",
                 day: "numeric"
             };
-
             var year = self.WeekYear().year;
             var firstDay = new Date(year, 0, 1).getDay();
 
@@ -186,11 +223,11 @@
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
             var n1 = new Date(w);
             var n2 = new Date(w + 345600000);
-            return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+            return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
 
 
-        self.pageSize = ko.observable(7);
+        self.pageSize = ko.observable(10);
 
         self.pageIndex = ko.observable(0);
 
@@ -217,29 +254,33 @@
             self.pageIndex(index);
         };
 
+        var updateViewModel = function(resp1) {
+            if (resp1 != null) {
+                self.WeekYear(resp1.weekYearDto);
+                self.DaysOfWeek(resp1.dayNames);
 
-        var factloadWeekOrders = function (wyDto1) {
+                self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function(uwoObject) {
+                    var summaryprice = uwoObject.userWeekOrderDishes.pop();
+                    return new weekUserOrderModel(uwoObject, summaryprice);
+                }));
 
-            app.su_Service.FactLoadWeekOrders(wyDto1).then(function (resp1) {
-                if (resp1 != null) {
-                    self.WeekYear(resp1.weekYearDto);
-                    self.DaysOfWeek(resp1.dayNames);
-
-                    self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function (uwoObject) {
-                        var summaryprice = uwoObject.userWeekOrderDishes.pop();
-                        return new weekUserOrderModel(uwoObject, summaryprice);
-                    }));
-
-                    self.SummaryDishQuantities(resp1.summaryDishQuantities);
-                    self.WeekDishPrices(resp1.weekDishPrices);
-                    self.SUCanChangeOrder(resp1.suCanChangeOrder);
-                } else {
+                self.SummaryDishQuantities(resp1.summaryDishQuantities);
+                self.WeekDishPrices(resp1.weekDishPrices);
+                self.SUCanChangeOrder(resp1.suCanChangeOrder);
+            } else {
+                if (!self.IsCurrentWeek()) {
                     modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
-                };
+                }
+            };
+        };
 
+        var loadWeekOrders = function (wyDto1, foplan) {
+            app.su_Service.LoadWeekOrders(wyDto1,foplan).then(function(resp1) {
+                updateViewModel(resp1);
             }, onError);
+        };
 
-        }
+
         self.previousPage = function () {
             if (self.pageIndex() > 0) {
                 self.pageIndex(self.pageIndex() - 1);
@@ -252,17 +293,14 @@
             }
         };
 
-        self.changeSelected = function (checkval) {
+        self.changeSelected = function(checkval) {
 
-            console.log("checkval= ", checkval);
             self.ItsFact(checkval);
-            console.log("ItsFact= ", self.ItsFact());
-            //if (self.SelectedCategory() === category) {
-            //    self.loadDishes(category);
-            //    self.SelectedCategory(category);
-            //}
+
+            loadWeekOrders(self.WeekYear(), checkval);
             return true;
-        }
+        };
+
         self.myDate.subscribe = ko.computed(function () {
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
@@ -275,19 +313,20 @@
                     };
                     if (!isNaN(weekyear.Week) && !isNaN(weekyear.Year)) {
 
-                        factloadWeekOrders(weekyear);
+                        loadWeekOrders(weekyear,self.ItsFact());
                     }
                 };
             };
         }, self);
 
-        self.GetExcel = function () {
+        self.GetExcel = function() {
             var forexcel = {
+                ItsFact: self.ItsFact(),
                 WeekYear: self.WeekYear(),
                 DataString: self.WeekTitle()
             }
-            app.su_Service.GetExcelFactOrders(forexcel)
-                .then(function (res) {
+            app.su_Service.GetExcelOrders(forexcel)
+                .then(function(res) {
                     window.location.assign(res.fileName);
                 });
         };
@@ -300,8 +339,6 @@
             app.su_Service.GetCurrentWeekYear().then(function(resp) {
                     self.WeekYear(resp);
                 self.CurrentWeekYear(resp);
-
-                //self.GetUnitCounts();
 
             }, onError)
                 .then(function () {

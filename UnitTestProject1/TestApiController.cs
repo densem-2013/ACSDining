@@ -5,6 +5,7 @@ using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.EmployeeArea.Controllers;
@@ -21,7 +22,7 @@ namespace UnitTestProject1
 
         public TestApiController()
         {
-            _unitOfWork = new UnitOfWork();
+            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
             _menuForWeekService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
         }
 

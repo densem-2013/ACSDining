@@ -53,11 +53,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
 
             MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(wyDto);
+            WeekMenuDto resultdto = null;
             if (weekmenu != null)
             {
-                return await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu,wyDto));
+                resultdto = await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu,wyDto));
             }
-            return null;
+            else
+            {
+                _db.CreateNewWeekMenu(wyDto);
+                weekmenu = _weekmenuService.GetWeekMenuByWeekYear(wyDto); 
+                resultdto = await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu, wyDto));
+            }
+
+            return resultdto;
         }
 
         [HttpPost]

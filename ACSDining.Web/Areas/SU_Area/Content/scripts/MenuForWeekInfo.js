@@ -8,8 +8,7 @@
 /// <reference path="~/Content/app/jquery-1.10.2.js" />
 (function() {
 
-    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
-        .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
+    $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
 
     $("ul.nav.navbar-nav li:first-child").addClass("active"); 
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
@@ -19,7 +18,31 @@
     $('#datepick').append(sendButtonDiv);
    // $('.wrapper').css({ 'margin': 'auto' });
     //sendButtonDiv.insertAfter($('#datepick'));
-    
+    $("#submenu td:first-child").attr({ 'data-bind': "text: CurNextTitle" });
+    var curweekbut=$("<input/>")
+    .attr({ 'data-bind': "click: GoToCurrentWeekMenu,visible: !IsCurrentWeekYear()" , "id": "curweek" ,  "type": "button" ,  "value": "Перейти на текущую неделю" })
+    .addClass("btn btnaddmenu");
+    $("#submenu td:nth-child(2)").append(curweekbut);
+
+    var btWorkDays=$("<input/>")
+    .attr({ 'data-bind': "click: WorkWeekApply,visible: !WorkingDaysAreSelected()", "id": "btWorkDays", "type": "button", "value": "Подтвердить рабочие дни" })
+    .addClass("btn btnaddmenu");
+    $("#submenu td:nth-child(3)").append(btWorkDays);
+
+    var btWorkDays = $("<input/>")
+    .attr({ 'data-bind': "click: SetAsOrderable,visible: WorkingDaysAreSelected()&&!OrderCanBeCreated()", "type": "button", "value": "Подтвердить возможность заказа по меню" })
+    .addClass("btn btnaddmenu");
+    $("#submenu td:nth-child(3)").append(btWorkDays);
+
+    var nextweekbut = $("<input/>")
+    .attr({ 'data-bind': "click: GoToNextWeekMenu,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Редактировать меню на следующую неделю" })
+    .addClass("btn btnaddmenu");
+    $("#submenu td:last-child").append(nextweekbut);
+
+    var nextweekbut = $("<input/>")
+    .attr({ 'data-bind': "click: CreateNextWeekMenu,visible: !IsNextWeekYear() && !IsNextWeekMenuExists()", "type": "button", "value": "Создать меню на следующую неделю" })
+    .addClass("btn btnaddmenu");
+    $("#submenu td:last-child").append(nextweekbut);
 
     var dishInfo = function(dinfo) {
 
@@ -153,6 +176,15 @@
 
         self.ChangeSaved = ko.observable(false);
 
+        self.CurNextTitle = ko.pureComputed(function () {
+            if (self.IsCurrentWeekYear()) {
+                return "Текущая неделя";
+            } else if (self.IsNextWeekYear()) {
+                return "Следующая неделя";
+            } else {
+                return "";
+            };
+        });
 
         function modalShow(title, message) {
 
@@ -167,9 +199,9 @@
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         };
 
-        self.WeekTitle = ko.computed(function() {
+        self.WeekTitle = ko.computed(function () {
             var options = {
-                weekday: "short",
+                weekday: "long",
                 year: "numeric",
                 month: "short",
                 day: "numeric"
@@ -182,7 +214,7 @@
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
             var n1 = new Date(w);
             var n2 = new Date(w + 345600000);
-            return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+            return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
 
 
@@ -308,7 +340,9 @@
                             self.IsNextWeekMenuExists(respnext);
                         }, onError);
                     } else {
-                        modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                        if (!self.IsCurrentWeekYear()) {
+                            modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                        }
                     }
                 },
                 onError);
@@ -318,15 +352,11 @@
 
         self.GoToNextWeekMenu = function() {
 
-            app.su_Service.GetNextWeekYear().then(function(nextWeekYear) {
-
-                self.SetMyDateByWeek(nextWeekYear);
-
-            });
+                self.SetMyDateByWeek(self.NextWeekYear());
         };
 
 
-        self.GoToNexCurrentWeekMenu = function () {
+        self.GoToCurrentWeekMenu = function () {
 
             self.SetMyDateByWeek(self.CurrentWeekYear());
         };

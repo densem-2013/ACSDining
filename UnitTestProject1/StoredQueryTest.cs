@@ -34,7 +34,7 @@ namespace UnitTestProject1
 
         public StoredQueryTest()
         {
-            _unitOfWork = new UnitOfWork();
+            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
             _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
             _weekOrderMenuRepository = _unitOfWork.RepositoryAsync<WeekOrderMenu>();
             _weekMenuRepository = _unitOfWork.RepositoryAsync<MenuForWeek>();

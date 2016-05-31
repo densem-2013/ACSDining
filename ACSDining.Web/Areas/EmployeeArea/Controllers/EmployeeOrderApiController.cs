@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -11,6 +13,8 @@ using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
+using ACSDining.Web.Areas.SU_Area.Models;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 
 namespace ACSDining.Web.Areas.EmployeeArea.Controllers
@@ -32,9 +36,9 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             _db = ((UnitOfWork) unitOfWorkAsync).GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
-            _weekPaimentService=new WeekPaimentService(_unitOfWork.RepositoryAsync<WeekPaiment>());
+            _weekPaimentService = new WeekPaimentService(_unitOfWork.RepositoryAsync<WeekPaiment>());
         }
-        
+
         /// <summary>
         /// Получить представление фактической заявки  запрашивающего пользователя за заданную неделю в году
         /// </summary>
@@ -42,7 +46,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("")]
-        [ResponseType(typeof(EmployeeWeekOrderDto))]
+        [ResponseType(typeof (EmployeeWeekOrderDto))]
         public async Task<IHttpActionResult> GetUserWeekOrderDto([FromBody] WeekYearDto wyDto)
         {
             string userid = RequestContext.Principal.Identity.GetUserId();
@@ -85,22 +89,36 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         [ResponseType(typeof (bool))]
         public async Task<IHttpActionResult> UpdateUserWeekOrder([FromBody] UpdateUserOrderDto userOrderDto)
         {
+            string userid = RequestContext.Principal.Identity.GetUserId();
+
             if (userOrderDto == null)
             {
                 return BadRequest("Bad Request Object");
             }
-            DayOrderMenu dayord = _unitOfWork.RepositoryAsync<DayOrderMenu>().Query().Include(dord=>dord.MenuForDay).Select().FirstOrDefault(dord=>dord.Id==userOrderDto.DayOrderId);
-            if (dayord==null)
+            DayOrderMenu dayord =
+                _unitOfWork.RepositoryAsync<DayOrderMenu>()
+                    .Query()
+                    .Include(dord => dord.MenuForDay)
+                    .Select()
+                    .FirstOrDefault(dord => dord.Id == userOrderDto.DayOrderId);
+            if (dayord == null)
             {
                 return BadRequest("Bad Request Object");
             }
             if (!dayord.MenuForDay.OrderCanBeChanged)
             {
-                return Ok(false);
+                return Ok("noordchenged");
+            }
+
+            User curuser = _db.Users.Find(userid);
+
+            if (!curuser.CanMakeBooking)
+            {
+                return Ok("nocanMakeBooking");
             }
             _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
 
-            return Ok(true);
+            return Ok(curuser.Balance);
 
         }
 
@@ -136,6 +154,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             return Ok(wyDto.Week == nextWeekYearDto.Week && wyDto.Year == nextWeekYearDto.Year);
         }
+
         /// <summary>
         /// 
         /// 
@@ -143,14 +162,15 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("isCurWeekYear")]
-        [ResponseType(typeof(bool))]
+        [ResponseType(typeof (bool))]
         public async Task<IHttpActionResult> IsCurWeek([FromBody] WeekYearDto wyDto)
         {
             WeekYearDto curWeekYearDto = YearWeekHelp.GetCurrentWeekYearDto();
-           // WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
+            // WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
 
             return Ok(wyDto.Week == curWeekYearDto.Week && wyDto.Year == curWeekYearDto.Year);
         }
+
         /// <summary>
         /// Возвращает уведомление о созданном заказе на следующую неделю
         /// </summary>
@@ -172,10 +192,49 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
         [HttpGet]
         [Route("nextWeekYear")]
-        [ResponseType(typeof(WeekYearDto))]
+        [ResponseType(typeof (WeekYearDto))]
         public Task<WeekYearDto> GetNextWeekYear()
         {
             return Task.FromResult(YearWeekHelp.GetNextWeekYear(YearWeekHelp.GetCurrentWeekYearDto()));
+        }
+
+        /// <summary>
+        /// Возвращает уведомление о заполненном поле адреса електронной почты текущего пользователя
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("emailexists")]
+        [ResponseType(typeof (bool))]
+        public async Task<IHttpActionResult> EmailExists()
+        {
+            string userid = RequestContext.Principal.Identity.GetUserId();
+            User curUser = _db.Users.Find(userid);
+            if (curUser == null)
+            {
+                return BadRequest("User not exists");
+            }
+            return Ok(!curUser.Email.IsNullOrWhiteSpace());
+        }
+
+        [HttpPut]
+        [Route("setemai")]
+        [ResponseType(typeof (bool))]
+        public async Task<IHttpActionResult> SetEmail([FromBody] string email)
+        {
+            string userid = RequestContext.Principal.Identity.GetUserId();
+            User curUser = _db.Users.Find(userid);
+            if (curUser == null)
+            {
+                return BadRequest("User not exists");
+            }
+            curUser.Email = email;
+            _db.Entry(curUser).State = EntityState.Modified;
+            int res = await _db.SaveChangesAsync();
+            if (res > 0)
+            {
+                MessageService.SendEmailAsync(new List<User>() {curUser}, MessageTopic.Registration);
+            }
+            return Ok(res > 0);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace UnitTestProject1
 
         public TestEmployeerOrderApiController()
         {
-            _unitOfWork = new UnitOfWork();
+            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
             _userManager = new ApplicationUserManager(new UserStore<User>(_unitOfWork.GetContext()));
             _weekOrderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());

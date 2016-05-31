@@ -3,26 +3,20 @@
 }
 
 <div id="submenu">
-    <div class="col-md-9">
-        <div class="col-md-3 t-label">
-            <!--ko ifnot: IsCurrentWeek-->
-            <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn btnaddmenu" data-bind=" click: GoToCurrentWeekOrder " />
-            <!--/ko-->
-            <!--ko if: IsCurrentWeek-->
-            <span class="navlink">Текущая неделя </span>
-            <!--/ko-->
-        </div>
-        <div class="col-md-6 " style="float: right; margin-right: 20px; vertical-align: middle; width: 500px; height: 40px; margin: 3px">
-            <!--ko if: CanCreateOrderOnNextWeek-->
-            <!--ko if: IsNextWeekYear-->
-            <label class="label-success" style="font-size: 18px; color: whitesmoke; padding: 7px; -ms-border-radius: 5px; border-radius: 5px">Редактирование заказа на следующую неделю </label>
-            <!--/ko-->
-            <!--ko ifnot: IsNextWeekYear-->
-            <input type="button" id="btnaddmenu" class="btn btnaddmenu enabled" value="Редактировать заказ на следующую неделю" data-bind=" click: GoToNextWeekOrder" />
-            <!--/ko-->
-            <!--/ko-->
-        </div>
-    </div>
+    <table class="table table-responsive">
+       <tbody>
+        <tr>
+            <td class="navlink" data-bind="text: CurNextTitle"></td>
+            <td class="t-label"  style="width: 40%; padding: 2px;">
+                <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn btnaddmenu" data-bind=" click: GoToCurrentWeekOrder,visible: !IsCurrentWeek() " />
+            </td>
+            <td class="t-label"  style="width: 40%; padding: 2px;">
+                <input type="button" id="btnaddmenu" class="btn btnaddmenu enabled" value="Редактировать заказ на следующую неделю" data-bind=" click: GoToNextWeekOrder,visible: !IsNextWeekYear() && NextWeekOrderExist()" />
+            </td>
+            <td class="navlink" data-bind="text: 'Ваш текущий баланс: ' + Balance()"></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 <div class="main_content_background">
@@ -69,8 +63,8 @@
                                     <!--ko if: OrderCanByChanged-->
                                     <!--ko foreach: Dishes-->
                                     <!--ko with: OrderQuantity-->
-                                    @*<div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseenter: onmouseenter , mouseleave:function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}">*@
-                                    <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                                    <div style="border-bottom: 1px solid;" data-bind="event : { mouseover: doubleClick ,mouseleave: function(){ hasFocus=false; }}">
+                                        @*<div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">*@
 
                                         <!--ko ifnot: isEditMode -->
                                         <span data-bind=" text: Quantity">
@@ -138,6 +132,27 @@
                     <span data-bind="text: Message"></span>
                 </div>
                 <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="emailComfirm" class="modal">
+    <div class="modal-dialog">
+        <div class="panel panel-default">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Сообщение</h1>
+                </div>
+                <div class="modal-body">
+                    <span>Адреса Вашей електронной почты нет в информации о доменной учётной записи.</span>
+                    <span>Заполните поле ниже актуальным электронным адресом для получения сообщений от администрации столовой.</span>
+                    <input type="text" data-bind="value:Email, hasFocus:true">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bind="click: applyEmail">Ok</button>
                     <button class="btn btn-default" data-dismiss="modal">Закрыть</button>
                 </div>
             </div>

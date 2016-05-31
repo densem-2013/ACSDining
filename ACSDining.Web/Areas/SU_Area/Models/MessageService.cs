@@ -40,8 +40,6 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             {
                 crident = new System.Net.NetworkCredential(Settings.Smtp.Network.UserName,
                     Settings.Smtp.Network.Password);
-                //crident = new System.Net.NetworkCredential(smtpSection.Network.UserName,
-                //    smtpSection.Network.Password);
             }
             catch (Exception)
             {
@@ -49,7 +47,7 @@ namespace ACSDining.Web.Areas.SU_Area.Models
                 throw;
             }
 
-            if (Settings/*smtpSection*/ != null)
+            if (Settings != null)
             {
                 Client = new SmtpClient
                 {
@@ -59,12 +57,6 @@ namespace ACSDining.Web.Areas.SU_Area.Models
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     //UseDefaultCredentials = Settings.Smtp.Network.DefaultCredentials,
                     EnableSsl = Settings.Smtp.Network.EnableSsl,
-                    //Host = smtpSection.Network.Host,
-                    //Port = smtpSection.Network.Port,
-                    //Credentials = crident,
-                    //DeliveryMethod = SmtpDeliveryMethod.Network,
-                    //UseDefaultCredentials = smtpSection.Network.DefaultCredentials,
-                    //EnableSsl = smtpSection.Network.EnableSsl,
                     Timeout = 60000
                 };
 
@@ -108,10 +100,7 @@ namespace ACSDining.Web.Areas.SU_Area.Models
         {
             string template = topic == MessageTopic.MenuChanged ? "DayMenuChanged" : topic == MessageTopic.Registration ? "RegistrationCompleted" : "MenuCreateCompleted";
             var templateFilePath = HostingEnvironment.MapPath("~/Areas/SU_Area/Views/SU_/EmailTemplates/") + template + ".html";
-            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-            //                          @"ACSDining.Web\Areas\SU_Area\Views\SU_\EmailTemplates\";
-            //var templateFilePath = _path + template + ".html";
-            string body;
+           string body;
             try
             {
                 StreamReader objstreamreaderfile = new StreamReader(templateFilePath);

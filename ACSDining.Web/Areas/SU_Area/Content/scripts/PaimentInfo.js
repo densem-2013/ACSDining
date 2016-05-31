@@ -1,7 +1,7 @@
 ﻿(function() {
 
-    $("#infoTitle span").attr({ 'data-bind': "text: WeekTitle" })
-        .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
+    $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
+    $("#submenu >table td:first-child").attr({ 'data-bind': "text: CurNextTitle" });
 
 
     $("ul.nav.navbar-nav li:nth-child(4)").addClass("active");
@@ -10,6 +10,7 @@
     var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
     excelButtonDiv.append(sendButtonInput);
     $('#datepick').append(excelButtonDiv);
+    $('#rightPart').css({ 'width': '20%', "padding-left": "5px" });
 
     var noteValueModel = function (value) {
 
@@ -75,9 +76,7 @@
         var self = this;
 
         self.UserPaiments = ko.observableArray([]);
-        self.WeekYear = ko.observable();
 
-        self.IsNextWeekYear = ko.observable();
 
         self.DaysOfWeek = ko.observableArray([]);
 
@@ -85,18 +84,18 @@
 
         self.BeenChanged = ko.observable(false);
 
+        self.myDate = ko.observable(new Date());
 
         self.CurrentWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
         self.WeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
+        self.IsNextWeekYear = ko.observable();
         self.Title = ko.observable("");
         self.Message = ko.observable();
 
-        self.CurrentWeekYear = ko.observable();
-        self.myDate = ko.observable(new Date());
         self.BeenChanged = ko.observable(false);
-        self.Year = ko.observable();
+
         self.Categories = ko.observableArray([]);
         self.UnitPrices = ko.observableArray([]);
         self.UnitPricesTotal = ko.observableArray([]);
@@ -112,7 +111,24 @@
             return res;
 
         });
-        // Callback for error responses from the server.
+
+        self.IsCurrentWeek = ko.pureComputed(function () {
+
+            var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
+            return res;
+
+        }.bind(self));
+
+        self.CurNextTitle = ko.pureComputed(function () {
+            if (self.IsCurrentWeek()) {
+                return "Текущая неделя";
+            } else if (self.IsNextWeekYear()) {
+                return "Следующая неделя";
+            } else {
+                return "";
+            };
+        });
+
         function modalShow(title, message) {
 
             self.Title(title);
@@ -120,7 +136,7 @@
             $("#modalMessage").modal("show");
 
         }
-        // Callback for error responses from the server.
+
         function onError(error) {
 
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
@@ -186,11 +202,6 @@
             }, onError);
         }
 
-        self.IsCurrentWeek = ko.pureComputed(function () {
-
-            return self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
-
-        }, self);
 
         self.CalcBalance = function (uspaiobj) {
 
@@ -232,7 +243,9 @@
                             return new userPaimentModel(item);
                         }));
                 } else {
-                    modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                    if (!self.IsCurrentWeek()) {
+                        modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                    }
                 };
                 }, onError);
         }
@@ -257,8 +270,7 @@
                     };
                     if (!isNaN(weekyear.Week) && !isNaN(weekyear.Year)) {
 
-                        //self.LoadPaiments(weekyear);
-                        self.SetMyDateByWeek(weekyear);
+                        self.LoadPaiments(weekyear);
                     }
                 };
             };
@@ -266,12 +278,11 @@
 
         self.WeekTitle = ko.computed(function () {
             var options = {
-                weekday: "short",
+                weekday: "long",
                 year: "numeric",
                 month: "short",
                 day: "numeric"
             };
-
             var year = self.WeekYear().year;
             var firstDay = new Date(year, 0, 1).getDay();
 
@@ -280,9 +291,9 @@
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
             var n1 = new Date(w);
             var n2 = new Date(w + 345600000);
-            return "Неделя " + week + ", " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+            return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
-        
+
 
         self.init = function () {
 

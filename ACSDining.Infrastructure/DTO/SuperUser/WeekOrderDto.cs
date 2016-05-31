@@ -23,7 +23,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         //SU может редактировать заказ
         public bool SuCanChangeOrder { get; set; }
 
-        public static  WeekOrderDto GetMapDto(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto)
+        public static WeekOrderDto GetMapDto(IUnitOfWorkAsync unitOfWork, WeekYearDto wyDto, bool needfact = true)
         {
             ApplicationDbContext context = unitOfWork.GetContext();
 
@@ -32,7 +32,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             if (menuForWeek == null) return null;
 
             List<WeekOrderMenu> weekOrderMenus = unitOfWork.RepositoryAsync<WeekOrderMenu>()
-                .OrdersMenuByWeekYear(wyDto);
+                .OrdersMenuByWeekYear(wyDto).OrderBy(wo=>wo.User.UserName).ToList();
 
 
             return new WeekOrderDto

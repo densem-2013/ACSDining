@@ -595,7 +595,7 @@ BEGIN
 	INNER JOIN WorkingWeek
 	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
 	INNER JOIN WorkingDay
-	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.IsWorking=1 AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
+	ON WorkingDay.Id=MenuForDay.WorkingDay_Id  AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
 	ORDER BY DayOrderMenu.Id, DishType.Id
 	
 	--добавляем недельную оплату на заказ из этого меню
@@ -706,7 +706,7 @@ GO
 -- Description:	<Создаёт новое меню на неделю и заполняет его пустыми блюдами>
 -- =============================================
 CREATE PROC "CreateNewWeekMenu"
-	@week int,
+		@week int,
 	@year int
 AS
 BEGIN
@@ -746,9 +746,10 @@ BEGIN
 	 insert [ACS_Dining].[dbo].[MenuForWeek]
 	 values(0.00,1,0,0,@workweekid)
 	 select @weekmenuid=id from [ACS_Dining].[dbo].[MenuForWeek] where [WorkingWeek_ID]=@workweekid
+	 --print @weekmenuid
 	 insert [ACS_Dining].[dbo].[MenuForDay]
-	 select 0.00,1,1,id,@weekmenuid
-	 from  [ACS_Dining].[dbo].[WorkingDay]
+	 select 0.00,1,1,@weekmenuid,wday.Id
+	 from  [ACS_Dining].[dbo].[WorkingDay] wday
 	 where WorkingWeek_ID=@workweekid
 	 order by Id
 	 --Заполняем дневные меню пустыми блюдами
@@ -888,6 +889,9 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
+	declare @roleid nvarchar(128)
+	select @roleid=id from [ACS_Dining].[dbo].[AspNetRoles] where [Name]='Employee'
+	if not exists(select * from [ACS_Dining].[dbo].[AspNetUserRoles] where [RoleId]=@roleid) return
 	--удаляем связи на блюда и их количества из фактических дневных заказов
 	delete from [ACS_Dining].[dbo].[DishQuantityRelations] 
 	where [DayOrderMenuId] in (select dords.Id from [ACS_Dining].[dbo].[DayOrderMenu] dords

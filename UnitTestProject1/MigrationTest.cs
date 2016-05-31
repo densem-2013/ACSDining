@@ -25,7 +25,7 @@ namespace UnitTestProject1
 
         public MigrationTest()
         {
-            _unitOfWork = new UnitOfWork();
+            _unitOfWork = new UnitOfWork(new ApplicationDbContext());
             dataContext = _unitOfWork.GetContext();
             IRepositoryAsync<MenuForWeek> menuRepo = _unitOfWork.RepositoryAsync<MenuForWeek>();
             _menuForWeekService = new MenuForWeekService(menuRepo);

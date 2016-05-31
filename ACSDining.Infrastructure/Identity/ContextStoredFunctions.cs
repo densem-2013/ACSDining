@@ -131,6 +131,30 @@ namespace ACSDining.Infrastructure.Identity
         }
 
         /// <summary>
+        /// Возвращает значения количеств заказанных блюд для указанного недельного заказа
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="planweekuserorderid">id плановой недельной заявки пользователя</param>
+        /// <returns></returns>
+        public static async Task<double[]> PlanDishQuantByWeekOrderId(this ApplicationDbContext context, int planweekuserorderid)
+        {
+            double[] res = null;
+            try
+            {
+                var planWeekOrdParameter = new SqlParameter("@Planword", planweekuserorderid);
+                res = context.Database.SqlQuery<double>("Select DishQuant From dbo.[PlanDishQuantByWeekOrderId](@Planword)",
+                    planWeekOrdParameter)
+                    .ToArrayAsync().Result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return res;
+        }
+
+        /// <summary>
         /// Обновляет значение заказа на блюдо а также сумму заказа на день и рабочую неделю
         /// </summary>
         /// <param name="context"></param>

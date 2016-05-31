@@ -42,7 +42,8 @@ span.changesaved {
     width: 99%;
 }
 .navlink {
-    color: #537386;
+    white-space: nowrap;
+    color: #537386 !important;
     font-size: 22px;
     line-height: 2em;
     padding-left: 10px;
@@ -134,8 +135,23 @@ div.panel.panel-default > table {
     width: 100%;
     background-color: #DAF0FD;
 }
-div.panel.panel-default > table th {
-    background-color: rgba(218, 240, 253, 0);
+#ordersObject {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+div.panel.panel-default > table {
+    width: 100%;
+    background-color: rgb(236, 245, 249);
+}
+#ordersObject div.panel.panel-default > table th, div.panel.panel-default > table td {
+    padding: 2px;
+    font-size: 14px;
+}
+#paimentsObject  div.panel.panel-default > table td, #paimentsObject  div.panel.panel-default > table th {
+    padding: 2px;
+    font-size: 13px !important;
+    height: 30px !important;
 }
 /*#menucontainer > ul > li  {
     background-color: aquamarine
@@ -156,6 +172,7 @@ table th,table td {
 }
 #updateTable td{
     
+    vertical-align: middle;
     text-align: left;
 }
 
@@ -206,5 +223,16 @@ table th,table td {
     font-family: Tahoma,Verdana,Arial,sans-serif;
     font-weight: bold;   
     color: Black;
-    font-size: 11px;
+    font-size: 12px;
+}
+.footheader {
+    background: #a6d9f4 url("/Content/css/Images/sprite.png") repeat-x scroll 0 -752px !important;
+    border-color: #a7bac5;    
+    border-style: solid;
+    border-width: 0 1px 1px 0;
+    font-weight: normal;
+    vertical-align: middle !important;
+    text-align: center !important;
+    border-color: #a7bac5;    
+    border-collapse: separate;
 }

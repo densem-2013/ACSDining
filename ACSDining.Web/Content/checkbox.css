@@ -14,6 +14,7 @@ body{-webkit-animation:bugfix infinite 1s}@-webkit-keyframes bugfix{from{padding
         border-radius: 3px;
         background-clip: padding-box;
         cursor: pointer;
+        display: inline-flex;
     }
 .checkbox-btn label::before,.radio-btn label::before {
     position:absolute;

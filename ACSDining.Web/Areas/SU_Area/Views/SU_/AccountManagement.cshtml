@@ -32,7 +32,6 @@
         <tr>
             <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
             <td colspan="4"><span data-bind="text: FullName"></span></td>
-            @*<td colspan="3"><span data-bind="text: Email"></span></td>*@
             <!--ko with: Email-->
             <td class="lastTD" colspan="3" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
                 <!--ko if: isEditMode-->
@@ -48,14 +47,14 @@
             <td colspan="2"><span data-bind="text: Balance"></span></td>
             <td colspan="2">
                 <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="click: function(){ $root.update($parent);},checked: CanMakeBooking, value: CanMakeBooking, attr:{id: 'acc' + $index(),name: 'acc' + $index()}" />
-                    <label data-bind=" attr:{'for': 'acc' + $index()}"></label>
+                    <input type="checkbox" data-bind="click: function(){ $root.update($data);},checked: $data.CanMakeBooking, checkedValue: $data.CanMakeBooking(), attr:{id: 'rcbook' + $index(),name: 'rcbook' + $index()}" />
+                    <label data-bind=" attr:{'for': 'rcbook' + $index()}"></label>
                 </div>
             </td>
             <td colspan="2">
                 <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="click: function(){ $root.update($parent);},checked: !IsExisting(), value: !IsExisting, attr:{id: 'accex' + $index(), name: 'accex' + $index()}" />
-                    <label data-bind="attr:{'for': 'accex' + $index()}"></label>
+                    <input type="checkbox" data-bind="click: function(){ $root.update($data);},checked: $data.IsExisting, checkedValue: $data.IsExisting(), attr:{id: 'rcexist' + $index(), name: 'rcexist' + $index()}" />
+                    <label data-bind="attr:{'for': 'rcexist' + $index()}"></label>
                 </div>
             </td>
         </tr>
