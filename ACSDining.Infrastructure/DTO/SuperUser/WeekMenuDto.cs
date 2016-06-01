@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
-using Microsoft.Owin.Security;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser
 {
@@ -15,8 +13,6 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
         public WeekYearDto WeekYear { get; set; }
         public double SummaryPrice { get; set; }
         public List<MenuForDayDto> MfdModels { get; set; }
-        ////Это меню может быть изменено
-        //public bool MenuCanBeChanged { get; set; }
         //На это недельное меню может быть сделан заказ
         public bool OrderCanBeCreated { get; set; }
         //Представление информации о рабочей неделе
@@ -48,7 +44,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
                             {
                                 var mfdDishPriceRelations = mfd.DishPriceMfdRelations.FirstOrDefault(dp => dp.DishId == d.DishID);
                                 if (mfdDishPriceRelations != null)
-                                    return new DishModelDto
+                                    return new Dishes.DishModelDto
                                     {
                                         DishId = d.DishID,
                                         Title = d.Title,

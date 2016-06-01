@@ -1,10 +1,8 @@
 ﻿using System;
 using System.DirectoryServices.AccountManagement;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Configuration;
-using System.Web.Hosting;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
@@ -12,7 +10,6 @@ using Microsoft.AspNet.Identity.Owin;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Models.ViewModels;
 using ACSDining.Core.Domains;
-using Microsoft.AspNet.Identity.EntityFramework;
 using NLog;
 
 namespace ACSDining.Web.Controllers
@@ -77,7 +74,7 @@ namespace ACSDining.Web.Controllers
 
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
+             var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
             //var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
@@ -173,7 +170,6 @@ namespace ACSDining.Web.Controllers
                         return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
                     }
                     return RedirectToLocal(returnUrl);
-                //return RedirectToLocal("Login");
 
                 case SignInStatus.LockedOut:
                     ModelState.AddModelError("", "Ваша учётная запись заблокирована.");
@@ -199,7 +195,6 @@ namespace ACSDining.Web.Controllers
                         {
                             specuser.LastLoginTime = DateTime.UtcNow;
                             Session["EmployeeFullname"] = specuser.LastName + " " + specuser.FirstName;
-                            //Session["Lname"] = user.LastName;
                             specuser.LastLoginTime = DateTime.Now;
                             await
                                 _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,

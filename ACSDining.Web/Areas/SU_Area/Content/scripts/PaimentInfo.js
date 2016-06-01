@@ -9,9 +9,9 @@
     var excelButtonDiv = $('<div></div>').css({ 'whith': '100%', 'padding': '10px' });
     var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
     excelButtonDiv.append(sendButtonInput);
-    $('#datepick').append(excelButtonDiv);
+    $('#datepick').css({"padding":"0"}).append(excelButtonDiv);
     $('#rightPart').css({ 'width': '20%', "padding-left": "5px" });
-
+   
     var noteValueModel = function (value) {
 
         var self = this;

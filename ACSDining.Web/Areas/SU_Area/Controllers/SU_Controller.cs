@@ -1,8 +1,4 @@
-﻿using System;
-using System.Web;
-using System.Web.Mvc;
-using ACSDining.Infrastructure.Identity;
-using Microsoft.AspNet.Identity.Owin;
+﻿using System.Web.Mvc;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {

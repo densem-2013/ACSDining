@@ -8,6 +8,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Accounts;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.UnitOfWork;
 using Microsoft.AspNet.Identity;
@@ -57,18 +58,39 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpPut]
-        [Route("update")]
-        public async Task<IHttpActionResult> UpdateAccount([FromBody]UpdateAccountDto accountDto)
+        [Route("updateEmail")]
+        public async Task<IHttpActionResult> UpdateAccount([FromBody] UpdateAccountEmailDto accountEmailDto)
         {
-            User user = await UserManager.FindByIdAsync(accountDto.UserId);
-            user.Email = accountDto.Email;
-            user.CanMakeBooking = accountDto.CanMakeBooking;
-            user.IsExisting = accountDto.IsExisting;
-            _unitOfWork.GetContext().Entry(user).State=EntityState.Modified;
+            User user = await UserManager.FindByIdAsync(accountEmailDto.UserId);
+            user.Email = accountEmailDto.Email;
+            _unitOfWork.GetContext().Entry(user).State = EntityState.Modified;
             await _unitOfWork.SaveChangesAsync();
             return Ok(true);
         }
-            // DELETE api/Dishes/5
+
+        [HttpPut]
+        [Route("updateMakeBook")]
+        public async Task<IHttpActionResult> UpdateAccountMakeBook([FromBody] UpdateMakeBookDto accountMakeBookDto)
+        {
+            User user = await UserManager.FindByIdAsync(accountMakeBookDto.UserId);
+            user.CanMakeBooking = accountMakeBookDto.CanMakeBooking;
+            _unitOfWork.GetContext().Entry(user).State = EntityState.Modified;
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(true);
+        }
+
+        [HttpPut]
+        [Route("updateExists")]
+        public async Task<IHttpActionResult> UpdateAccountExists([FromBody] UpdateExistingDto accountExistsDto)
+        {
+            User user = await UserManager.FindByIdAsync(accountExistsDto.UserId);
+            user.IsExisting = accountExistsDto.IsExisting;
+            _unitOfWork.GetContext().Entry(user).State = EntityState.Modified;
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(true);
+        }
+
+        // DELETE api/Dishes/5
         [HttpDelete]
         [Route("delete/{id}")]
         public async Task<IHttpActionResult> DeleteAccount(string id)

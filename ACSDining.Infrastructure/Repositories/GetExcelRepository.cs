@@ -51,7 +51,7 @@ namespace ACSDining.Infrastructure.Repositories
             Spreadsheet document = new Spreadsheet();
 
             // Get worksheet by name
-            Worksheet workSheet = document.Workbook.Worksheets.Add("Заявки фактические");
+            Worksheet workSheet = document.Workbook.Worksheets.Add("Оплаты");
             // I created Application and Worksheet objects before try/catch,
             // so that i can close them in finnaly block.
             // It's IMPORTANT to release these COM objects!!

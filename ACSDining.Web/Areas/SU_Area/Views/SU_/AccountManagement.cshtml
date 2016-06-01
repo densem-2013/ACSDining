@@ -1,96 +1,86 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "AccountManagement";
 }
-<div id="mfwPanel">
+<div class="col-md-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0; padding-left: 0px;" id="accountsObject">
+    <div class="panel panel-default" id="mfwPanel" style="margin: 20px">
 
-    <div id="searchItems">
-        <span>Поиск</span>
-        <input type="search" autocomplete="off" class="form-control" data-bind="value: handledSearch, valueUpdate: 'keyup'" />
-        <span class="glyphicon glyphicon-search"></span>
-    </div>
-    <table class="table table-striped table-bordered fixed  table-hover" id="accountsTable" style="text-align: center">
+        <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="accountsTable" style="text-align: center">
 
-        <tbody>
-        <tr>
-            <td colspan="6">
-            </td>
-            <td colspan="6"></td>
-            <td colspan="6"></td>
-        </tr>
-        <tr>
-            <th>№</th>
-            <th colspan="4">Ф.И.О.</th>
-            <th colspan="3">Email</th>
-            <th colspan="2">Дата последнего входа</th>
-            <th colspan="2">Дата регистрации</th>
-            <th colspan="2">Баланс</th>
-            <th colspan="2">Может делать заказ</th>
-            <th colspan="2">Удалён из системы</th>
-        </tr>
-        <!-- ko foreach: filterList-->
-        <tr>
-            <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
-            <td colspan="4"><span data-bind="text: FullName"></span></td>
-            <!--ko with: Email-->
-            <td class="lastTD" colspan="3" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
-                <!--ko if: isEditMode-->
-                <input type="text" data-bind="value:Email,hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.update($parent);} }">
+            <tbody>
+            <tr>
+                <th>№</th>
+                <th colspan="4">Ф.И.О.</th>
+                <th colspan="3">Email</th>
+                <th colspan="2">Дата последнего входа</th>
+                <th colspan="2">Дата регистрации</th>
+                <th colspan="2">Баланс</th>
+                <th colspan="2">Может делать заказ</th>
+                <th colspan="2">Удалён из системы</th>
+            </tr>
+            <!-- ko foreach: filterList-->
+            <tr>
+                <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
+                <td colspan="4"><span data-bind="text: FullName"></span></td>
+                <!--ko with: Email-->
+                <td class="lastTD" colspan="3" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                    <!--ko if: isEditMode-->
+                    <input type="text" data-bind="value:Email,hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.updateEmail($parent);} }">
+                    <!--/ko-->
+                    <!--ko ifnot: isEditMode-->
+                    <span data-bind="text: Email"></span>
+                    <!--/ko-->
+                </td>
                 <!--/ko-->
-                <!--ko ifnot: isEditMode-->
-                <span data-bind="text: Email"></span>
-                <!--/ko-->
-            </td>
+                <td colspan="2"><span data-bind="text: LastLoginTime"></span></td>
+                <td colspan="2"><span data-bind="text: RegistrationDate"></span></td>
+                <td colspan="2"><span data-bind="text: Balance"></span></td>
+                <td colspan="2">
+                    <div class="checkbox-btn" style="vertical-align: middle">
+                        <input type="checkbox" data-bind="click: function(){ return $root.bookupdate($data);}, checked: $data.CanMakeBooking, value: $data.CanMakeBooking , attr:{id: 'rc' + $index(), name:'rc' + $index()}"/>
+                        <label data-bind=" attr:{'for': 'rc' + $index()}"></label>
+                    </div>
+                </td>
+                <td colspan="2">
+                    <div class="checkbox-btn" style="vertical-align: middle">
+                        <input type="checkbox" value="true" data-bind="click: function(){ return $root.existsupdate($data);},checked: $data.IsExisting, attr:{id: 'rcexist' + $index(), name: 'rcexist' + $index()}"/>
+                        <label data-bind="attr:{'for': 'rcexist' + $index()}"></label>
+                    </div>
+                </td>
+            </tr>
             <!--/ko-->
-            <td colspan="2"><span data-bind="text: LastLoginTime"></span></td>
-            <td colspan="2"><span data-bind="text: RegistrationDate"></span></td>
-            <td colspan="2"><span data-bind="text: Balance"></span></td>
-            <td colspan="2">
-                <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="click: function(){ $root.update($data);},checked: $data.CanMakeBooking, checkedValue: $data.CanMakeBooking(), attr:{id: 'rcbook' + $index(),name: 'rcbook' + $index()}" />
-                    <label data-bind=" attr:{'for': 'rcbook' + $index()}"></label>
-                </div>
-            </td>
-            <td colspan="2">
-                <div class="checkbox-btn" style="vertical-align: middle">
-                    <input type="checkbox" data-bind="click: function(){ $root.update($data);},checked: $data.IsExisting, checkedValue: $data.IsExisting(), attr:{id: 'rcexist' + $index(), name: 'rcexist' + $index()}" />
-                    <label data-bind="attr:{'for': 'rcexist' + $index()}"></label>
-                </div>
-            </td>
-        </tr>
-        <!--/ko-->
-     
-        </tbody>
-        <tfoot>
-        <tr>
-            <td >
-                <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
-                    <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
-                </button>
-            </td>
-            <td colspan="5" style="-moz-min-width: 200px; -ms-min-width: 200px; -o-min-width: 200px; -webkit-min-width: 200px; min-width: 200px">
-                <div style="text-align: center">
-                    <span class="glyphicon ">Страница </span>
-                    <span class="label-info " data-bind=" text: pageIndex()+1"></span>
-                    <span> из </span>
-                    <span class="label-info " data-bind=" text: maxPageIndex()+1"></span>
 
-                </div>
-            </td>
-            <td colspan="2">
-                <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
-                    <span class="glyphicon glyphicon-hand-right"> Следующая</span>
-                </button>
-            </td>
-            <td colspan="10">
-                <div>
-                    <span> Отображать </span>
-                    <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>
-                    <span> элементов на странице</span>
-                </div>
-            </td>
-        </tr>
-        </tfoot>
-    </table>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
+                        <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
+                    </button>
+                </td>
+                <td colspan="5" style="-moz-min-width: 200px; -ms-min-width: 200px; -o-min-width: 200px; -webkit-min-width: 200px; min-width: 200px">
+                    <div style="text-align: center">
+                        <span class="glyphicon ">Страница </span>
+                        <span class="label-info " data-bind=" text: pageIndex()+1"></span>
+                        <span> из </span>
+                        <span class="label-info " data-bind=" text: maxPageIndex()+1"></span>
+
+                    </div>
+                </td>
+                <td colspan="2">
+                    <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
+                        <span class="glyphicon glyphicon-hand-right"> Следующая</span>
+                    </button>
+                </td>
+                <td colspan="10">
+                    <div>
+                        <span> Отображать </span>
+                        <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>
+                        <span> элементов на странице</span>
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
 </div>
-@Scripts.Render("~/bundles/AccountsInfo")
+    @Scripts.Render("~/bundles/AccountsInfo")

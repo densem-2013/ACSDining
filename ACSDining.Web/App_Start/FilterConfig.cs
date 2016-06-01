@@ -16,7 +16,7 @@ namespace ACSDining.Web
             {
                 if (context.Session.IsNewSession)
                 {
-                    var session = context.Session["Fullname"];
+                    var session = context.Session["FullName"];
 
                     if ((session == null) /*&& (sessionCookie.IndexOf("ASP.NET_SessionId") >= 0)*/)
                     {

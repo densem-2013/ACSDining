@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -6,6 +7,8 @@ using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Dishes;
+using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -74,15 +77,23 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         // DELETE api/Dishes/5
-        [HttpDelete]
-        [Route("delete/{id}")]
-        public async Task<IHttpActionResult> DeleteDish(int id)
+        [HttpPut]
+        [Route("updateDeleted")]
+        public async Task<IHttpActionResult> DeleteDish([FromBody]UpdateDishDeleted updel)
         {
-             _mfdDishPriceService.DeleteDish(id);
+            ApplicationDbContext db = _unitOfWork.GetContext();
+            Dish delDish = db.Dishes.Find(updel.DishId);
+            if (delDish == null)
+            {
+                return NotFound();
+            }
+            delDish.Deleted = updel.Deleted;
+
+            db.Entry(delDish).State = EntityState.Modified;
 
             await _unitOfWork.SaveChangesAsync();
 
-            return Ok(true);
+            return Ok(delDish.Deleted);
         }
 
         protected override void Dispose(bool disposing)

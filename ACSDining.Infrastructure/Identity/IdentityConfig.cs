@@ -102,7 +102,6 @@ namespace ACSDining.Infrastructure.Identity
         }
     }
 
-
     public class ApplicationSignInManager : SignInManager<User, string>
     {
         private PrincipalContext _ad;

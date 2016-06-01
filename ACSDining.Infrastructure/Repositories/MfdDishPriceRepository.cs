@@ -7,6 +7,7 @@ using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
 using LinqKit;
+using DishModelDto = ACSDining.Infrastructure.DTO.SuperUser.Dishes.DishModelDto;
 
 namespace ACSDining.Infrastructure.Repositories
 {
@@ -21,11 +22,11 @@ namespace ACSDining.Infrastructure.Repositories
             //}
             return
                 repository.GetRepositoryAsync<Dish>().Query()
-                .Include(d => d.DishDetail)
-                .Include(d => d.DishType)
-                .Include(d => d.CurrentPrice)
-                .Include(d => d.MfdDishPriceRelations)
-                .Select()
+                    .Include(d => d.DishDetail)
+                    .Include(d => d.DishType)
+                    .Include(d => d.CurrentPrice)
+                    .Include(d => d.MfdDishPriceRelations)
+                    .Select()
                     .Where(d => string.Equals(d.DishType.Category, category))
                     .Select(d => repository.GetDishModelDto(d, menufordayid))
                     .ToList();
@@ -59,7 +60,8 @@ namespace ACSDining.Infrastructure.Repositories
                 ProductImage = dish.ProductImage,
                 Price = price,
                 Category = dish.DishType.Category,
-                Description = dish.Description
+                Description = dish.Description,
+                Deleted = dish.Deleted
             };
             return dto;
         }

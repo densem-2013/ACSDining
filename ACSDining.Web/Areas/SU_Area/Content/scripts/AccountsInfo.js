@@ -11,6 +11,15 @@
     $("#infoTitle span").text("Управление пользователями")
         .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
     $("ul.nav.navbar-nav li:last-child").addClass("active");
+
+    var divadd = $("<div>").attr({ "id": "searchItems" });
+    divadd.append($("<span>").text("Поиск"));
+     var searchinput = $("<input/>")
+    .attr({ 'data-bind': "value: handledSearch, valueUpdate: 'keyup'", "type": "search","autocomplete":"off","class":"form-control" });
+    divadd.append(searchinput);
+    divadd.append($("<span>").addClass("glyphicon glyphicon-search"));
+    $("#submenu td:nth-child(3)").append(divadd);
+
     var emailValueModel = function (email) {
         var self = this;
         self.isEditMode = ko.observable(false);
@@ -140,23 +149,32 @@
                 });
             }
         });
-
+        
        
-        self.update= function(account) {
+        self.updateEmail= function(account) {
             var forupdate = {
                 UserId: account.UserId(),
-                Email: account.Email().Email(),
-                CanMakeBooking: account.CanMakeBooking(),
+                Email: account.Email().Email()
+            }
+            app.su_Service.UpdateAccountEmail(forupdate);
+        }
+        self.bookupdate=function(account) {
+
+            var forupdate = {
+                UserId: account.UserId(),
+                CanMakeBooking: account.CanMakeBooking()
+            }
+            app.su_Service.UpdateAccountMakebook(forupdate);
+            return true;
+        }
+        self.existsupdate = function (account) {
+
+            var forupdate = {
+                UserId: account.UserId(),
                 IsExisting: account.IsExisting()
             }
-            app.su_Service.UpdateAccount(forupdate).then(function(res) {
-
-            });
-            //account.CanMakeBooking(!account.CanMakeBooking());
-            //account.IsExisting(!)
-            //return true;
-            console.log("IsExisting= " + account.IsExisting());
-            console.log("CanMakeBooking= " + account.CanMakeBooking());
+            app.su_Service.UpdateAccountExists(forupdate);
+            return true;
         }
 
         self.init = function () {

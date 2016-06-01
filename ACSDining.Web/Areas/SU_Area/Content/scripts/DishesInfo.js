@@ -26,13 +26,18 @@
     divadd.append(factorderslabel);
 
     trforadd.append($("<!--/ko-->"));
-
+    var tdforselect = $("<div>Режим отображения: </div>").css({"float":"right"});
+     $("#menucontainer").prepend(tdforselect);
+    var optmode = $("<select>").addClass("glyphicon-expand")
+        .attr({ "data-bind": "options: ModeArray, value: displayMode" });
+    tdforselect.append(optmode);
     var dishInfo = function(dish) {
         var self = this;
         self.DishId = ko.observable(dish.dishId);
         self.Description = ko.observable(dish.description);
         self.Title = ko.observable(dish.title);
         self.Price = ko.observable(dish.price.toFixed(2));
+        self.isDeleted = ko.observable(dish.deleted);
         self.formattedPrice = ko.pureComputed({
             read: function () {
                 return  self.Price();
@@ -65,7 +70,8 @@
         self.DishesByCategory = ko.observableArray([]);
         self.ChangingDish = ko.observable();
         self.ModalTitle = ko.observable("");
-
+        self.ModeArray = ["Кроме удалённых", "Все", "Только удалённые"];
+        self.displayMode = ko.observable("Кроме удалённых");
         // Callback for error responses from the server.
         function onError(error) {
             self.Message("Error: " + error.status + " " + error.statusText);
@@ -75,10 +81,25 @@
 
         self.pageIndex = ko.observable(0);
 
-        self.pagedList = ko.dependentObservable(function() {
+        self.pagedList = ko.dependentObservable(function () {
+            var dishItems = [];
             var size = self.pageSize();
             var start = self.pageIndex() * size;
-            return self.DishesByCategory.slice(start, start + size);
+            switch (self.displayMode()) {
+                case "Кроме удалённых":
+                    dishItems = ko.utils.arrayFilter(self.DishesByCategory(),function(item) {
+                        return !item.isDeleted();
+                    });
+                    break;
+                case "Все":
+                    dishItems = self.DishesByCategory();
+                    break;
+                case "Только удалённые":
+                    dishItems = ko.utils.arrayFilter(self.DishesByCategory(), function (item) {
+                        return item.isDeleted();
+                    });
+            }
+            return dishItems.slice(start, start + size);
         });
 
         self.maxPageIndex = ko.dependentObservable(function() {
@@ -118,11 +139,13 @@
         }
 
 
-        self.remove = function(item) {
-            app.su_Service.DeleteDish(item.DishId()).then(function (resp) {
-
-                self.loadDishes(self.SelectedCategory());
-            }, onError);
+        self.upDeleted = function (item) {
+            var forupdate= {
+                DishId: item.DishId(),
+                Deleted:item.isDeleted()
+            }
+            app.su_Service.UpDelDish(forupdate);
+            return true;
         };
 
 

@@ -173,7 +173,7 @@ window.app.su_Service = (function() {
     var serviceDishesUrls = {
         byCategory: function(category) { return baseDishesUri + "byCategory/" + category },
         update: function() { return baseDishesUri + "update" },
-        deleteDish: function(dishID) { return baseDishesUri + "delete/" + dishID },
+        updateDeleted: function () { return baseDishesUri + "updateDeleted" },
         create: function() { return baseDishesUri + "create" }
     }
 
@@ -185,7 +185,9 @@ window.app.su_Service = (function() {
     var baseAccountsUri = "/api/Account/";
     var serviceAccountsUrls = {
         accounts: function() { return baseAccountsUri + "All" },
-        updateAccount: function() { return baseAccountsUri + "update" },
+        updateEmail: function () { return baseAccountsUri + "updateEmail" },
+        updateMakeBook: function () { return baseAccountsUri + "updateMakeBook" },
+        updateExists: function () { return baseAccountsUri + "updateExists" },
         deleteAccount: function(id) { return baseAccountsUri + "delete/" + id }
     }
 
@@ -270,8 +272,8 @@ window.app.su_Service = (function() {
         UpdateDish: function(dish) {
             return ajaxRequest("put", serviceDishesUrls.update(), dish);
         },
-        DeleteDish: function(dishId) {
-            return ajaxRequest("delete", serviceDishesUrls.deleteDish(dishId));
+        UpDelDish: function(updel) {
+            return ajaxRequest("put", serviceDishesUrls.updateDeleted(), updel);
         },
         //Orders
         LoadWeekOrders: function(wyDto,factorplan) {
@@ -300,8 +302,14 @@ window.app.su_Service = (function() {
         GetAccounts: function() {
             return ajaxRequest("get", serviceAccountsUrls.accounts());
         },
-        UpdateAccount: function(account) {
-            return ajaxRequest("get", serviceAccountsUrls.updateAccount(), account);
+        UpdateAccountEmail: function(accountEmail) {
+            return ajaxRequest("put", serviceAccountsUrls.updateEmail(), accountEmail);
+        },
+        UpdateAccountMakebook: function (accmakebook) {
+            return ajaxRequest("put", serviceAccountsUrls.updateMakeBook(), accmakebook);
+        },
+        UpdateAccountExists: function (acexists) {
+            return ajaxRequest("put", serviceAccountsUrls.updateExists(), acexists);
         },
         DeleteAccount: function(accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));

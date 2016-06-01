@@ -57,7 +57,7 @@ span.changesaved {
 }
 
 .disabled {
-    background-color: #d96666;
+    background-color: #a6d9f4 !important;
     color: #ffffff;
 }
 #wnDysplay {

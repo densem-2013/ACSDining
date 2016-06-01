@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Repositories;
+using DishModelDto = ACSDining.Infrastructure.DTO.SuperUser.Dishes.DishModelDto;
 
 namespace ACSDining.Infrastructure.Services
 {
@@ -62,5 +59,6 @@ namespace ACSDining.Infrastructure.Services
         {
             _repository.UpdateMfdDishes(dayMenuDto);
         }
+
     }
 }
