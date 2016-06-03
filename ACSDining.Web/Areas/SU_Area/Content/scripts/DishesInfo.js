@@ -102,8 +102,11 @@
             return dishItems.slice(start, start + size);
         });
 
-        self.maxPageIndex = ko.dependentObservable(function() {
+        self.maxPageIndex = ko.dependentObservable(function () {
+            //var res = Math.ceil(self.DishesByCategory().length / self.pageSize());
+            //if ((self.DishesByCategory().length % self.pageSize()) > 0) res += 1;
             return Math.ceil(self.DishesByCategory().length / self.pageSize()) - 1;
+            //return res;
         });
 
         self.previousPage = function() {
@@ -193,7 +196,8 @@
         self.create = function() {
 
             app.su_Service.CreateDish(self.ChangingDish()).then(function (resp) {
-                  self.loadDishes(self.SelectedCategory());
+                self.loadDishes(self.SelectedCategory());
+                $("#modalbox").modal("hide");
             }, onError);
 
         };

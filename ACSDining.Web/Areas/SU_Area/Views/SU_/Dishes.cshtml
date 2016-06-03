@@ -47,31 +47,26 @@
         </table>
         <table>
             <colgroup>
-                <col class="col-md-2">
-                <col class="col-md-8">
-                <col class="col-md-2">
+                <col class="col-md-4">
+                <col class="col-md-4">
+                <col class="col-md-4">
             </colgroup>
             <tbody>
             <tr>
-                <td>
-                    <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
+                <td class="t-header">
+                    <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}" style="float: right">
                         <span class="glyphicon glyphicon-hand-left"></span>
                     </button>
                 </td>
-                <td>
+                <td  class="t-header">
                     <div>
-                        <div style="text-align: center">
-                            <ul class="pagination pagination-lg">
-                                <li data-bind=" foreach: allPages">
-                                    <button type="button" class="btn btn-default btn-circle" data-bind=" click: function() { $parent.moveToPage($data.pageNumber-1)  }, css: { active: $data.pageNumber === ($parent.pageIndex() + 1) }">
-                                        <span class="glyphicon" data-bind="text: $data.pageNumber"></span>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+                        <span class="glyphicon ">Страница </span>
+                        <span class="label-info " data-bind=" text: pageIndex()+1"></span>
+                        <span> из </span>
+                        <span class="label-info " data-bind=" text: maxPageIndex() + 1"></span>
                     </div>
                 </td>
-                <td>
+                <td class="t-header">
                     <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float:left">
                         <span class="glyphicon glyphicon-hand-right"></span>
                     </button>

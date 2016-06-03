@@ -22,26 +22,27 @@
                 <div class="dright">
                     <h1 class="logo">
                         <a href="">
-                            <img style="border: 0" src="@Url.Content("~/Content/Images/Infocom.png")" title="Инфоком ЛТД" alt="Инфоком ЛТД" />
+                            <img style="border: 0" src="@Url.Content("~/Content/css/Images/Infocom.png")" title="Инфоком ЛТД" alt="Инфоком ЛТД" />
                         </a>
                     </h1>
                     <div class="tophead_i1">
                         <div class="blockinform">
                             <div class="dleft">
                                 <div class="dright">
-                                    <div class="logOnGreeting"></div>
-                                    <div style="text-align: right;">
-                                        @if (Session["FullName"] != null)
-                                        {
-                                            <span> Вы вошли как, @Session["FullName"]<a href="@Url.RouteUrl(new { action = "LogOff", controller = "Account", area = "" })"> Выход </a></span>
-                                        }
-                                        else
-                                        {
-                                            <span>
-                                                Пожалуйста,
-                                                авторизируйтесь
-                                            </span>
-                                        }
+                                    <div class="logOnGreeting">
+                                        <div style="text-align: right;">
+                                            @if (Session["FullName"] != null)
+                                            {
+                                                <span> Вы вошли как, @Session["FullName"]<a href="@Url.RouteUrl(new { action = "LogOff", controller = "Account", area = "" })"> Выход </a></span>
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    Пожалуйста,
+                                                    авторизируйтесь
+                                                </span>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>

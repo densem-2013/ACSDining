@@ -8,8 +8,8 @@
 /// <reference path="~/Content/app/jquery-1.10.2.js" />
 (function () {
 
-    $("#infoTitle span").text("Управление пользователями")
-        .css({ 'background': "rgba(119, 222, 228, 0.61)", 'color': "rgb(232, 34, 208)", 'border': "3px solid rgb(50, 235, 213)" });
+    $("#menucontainer span").text("Управление пользователями")
+        .addClass("navlink");
     $("ul.nav.navbar-nav li:last-child").addClass("active");
 
     var divadd = $("<div>").attr({ "id": "searchItems" });
@@ -160,18 +160,18 @@
         }
         self.bookupdate=function(account) {
 
-            var forupdate = {
+            var formbupdate = {
                 UserId: account.UserId(),
-                CanMakeBooking: account.CanMakeBooking()
+                CanMakeBooking: !account.CanMakeBooking()
             }
-            app.su_Service.UpdateAccountMakebook(forupdate);
+            app.su_Service.UpdateAccountMakebook(formbupdate);
             return true;
         }
         self.existsupdate = function (account) {
 
             var forupdate = {
                 UserId: account.UserId(),
-                IsExisting: account.IsExisting()
+                IsExisting: !account.IsExisting()
             }
             app.su_Service.UpdateAccountExists(forupdate);
             return true;

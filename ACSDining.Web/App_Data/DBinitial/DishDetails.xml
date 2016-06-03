@@ -175,7 +175,7 @@
     <recept></recept>
   </dish>
   <dish title="Помидор / огурец" dishtype="Салат" image="">
-    <cost>3,40</cost>
+    <cost>4,60</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
@@ -200,6 +200,54 @@
   </dish>
   <dish title="Компот" dishtype="Напиток" image="">
     <cost>0,90</cost>
+    <description></description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Суп свинина / говядина / овощи" dishtype="Первое блюдо" image="">
+    <cost>4,90</cost>
+    <description></description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Котлета куриная / арнаутка" dishtype="Второе блюдо" image="">
+    <cost>12,90</cost>
+    <description></description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Отбивная свиная / рис" dishtype="Второе блюдо" image="">
+    <cost>13,80</cost>
+    <description></description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Карманчики куриные / картофель молодой" dishtype="Второе блюдо" image="">
+    <cost>13,90</cost>
+    <description></description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Пирожки с фруктами" dishtype="Второе блюдо" image="">
+    <cost>10,20</cost>
+    <description></description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Капуста / огурец" dishtype="Салат" image="">
+    <cost>3,90</cost>
+    <description></description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Салат" dishtype="Салат" image="">
+    <cost>9,50</cost>
+    <description>Филе куриное/ грибы маринованые / огурец свежий / лук маринованый / зелень</description>
+    <foods></foods>
+    <recept></recept>
+  </dish>
+  <dish title="Огурец / яйцо / зелень / майонез" dishtype="Салат" image="">
+    <cost>4,40</cost>
     <description></description>
     <foods></foods>
     <recept></recept>

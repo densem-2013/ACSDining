@@ -74,7 +74,7 @@ namespace ACSDining.Web.Controllers
 
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-             var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
+            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
             //var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
@@ -203,43 +203,43 @@ namespace ACSDining.Web.Controllers
                             return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         }
                     }
-                    //else
-                    //{
-                    //    double defaultDebt;
-                    //    double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
-                    //    user = new User
-                    //    {
-                    //        FirstName = DateTime.Now.Second.ToString(),
-                    //        LastName = "NewUser",
-                    //        Email = "test.test@test",
-                    //        UserName = model.LogIn,
-                    //        LastLoginTime = DateTime.UtcNow,
-                    //        RegistrationDate = DateTime.UtcNow,
-                    //        EmailConfirmed = true,
-                    //        AllowableDebt = defaultDebt,
-                    //        SecurityStamp = Guid.NewGuid().ToString(),
-                    //        PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
-                    //    };
+                    else
+                    {
+                        double defaultDebt;
+                        double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
+                        user = new User
+                        {
+                            FirstName = DateTime.Now.Second.ToString(),
+                            LastName = "NewUser",
+                            Email = "test.test@test",
+                            UserName = model.LogIn,
+                            LastLoginTime = DateTime.UtcNow,
+                            RegistrationDate = DateTime.UtcNow,
+                            EmailConfirmed = true,
+                            AllowableDebt = defaultDebt,
+                            SecurityStamp = Guid.NewGuid().ToString(),
+                            PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
+                        };
 
-                    //    var res = UserManager.CreateAsync(user, model.Password).Result;
-                    //    if (res == IdentityResult.Success)
-                    //    {
-                    //        await UserManager.AddToRoleAsync(user.Id, "Employee");
-                    //    }
+                        var res = UserManager.CreateAsync(user, model.Password).Result;
+                        if (res == IdentityResult.Success)
+                        {
+                            await UserManager.AddToRoleAsync(user.Id, "Employee");
+                        }
 
-                    //    await
-                    //        _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                    //            shouldLockout: false);
+                        await
+                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                shouldLockout: false);
 
-                    //    user.LastLoginTime = DateTime.UtcNow;
-                    //    Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
-                    //    user.LastLoginTime = DateTime.Now;
-                    //    await
-                    //        _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                    //            shouldLockout: false);
+                        user.LastLoginTime = DateTime.UtcNow;
+                        Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
+                        user.LastLoginTime = DateTime.Now;
+                        await
+                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                shouldLockout: false);
 
-                    //    return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
-                    //}
+                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
+                    }
                     ModelState.AddModelError("", "Неудачная попытка входа.");
                     return View(model);
 

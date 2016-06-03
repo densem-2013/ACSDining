@@ -5,44 +5,55 @@
     <div class="panel panel-default" id="mfwPanel" style="margin: 20px">
 
         <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="accountsTable" style="text-align: center">
-
-            <tbody>
+            <colgroup>
+                <col class="col-sm-1"/>
+                <col class="col-sm-4"/>
+                <col class="col-sm-4"/>
+                <col class="col-sm-2"/>
+                <col class="col-sm-2"/>
+                <col class="col-sm-2"/>
+                <col class="col-sm-2"/>
+                <col class="col-sm-2"/>
+            </colgroup>
+            <thead>
             <tr>
-                <th>№</th>
-                <th colspan="4">Ф.И.О.</th>
-                <th colspan="3">Email</th>
-                <th colspan="2">Дата последнего входа</th>
-                <th colspan="2">Дата регистрации</th>
-                <th colspan="2">Баланс</th>
-                <th colspan="2">Может делать заказ</th>
-                <th colspan="2">Удалён из системы</th>
+                <th class="t-header">№</th>
+                <th class="t-header">Ф.И.О.</th>
+                <th class="t-header">Email</th>
+                <th class="t-header">Дата последнего входа</th>
+                <th class="t-header">Дата регистрации</th>
+                <th class="t-header">Баланс</th>
+                <th class="t-header">Может делать заказ</th>
+                <th class="t-header">Удалён из системы</th>
             </tr>
+            </thead>
+            <tbody>
             <!-- ko foreach: filterList-->
             <tr>
                 <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
-                <td colspan="4"><span data-bind="text: FullName"></span></td>
+                <td ><span data-bind="text: FullName" style="float: left; padding-left: 5px"></span></td>
                 <!--ko with: Email-->
-                <td class="lastTD" colspan="3" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                <td class="lastTD"  style="float: left; padding-left: 5px" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
                     <!--ko if: isEditMode-->
-                    <input type="text" data-bind="value:Email,hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.updateEmail($parent);} }">
+                    <input type="text" data-bind="value:Email, hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.updateEmail($parent);} }">
                     <!--/ko-->
                     <!--ko ifnot: isEditMode-->
                     <span data-bind="text: Email"></span>
                     <!--/ko-->
                 </td>
                 <!--/ko-->
-                <td colspan="2"><span data-bind="text: LastLoginTime"></span></td>
-                <td colspan="2"><span data-bind="text: RegistrationDate"></span></td>
-                <td colspan="2"><span data-bind="text: Balance"></span></td>
-                <td colspan="2">
+                <td ><span data-bind="text: LastLoginTime"></span></td>
+                <td ><span data-bind="text: RegistrationDate"></span></td>
+                <td ><span data-bind="text: Balance"></span></td>
+                <td >
                     <div class="checkbox-btn" style="vertical-align: middle">
-                        <input type="checkbox" data-bind="click: function(){ return $root.bookupdate($data);}, checked: $data.CanMakeBooking, value: $data.CanMakeBooking , attr:{id: 'rc' + $index(), name:'rc' + $index()}"/>
-                        <label data-bind=" attr:{'for': 'rc' + $index()}"></label>
+                        <input type="checkbox" data-bind="click: function(){ return $root.bookupdate($data);}, checked: $data.CanMakeBooking, checkedValue: $data.CanMakeBooking , attr:{id: 'rcammb' + $index(), name:'rcammb' + $index()}" />
+                        <label data-bind=" attr:{'for': 'rcammb' + $index()}"></label>
                     </div>
                 </td>
-                <td colspan="2">
+                <td >
                     <div class="checkbox-btn" style="vertical-align: middle">
-                        <input type="checkbox" value="true" data-bind="click: function(){ return $root.existsupdate($data);},checked: $data.IsExisting, attr:{id: 'rcexist' + $index(), name: 'rcexist' + $index()}"/>
+                        <input type="checkbox" data-bind="click: function(){ return $root.existsupdate($data);},checked: !$data.IsExisting(), value: $data.IsExisting, attr:{id: 'rcexist' + $index(), name: 'rcexist' + $index()}" />
                         <label data-bind="attr:{'for': 'rcexist' + $index()}"></label>
                     </div>
                 </td>
@@ -52,12 +63,12 @@
             </tbody>
             <tfoot>
             <tr>
-                <td>
+                <td class="t-header">
                     <button type="button" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
-                        <span class="glyphicon glyphicon-hand-left"> Предыдущая</span>
+                        <span class="glyphicon glyphicon-hand-left"></span>
                     </button>
                 </td>
-                <td colspan="5" style="-moz-min-width: 200px; -ms-min-width: 200px; -o-min-width: 200px; -webkit-min-width: 200px; min-width: 200px">
+                <td class="t-header" style="-moz-min-width: 200px; -ms-min-width: 200px; -o-min-width: 200px; -webkit-min-width: 200px; min-width: 200px">
                     <div style="text-align: center">
                         <span class="glyphicon ">Страница </span>
                         <span class="label-info " data-bind=" text: pageIndex()+1"></span>
@@ -66,12 +77,12 @@
 
                     </div>
                 </td>
-                <td colspan="2">
+                <td class="t-header">
                     <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
-                        <span class="glyphicon glyphicon-hand-right"> Следующая</span>
+                        <span class="glyphicon glyphicon-hand-right"></span>
                     </button>
                 </td>
-                <td colspan="10">
+                <td colspan="5" class="t-header">
                     <div>
                         <span> Отображать </span>
                         <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>

@@ -31,7 +31,7 @@ body
 {
     padding: 0;
     margin: 0;
-    background: #ffffff url("/Content/Images/background.jpg") repeat-x fixed 0 top ;
+    background: #ffffff url("/Content/css/Images/background.jpg") repeat-x fixed 0 top ;
      /*background-attachment: fixed;*/ 
 }
 /*WRAPPER ОСНОВНОЙ РАЗМЕРНЫЙ БЛОК*/
@@ -408,11 +408,12 @@ table
 
 td.orderquant{
     padding: 0px; /* border: solid 1px #e8eef4; */
-    -moz-min-width: 40px;
-    -ms-min-width: 40px;
-    -o-min-width: 40px;
-    -webkit-min-width: 40px;
-    min-width: 40px;
+    -moz-min-width: 50px;
+    -ms-min-width: 50px;
+    -o-min-width: 50px;
+    -webkit-min-width: 50px;
+    min-width: 50px;   
+    text-align: center;
 }
 
 td.weekmenu div{
@@ -1061,14 +1062,16 @@ select.input-small {
     font-size: 18px;
     color: #436A73;;
 }
-.modal-body input{
-    -moz-min-width: 500px;
-    -ms-min-width: 500px;
-    -o-min-width: 500px;
-    -webkit-min-width: 500px;
-    min-width: 500px;
- }
- .modal-body th {
+.modal-body input {
+    margin-top: 15px;
+    -moz-min-width: 350px;
+    -ms-min-width: 350px;
+    -o-min-width: 350px;
+    -webkit-min-width: 350px;
+    min-width: 350px;
+}
+
+.modal-body th {
      color: darkcyan;
  }
  #searchItems  {
@@ -1086,6 +1089,7 @@ select.input-small {
     float: left;
     position: relative;
  }
+ 
  .modal-content {
     background-color: #e2f8fe;
     width: 650px;
@@ -1111,7 +1115,7 @@ select.input-small {
     text-align: center;
     vertical-align: middle;
     width: 20px;   
-    margin-top: 180px;
+    margin-top: 100px;
     /*margin: 0px;
     padding: 0px;*/
     padding-left: 3px;
@@ -1120,4 +1124,7 @@ select.input-small {
     white-space: nowrap;
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
+}
+#dishDesc {
+    min-height: 275px;
 }

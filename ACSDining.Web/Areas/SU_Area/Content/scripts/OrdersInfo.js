@@ -28,7 +28,7 @@
     var excelButtonDiv = $('<div></div>').css({ 'whith': "100%", 'padding': "10px" });
     var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
     excelButtonDiv.append(sendButtonInput);
-    $('#datepick').append(excelButtonDiv);
+    $('#forpaibutton').append(excelButtonDiv);
     //$(".container").css({ 'marginLeft': 0 });
 
     var quantValueModel = function (value) {

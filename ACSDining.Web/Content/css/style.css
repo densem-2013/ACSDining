@@ -146,12 +146,28 @@ div.panel.panel-default > table {
 }
 #ordersObject div.panel.panel-default > table th, div.panel.panel-default > table td {
     padding: 2px;
-    font-size: 14px;
+    font-size: 14px !important;
+    height: 30px !important;
+    /*-moz-min-width: 60px;
+    -ms-min-width: 60px;
+    -o-min-width: 60px;
+    -webkit-min-width: 60px;
+    min-width: 60px;*/
 }
 #paimentsObject  div.panel.panel-default > table td, #paimentsObject  div.panel.panel-default > table th {
     padding: 2px;
     font-size: 13px !important;
     height: 30px !important;
+    /*-moz-min-width: 52px;
+    -ms-min-width: 52px;
+    -o-min-width: 52px;
+    -webkit-min-width: 52px;
+    min-width: 52px;*/
+}
+
+#paimentsObject{   
+    padding-left: 5px!important;
+    padding-right: 15px !important;
 }
 /*#menucontainer > ul > li  {
     background-color: aquamarine

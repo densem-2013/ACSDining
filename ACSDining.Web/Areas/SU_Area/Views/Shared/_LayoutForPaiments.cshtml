@@ -1,0 +1,147 @@
+﻿@using System.Runtime.Versioning
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>
+
+        Работа столовой
+
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=IE8" />
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/themes/base/css")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/ViewModel")
+    @RenderSection("scripts", required: false)
+</head>
+<body class="pagebg">
+    <div class="wrapper toppad">
+        <div class="tophead">
+            <div class="dleft">
+                <div class="dright">
+                    <h1 class="logo">
+                        <a href="">
+                            <img style="border: 0" src="@Url.Content("~/Content/css/Images/Infocom.png")" title="Инфоком ЛТД" alt="Инфоком ЛТД" />
+                        </a>
+                    </h1>
+                    <div class="tophead_i1">
+                        <div class="blockinform">
+                            <div class="dleft">
+                                <div class="dright">
+                                    <div class="logOnGreeting">
+                                        <div style="text-align: right;">
+                                            @if (Session["FullName"] != null)
+                                            {
+                                                <span> Вы вошли как, @Session["FullName"]<a href="@Url.RouteUrl(new { action = "LogOff", controller = "Account", area = "" })"> Выход </a></span>
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    Пожалуйста,
+                                                    авторизируйтесь
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="menucontainer">
+                        <span></span>
+                        <div id="infoTitle"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="page">
+            <div class="dleft">
+                <div class="dright">
+
+                    @*<div class="container">
+                        <div class="row">*@
+
+                    <div data-animation-effect="fadeIn" style="margin-left: 0">
+                        <div id="submenu">
+                            <table class="table table-responsive">
+                                <tbody>
+                                <tr>
+                                    <td class="navlink" style="width: 20%;"></td>
+                                    <td class="t-label" style="width: 20%; padding: 2px;"></td>
+                                    <td class="t-label" style="width: 30%; padding: 2px;"></td>
+                                    <td class="t-label" style="width: 30%; padding: 2px;"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="main_content_background">
+                            <div class="main_content">
+                                <div class="row">
+                                    <div class="col-md-3 " id="rightPart">
+                                        <div class="input-group date form-control">
+                                            <div class="sidebar-nav">
+                                                <div class="navbar navbar-default" role="navigation">
+                                                    <div class="navbar-header">
+                                                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+                                                            <span class="sr-only">Toggle navigation</span>
+                                                            <span class="icon-bar"></span>
+                                                            <span class="icon-bar"></span>
+                                                            <span class="icon-bar"></span>
+                                                        </button>
+                                                        @*<span class="visible-xs navbar-brand">Sidebar menu</span>*@
+                                                    </div>
+                                                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                                                        <ul class="nav navbar-nav">
+                                                            <li><a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a></li>
+                                                            <li><a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a></li>
+                                                            <li><a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a></li>
+                                                            <li><a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a></li>
+                                                            <li><a href="@Url.RouteUrl(new {action = "AccountManagement", controller = "SU_", area = "SU_Area"})">Управление пользователями</a></li>
+                                                        </ul>
+                                                    </div><!--/.nav-collapse -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 ">
+                                        <div class="input-group date form-control" id="datepick" data-provide="datepicker" data-bind="datepicker: myDate">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 ">
+                                        <div class="input-group date form-control" id="forpaibutton">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    @RenderBody()
+                                </div>
+                            </div>
+                        </div>
+                        <div id="footer">
+                            Copyright 2016 INFOCOM Ltd. Все права защищены.&nbsp;
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var homeLoader = $('body').loadingIndicator({
+                useImage: false
+            }).data("loadingIndicator");
+            $(document).bind("ajaxSend", function () {
+                homeLoader.show();
+                // $("#loading").show();
+            }).bind("ajaxComplete", function () {
+                homeLoader.hide();
+            });
+        });
+    </script>
+</body>
+</html>

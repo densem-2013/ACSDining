@@ -614,8 +614,10 @@ BEGIN
 	
 	--добавляем плановые дневные заявки на дневные меню из этого недельного меню
 	INSERT INTO PlannedDayOrderMenu 
-	SELECT DayOrderMenu.[DayOrderSummaryPrice], @MENUID, PlannedWeekOrderMenu.Id
+	SELECT DayOrderMenu.[DayOrderSummaryPrice], MenuForDay.ID, PlannedWeekOrderMenu.Id
 	FROM DayOrderMenu 
+	inner join MenuForDay
+	on MenuForDay.ID=DayOrderMenu.MenuForDay_ID
 	INNER JOIN AspNetUsers AS USERS 
 	ON USERS.Id =@userid
 	INNER JOIN PlannedWeekOrderMenu

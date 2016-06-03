@@ -32,7 +32,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser
             if (menuForWeek == null) return null;
 
             List<WeekOrderMenu> weekOrderMenus = unitOfWork.RepositoryAsync<WeekOrderMenu>()
-                .OrdersMenuByWeekYear(wyDto).OrderBy(wo=>wo.User.UserName).ToList();
+                .OrdersMenuByWeekYear(wyDto).OrderBy(wo=>wo.User.LastName).ToList();
 
 
             return new WeekOrderDto
