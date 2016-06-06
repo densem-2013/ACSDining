@@ -13,7 +13,7 @@
             <td class="t-label"  style="width: 40%; padding: 2px;">
                 <input type="button" id="btnaddmenu" class="btn btnaddmenu enabled" value="Редактировать заказ на следующую неделю" data-bind=" click: GoToNextWeekOrder,visible: !IsNextWeekYear() && NextWeekOrderExist()" />
             </td>
-            <td class="navlink" data-bind="text: 'Ваш текущий баланс: ' + Balance()"></td>
+            <td class="navlink" data-bind="text: 'Ваш текущий баланс: ' + Balance().toFixed(2)"></td>
         </tr>
         </tbody>
     </table>
@@ -22,16 +22,16 @@
 <div class="main_content_background">
     <div class="main_content">
         <div class="row">
-            <div class="col-md-3 ">
+            <div class="col-sm-3 ">
                 <div class="input-group date form-control" id="datepick" data-provide="datepicker" data-bind="datepicker: myDate">
                 </div>
                 <div class="input-group date form-control" id="dishDesc">
                     <span class="navlink glyphicon glyphicon-info-sign"></span>
                     <span class="navlink" style="vertical-align: top; padding-left: 15px; border-bottom: 2px solid royalblue;">Описание блюда</span>
-                    <label ></label>
+                    <label data-bind="text: HoverDesciption"></label>
                 </div>
             </div>
-            <div class="col-md-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0">
+            <div class="col-sm-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0">
                 <div class="panel panel-default" id="mfwPanel">
                    
                     <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="updateTable">
@@ -52,24 +52,24 @@
                                 </td>
                                 <td>
                                     <!-- ko foreach: Dishes-->
-                                    <div style="border-bottom: 1px solid; text-align: right">
+                                    <div style="border-bottom: 1px solid; text-align: right" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
                                         <span data-bind="text: Category() + ' : '"></span>
                                     </div>
                                     <!--/ko-->
                                 </td>
                                 <td>
                                     <!-- ko foreach: Dishes-->
-                                    <div style="border-bottom: 1px solid;">
+                                    <div style="border-bottom: 1px solid;" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
                                         <span data-bind="text: $data.Title"></span>
                                     </div>
                                     <!--/ko-->
                                 </td>
-                                <td style="vertical-align: middle; text-align: center;">
+                                <td style="vertical-align: middle; text-align: center;" >
                                     <!--ko if: OrderCanByChanged-->
                                     <!--ko foreach: Dishes-->
                                     <!--ko with: OrderQuantity-->
-                                    <div style="border-bottom: 1px solid;" data-bind="event : { mouseover: doubleClick ,mouseleave: function(){ hasFocus=false; }}">
-                                        @*<div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">*@
+                                    <div style="border-bottom: 1px solid;" data-bind="event : { mouseover: doubleClick,  mouseleave: function(){ hasFocus=false}},  css: { menu_hover : $parent.isHovering}">
+                                        @*<div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick },  css: { menu_hover : $parent.isHovering}, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">*@
 
                                         <!--ko ifnot: isEditMode -->
                                         <span data-bind=" text: Quantity">
@@ -77,10 +77,10 @@
                                         <!--/ko-->
                                         <!-- ko if: isEditMode -->
                                         <!-- ko if: ($index() % 4 === 0) -->
-                                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity,hasFocus:isEditMode,event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}"></select>
+                                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}"></select>
                                         <!--/ko-->
                                         <!-- ko ifnot: ($index() % 4 === 0) -->
-                                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity,hasFocus:isEditMode,event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}"></select>
+                                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity , hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}"></select>
                                         <!--/ko-->
                                         <!--/ko-->
                                     </div>
@@ -99,7 +99,7 @@
                                 </td>
                                 <td style="text-align: right">
                                     <!--ko foreach: Dishes-->
-                                    <div>
+                                    <div data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
                                         <span data-bind="text:  Price" style="border-bottom: 1px solid"></span><br />
                                     </div>
                                     <!--/ko-->

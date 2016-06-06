@@ -1,6 +1,7 @@
 ﻿using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.Repositories;
+using ForExcelDataDto = ACSDining.Infrastructure.DTO.SuperUser.Orders.ForExcelDataDto;
 
 namespace ACSDining.Infrastructure.Services
 {
@@ -9,6 +10,7 @@ namespace ACSDining.Infrastructure.Services
         string GetExcelFileFromPaimentsModel(ForExcelDataDto feDto);
         string GetExcelFileFromOrdersModel(ForExcelDataDto feDto);
         string GetExcelFromPlanOrdersModel(ForExcelDataDto feDto);
+        string GetMenuExcel(ForMenuExcelDto feDto);
     }
 
     public class GetExcelService : Service<WeekOrderMenu>, IGetExcelService
@@ -32,6 +34,11 @@ namespace ACSDining.Infrastructure.Services
         public string GetExcelFromPlanOrdersModel(ForExcelDataDto feDto)
         {
             return _repository.GetPlanOrdersExcelFileWeekYearDto(feDto);
+        }
+
+        public string GetMenuExcel(ForMenuExcelDto feDto)
+        {
+            return _repository.GetRepositoryAsync<MenuForWeek>().GetMenuExcelFile(feDto);
         }
     }
 }

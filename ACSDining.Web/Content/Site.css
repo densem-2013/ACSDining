@@ -427,10 +427,18 @@ td.weekmenu div{
     max-width: 500px;
 }
 .menu_hover{
-    background: aqua;
-    border: 1px solid darkcyan;
+    white-space: normal;
+    background: #a6f4db url("/Content/css/Images/sprite.png") repeat-x scroll 0 -752px !important;
+    border-color: #a7bac5;    
     padding: 0;
     margin: 0;
+    border-style: solid;
+    border-width: 0 1px 1px 0;
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-collapse: separate;
+    empty-cells: show;
 }
 
 table th
@@ -1116,6 +1124,7 @@ select.input-small {
     vertical-align: middle;
     width: 20px;   
     margin-top: 100px;
+    font-weight: bold;
     /*margin: 0px;
     padding: 0px;*/
     padding-left: 3px;
@@ -1127,4 +1136,8 @@ select.input-small {
 }
 #dishDesc {
     min-height: 275px;
+}
+#dishDesc label {
+    padding: 5px;
+    font-size: 15px;
 }

@@ -477,8 +477,11 @@
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="ExcelFiles\Paiments.xlsx" />
     <Content Include="Areas\SU_Area\Views\Shared\_LayoutForPaiments.cshtml" />
+    <Content Include="ExcelFiles\Menu.xls" />
+    <Content Include="ExcelFiles\Orders.xls" />
+    <Content Include="ExcelFiles\Paiments.xls" />
+    <Content Include="ExcelFiles\PlanOrders.xls" />
     <None Include="Properties\PublishProfiles\Dining_package.pubxml" />
     <None Include="Properties\PublishProfiles\Dining_profile.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

@@ -52,7 +52,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 await
                     Task.FromResult(
                         UserManager.Users.Where(u => u.Roles.Select(r => r.RoleId).Contains(employrole.Id))
-                            .OrderBy(u => u.UserName)
+                            .OrderBy(u => u.LastName)
                             .Select(AccountDto.MapDto)
                             .ToList());
         }

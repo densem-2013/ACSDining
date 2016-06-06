@@ -17,6 +17,9 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public bool WeekIsPaid { get; set; }
         public double Balance { get; set; }
         public WeekYearDto WeekYear { get; set; }
+        public double PrevWeekBalance { get; set; }
+        public double WeekPaiment { get; set; }
+        public double AllowDebt { get; set; }
         public static EmployeeWeekOrderDto MapDto(ApplicationDbContext context, WeekPaiment weekPaiment,WeekYearDto wyDto)
         {
             return new EmployeeWeekOrderDto
@@ -27,7 +30,10 @@ namespace ACSDining.Infrastructure.DTO.Employee
                 WeekOrderDishes = context.FactDishQuantByWeekOrderId(weekPaiment.WeekOrderMenu.Id).Result,
                 WeekIsPaid = weekPaiment.WeekIsPaid,
                 Balance = weekPaiment.WeekOrderMenu.User.Balance,
-                WeekYear = wyDto
+                WeekYear = wyDto,
+                PrevWeekBalance = weekPaiment.PreviousWeekBalance,
+                WeekPaiment = weekPaiment.Paiment,
+                AllowDebt = weekPaiment.WeekOrderMenu.User.AllowableDebt
             };
         }
     }

@@ -346,3 +346,15 @@ E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\LinqKit.xml
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Bytescout.Spreadsheet.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\LinqKit.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\CodeFirstStoreFunctions.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\Bytescout.Spreadsheet.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Infrastructure.pdb
+E:\ACSDining\ACSDining.Core\bin\Debug\LinqKit.pdb
+E:\ACSDining\ACSDining.Core\bin\Debug\LinqKit.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+E:\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\Bytescout.Spreadsheet.xml
+E:\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache
+E:\ACSDining\ACSDining.Core\bin\Debug\ACSDining.Infrastructure.dll

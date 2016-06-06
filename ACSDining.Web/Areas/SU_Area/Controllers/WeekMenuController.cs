@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,13 +9,12 @@ using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.SU_Area.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
-using WebGrease.Css.Extensions;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -47,23 +45,13 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         public async Task<WeekMenuDto> GetWeekMenu([FromBody] WeekYearDto wyDto)
         {
 
-            if (wyDto==null)
+            if (wyDto == null)
             {
                 wyDto = YearWeekHelp.GetCurrentWeekYearDto();
             }
 
-            MenuForWeek weekmenu = _weekmenuService.GetWeekMenuByWeekYear(wyDto);
-            WeekMenuDto resultdto = null;
-            if (weekmenu != null)
-            {
-                resultdto = await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu,wyDto));
-            }
-            else
-            {
-                _db.CreateNewWeekMenu(wyDto);
-                weekmenu = _weekmenuService.GetWeekMenuByWeekYear(wyDto); 
-                resultdto = await Task.FromResult(WeekMenuDto.MapDto(_unitOfWork, weekmenu, wyDto));
-            }
+            WeekMenuDto
+                resultdto = await Task.FromResult(_weekmenuService.GetWeekMenuDto(wyDto));
 
             return resultdto;
         }
@@ -210,7 +198,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             return StatusCode(HttpStatusCode.OK);
         }
-        
         // DELETE api/WeekMenu/5
         [HttpDelete]
         [Route("delete/{menuid}")]

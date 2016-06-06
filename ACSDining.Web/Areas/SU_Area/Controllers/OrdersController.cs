@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.UnitOfWork;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Orders;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
@@ -68,8 +66,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest("Bad Request Object");
             }
-            
-             _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
+            try
+            {
+                _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
+            }
+            catch (Exception)
+            {
+                    
+                throw;
+            }
 
             return Ok(true);
         }

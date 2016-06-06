@@ -1,4 +1,4 @@
-body{-webkit-animation:bugfix infinite 1s}@-webkit-keyframes bugfix{from{padding:0}to{padding:0}}.checkbox-btn,.radio-btn{position:relative;padding-left:20px}.checkbox-btn input[type="checkbox"],.checkbox-btn input[type="radio"],.radio-btn input[type="checkbox"],.radio-btn input[type="radio"]{position:absolute;opacity:0;z-index:1}.checkbox-btn label,.radio-btn label{display:inline-block;line-height:24px;vertical-align:middle;position:relative;padding-left:20px;cursor:pointer;user-select:none;color:#424242}
+body{-webkit-animation:bugfix infinite 1s}@-webkit-keyframes bugfix{from{padding:0}to{padding:0}}.checkbox-btn,.radio-btn{position:relative;padding-left:10px}.checkbox-btn input[type="checkbox"],.checkbox-btn input[type="radio"],.radio-btn input[type="checkbox"],.radio-btn input[type="radio"]{position:absolute;opacity:0;z-index:1}.checkbox-btn label,.radio-btn label{display:inline-block;line-height:24px;vertical-align:middle;position:relative;padding-left:20px;cursor:pointer;user-select:none;color:#424242}
     .checkbox-btn label::after, .radio-btn label::after {
         position: absolute;
         content: "";

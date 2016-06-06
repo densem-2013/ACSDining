@@ -10,18 +10,18 @@
                     <th class="t-header" style="padding: 2px !important" rowspan="4"><span>№</span></th>
                     <th class="t-header" style="text-align: center; padding: 2px !important" rowspan="4"><span>Ф.И.О</span></th>
                     <!--ko foreach: DaysOfWeek-->
-                    <th class="t-header" style="text-align: center; padding: 2px !important" colspan="4" ><span data-bind="text:$data"></span></th>
+                    <th class="t-header" style="text-align: center; padding: 2px !important; height: 40px !important" colspan="4" ><span data-bind="text:$data"></span></th>
                     <!--/ko-->
-                    <th class="thvert t-header" rowspan="4">
+                    <th class="thvert t-header" rowspan="4" style="vertical-align: bottom !important">
                         <div class="verticalText">Сумма за неделю</div>
                     </th>
-                    <th class="thvert t-header" rowspan="4">
+                    <th class="thvert t-header" rowspan="4" style="vertical-align: bottom !important">
                         <div class="verticalText">Оплата за неделю</div>
                     </th>
-                    <th class="thvert t-header" rowspan="4">
+                    <th class="thvert t-header" rowspan="4" style="vertical-align: bottom !important">
                         <div class="verticalText">Баланс</div>
                     </th>
-                    <th class="thvert t-header" rowspan="4">
+                    <th class="thvert t-header" rowspan="4" style="vertical-align: bottom !important">
                         <div class="verticalText">Примечание</div>
                     </th>
                 </tr>
@@ -74,11 +74,10 @@
                     </td>
                     <!--/ko-->
                     <td class="lastTD"><span data-bind="text: Balance"></span></td>
-                    @*<td class="lastTD"><input type="checkbox" data-bind="checked: IsDinningRoomClient, checkedValue : true" /></td>*@
                     <!--ko with: Note-->
                     <td class="lastTD" style="min-width: 60px" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
                         <!--ko if: isEditMode-->
-                        <input type="text" data-bind="value:Note,event:{focusout: function(){$data.onFocusOut()} }">
+                        <input type="text" data-bind="value:Note,event:{focusout: function(){$data.onFocusOut(); $root.noteUpdate($parent);} }">
                         <!--/ko-->
                         <!--ko ifnot: isEditMode-->
                         <span data-bind="text: Note"></span>
@@ -88,13 +87,13 @@
                 </tr>
                 <!--/ko-->
                 <tr>
-                    <td class="footheader" colspan="2"><span>Итого</span></td>
+                    <td class="t-header" colspan="2"><span>Итого</span></td>
                     <!--ko foreach: UnitPricesTotal-->
                     <td class="footheader"><span data-bind="text:$data.toFixed(2)" style="font-weight: bold"></span></td>
                     <!--/ko-->
+                    <td class="footheader"><span data-bind="text: TotalNeedWeekPaiment" style="font-weight: bold"></span></td>
                     <td class="footheader"><span data-bind="text: TotalWeekPaiment" style="font-weight: bold"></span></td>
                     <td class="footheader"><span data-bind="text: TotalBalance" style="font-weight: bold"></span></td>
-                    <td class="footheader"></td>
                     <td class="footheader"></td>
                 </tr>
                 <tr>

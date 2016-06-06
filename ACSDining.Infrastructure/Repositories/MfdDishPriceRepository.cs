@@ -4,10 +4,10 @@ using System.Data.Entity;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Identity;
-using LinqKit;
 using DishModelDto = ACSDining.Infrastructure.DTO.SuperUser.Dishes.DishModelDto;
+using MenuForDayDto = ACSDining.Infrastructure.DTO.SuperUser.Menu.MenuForDayDto;
+using WeekMenuDto = ACSDining.Infrastructure.DTO.SuperUser.Menu.WeekMenuDto;
 
 namespace ACSDining.Infrastructure.Repositories
 {

@@ -595,7 +595,7 @@ BEGIN
 	INNER JOIN WorkingWeek
 	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
 	INNER JOIN WorkingDay
-	ON WorkingDay.Id=MenuForDay.WorkingDay_Id  AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
+	ON WorkingDay.Id=MenuForDay.WorkingDay_Id  AND WorkingDay.IsWorking=1 AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
 	ORDER BY DayOrderMenu.Id, DishType.Id
 	
 	--добавляем недельную оплату на заказ из этого меню
@@ -1065,7 +1065,7 @@ BEGIN
 	
 	--заносим полученное значение в баланс данного пользователя
 	update AspNetUsers
-	set Balance=@curbalance
+	set Balance=@curbalance, CanMakeBooking=cast(case when -1*@curbalance<AllowableDebt then 1 else 0 end as bit)
 	from AspNetUsers 
 	inner join WeekOrderMenu
 	on WeekOrderMenu.[User_Id]=AspNetUsers.Id and WeekOrderMenu.Id=@weekorderid

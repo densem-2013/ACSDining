@@ -15,7 +15,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
             return new OrderDayMenuDto
             {
                 DayOrdId = dayorder.Id,
-                Dishes = dayorder.MenuForDay.DishPriceMfdRelations.Select(dp=>new OrderDishDto
+                Dishes = dayorder.MenuForDay.DishPriceMfdRelations.OrderBy(d=>d.Dish.DishType.Id).Select(dp=>new OrderDishDto
                 {
                     Title = dp.Dish.Title,
                     Description = dp.Dish.Description,

@@ -180,7 +180,8 @@ window.app.su_Service = (function() {
     var basePaimentsUri = "/api/Paiment/";
     var servicePaimentsUrls = {
         weekPaiments: function() { return basePaimentsUri },
-        updatePaiment: function() { return basePaimentsUri + "updatePaiment" }
+        updatePaiment: function () { return basePaimentsUri + "updatePaiment" },
+        updateNote: function () { return basePaimentsUri + "updateNote" }
     }
     var baseAccountsUri = "/api/Account/";
     var serviceAccountsUrls = {
@@ -236,6 +237,9 @@ window.app.su_Service = (function() {
         IsNextWeekMenuExists: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.isnextweekmenuexists());
         },
+        GetMenuExcel:function(medto) {
+            return ajaxRequest("put", serviceGetExcel.menu(), medto);
+        },
         GetCurrentWeekYear: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.currentweek());
         },
@@ -263,6 +267,7 @@ window.app.su_Service = (function() {
         GetCategories: function() {
             return ajaxRequest("get", serviceWeekMenuUrls.categories());
         },
+        //Dishes
         CreateDish: function(dish) {
             return ajaxRequest("post", serviceDishesUrls.create(), dish);
         },
@@ -294,6 +299,9 @@ window.app.su_Service = (function() {
         },
         UpdatePaiment: function(uwp) {
             return ajaxRequest("put", servicePaimentsUrls.updatePaiment(), uwp);
+        },
+        UpdateNote: function (uwnote) {
+            return ajaxRequest("put", servicePaimentsUrls.updateNote(), uwnote);
         },
         GetExcelPaiments: function(wyDto) {
             return ajaxRequest("put", serviceGetExcel.paiments(), wyDto);

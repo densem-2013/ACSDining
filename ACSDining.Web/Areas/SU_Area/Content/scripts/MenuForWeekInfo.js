@@ -13,7 +13,7 @@
     $("ul.nav.navbar-nav li:first-child").addClass("active"); 
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
     var sendButtonDiv = $('<div></div>').css({ 'whith': '100%','padding':'10px' });
-    var sendButtonInput = $('<input type="button" id="btSend" class="btn btn-info" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject"/>');
+    var sendButtonInput = $('<input type="button" id="btSend" class="btn btn-success" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject"/>');
     sendButtonDiv.append(sendButtonInput);
     $('#datepick').append(sendButtonDiv);
    // $('.wrapper').css({ 'margin': 'auto' });
@@ -43,6 +43,11 @@
     .attr({ 'data-bind': "click: CreateNextWeekMenu,visible: !IsNextWeekYear() && !IsNextWeekMenuExists()", "type": "button", "value": "Создать меню на следующую неделю" })
     .addClass("btn btnaddmenu");
     $("#submenu td:last-child").append(nextweekbut);
+
+    var excelButtonDiv = $('<div></div>').css({ 'whith': '100%', 'padding': '10px' });
+    var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
+    excelButtonDiv.append(sendButtonInput);
+    $("#datepick").css({ "padding": "0" }).append(excelButtonDiv);
 
     var dishInfo = function(dinfo) {
 
@@ -74,7 +79,7 @@
         self.Id = ko.observable(object.id);
         self.IsWorking = ko.observable(isworking);
         var ind = 0;
-        self.Dishes = ko.observableArray(ko.utils.arrayMap(object.dishes, function (item) {
+        self.Dishes = ko.observableArray(ko.utils.arrayMap(object.dishes, function(item) {
             return new dishInfo(item);
         }));
 
@@ -93,8 +98,13 @@
 
         //На меню уже был сделан заказ
         self.OrderWasBooking = ko.observable(object.orderWasBooking);
+        self.HoverDesciption = ko.dependentObservable(function() {
+            var hovitem = ko.utils.arrayFirst(self.Dishes(), function(item) {
+                return item.isHovering();
+            });
+            return hovitem == null ? "" : (hovitem.Description() === "") ? "Описание блюда отсутствует" : hovitem.Description();
+        });
     }
-
 
 
     var weekMenuModel = function() {
@@ -500,6 +510,18 @@
 
             });
 
+        };
+
+        self.GetExcel = function () {
+            var forexcel = {
+                MenuId:self.MenuId(),
+                WeekYear: self.WeekYear(),
+                MenuTitle: self.WeekTitle()
+            }
+            app.su_Service.GetMenuExcel(forexcel)
+                .then(function (res) {
+                    window.location.assign(res.fileName);
+                });
         };
 
         self.init = function () {

@@ -24,8 +24,6 @@ IF NOT @OCBCRES = 1 RETURN
 	ON USROLES.UserId = USERS.Id and USERS.IsExisting=1
 	INNER JOIN AspNetRoles AS ROLES 
 	ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'
-	--INNER JOIN MenuForWeek
-	--ON  MenuForWeek.ID=@MENUID 
 	WHERE USERS.IsExisting=1
 	ORDER BY USERS.UserName
 		
@@ -80,6 +78,61 @@ IF NOT @OCBCRES = 1 RETURN
 	INNER JOIN AspNetUsers
 	ON WeekOrderMenu.[User_Id]=AspNetUsers.Id
 	WHERE WeekOrderMenu.MenuForWeek_ID = @MENUID
+	
+--добавляем плановые недельные заявки на это меню
+	INSERT INTO PlannedWeekOrderMenu
+	SELECT  0.00, @MENUID, USERS.Id
+	FROM AspNetUsers AS USERS 
+	INNER JOIN .AspNetUserRoles AS USROLES 
+	ON USROLES.UserId = USERS.Id and USERS.IsExisting=1
+	INNER JOIN AspNetRoles AS ROLES 
+	ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'
+	ORDER BY USERS.UserName
+	
+	--добавляем плановые дневные заявки на дневные меню из этого недельного меню
+	INSERT INTO PlannedDayOrderMenu
+	SELECT 0.00,MenuForDay.ID,PlannedWeekOrderMenu.Id 
+	FROM MenuForWeek 
+	INNER JOIN PlannedWeekOrderMenu
+	ON PlannedWeekOrderMenu.MenuForWeek_ID=MenuForWeek.ID 
+	INNER JOIN AspNetUsers AS USERS 
+	ON PlannedWeekOrderMenu.[User_Id]=USERS.Id AND USERS.IsExisting=1
+	INNER JOIN .AspNetUserRoles AS USROLES 
+	ON USROLES.UserId = USERS.Id 
+	INNER JOIN AspNetRoles AS ROLES 
+	ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'	
+	INNER JOIN MenuForDay
+	ON MenuForDay.MenuForWeek_ID=MenuForWeek.ID
+	WHERE MenuForWeek.ID=@MENUID
+	
+	--ДОБАВЛЯЕМ НУЛЕВЫЕ КОЛИЧЕСТВА ЗАКАЗАННЫХ БЛЮД ВО ВСЕ ПЛАНОВЫЕ ДНЕВНЫЕ ЗАКАЗЫ
+	--ИЗ ЭТОГО ФАКТИЧЕСКОГО НЕДЕЛЬНОГО ЗАКАЗА
+	INSERT INTO PlanDishQuantityRelations 
+	SELECT 1 ,DishType.Id,PlannedDayOrderMenu.Id 
+	FROM MenuForWeek 
+	INNER JOIN PlannedWeekOrderMenu
+	ON PlannedWeekOrderMenu.MenuForWeek_ID=MenuForWeek.ID AND MenuForWeek.ID=@MENUID 
+	INNER JOIN AspNetUsers AS USERS 
+	ON PlannedWeekOrderMenu.[User_Id]=USERS.Id AND USERS.IsExisting=1
+	INNER JOIN .AspNetUserRoles AS USROLES 
+	ON USROLES.UserId = USERS.Id 
+	INNER JOIN AspNetRoles AS ROLES 
+	ON ROLES.Id = USROLES.RoleId AND ROLES.Name = 'Employee'	
+	INNER JOIN MenuForDay
+	ON MenuForDay.MenuForWeek_ID=MenuForWeek.ID 
+	join [ACS_Dining].[dbo].[MfdDishPriceRelations] mfddprice
+	on mfddprice.MenuForDayId=MenuForDay.ID
+	INNER JOIN PlannedDayOrderMenu
+	ON PlannedDayOrderMenu.MenuForDay_ID=MenuForDay.ID AND PlannedDayOrderMenu.PlannedWeekOrderMenu_Id=PlannedWeekOrderMenu.Id
+	INNER JOIN Dish
+	ON mfddprice.DishID=Dish.DishID
+	INNER JOIN DishType
+	ON DishType.Id=Dish.DishType_Id 
+	INNER JOIN WorkingWeek
+	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
+	INNER JOIN WorkingDay
+	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
+	ORDER BY PlannedDayOrderMenu.Id, DishType.Id
 END
 GO
 

@@ -949,8 +949,6 @@ E:\ACSDining\ACSDining.Web\bin\ru\System.Spatial.resources.dll
 E:\ACSDining\ACSDining.Web\bin\zh-Hans\System.Spatial.resources.dll
 E:\ACSDining\ACSDining.Web\bin\zh-Hant\System.Spatial.resources.dll
 E:\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.csprojResolveAssemblyReference.cache
-E:\ACSDining\ACSDining.Web\obj\Debug\RdlCompile.cache
-E:\ACSDining\ACSDining.Web\obj\Debug\RdlCompile.compiled
 E:\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.dll
 E:\ACSDining\ACSDining.Web\obj\Debug\ACSDining.Web.pdb
 E:\Столовка\ACSDining\ACSDining.Web\bin\ACSDining.Web.dll.config
@@ -1087,3 +1085,5 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.xml
 E:\GitProjects\ACSDining\ACSDining.Web\bin\CodeFirstStoreFunctions.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.xml
+E:\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.dll
+E:\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.xml

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
+using ACSDining.Infrastructure.DTO.SuperUser.Orders;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
@@ -112,10 +112,10 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             User curuser = _db.Users.Find(userid);
 
-            if (!curuser.CanMakeBooking)
-            {
-                return Ok("nocanMakeBooking");
-            }
+            //if (!curuser.CanMakeBooking)
+            //{
+            //    return Ok("nocanMakeBooking");
+            //}
             _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
 
             return Ok(curuser.Balance);

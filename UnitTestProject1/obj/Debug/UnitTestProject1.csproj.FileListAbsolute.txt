@@ -440,7 +440,6 @@ E:\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.dll
 E:\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.Mvc.dll
 E:\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.dll
 E:\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.WebHost.dll
-E:\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.Owin.dll
 E:\ACSDining\UnitTestProject1\bin\Debug\WebGrease.dll
 E:\ACSDining\UnitTestProject1\bin\Debug\NLog.dll
 E:\ACSDining\UnitTestProject1\bin\Debug\PerpetuumSoft.Knockout.dll
@@ -476,7 +475,6 @@ E:\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Host.SystemWeb.xml
 E:\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.Mvc.xml
 E:\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Practices.Unity.WebApi.xml
 E:\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.WebHost.xml
-E:\ACSDining\UnitTestProject1\bin\Debug\System.Web.Http.Owin.xml
 E:\ACSDining\UnitTestProject1\bin\Debug\NLog.xml
 E:\ACSDining\UnitTestProject1\bin\Debug\Microsoft.Owin.Security.OAuth.xml
 E:\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb
@@ -501,3 +499,5 @@ E:\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\WebGrease.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.dll
 C:\Soft\GitProjects\ACSDining\UnitTestProject1\bin\Debug\Antlr3.Runtime.pdb
+E:\ACSDining\UnitTestProject1\bin\Debug\Bytescout.Spreadsheet.dll
+E:\ACSDining\UnitTestProject1\bin\Debug\Bytescout.Spreadsheet.xml

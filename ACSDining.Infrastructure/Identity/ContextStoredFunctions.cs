@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using UpdateUserOrderDto = ACSDining.Infrastructure.DTO.SuperUser.Orders.UpdateUserOrderDto;
+using UpdateWeekPaimentDto = ACSDining.Infrastructure.DTO.SuperUser.Paiments.UpdateWeekPaimentDto;
+using WeekUserOrder = ACSDining.Infrastructure.DTO.SuperUser.Orders.WeekUserOrder;
 
 namespace ACSDining.Infrastructure.Identity
 {

@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "AccountManagement";
 }
-<div class="col-md-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0; padding-left: 0px;" id="accountsObject">
+<div class="col-sm-9  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0; padding-left: 0px;" id="accountsObject">
     <div class="panel panel-default" id="mfwPanel" style="margin: 20px">
 
         <table class="table table-striped table-bordered table-responsive table-condensed table-hover" id="accountsTable" style="text-align: center">
@@ -17,34 +17,34 @@
             </colgroup>
             <thead>
             <tr>
-                <th class="t-header">№</th>
-                <th class="t-header">Ф.И.О.</th>
-                <th class="t-header">Email</th>
-                <th class="t-header">Дата последнего входа</th>
-                <th class="t-header">Дата регистрации</th>
-                <th class="t-header">Баланс</th>
-                <th class="t-header">Может делать заказ</th>
-                <th class="t-header">Удалён из системы</th>
+                <th class="t-header"><span>№</span></th>
+                <th class="t-header"><span>Ф.И.О.</span></th>
+                <th class="t-header"><span>Email</span></th>
+                <th class="t-header"><span>Дата последнего входа</span></th>
+                <th class="t-header"><span>Дата регистрации</span></th>
+                <th class="t-header"><span>Баланс</span></th>
+                <th class="t-header"><span>Может делать заказ</span></th>
+                <th class="t-header"><span>Удалён из системы</span></th>
             </tr>
             </thead>
             <tbody>
             <!-- ko foreach: filterList-->
             <tr>
-                <td><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
-                <td ><span data-bind="text: FullName" style="float: left; padding-left: 5px"></span></td>
+                <td style="text-align: center"><span data-bind="text: $root.pageIndex()*$root.pageSize()+$index() + 1"></span></td>
+                <td ><label data-bind="text: FullName" style="float: left; padding-left: 5px"></label></td>
                 <!--ko with: Email-->
-                <td class="lastTD"  style="float: left; padding-left: 5px" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
+                <td style="float: left; padding-left: 5px; width: 100%; text-align: left" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
                     <!--ko if: isEditMode-->
                     <input type="text" data-bind="value:Email, hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.updateEmail($parent);} }">
                     <!--/ko-->
                     <!--ko ifnot: isEditMode-->
-                    <span data-bind="text: Email"></span>
+                    <label data-bind="text: Email"></label>
                     <!--/ko-->
                 </td>
                 <!--/ko-->
-                <td ><span data-bind="text: LastLoginTime"></span></td>
-                <td ><span data-bind="text: RegistrationDate"></span></td>
-                <td ><span data-bind="text: Balance"></span></td>
+                <td style="text-align: center"><label data-bind="text: LastLoginTime"></label></td>
+                <td style="text-align: center"><label data-bind="text: RegistrationDate"></label></td>
+                <td ><label data-bind="text: Balance"></label></td>
                 <td >
                     <div class="checkbox-btn" style="vertical-align: middle">
                         <input type="checkbox" data-bind="click: function(){ return $root.bookupdate($data);}, checked: $data.CanMakeBooking, checkedValue: $data.CanMakeBooking , attr:{id: 'rcammb' + $index(), name:'rcammb' + $index()}" />

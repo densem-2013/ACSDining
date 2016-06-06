@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using LinqKit;
 
 namespace ACSDining.Infrastructure.Repositories
 {
@@ -67,6 +65,55 @@ namespace ACSDining.Infrastructure.Repositories
                     .Include(mfd => mfd.DishPriceMfdRelations.Select(mp => mp.DishPrice))
                     .Select()
                     .FirstOrDefault(mfd => curWorkingDay != null && mfd.WorkingDay.Id == curWorkingDay.Id);
+        }
+
+        public static WeekMenuDto MapWeekMenuDto(this IRepositoryAsync<MenuForWeek> repository, WeekYearDto wyDto)
+        {
+            MenuForWeek wmenu = repository.GetWeekMenuByWeekYear(wyDto);
+            if (wmenu == null)
+            {
+                repository.Context.CreateNewWeekMenu(wyDto);
+                wmenu = repository.GetWeekMenuByWeekYear(wyDto);
+            };
+
+            WeekMenuDto dtoModel = new WeekMenuDto
+            {
+                Id = wmenu.ID,
+                SummaryPrice = wmenu.SummaryPrice,
+                MfdModels =
+                    wmenu.MenuForDay
+                        .Select(mfd => new MenuForDayDto
+                        {
+                            Id = mfd.ID,
+                            TotalPrice = mfd.TotalPrice,
+                            Dishes = mfd.DishPriceMfdRelations.Select(dp => dp.Dish).OrderBy(d => d.DishType.Id).Select(d =>
+                            {
+                                var mfdDishPriceRelations = mfd.DishPriceMfdRelations.FirstOrDefault(dp => dp.DishId == d.DishID);
+                                if (mfdDishPriceRelations != null)
+                                    return new DTO.SuperUser.Dishes.DishModelDto
+                                    {
+                                        DishId = d.DishID,
+                                        Title = d.Title,
+                                        ProductImage = d.ProductImage,
+                                        Price =
+                                            mfdDishPriceRelations
+                                                .DishPrice.Price,
+                                        Category = mfdDishPriceRelations.Dish.DishType.Category,// != null ? mfdDishPriceRelations.Dish.DishType.Category : null,
+                                        Description = mfdDishPriceRelations.Dish.Description
+                                    };
+                                return null;
+                            }).ToList(),
+                            OrderCanBeChanged = mfd.OrderCanBeChanged,
+                            OrderWasBooking = repository.GetRepositoryAsync<WeekOrderMenu>().GetUsersMadeOrder(mfd.ID).Any()
+                        })
+                        .ToList(),
+                OrderCanBeCreated = wmenu.OrderCanBeCreated,
+                WorkWeekDays = wmenu.WorkingWeek.WorkingDays.Select(wd => wd.IsWorking).ToArray(),
+                WorkingDaysAreSelected = wmenu.WorkingDaysAreSelected,
+                DayNames = repository.Context.GetDayNames(wyDto).Result,
+                WeekYear = wyDto
+            };
+            return dtoModel;
         }
     }
 }

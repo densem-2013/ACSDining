@@ -145,8 +145,9 @@
         self.upDeleted = function (item) {
             var forupdate= {
                 DishId: item.DishId(),
-                Deleted:item.isDeleted()
+                Deleted: !item.isDeleted()
             }
+            item.isHovering(false);
             app.su_Service.UpDelDish(forupdate);
             return true;
         };

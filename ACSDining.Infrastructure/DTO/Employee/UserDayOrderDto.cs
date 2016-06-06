@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.DTO.SuperUser;
-using ACSDining.Infrastructure.UnitOfWork;
+﻿using ACSDining.Core.Domains;
+using MenuForDayDto = ACSDining.Infrastructure.DTO.SuperUser.Menu.MenuForDayDto;
 
 namespace ACSDining.Infrastructure.DTO.Employee
 {

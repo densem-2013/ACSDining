@@ -41,6 +41,7 @@
         self.Category = ko.observable(dinfo.category);
         self.Description = ko.observable(dinfo.description);
         self.OrderQuantity = ko.observable(new quantValueModel(quantity));
+        self.isHovering = ko.observable(false);
     }
 
     var userDayOrderInfo = function(dayOrdObject, dishQuantities) {
@@ -82,18 +83,22 @@
         self.NextWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
         self.UserDayOrders = ko.observableArray([]);
+
         self.Title = ko.observable("");
+
         self.Message = ko.observable("");
 
         self.myDate = ko.observable(new Date());
 
         self.Categories = ko.observableArray([]);
 
-        self.WeekSummaryPrice = ko.observable();
+        self.WeekSummaryPrice = ko.observable(0);
 
         self.WeekPaid = ko.observable();
 
         self.WeekIsPaid = ko.observable();
+
+        self.WeekPaiment = ko.observable(0);
 
         self.CanCreateOrderOnNextWeek = ko.observable();
 
@@ -112,10 +117,18 @@
         self.QuantValues = [0, 1, 2, 3, 4, 5];
 
         self.DaysOfWeek = ko.observableArray([]);
-
-        self.Balance = ko.observable();
-
+        self.PreviosweekBalance = ko.observable(0);
         self.BeenChanged = ko.observable(false);
+        self.AllowDebt = ko.observable();
+        self.Balance = ko.dependentObservable(function () {
+            var bal1 = self.WeekPaiment();
+            var bal2 = self.WeekSummaryPrice();
+            var bal3 = self.PreviosweekBalance();
+            //var bal = ;
+            return bal1 - bal2 - bal3;
+        });
+
+        self.HasBalance = ko.observable();
 
         self.IsCurrentWeek = ko.pureComputed(function() {
 
@@ -123,6 +136,21 @@
             return res;
 
         }.bind(self));
+
+        self.HoverDesciption = ko.dependentObservable(function () {
+            var hovday = ko.utils.arrayFirst(self.UserDayOrders(), function (item) {
+                return ko.utils.arrayFirst(item.Dishes(),function(dish) {
+                    return dish.isHovering();
+                });
+            });
+            if (hovday==null) {
+                return "";
+            }
+            var hovitem = ko.utils.arrayFirst(hovday.Dishes(), function (dish) {
+                return dish.isHovering();
+            });
+            return hovitem == null ? "" : (hovitem.Description() === "") ? "Описание блюда отсутствует" : hovitem.Description();
+        });
 
         self.CurNextTitle = ko.pureComputed(function() {
             if (self.IsCurrentWeek()) {
@@ -187,13 +215,16 @@
                     self.DaysOfWeek(resp.dayNames);
                     var summary = resp.weekOrderDishes.pop();
                     self.WeekSummaryPrice(summary.toFixed(2));
-                    self.Balance(resp.balance.toFixed(2));
+                    self.HasBalance(resp.balance.toFixed(2));
                     self.UserDayOrders(ko.utils.arrayMap(resp.dayOrders, function(object, index) {
                         var dishcount = object.dishes.length;
                         var start = resp.weekOrderDishes.slice(index * dishcount, (index + 1) * dishcount);
                         return new userDayOrderInfo(object, start);
 
                     }));
+                    self.PreviosweekBalance(resp.prevWeekBalance);
+                    self.WeekPaiment(resp.weekPaiment);
+                    self.AllowDebt(resp.allowDebt);
                 } else {
                     modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
                 }
@@ -240,21 +271,28 @@
             };
 
             self.CalcSummary();
+            
+            if (self.Balance() < -1 * self.AllowDebt()) {
 
+                modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
+
+                loadUserWeekOrder(self.WeekYear());
+                return;
+            };
             app.su_Service.UserWeekUpdateOrder(userweekorder).then(function(res) {
                 self.BeenChanged(false);
                 if (res === "noordchenged") {
                     dayord.OrderCanByChanged(false);
                     modalShow("Внимание!", "Редактирование заявки на этот день уже закрыто. Если Вам необходио внести изменения в заказ на этот день, обратитесь к администрации столовой.")
-                }else
-                if (res === "nocanMakeBooking") {
-                    //dayord.OrderCanByChanged(false);
-                    modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
+                }//else
+                //if (res === "nocanMakeBooking") {
+                //    //dayord.OrderCanByChanged(false);
+                //    modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
 
-                    //loadUserWeekOrder(self.WeekYear());
-                }else {
-                    self.Balance(res.toFixed(2));
-                }
+                //    loadUserWeekOrder(self.WeekYear());
+                //}else {
+                //    self.HasBalance(res.toFixed(2));
+                //}
             });
         };
 
@@ -283,6 +321,7 @@
             $("#emailComfirm").modal("hide");
 
         };
+
 
         self.init = function() {
 

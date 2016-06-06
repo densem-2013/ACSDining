@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.Repositories;
 using DishModelDto = ACSDining.Infrastructure.DTO.SuperUser.Dishes.DishModelDto;
+using MenuForDayDto = ACSDining.Infrastructure.DTO.SuperUser.Menu.MenuForDayDto;
 
 namespace ACSDining.Infrastructure.Services
 {

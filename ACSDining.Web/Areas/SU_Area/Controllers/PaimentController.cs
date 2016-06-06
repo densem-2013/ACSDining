@@ -1,10 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Data.Entity;
+using System.Data.Entity.Validation;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Paiments;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
@@ -15,14 +20,14 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Paiment")]
     public class PaimentController : ApiController
     {
-        private readonly ApplicationDbContext _db;
+        //private readonly ApplicationDbContext _db;
         private readonly IUnitOfWorkAsync _unitOfWork;
         private readonly IWeekPaimentService _weekPaimentService;
 
         public PaimentController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
-            _db = unitOfWorkAsync.GetContext();
+            //_db = unitOfWorkAsync.GetContext();
             _weekPaimentService = new WeekPaimentService(_unitOfWork.RepositoryAsync<WeekPaiment>());
         }
 
@@ -57,7 +62,28 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest();
             }
-            _db.UpdateWeekPaiment(upwpDto);
+            _unitOfWork.GetContext().UpdateWeekPaiment(upwpDto);
+
+            return Ok(true);
+        }
+
+        [HttpPut]
+        [Route("updateNote")]
+        [ResponseType(typeof (double))]
+        public async Task<IHttpActionResult> UpdateNote([FromBody] NoteUpdateDto upNoteDto)
+        {
+            if (upNoteDto == null)
+            {
+                return BadRequest();
+            }
+            ApplicationDbContext db = _unitOfWork.GetContext();
+            WeekPaiment wpai = db.WeekPaiments.Include("WeekOrderMenu").FirstOrDefault(wp=>wp.Id==upNoteDto.Id);
+            if (wpai != null)
+            {
+                wpai.Note = upNoteDto.Note;
+                db.Entry(wpai).State = EntityState.Modified;
+                await _unitOfWork.SaveChangesAsync();
+            }
 
             return Ok(true);
         }

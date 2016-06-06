@@ -126,30 +126,32 @@
     <Compile Include="DTO\Employee\EmployeeWeekOrderDto.cs" />
     <Compile Include="DTO\Employee\OrderDayMenuDto.cs" />
     <Compile Include="DTO\Employee\OrderDishDto.cs" />
-    <Compile Include="DTO\MenuUpdateMessageDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\ForMenuExcelDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\MenuUpdateMessageDto.cs" />
     <Compile Include="DTO\SuperUser\Accounts\AccountDto.cs" />
     <Compile Include="DTO\SuperUser\Dishes\DishModelDto.cs" />
     <Compile Include="DTO\SuperUser\Dishes\UpdateDishDeleted.cs" />
-    <Compile Include="DTO\SuperUser\ForExcelDataDto.cs" />
-    <Compile Include="DTO\SuperUser\MenuForDayDto.cs" />
+    <Compile Include="DTO\SuperUser\Orders\ForExcelDataDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\MenuForDayDto.cs" />
     <Compile Include="DTO\Employee\UserDayOrderDto.cs" />
-    <Compile Include="DTO\SuperUser\PlanUserWeekOrderDto.cs" />
-    <Compile Include="DTO\SuperUser\PlanWeekOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\Orders\PlanUserWeekOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\Orders\PlanWeekOrderDto.cs" />
     <Compile Include="DTO\SuperUser\Accounts\UpdateAccountEmailDto.cs" />
-    <Compile Include="DTO\SuperUser\UpdateDishDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\UpdateDishDto.cs" />
     <Compile Include="DTO\SuperUser\Accounts\UpdateExistingDto.cs" />
     <Compile Include="DTO\SuperUser\Accounts\UpdateMakeBookDto.cs" />
-    <Compile Include="DTO\SuperUser\UpdateWeekPaimentDto.cs" />
+    <Compile Include="DTO\SuperUser\Paiments\NoteUpdateDto.cs" />
+    <Compile Include="DTO\SuperUser\Paiments\UpdateWeekPaimentDto.cs" />
     <Compile Include="DTO\Employee\UserWeekOrderDto.cs" />
-    <Compile Include="DTO\SuperUser\UserWeekPaimentDto.cs" />
-    <Compile Include="DTO\SuperUser\WeekMenuDto.cs" />
-    <Compile Include="DTO\SuperUser\WeekOrderDto.cs" />
-    <Compile Include="DTO\SuperUser\WeekPaimentDto.cs" />
-    <Compile Include="DTO\SuperUser\WorkDayDto.cs" />
-    <Compile Include="DTO\SuperUser\WorkDaysUpdateDto.cs" />
-    <Compile Include="DTO\SuperUser\WorkWeekDto.cs" />
-    <Compile Include="DTO\UpdateUserOrderDto.cs" />
-    <Compile Include="DTO\WeekUserOrder.cs" />
+    <Compile Include="DTO\SuperUser\Paiments\UserWeekPaimentDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\WeekMenuDto.cs" />
+    <Compile Include="DTO\SuperUser\Orders\WeekOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\Paiments\WeekPaimentDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\WorkDayDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\WorkDaysUpdateDto.cs" />
+    <Compile Include="DTO\SuperUser\Menu\WorkWeekDto.cs" />
+    <Compile Include="DTO\SuperUser\Orders\UpdateUserOrderDto.cs" />
+    <Compile Include="DTO\SuperUser\Orders\WeekUserOrder.cs" />
     <Compile Include="DTO\WeekYearDTO.cs" />
     <Compile Include="HelpClasses\MapHelper.cs" />
     <Compile Include="HelpClasses\TestHelper.cs" />
@@ -206,6 +208,7 @@
       <DependentUpon>201605291303139_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

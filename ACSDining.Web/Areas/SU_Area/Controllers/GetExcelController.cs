@@ -2,8 +2,10 @@
 using System.Web.Http;
 using System.Web.Mvc;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.UnitOfWork;
-using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Orders;
+using ACSDining.Infrastructure.DTO.SuperUser.Paiments;
 using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
@@ -49,6 +51,15 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             return new FilePathResult(_path, "multipart/form-data");
         }
 
+        [System.Web.Http.HttpPut]
+        [System.Web.Http.Route("menu")]
+        public FilePathResult GetExcelMenu([FromBody] ForMenuExcelDto excDto)
+        {
+            string filename = _getExcelService.GetMenuExcel(excDto); 
+            string _path = string.Format("/ExcelFiles/{0}",
+                    filename.Substring(filename.LastIndexOf(@"\", StringComparison.Ordinal) + 1));
+            return new FilePathResult(_path, "multipart/form-data");
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -38,12 +38,12 @@
             read: function () {
                 return self.Paiment();
             },
-            write: function (value) {
-                value = value.replace(",", ".");
-                value = value.replace(new RegExp(/(.*)(\.)+(.*)(\.)(.*)/g), "$1$2$3");
-                value = value.replace(/[^\.\d]/g, "");
-                value = parseFloat(value);
-                self.Paiment(isNaN(value) ? 0 : value); // Write to underlying storage
+            write: function (val) {
+                val = val.replace(",", ".");
+                val = val.replace(new RegExp(/(.*)(\.)+(.*)(\.)(.*)/g), "$1$2$3");
+                val = val.replace(/[^\.\d]/g, "");
+                val = parseFloat(val);
+                self.Paiment(isNaN(val) ? 0 : val); // Write to underlying storage
             },
             owner: self
         });
@@ -70,7 +70,6 @@
         self.Summary = ko.observable(summ.toFixed(2));
         self.Note = ko.observable(new noteValueModel(item.note));
         self.LastWeekBalance = ko.observable(item.prevWeekBalance);
-
     }
     var paimentViewModel = function() {
         var self = this;
@@ -99,8 +98,31 @@
         self.Categories = ko.observableArray([]);
         self.UnitPrices = ko.observableArray([]);
         self.UnitPricesTotal = ko.observableArray([]);
-        self.TotalWeekPaiment = ko.observable();
-        self.TotalBalance = ko.observable();
+
+
+        self.TotalNeedWeekPaiment = ko.dependentObservable(function () {
+            var tatalneedpai = 0;
+            ko.utils.arrayForEach(self.UserPaiments(), function (item) {
+                tatalneedpai += parseFloat(item.Summary());
+            });
+            return tatalneedpai.toFixed(2);
+        });
+
+        self.TotalWeekPaiment = ko.dependentObservable(function() {
+            var tatalpai = 0;
+            ko.utils.arrayForEach(self.UserPaiments(), function(item) {
+                tatalpai += parseFloat(item.Paiment().Paiment());
+            });
+            return tatalpai.toFixed(2);
+        });
+        
+        self.TotalBalance = ko.dependentObservable(function () {
+            var tatalbal = 0;
+            ko.utils.arrayForEach(self.UserPaiments(), function (item) {
+                tatalbal += parseFloat(item.Balance());
+            });
+            return tatalbal.toFixed(2);
+        });
 
         self.PageSizes = ko.pureComputed(function () {
             var res = [2, 5, 7, 10, 15, 20, 25];
@@ -198,7 +220,6 @@
 
             app.su_Service.GetCurrentWeekYear().then(function(resp) {
                 self.CurrentWeekYear(resp);
-
             }, onError);
         }
 
@@ -219,6 +240,17 @@
                 self.BeenChanged(!res);
             });
         };
+
+        self.noteUpdate = function(upnodeobj) {
+            var forupdate = {
+                Id: upnodeobj.PaiId(),
+                Note: upnodeobj.Note().Note()
+            }
+            app.su_Service.UpdateNote(forupdate).then(function(res) {
+                self.BeenChanged(!res);
+            });
+        }
+
         self.GetExcel = function () {
             var forexcel= {
                 WeekYear: self.WeekYear(),
@@ -297,7 +329,6 @@
 
         self.init = function () {
 
-            self.LoadPaiments();
             app.su_Service.GetCategories().then(function (resp) {
                 self.Categories(resp);
             }, onError);
@@ -305,17 +336,8 @@
             app.su_Service.GetCurrentWeekYear().then(function (resp) {
 
                 self.CurrentWeekYear(resp);
-
-                //self.SetMyDateByWeek(self.CurrentWeekYear());
-
-
-            }, onError).then(function () {
-               // self.GetUnitWeekPaiments();
-            }
-            );
-            //self.loadWeekNumbers();
-            //self.GetCurrentWeekYear();
-
+                
+            }, onError);
         }
 
 

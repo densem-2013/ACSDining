@@ -4,6 +4,8 @@ using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser;
+using ACSDining.Infrastructure.DTO.SuperUser.Menu;
+using ACSDining.Infrastructure.DTO.SuperUser.Orders;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.EmployeeArea.Controllers;
@@ -115,48 +117,6 @@ namespace UnitTestProject1
         public void EmployeDtoGetTest()
         {
             EmployeeOrderApiController emplorderapi=new EmployeeOrderApiController(_unitOfWork);
-        }
-        [TestMethod]
-        public void GetExcellTestApi()
-        {
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-                                      @"ACSDining.Web\ExcelFiles\Paiments.xls";
-            //GetExcelController excelApi = new GetExcelController(_unitOfWork);
-            GetExcelService excelService=new GetExcelService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
-            WeekYearDto wyDto = new WeekYearDto
-            {
-                Week = 22,
-                Year = 2016
-            };
-            ForExcelDataDto feDto = new ForExcelDataDto
-            {
-                WeekYear = wyDto,
-                DataString = "test string"
-            };
-            string result = excelService.GetExcelFileFromPaimentsModel(feDto);
-            Assert.IsNotNull(result);
-            Process.Start(_path);
-        }
-        [TestMethod]
-        public void GetOrdersExcellTestApi()
-        {
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-                                      @"ACSDining.Web\ExcelFiles\Paiments.xls";
-            //GetExcelController excelApi = new GetExcelController(_unitOfWork);
-            GetExcelService excelService = new GetExcelService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
-            WeekYearDto wyDto = new WeekYearDto
-            {
-                Week = 22,
-                Year = 2016
-            };
-            ForExcelDataDto feDto = new ForExcelDataDto
-            {
-                WeekYear = wyDto,
-                DataString = "test string"
-            };
-            string result = excelService.GetExcelFileFromOrdersModel(feDto);
-            Assert.IsNotNull(result);
-            Process.Start(_path);
         }
     }
 }

@@ -129,6 +129,7 @@
     <Compile Include="MigrationTest.cs" />
     <Compile Include="TestEmployeerOrderApiController.cs" />
     <Compile Include="StoredQueryTest.cs" />
+    <Compile Include="GetExcelTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACSDining.Core\ACSDining.Core.csproj">
