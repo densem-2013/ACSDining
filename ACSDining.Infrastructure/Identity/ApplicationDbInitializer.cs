@@ -114,8 +114,8 @@ namespace ACSDining.Infrastructure.Identity
 
 
                 context.DishTypes.AddOrUpdate(dt => dt.Category,
-                    new DishType {Category = "Первое блюдо"},
-                    new DishType {Category = "Второе блюдо"},
+                    new DishType {Category = "Первое"},
+                    new DishType {Category = "Второе"},
                     new DishType {Category = "Салат"},
                     new DishType {Category = "Напиток"}
                     );
@@ -346,7 +346,7 @@ namespace ACSDining.Infrastructure.Identity
                             darray.Where(d => string.Equals(d.DishType.Category, pair.Key))
                                 .ElementAt(Rand.Next(pair.Value))).ToList();
             };
-            Func<double,DishPrice> getDishPrice=(price) =>
+            Func<double, DishPrice> getDishPrice = (price) =>
             {
                 return dishPrices.FirstOrDefault(d => Math.Abs(price - d.Price) < 0.001);
             };
@@ -387,7 +387,7 @@ namespace ACSDining.Infrastructure.Identity
                             WorkingDay = workday,
                             //TotalPrice = dishes.Select(d => d.Price).Sum(),
                             DayMenuCanBeChanged =
-                                week == 0 && ((int) DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9,
+                                week == 0 /*&& ((int) DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9*/,
                             OrderCanBeChanged = true//week == 0 && ((int)DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9
                         };
                         mfdDishPriceRelationses.AddRange(dishes.Select(d=>new MfdDishPriceRelations

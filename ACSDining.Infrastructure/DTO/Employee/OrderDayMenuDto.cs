@@ -10,6 +10,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public List<OrderDishDto> Dishes { get; set; }
         public bool OrderCanByChanged { get; set; }
         public double DayOrderSummary { get; set; }
+        public string DayName { get; set; }
         public static OrderDayMenuDto MapDto(DayOrderMenu dayorder)
         {
             return new OrderDayMenuDto
@@ -24,7 +25,8 @@ namespace ACSDining.Infrastructure.DTO.Employee
                     
                 }).ToList(),
                 OrderCanByChanged = dayorder.MenuForDay.OrderCanBeChanged,
-                DayOrderSummary = dayorder.DayOrderSummaryPrice
+                DayOrderSummary = dayorder.DayOrderSummaryPrice,
+                DayName=dayorder.MenuForDay.WorkingDay.DayOfWeek.Name
             };
         }
     }

@@ -68,7 +68,7 @@ IF NOT @OCBCRES = 1 RETURN
 	INNER JOIN WorkingWeek
 	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
 	INNER JOIN WorkingDay
-	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
+	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.IsWorking=1 AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
 	ORDER BY DayOrderMenu.Id, DishType.Id
 	
 	--добавляем недельные оплаты на заказы из этого меню
@@ -131,7 +131,7 @@ IF NOT @OCBCRES = 1 RETURN
 	INNER JOIN WorkingWeek
 	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
 	INNER JOIN WorkingDay
-	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
+	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.IsWorking=1 AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
 	ORDER BY PlannedDayOrderMenu.Id, DishType.Id
 END
 GO

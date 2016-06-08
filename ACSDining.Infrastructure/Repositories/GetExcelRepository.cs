@@ -171,14 +171,18 @@ namespace ACSDining.Infrastructure.Repositories
                         {
 
                             colname = GetExcelColumnName(k + 2);
-                            workSheet.Cell(i + j, k + 2).Value = userpai.WeekPaiments[k];
+                            bool itsnulval = userpai.WeekPaiments[k] == 0.00;
+                            if (!itsnulval)
+                            {
+                                workSheet.Cell(i + j, k + 2).Value = userpai.WeekPaiments[k];
+                            }
                             if (ev)
                             {
                                 workSheet.Cell(i + j, k + 2).FillPattern = PatternStyle.Solid;
                                 workSheet.Cell(i + j, k + 2).FillPatternForeColor = contentColor;
 
                             }
-                            bool itsnulval = userpai.WeekPaiments[k] == 0.00;
+                           // bool itsnulval = userpai.WeekPaiments[k] == 0.00;
                             if (itsnulval)
                             {
                                 workSheet.Cell(i + j, k + 2).FillPattern = PatternStyle.Solid;
@@ -273,6 +277,11 @@ namespace ACSDining.Infrastructure.Repositories
                     workSheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
                     workSheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
                     workSheet.Range(allstr).Font = new Font("Arial", 12, FontStyle.Bold);
+                    for (int j = 5; j <paimentList.Count+6; j++)
+                    {
+                        workSheet.Rows[j].Height=22;
+                        workSheet.Rows[j].AlignmentVertical=AlignmentVertical.Centered;
+                    }
                     // Define filename
                     //string fileName = string.Format(@"{0}\ExcelData.xlsx",
                     //    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
@@ -280,7 +289,7 @@ namespace ACSDining.Infrastructure.Repositories
                     //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
                     //               @"ACSDining.Web\ExcelFiles\Paiments.xls";
 
-                    string _path = HostingEnvironment.MapPath("~/ExcelFiles/Paiments.xls");
+                    string _path = HostingEnvironment.MapPath("~/ExcelFiles/Оплаты.xls");
                     //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
                     //                          @"ACSDining.Web\ExcelFiles\Orders.xlsx";
                     // Save this data as a file
@@ -407,7 +416,7 @@ namespace ACSDining.Infrastructure.Repositories
             // worksheet.Range(str).Font=new Font("Arial",12,FontStyle.Bold);
             i = 5;
             string endcolname = GetExcelColumnName(dishcount + 3);
-            Color contentColor = Color.FromArgb(162, 192, 227);
+            Color contentColor = Color.FromArgb(224, 232, 241);
             for (int j = 0; j < userWeekOrders.Count; j++)
             {
                 var itsevenrow = (i + j)%2 != 0;
@@ -476,7 +485,7 @@ namespace ACSDining.Infrastructure.Repositories
             worksheet.Range(allstr).Font = new Font("Arial", 12, FontStyle.Bold);
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //               @"ACSDining.Web\ExcelFiles\Orders.xls";
-             string _path = HostingEnvironment.MapPath("~/ExcelFiles/Orders.xls");
+             string _path = HostingEnvironment.MapPath("~/ExcelFiles/ЗаявкиФакт.xls");
             if (File.Exists(_path))
             {
                 File.Delete(_path);
@@ -575,7 +584,7 @@ namespace ACSDining.Infrastructure.Repositories
             // worksheet.Range(str).Font=new Font("Arial",12,FontStyle.Bold);
             i = 5;
 
-            Color contentColor = Color.FromArgb(162, 192, 227);
+            Color contentColor = Color.FromArgb(224, 232, 241);
             for (int j = 0; j < userWeekOrders.Count; j++)
             {
                 var itsevenrow = (i + j)%2 != 0;
@@ -653,7 +662,7 @@ namespace ACSDining.Infrastructure.Repositories
 
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //               @"ACSDining.Web\ExcelFiles\PlanOrders.xls";
-            string _path = HostingEnvironment.MapPath("~/ExcelFiles/PlanOrders.xls");
+            string _path = HostingEnvironment.MapPath("~/ExcelFiles/ЗаявкиПлан.xls");
             if (File.Exists(_path))
             {
                 File.Delete(_path);
@@ -761,7 +770,7 @@ namespace ACSDining.Infrastructure.Repositories
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //               @"ACSDining.Web\ExcelFiles\Menu.xls";
 
-            string _path = HostingEnvironment.MapPath("~/ExcelFiles/Menu.xls");
+            string _path = HostingEnvironment.MapPath("~/ExcelFiles/Меню.xls");
             if (File.Exists(_path))
             {
                 File.Delete(_path);

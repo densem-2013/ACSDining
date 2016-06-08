@@ -55,7 +55,7 @@
                     <td class="weekmenu" data-bind="foreach: Dishes">
                         <div style="border-bottom: 1px solid" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}, click: function(){$parents[1].showDishes($data, $parentContext.$index())}">
                             <span data-bind="text: Title"></span>
-                            <button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$parents[1].showDishes($data, $parentContext.$index())}" style="float: right; max-height: 25px; width: 70px;"></button>
+                            @*<button type="button" class="glyphicon glyphicon-pencil btn-success btn-xs" data-bind=" visible: $parent.Editing, click: function(){$parents[1].showDishes($data, $parentContext.$index())}" style="float: right; max-height: 25px; width: 70px;"></button>*@
 
                         </div>
                     </td>

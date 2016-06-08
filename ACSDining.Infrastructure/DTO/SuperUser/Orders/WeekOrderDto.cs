@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.DesignerServices;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.Identity;
@@ -31,7 +32,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Orders
             if (menuForWeek == null) return null;
 
             List<WeekOrderMenu> weekOrderMenus = unitOfWork.RepositoryAsync<WeekOrderMenu>()
-                .OrdersMenuByWeekYear(wyDto).OrderBy(wo=>wo.User.LastName).ToList();
+                .OrdersMenuByWeekYear(wyDto).Where(word=>word.User.IsExisting).OrderBy(wo=>wo.User.LastName).ToList();
 
 
             return new WeekOrderDto

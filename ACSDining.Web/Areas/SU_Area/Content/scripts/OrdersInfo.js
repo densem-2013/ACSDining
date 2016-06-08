@@ -8,9 +8,9 @@
     $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
     $("#submenu >table td:first-child").attr({ 'data-bind': "text: CurNextTitle" });
 
-    $("#submenu td:nth-child(2)").removeClass("t-label").addClass("navlink").text("Заявки");
+    $("#submenu td:nth-child(2)").removeClass("t-label").addClass("navlink").css({"padding":"5px 15px 25px 10px"}).text("Заявки");
 
-    var radiobutdiv = $("<div>").attr({ "class": "radio-btn" }).css({ "padding-top": "5px", "float": "left", "display": "inline-flex" });
+    var radiobutdiv = $("<div>").attr({ "class": "radio-btn" }).css({ "padding-top": "7px", "float": "left", "display": "inline-flex" });
     radiobutdiv.append($("<!--ko foreach: PlanFactValues-->"));
     var factordersinput = $("<input/>")
     .attr({ 'data-bind': "checked: $parent.ItsFact, checkedValue: $data, click: $parent.changeSelected, attr:{id: 'dbc' + $index(),name: 'dbc' + $index()}","type": "radio" });

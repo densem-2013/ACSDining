@@ -1,168 +1,168 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <dishes>
-  <dish title="Суп-фрикадельки куриные / овощи" dishtype="Первое блюдо" image="">
+  <dish title="Суп-фрикадельки куриные / овощи" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп полевой" dishtype="Первое блюдо" image="">
+  <dish title="Суп полевой" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп-лапша / куриные фрикадельки" dishtype="Первое блюдо" image="">
+  <dish title="Суп-лапша / куриные фрикадельки" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп курица / рис" dishtype="Первое блюдо" image="">
+  <dish title="Суп курица / рис" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп-галушки" dishtype="Первое блюдо" image="">
+  <dish title="Суп-галушки" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп-лапша" dishtype="Первое блюдо" image="">
+  <dish title="Суп-лапша" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Борщ" dishtype="Первое блюдо" image="">
+  <dish title="Борщ" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп-харчо" dishtype="Первое блюдо" image="">
+  <dish title="Суп-харчо" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп грибной" dishtype="Первое блюдо" image="">
+  <dish title="Суп грибной" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп немецкий" dishtype="Первое блюдо" image="">
+  <dish title="Суп немецкий" dishtype="Первое" image="">
     <cost>5,30</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп гороховый" dishtype="Первое блюдо" image="">
+  <dish title="Суп гороховый" dishtype="Первое" image="">
     <cost>5,30</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп-фрикадельки свино-говяжьи" dishtype="Первое блюдо" image="">
+  <dish title="Суп-фрикадельки свино-говяжьи" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп - фрикадельки куриные / овсянка / овощи" dishtype="Первое блюдо" image="">
+  <dish title="Суп - фрикадельки куриные / овсянка / овощи" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп-фрикадельки куриные / рис" dishtype="Первое блюдо" image="">
+  <dish title="Суп-фрикадельки куриные / рис" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Свинина / арнаутка" dishtype="Второе блюдо" image="">
+  <dish title="Свинина / арнаутка" dishtype="Второе" image="">
     <cost>11,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Шницель куриный / картофель" dishtype="Второе блюдо" image="">
+  <dish title="Шницель куриный / картофель" dishtype="Второе" image="">
     <cost>11,80</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Жаркое /филе куриное" dishtype="Второе блюдо" image="">
+  <dish title="Жаркое /филе куриное" dishtype="Второе" image="">
     <cost>11,80</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Котлета Пожарская /арнаутка" dishtype="Второе блюдо" image="">
+  <dish title="Котлета Пожарская /арнаутка" dishtype="Второе" image="">
     <cost>11,50</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Бифштекс /пюре" dishtype="Второе блюдо" image="">
+  <dish title="Бифштекс /пюре" dishtype="Второе" image="">
     <cost>11,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Штрудель с фруктами" dishtype="Второе блюдо" image="">
+  <dish title="Штрудель с фруктами" dishtype="Второе" image="">
     <cost>9,80</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Филе куриное /грибы /картофель" dishtype="Второе блюдо" image="">
+  <dish title="Филе куриное /грибы /картофель" dishtype="Второе" image="">
     <cost>11,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Котлета куриная / картофель" dishtype="Второе блюдо" image="">
+  <dish title="Котлета куриная / картофель" dishtype="Второе" image="">
     <cost>11,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Плов" dishtype="Второе блюдо" image="">
+  <dish title="Плов" dishtype="Второе" image="">
     <cost>12,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="тефтели свино-говяжьи / спагети" dishtype="Второе блюдо" image="">
+  <dish title="тефтели свино-говяжьи / спагети" dishtype="Второе" image="">
     <cost>12,50</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Отбивная куриная /пюре" dishtype="Второе блюдо" image="">
+  <dish title="Отбивная куриная /пюре" dishtype="Второе" image="">
     <cost>11,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Жареные пирожки /картошка+мясо/ со сметаной" dishtype="Второе блюдо" image="">
+  <dish title="Жареные пирожки /картошка+мясо/ со сметаной" dishtype="Второе" image="">
     <cost>12,50</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Котлета рыбная / пюре" dishtype="Второе блюдо" image="">
+  <dish title="Котлета рыбная / пюре" dishtype="Второе" image="">
     <cost>11,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Блины сладкие" dishtype="Второе блюдо" image="">
+  <dish title="Блины сладкие" dishtype="Второе" image="">
     <cost>9,20</cost>
     <description></description>
     <foods></foods>
@@ -204,31 +204,31 @@
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Суп свинина / говядина / овощи" dishtype="Первое блюдо" image="">
+  <dish title="Суп свинина / говядина / овощи" dishtype="Первое" image="">
     <cost>4,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Котлета куриная / арнаутка" dishtype="Второе блюдо" image="">
+  <dish title="Котлета куриная / арнаутка" dishtype="Второе" image="">
     <cost>12,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Отбивная свиная / рис" dishtype="Второе блюдо" image="">
+  <dish title="Отбивная свиная / рис" dishtype="Второе" image="">
     <cost>13,80</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Карманчики куриные / картофель молодой" dishtype="Второе блюдо" image="">
+  <dish title="Карманчики куриные / картофель молодой" dishtype="Второе" image="">
     <cost>13,90</cost>
     <description></description>
     <foods></foods>
     <recept></recept>
   </dish>
-  <dish title="Пирожки с фруктами" dishtype="Второе блюдо" image="">
+  <dish title="Пирожки с фруктами" dishtype="Второе" image="">
     <cost>10,20</cost>
     <description></description>
     <foods></foods>

@@ -49,10 +49,7 @@ namespace ACSDining.Web
                         "~/Scripts/jquery-2.1.4.min.js",
                         "~/Scripts/jquery-ui-1.11.4.min.js",
                         "~/Scripts/jquery-ui-cup.min.js",
-                        //"~/Scripts/jquery-ui-i18n.min.js",
                         "~/Scripts/moment.js",
-                        //"~/Scripts/transition.js",
-                       // "~/Scripts/collapse.js",
                         "~/Scripts/bootstrap.min.js",
                         "~/Scripts/bootstrap-datetimepicker.js",
                         "~/Scripts/knockout-3.2.0.js",
@@ -72,11 +69,7 @@ namespace ACSDining.Web
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             //bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
             //            "~/Scripts/modernizr-*"));
-
-            //bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-            //          "~/Scripts/bootstrap.js",
-            //          "~/Scripts/respond.js"));
-
+            
             bundles.Add(new StyleBundle("~/Content/css").Include(
                        "~/Content/bootstrap.css",
                        "~/Content/font-awesome/font-awesome.css",

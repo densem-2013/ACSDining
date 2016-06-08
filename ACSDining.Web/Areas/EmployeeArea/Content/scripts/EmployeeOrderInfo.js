@@ -67,7 +67,7 @@
             });
             return self.DayOrderSummary(sum.toFixed(2));
         };
-
+        self.DayName = ko.observable(dayOrdObject.dayName);
     }
 
     var weekUserOrderModel = function() {
@@ -116,19 +116,23 @@
 
         self.QuantValues = [0, 1, 2, 3, 4, 5];
 
-        self.DaysOfWeek = ko.observableArray([]);
+        self.HasBalance = ko.observable();
+        self.HasSummary = ko.observable();
+
+        //self.DaysOfWeek = ko.observableArray([]);
         self.PreviosweekBalance = ko.observable(0);
         self.BeenChanged = ko.observable(false);
         self.AllowDebt = ko.observable();
         self.Balance = ko.dependentObservable(function () {
-            var bal1 = self.WeekPaiment();
+            //var bal1 = self.WeekPaiment();
+            var bal1 = parseFloat(self.HasBalance());
             var bal2 = self.WeekSummaryPrice();
-            var bal3 = self.PreviosweekBalance();
+            var bal3 = parseFloat(self.HasSummary());
+            //var bal3 = self.PreviosweekBalance();
             //var bal = ;
-            return bal1 - bal2 - bal3;
+            return bal1 +bal3- bal2;//- bal3;
         });
 
-        self.HasBalance = ko.observable();
 
         self.IsCurrentWeek = ko.pureComputed(function() {
 
@@ -166,14 +170,12 @@
 
         // Callback for error responses from the server.
         function modalShow(title, message) {
-
             self.Title(title);
             self.Message(message);
             $("#modalMessage").modal("show");
-
         }
 
-// Callback for error responses from the server.
+        // Callback for error responses from the server.
         function onError(error) {
 
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
@@ -212,9 +214,10 @@
                     self.OrderId(resp.weekOrderId);
                     self.WeekIsPaid(resp.weekIsPaid);
                     self.WeekYear(resp.weekYear);
-                    self.DaysOfWeek(resp.dayNames);
+                    //self.DaysOfWeek(resp.dayNames);
                     var summary = resp.weekOrderDishes.pop();
                     self.WeekSummaryPrice(summary.toFixed(2));
+                    self.HasSummary(summary.toFixed(2));
                     self.HasBalance(resp.balance.toFixed(2));
                     self.UserDayOrders(ko.utils.arrayMap(resp.dayOrders, function(object, index) {
                         var dishcount = object.dishes.length;
@@ -226,7 +229,7 @@
                     self.WeekPaiment(resp.weekPaiment);
                     self.AllowDebt(resp.allowDebt);
                 } else {
-                    modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
+                    modalShow("Сообщение", "На выбранную Вами дату Ваших заказов не было . Будьте внимательны!");
                 }
 
 
@@ -338,7 +341,7 @@
             });
 
             app.su_Service.CanCreateOrderOnNextWeek().then(function(cancreatenext) {
-                self.CanCreateOrderOnNextWeek(cancreatenext);
+                self.NextWeekOrderExist(cancreatenext);
             }, onError);
 
             app.su_Service.IsEmailExists().then(function(exists) {

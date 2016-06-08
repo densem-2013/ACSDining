@@ -9,5 +9,6 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Menu
         public List<Dishes.DishModelDto> Dishes { get; set; }
         public bool OrderCanBeChanged { get; set; }
         public bool OrderWasBooking { get; set; }
+        public bool DayMenuCanBeChanged { get; set; }
     }
 }

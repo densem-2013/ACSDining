@@ -146,7 +146,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             List<User> users = userManager.Users.ToList();
 
-            MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
+            //MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
 
             return Ok(true);
         }

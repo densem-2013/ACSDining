@@ -468,7 +468,7 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Обновляет значение заказа на блюдо а также сумму заказа на день и рабочую неделю>
 -- =============================================
-CREATE PROC "UpdateDishQuantity"
+CREATE PROC [dbo].[UpdateDishQuantity]
 		-- Add the parameters for the stored procedure here
 	@dayorderid int,
 	@dishtypeid int,
@@ -485,7 +485,12 @@ BEGIN
 	
 	DECLARE @weekorderid INT
 	SELECT @weekorderid=[WeekOrderMenu_Id] FROM [ACS_Dining].[dbo].[DayOrderMenu] WHERE ID=@dayorderid
-	EXEC UpdateBalanceByWeekOrderId @weekorderid
+	--Обновляем баланс пользователя по его id
+	declare @userid nvarchar(128)
+	select @userid=[User_Id] from WeekOrderMenu where WeekOrderMenu.Id=@weekorderid
+	
+	--EXEC UpdateBalanceByWeekOrderId @weekorderid
+	exec dbo.UpdateUserBalance @userid
 END
 GO
 -- =============================================
@@ -930,14 +935,14 @@ GO
 -- =============================================
 CREATE PROCEDURE [dbo].[DayFactToPlan] 
 	-- Add the parameters for the stored procedure here
+	@WDAYID int=null
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-	DECLARE @WDAYID INT,@DAYMENUID INT,@WEEKMENUID INT, @ISWORKING BIT
-	
-	SET @WDAYID=dbo.GetCurrentWorkDayId();
+	DECLARE @DAYMENUID INT,@WEEKMENUID INT, @ISWORKING BIT
+	if @WDAYID is null	SET @WDAYID=dbo.GetCurrentWorkDayId();
 	
 	--ЕСЛИ ТЕКУЩИЙ ДЕНЬ НЕ РАБОЧИЙ или РАБОЧЕГО ДНЯ НЕ СУЩЕСТВУЕТ(т.е. меню не создано)- ВЫХОДИМ
 	SELECT @ISWORKING=WorkingDay.IsWorking FROM WorkingDay WHERE WorkingDay.Id=@WDAYID
@@ -1017,7 +1022,7 @@ GO
 -- Description:	<Обновляет значения сумм к оплате для дневных заказов,
 -- сумму заказа на неделю и баланс пользователя, которому принадлежит заказ>
 -- =============================================
-CREATE PROCEDURE UpdateBalanceByWeekOrderId
+CREATE PROC [dbo].[UpdateBalanceByWeekOrderId]
 	-- Add the parameters for the function here
 	@weekorderid int
 AS
@@ -1037,12 +1042,18 @@ BEGIN
 	on dishes.DishID=mfddprice.DishID
 	inner join [ACS_Dining].[dbo].[MenuForDay] mfd
 	on mfd.ID=dordmenu.MenuForDay_ID and mfddprice.MenuForDayId=mfd.ID
+	inner join [ACS_Dining].[dbo].[WorkingDay] wdays
+	on wdays.Id=mfd.WorkingDay_Id and wdays.IsWorking=1
 	inner join [ACS_Dining].[dbo].[DishQuantity] dqua
 	on dqua.Id=rels.DishQuantityId
 	inner join  [ACS_Dining].[dbo].[DishType] dtypes
 	on dtypes.Id=rels.DishTypeId and dtypes.Id=dishes.DishType_Id
 	where rels.DayOrderMenuId=dordmenu.Id)
 	from [ACS_Dining].[dbo].[DayOrderMenu] dordmenu
+	inner join [ACS_Dining].[dbo].[MenuForDay] mfd
+	on mfd.ID=dordmenu.MenuForDay_ID 
+	inner join [ACS_Dining].[dbo].[WorkingDay] wdays
+	on wdays.Id=mfd.WorkingDay_Id and wdays.IsWorking=1
 	where dordmenu.WeekOrderMenu_Id=@weekorderid
 	--обновляем сумму к оплате для данного недельного заказа
 	update weekordmenu
@@ -1060,7 +1071,7 @@ BEGIN
 	where weekordmenu.Id=@weekorderid
 	
 	--добавляем остаток по оплате с прошлой недели
-	select @curbalance=-1*@curbalance-WeekPaiment.PreviousWeekBalance + WeekPaiment.Paiment
+	select @curbalance=-1*@curbalance+WeekPaiment.PreviousWeekBalance + WeekPaiment.Paiment
 	from WeekPaiment where WeekPaiment.WeekOrderMenu_Id=@weekorderid
 	
 	--заносим полученное значение в баланс данного пользователя
@@ -1070,6 +1081,65 @@ BEGIN
 	inner join WeekOrderMenu
 	on WeekOrderMenu.[User_Id]=AspNetUsers.Id and WeekOrderMenu.Id=@weekorderid
 END
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Обновляет текущий баланс пользователя, состоящий из баланса текущей недели 
+--                            и баланса следующей недели, если заказ данного пользователя на неё существует >
+-- =============================================
+CREATE PROCEDURE  [dbo].[UpdateUserBalance]
+	-- Add the parameters for the stored procedure here
+	@userid nvarchar(128)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	
+	declare @NEXTWEEKMENUID int, @CURWEEKMENUID int, 
+	@curweekordid int,@curbalance float, @nextbalance float
+	--Получаем ID меню на текущую неделю
+	SELECT @CURWEEKMENUID=MenuForWeek_ID  
+	FROM MenuForDay 
+	WHERE MenuForDay.WorkingDay_Id=dbo.GetCurrentWorkDayId()
+	--Получаем ID недельного заказа пользователя на текущую неделю
+	Select @curweekordid=WeekOrderMenu.Id from WeekOrderMenu 
+	where WeekOrderMenu.MenuForWeek_ID=@CURWEEKMENUID
+	and WeekOrderMenu.[User_Id]=@userid
+	exec [dbo].[UpdateBalanceByWeekOrderId] @curweekordid
+	--Получаем ID меню на следующую неделю
+    SET @NEXTWEEKMENUID=(SELECT MenuForWeek.ID FROM MenuForWeek
+	INNER JOIN WorkingWeek
+	ON MenuForWeek.[WorkingWeek_ID]=WorkingWeek.[ID]
+	INNER JOIN dbo.GetNextWeekYear()NEXTWEEK
+	ON NEXTWEEK.[WEEK]=WorkingWeek.[WeekNumber]
+	INNER JOIN [ACS_Dining].[dbo].[Year] YEARS
+	ON YEARS.[YearNumber]=NEXTWEEK.[YEAR] AND YEARS.ID=WorkingWeek.[Year_Id])
+	--если существует меню на след неделю, ищем заказ текущего пользователя на это меню
+	--и обновляем в нём значение остатка с прошлой недели
+	if @NEXTWEEKMENUID is not null
+	begin
+		declare @nextweekordid int
+		select @nextweekordid=WeekOrderMenu.[Id] from WeekOrderMenu
+		where WeekOrderMenu.MenuForWeek_ID=@NEXTWEEKMENUID and WeekOrderMenu.[User_Id]=@userid
+		
+		if @nextweekordid is not null
+		begin
+			select @curbalance=Balance from AspNetUsers where Id=@userid
+			
+			update WP
+			set WP.PreviousWeekBalance=@curbalance
+			from WeekPaiment WP
+			where WP.WeekOrderMenu_Id=@nextweekordid
+			exec [dbo].[UpdateBalanceByWeekOrderId] @nextweekordid
+			update AspNetUsers
+			set Balance=Balance-@curbalance where Id=@userid
+			--select @nextbalance=Balance from AspNetUsers where Id=@userid
+		end
+	end
+END
+
 GO
 -- =============================================
 -- Author:		<Author,,Name>
@@ -1090,7 +1160,15 @@ BEGIN
 	SET [Paiment]=@paiment
 	WHERE [Id]=@weekpaimentid
 	
-	DECLARE @weekorderid INT
-	SELECT @weekorderid=WeekPaiment.[WeekOrderMenu_Id] FROM WeekPaiment WHERE WeekPaiment.Id=@weekpaimentid
-	EXEC UpdateBalanceByWeekOrderId @weekorderid
+	--DECLARE @weekorderid INT
+	--SELECT @weekorderid=WeekPaiment.[WeekOrderMenu_Id] FROM WeekPaiment WHERE WeekPaiment.Id=@weekpaimentid
+	--EXEC UpdateBalanceByWeekOrderId @weekorderid
+	DECLARE @userid nvarchar(128)
+	SELECT @userid=AspNetUsers.[Id] FROM WeekOrderMenu 
+	inner join AspNetUsers
+	on WeekOrderMenu.[User_Id]=AspNetUsers.[Id]
+	inner join WeekPaiment
+	on WeekPaiment.WeekOrderMenu_Id=WeekOrderMenu.Id and WeekPaiment.Id=@weekpaimentid
+	exec  [dbo].[UpdateUserBalance] @userid
 END
+GO

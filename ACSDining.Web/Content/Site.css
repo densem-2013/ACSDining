@@ -1141,3 +1141,6 @@ select.input-small {
     padding: 5px;
     font-size: 15px;
 }
+.ui-datepicker-inline.ui-datepicker.ui-widget.ui-widget-content.ui-helper-clearfix.ui-corner-all {
+    display: inline-block !important;
+}

@@ -13,8 +13,8 @@
     $("ul.nav.navbar-nav li:first-child").addClass("active"); 
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
     var sendButtonDiv = $('<div></div>').css({ 'whith': '100%','padding':'10px' });
-    var sendButtonInput = $('<input type="button" id="btSend" class="btn btn-success" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject"/>');
-    sendButtonDiv.append(sendButtonInput);
+    var sendOrderedMessageButtonInput = $('<input type="button" id="btSend" class="btn btn-success" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject"/>');
+    sendButtonDiv.append(sendOrderedMessageButtonInput);
     $('#datepick').append(sendButtonDiv);
    // $('.wrapper').css({ 'margin': 'auto' });
     //sendButtonDiv.insertAfter($('#datepick'));
@@ -24,20 +24,20 @@
     .addClass("btn btnaddmenu");
     $("#submenu td:nth-child(2)").append(curweekbut);
 
-    var btWorkDays=$("<input/>")
-    .attr({ 'data-bind': "click: WorkWeekApply,visible: !WorkingDaysAreSelected()", "id": "btWorkDays", "type": "button", "value": "Подтвердить рабочие дни" })
-    .addClass("btn btnaddmenu");
-    $("#submenu td:nth-child(3)").append(btWorkDays);
+    //var btWorkDays=$("<input/>")
+    //.attr({ 'data-bind': "click: WorkWeekApply,visible: !WorkingDaysAreSelected()", "id": "btWorkDays", "type": "button", "value": "Подтвердить рабочие дни" })
+    //.addClass("btn btnaddmenu");
+    //$("#submenu td:nth-child(3)").append(btWorkDays);
 
     var btWorkDays = $("<input/>")
     .attr({ 'data-bind': "click: SetAsOrderable,visible: WorkingDaysAreSelected()&&!OrderCanBeCreated()", "type": "button", "value": "Подтвердить возможность заказа по меню" })
     .addClass("btn btnaddmenu");
     $("#submenu td:nth-child(3)").append(btWorkDays);
 
-    var nextweekbut = $("<input/>")
-    .attr({ 'data-bind': "click: GoToNextWeekMenu,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Редактировать меню на следующую неделю" })
-    .addClass("btn btnaddmenu");
-    $("#submenu td:last-child").append(nextweekbut);
+    //var nextweekbut = $("<input/>")
+    //.attr({ 'data-bind': "click: GoToNextWeekMenu,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Редактировать меню на следующую неделю" })
+    //.addClass("btn btnaddmenu");
+    //$("#submenu td:last-child").append(nextweekbut);
 
     var nextweekbut = $("<input/>")
     .attr({ 'data-bind': "click: CreateNextWeekMenu,visible: !IsNextWeekYear() && !IsNextWeekMenuExists()", "type": "button", "value": "Создать меню на следующую неделю" })
@@ -104,6 +104,8 @@
             });
             return hovitem == null ? "" : (hovitem.Description() === "") ? "Описание блюда отсутствует" : hovitem.Description();
         });
+
+        self.DayMenuCanBeChanged = ko.observable(object.dayMenuCanBeChanged);
     }
 
 
@@ -151,7 +153,6 @@
         self.IsNextWeekYear = ko.pureComputed(function () {
 
             var res=self.NextWeekYear().week === self.WeekYear().week && self.NextWeekYear().year === self.WeekYear().year;
-            //console.log("IsNextWeekYear = " + res + " week =" + self.NextWeekYear().week);
             return res;
 
         }.bind(self));
@@ -304,16 +305,19 @@
         }
 
         self.showDishes = function (searchdish, index) {
-            if (self.WorkingDaysAreSelected()) {
-                self.DishesByCategory([]);
-                self.UpdatableMFD(index);
-                self.Category(searchdish.Category());
-                self.loadDishes(searchdish);
-                self.pageIndex(0);
-
-                $("#modalbox").modal("show");
+            if (!self.MFD_models()[index].DayMenuCanBeChanged()) {
+                modalShow("Создание меню", "Редактирование меню на этот день уже недоступно");
             } else {
-                modalShow("Создание меню", "Сначала подтвердите выбор рабочих дней");
+                if (self.WorkingDaysAreSelected()) {
+                    self.DishesByCategory([]);
+                    self.UpdatableMFD(index);
+                    self.Category(searchdish.Category());
+                    self.loadDishes(searchdish);
+                    self.pageIndex(0);
+                    $("#modalbox").modal("show");
+                } else {
+                    modalShow("Создание меню", "Сначала подтвердите выбор рабочих дней");
+                }
             }
         }
 
@@ -361,13 +365,11 @@
 
 
         self.GoToNextWeekMenu = function() {
-
-                self.SetMyDateByWeek(self.NextWeekYear());
+            self.SetMyDateByWeek(self.NextWeekYear());
         };
 
 
         self.GoToCurrentWeekMenu = function () {
-
             self.SetMyDateByWeek(self.CurrentWeekYear());
         };
 

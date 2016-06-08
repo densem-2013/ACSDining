@@ -43,6 +43,7 @@ namespace ACSDining.Infrastructure.Repositories
 
             return mfw;
         }
+
         public static WorkingWeek WorkWeekByWeekYear(this IRepositoryAsync<MenuForWeek> repository, WeekYearDto wyDto)
         {
             return repository.GetRepositoryAsync<WorkingWeek>().Query()
@@ -58,7 +59,7 @@ namespace ACSDining.Infrastructure.Repositories
                 repository.GetRepositoryAsync<MenuForWeek>().WorkWeekByWeekYear(YearWeekHelp.GetCurrentWeekYearDto());
             WorkingDay curWorkingDay =
                 curWorkingWeek.WorkingDays.FirstOrDefault(
-                    wd => wd.DayOfWeek.Id == (((int)DateTime.Now.DayOfWeek + 1)) % 7);
+                    wd => wd.DayOfWeek.Id == (((int) DateTime.Now.DayOfWeek + 1))%7);
             return
                 repository.GetRepositoryAsync<MenuForDay>()
                     .Query()
@@ -70,12 +71,16 @@ namespace ACSDining.Infrastructure.Repositories
         public static WeekMenuDto MapWeekMenuDto(this IRepositoryAsync<MenuForWeek> repository, WeekYearDto wyDto)
         {
             MenuForWeek wmenu = repository.GetWeekMenuByWeekYear(wyDto);
-            if (wmenu == null)
+            if (wmenu == null && repository.GetAll().Count == 0)
             {
                 repository.Context.CreateNewWeekMenu(wyDto);
                 wmenu = repository.GetWeekMenuByWeekYear(wyDto);
-            };
-
+            }
+            ;
+            if (wmenu == null)
+            {
+                return null;
+            }
             WeekMenuDto dtoModel = new WeekMenuDto
             {
                 Id = wmenu.ID,
@@ -86,25 +91,29 @@ namespace ACSDining.Infrastructure.Repositories
                         {
                             Id = mfd.ID,
                             TotalPrice = mfd.TotalPrice,
-                            Dishes = mfd.DishPriceMfdRelations.Select(dp => dp.Dish).OrderBy(d => d.DishType.Id).Select(d =>
-                            {
-                                var mfdDishPriceRelations = mfd.DishPriceMfdRelations.FirstOrDefault(dp => dp.DishId == d.DishID);
-                                if (mfdDishPriceRelations != null)
-                                    return new DTO.SuperUser.Dishes.DishModelDto
-                                    {
-                                        DishId = d.DishID,
-                                        Title = d.Title,
-                                        ProductImage = d.ProductImage,
-                                        Price =
-                                            mfdDishPriceRelations
-                                                .DishPrice.Price,
-                                        Category = mfdDishPriceRelations.Dish.DishType.Category,// != null ? mfdDishPriceRelations.Dish.DishType.Category : null,
-                                        Description = mfdDishPriceRelations.Dish.Description
-                                    };
-                                return null;
-                            }).ToList(),
+                            Dishes =
+                                mfd.DishPriceMfdRelations.Select(dp => dp.Dish).OrderBy(d => d.DishType.Id).Select(d =>
+                                {
+                                    var mfdDishPriceRelations =
+                                        mfd.DishPriceMfdRelations.FirstOrDefault(dp => dp.DishId == d.DishID);
+                                    if (mfdDishPriceRelations != null)
+                                        return new DTO.SuperUser.Dishes.DishModelDto
+                                        {
+                                            DishId = d.DishID,
+                                            Title = d.Title,
+                                            ProductImage = d.ProductImage,
+                                            Price =
+                                                mfdDishPriceRelations
+                                                    .DishPrice.Price,
+                                            Category = mfdDishPriceRelations.Dish.DishType.Category,
+                                            Description = mfdDishPriceRelations.Dish.Description
+                                        };
+                                    return null;
+                                }).ToList(),
                             OrderCanBeChanged = mfd.OrderCanBeChanged,
-                            OrderWasBooking = repository.GetRepositoryAsync<WeekOrderMenu>().GetUsersMadeOrder(mfd.ID).Any()
+                            OrderWasBooking =
+                                repository.GetRepositoryAsync<WeekOrderMenu>().GetUsersMadeOrder(mfd.ID).Any(),
+                            DayMenuCanBeChanged = mfd.DayMenuCanBeChanged
                         })
                         .ToList(),
                 OrderCanBeCreated = wmenu.OrderCanBeCreated,

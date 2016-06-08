@@ -29,11 +29,9 @@ namespace ACSDining.Core.Domains
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-
         public double TotalPrice { get; set; }
         //СуперЮзер может изменить меню на этот день
         public bool DayMenuCanBeChanged { get; set; }
-
         //Пользователь может изменить заказ на это меню
         public bool OrderCanBeChanged { get; set; }
         public virtual ICollection<MfdDishPriceRelations> DishPriceMfdRelations { get; set; }

@@ -26,7 +26,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Paiments
             MenuForWeek menuForWeek = repository.GetRepositoryAsync<MenuForWeek>().GetWeekMenuByWeekYear(wyDto);
 
             if (menuForWeek == null) return null;
-            List<WeekPaiment> weekPaiments = repository.WeekPaiments(wyDto).OrderBy(wo => wo.WeekOrderMenu.User.LastName).ToList();
+            List<WeekPaiment> weekPaiments = repository.WeekPaiments(wyDto).Where(word=>word.WeekOrderMenu.User.IsExisting).OrderBy(wo => wo.WeekOrderMenu.User.LastName).ToList();
 
             return new WeekPaimentDto
             {
