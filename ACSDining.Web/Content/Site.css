@@ -9,7 +9,7 @@ body
     color: #414141;
     background-color: #FFFFFF;
     font-family: Tahoma, Verdana, Arial, sans-serif;
-    font-size: 15px; /*font-style: normal;        font-weight: normal;*/
+    font-size: 14px; /*font-style: normal;        font-weight: normal;*/
     line-height: 17px;
 }
 #menucontainer span {
@@ -40,7 +40,7 @@ body
     margin: auto;
     width: 96%;
     min-width: 994px;
-    max-width: 1500px;
+    max-width: 1400px;
     text-align: left;
 }
 /*TOPHEAD*/
@@ -408,21 +408,21 @@ table
 
 td.orderquant{
     padding: 0px; /* border: solid 1px #e8eef4; */
-    -moz-min-width: 50px;
+    /*-moz-min-width: 50px;
     -ms-min-width: 50px;
     -o-min-width: 50px;
     -webkit-min-width: 50px;
-    min-width: 50px;   
+    min-width: 50px;*/   
     text-align: center;
 }
 
 td.weekmenu div{
     padding: 5px; /* border: solid 1px #e8eef4; */
-    -moz-min-height: 30px;
+    /*-moz-min-height: 30px;
     -ms-min-height: 30px;
     -o-min-height: 30px;
     -webkit-min-height: 30px;
-    min-height: 30px;
+    min-height: 30px;*/
     white-space: nowrap;
     max-width: 500px;
 }
@@ -656,6 +656,7 @@ div#title
 
 .date.form-control {
     background: transparent;
+    font-size: 12px;
 }
 /*Project Overview ----------------- */
 

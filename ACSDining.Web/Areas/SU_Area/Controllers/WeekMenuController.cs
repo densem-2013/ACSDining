@@ -12,6 +12,7 @@ using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.SU_Area.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -115,12 +116,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest();
             }
-            int[] daymenusid = messageDto.UpdatedDayMenu;
-            List<User> userBooking =
-                daymenusid.SelectMany(dmi => _orderMenuService.GetUsersMedeBooking(dmi)).Distinct().ToList();
-            //await
-                MessageService.SendEmailAsync(userBooking, MessageTopic.MenuChanged, messageDto.DateTime,
-                    messageDto.Message);
+            MessageService.SendUpdateDayMenuMessage(_unitOfWork.RepositoryAsync<WeekOrderMenu>(), messageDto);
 
             return Ok(true);
         }
@@ -194,6 +190,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             }
             _mfdDishPriceService.UpdateMenuForDay(menuforday);
 
+            MenuForWeek mfw = _unitOfWork.RepositoryAsync<MenuForWeek>().GetWeekMenuMfdContains(menuforday.Id);
+
+            mfw.SummaryPrice = mfw.MenuForDay.Sum(mw => mw.TotalPrice);
+
+            _unitOfWork.GetContext().Entry(mfw).State = EntityState.Modified;
             _unitOfWork.SaveChanges();
 
             return StatusCode(HttpStatusCode.OK);

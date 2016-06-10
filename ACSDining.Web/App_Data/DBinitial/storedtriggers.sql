@@ -146,7 +146,7 @@ DECLARE  @MENUID INT,@NEXTWEEKMENUID INT, @USERID NVARCHAR(128), @CURWORKDAYID I
  IF (@CURWORKDAYID IS NULL) RETURN
  SET @MENUID=(SELECT MenuForWeek.ID FROM MenuForWeek
 	INNER JOIN MenuForDay
-	ON MenuForDay.MenuForWeek_ID=MenuForWeek.ID AND MenuForDay.WorkingDay_Id=@CURWORKDAYID);
+	ON MenuForDay.MenuForWeek_ID=MenuForWeek.ID AND MenuForDay.WorkingDay_Id=@CURWORKDAYID and MenuForWeek.[OrderCanBeCreated]=1);
  IF (@MENUID IS NULL) RETURN
 	
 --Получаем ID меню на следующую неделю
@@ -156,7 +156,8 @@ SET @NEXTWEEKMENUID=(SELECT MenuForWeek.ID FROM MenuForWeek
 	INNER JOIN dbo.GetNextWeekYear()NEXTWEEK
 	ON NEXTWEEK.[WEEK]=WorkingWeek.[WeekNumber]
 	INNER JOIN [ACS_Dining].[dbo].[Year] YEARS
-	ON YEARS.[YearNumber]=NEXTWEEK.[YEAR] AND YEARS.ID=WorkingWeek.[Year_Id])
+	ON YEARS.[YearNumber]=NEXTWEEK.[YEAR] AND YEARS.ID=WorkingWeek.[Year_Id]
+	WHERE MenuForWeek.[OrderCanBeCreated]=1)
 
 DECLARE INS_USER_CURSOR CURSOR
 SCROLL

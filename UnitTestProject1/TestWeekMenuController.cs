@@ -33,7 +33,7 @@ namespace UnitTestProject1
             List<User> empluserlist = new List<User>(new[]{_userManager.FindByNameAsync("employee").Result});
             string message = "Hello. This is Registration message";
             MessageService.SendEmailAsync(empluserlist, MessageTopic.Registration, DateTime.Now.ToShortDateString(), message);
-            Assert.Inconclusive("Ok");
+            //Assert.Inconclusive("Ok");
         }
 
     }

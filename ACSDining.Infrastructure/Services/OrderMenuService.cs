@@ -15,7 +15,7 @@ namespace ACSDining.Infrastructure.Services
         WeekOrderMenu FindByUserIdWeekYear(string userid, WeekYearDto wyDto);
         List<WeekOrderMenu> GetOrderMenuByWeekYear(WeekYearDto wyDto, int? pageSize = null, int? page = null);
         //Возвращает список пользователей, которые уже сделали заказ на указанное дневное меню для отправки им сообщения
-        List<User> GetUsersMedeBooking(int daymenuid);
+        List<User> GetUsersMadeBooking(int daymenuid);
         int GetCountByWeekYear(WeekYearDto wyDto);
     }
 
@@ -57,7 +57,7 @@ namespace ACSDining.Infrastructure.Services
                         om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&
                         om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year);
         }
-        public List<User> GetUsersMedeBooking(int daymenuid)
+        public List<User> GetUsersMadeBooking(int daymenuid)
         {
             return _repository.GetUsersMadeOrder(daymenuid);
         }

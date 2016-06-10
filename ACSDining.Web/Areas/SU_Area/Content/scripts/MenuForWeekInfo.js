@@ -24,25 +24,25 @@
     .addClass("btn btnaddmenu");
     $("#submenu td:nth-child(2)").append(curweekbut);
 
-    //var btWorkDays=$("<input/>")
-    //.attr({ 'data-bind': "click: WorkWeekApply,visible: !WorkingDaysAreSelected()", "id": "btWorkDays", "type": "button", "value": "Подтвердить рабочие дни" })
-    //.addClass("btn btnaddmenu");
-    //$("#submenu td:nth-child(3)").append(btWorkDays);
-
-    var btWorkDays = $("<input/>")
-    .attr({ 'data-bind': "click: SetAsOrderable,visible: WorkingDaysAreSelected()&&!OrderCanBeCreated()", "type": "button", "value": "Подтвердить возможность заказа по меню" })
+    var btWorkDays=$("<input/>")
+    .attr({ 'data-bind': "click: WorkWeekApply,visible: !WorkingDaysAreSelected()", "id": "btWorkDays", "type": "button", "value": "Подтвердить рабочие дни" })
     .addClass("btn btnaddmenu");
     $("#submenu td:nth-child(3)").append(btWorkDays);
 
-    //var nextweekbut = $("<input/>")
-    //.attr({ 'data-bind': "click: GoToNextWeekMenu,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Редактировать меню на следующую неделю" })
-    //.addClass("btn btnaddmenu");
-    //$("#submenu td:last-child").append(nextweekbut);
+    var btasbook = $("<input/>")
+    .attr({ 'data-bind': "click: SetAsOrderable,visible: WorkingDaysAreSelected()&&!OrderCanBeCreated()", "type": "button", "value": "Подтвердить возможность заказа по меню" })
+    .addClass("btn btnaddmenu");
+    $("#submenu td:nth-child(3)").append(btasbook);
 
     var nextweekbut = $("<input/>")
-    .attr({ 'data-bind': "click: CreateNextWeekMenu,visible: !IsNextWeekYear() && !IsNextWeekMenuExists()", "type": "button", "value": "Создать меню на следующую неделю" })
+    .attr({ 'data-bind': "click: GoToNextWeekMenu,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Редактировать меню на следующую неделю" })
     .addClass("btn btnaddmenu");
     $("#submenu td:last-child").append(nextweekbut);
+
+    var nextweekcreatebut = $("<input/>")
+    .attr({ 'data-bind': "click: CreateNextWeekMenu,visible: !IsNextWeekYear() && !IsNextWeekMenuExists()", "type": "button", "value": "Создать меню на следующую неделю" })
+    .addClass("btn btnaddmenu");
+    $("#submenu td:last-child").append(nextweekcreatebut);
 
     var excelButtonDiv = $('<div></div>').css({ 'whith': '100%', 'padding': '10px' });
     var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
@@ -415,7 +415,12 @@
                     return item === mfdupdate.Id();
                 });
                 if (exists==null) {
-                    self.UpdatedDayMenus.push(mfdupdate.Id());
+                    self.UpdatedDayMenus.push({
+                        DayMenuId: mfdupdate.Id(),
+                        OldDishId: mfdupdate.Dishes()[catIndex].DishId(),
+                        NewDishId: self.SelectedDish(),
+                        Category: self.Category()
+                    });
                 };
 
             }

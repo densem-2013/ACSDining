@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Configuration;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Hosting;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DTO.SuperUser.Menu;
+using ACSDining.Infrastructure.Repositories;
 
 namespace ACSDining.Web.Areas.SU_Area.Models
 {
@@ -19,20 +23,24 @@ namespace ACSDining.Web.Areas.SU_Area.Models
         Registration,
         MenuCreated
     };
+
     public static class MessageService
     {
         private static readonly SmtpClient Client;
-        static string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") +
+
+        private static string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"bin\Debug", "") +
                                       @"App.config";
-        static readonly Configuration Config =
+
+        private static readonly Configuration Config =
             WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
-            
-           //WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
-           //WebConfigurationManager.OpenWebConfiguration(_path);
+
+        //WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
+        //WebConfigurationManager.OpenWebConfiguration(_path);
         //static SmtpSection smtpSection = (SmtpSection)ConfigurationManager.GetSection("system.net/mailSettings/smtp");
         //static string username = smtpSection.Network.UserName;
-        static readonly MailSettingsSectionGroup Settings =
-            (MailSettingsSectionGroup)Config.GetSectionGroup("system.net/mailSettings");
+        private static readonly MailSettingsSectionGroup Settings =
+            (MailSettingsSectionGroup) Config.GetSectionGroup("system.net/mailSettings");
+
         static MessageService()
         {
             NetworkCredential crident = null;
@@ -43,7 +51,7 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             }
             catch (Exception)
             {
-                    
+
                 throw;
             }
 
@@ -66,9 +74,13 @@ namespace ACSDining.Web.Areas.SU_Area.Models
         public static void SendEmailAsync(List<User> users, MessageTopic topic, string datastring = null,
             string message = null)
         {
-           MailMessage email = new MailMessage
+            //SmtpClient Smtp = new SmtpClient("srv-terminal", 25);
+            //Smtp.Credentials = new NetworkCredential("robot@ia.ua", "");
+            //Smtp.EnableSsl = false;
+            MailMessage email = new MailMessage
             {
-                From = new MailAddress(Settings.Smtp.Network.UserName, "Администрация столовой", System.Text.Encoding.UTF8),
+                From =
+                    new MailAddress(Settings.Smtp.Network.UserName, "Администрация столовой", System.Text.Encoding.UTF8),
                 DeliveryNotificationOptions =
                     DeliveryNotificationOptions.OnFailure
             };
@@ -80,27 +92,31 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             email.Body = string.Format(template, datastring, message);
             email.Subject = (topic == MessageTopic.MenuChanged)
                 ? "Изменения в меню"
-                : topic == MessageTopic.Registration ? "Регистрация" 
-                : "Создано меню для заказа";
+                : topic == MessageTopic.Registration
+                    ? "Регистрация"
+                    : "Создано меню для заказа";
 
             email.IsBodyHtml = true;
             try
             {
                 //Task.Run(()=>).Wait();
-               Client.Send(email);
+                Client.Send(email);
             }
             catch (Exception)
             {
-                    
+
                 throw;
             }
         }
 
         public static async Task<string> EMailTemplate(MessageTopic topic)
         {
-            string template = topic == MessageTopic.MenuChanged ? "DayMenuChanged" : topic == MessageTopic.Registration ? "RegistrationCompleted" : "MenuCreateCompleted";
-            var templateFilePath = HostingEnvironment.MapPath("~/Areas/SU_Area/Views/SU_/EmailTemplates/") + template + ".html";
-           string body;
+            string template = topic == MessageTopic.MenuChanged
+                ? "DayMenuChanged"
+                : topic == MessageTopic.Registration ? "RegistrationCompleted" : "MenuCreateCompleted";
+            var templateFilePath = HostingEnvironment.MapPath("~/Areas/SU_Area/Views/SU_/EmailTemplates/") + template +
+                                   ".html";
+            string body;
             try
             {
                 StreamReader objstreamreaderfile = new StreamReader(templateFilePath);
@@ -109,10 +125,39 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             }
             catch (Exception)
             {
-                    
+
                 throw;
             }
             return await Task.FromResult(body);
         }
+
+        public static void SendUpdateDayMenuMessage(IRepositoryAsync<WeekOrderMenu> repo,MenuUpdateMessageDto mesdto)
+        {
+            int[] dayids = mesdto.UpdatedDayMenu.Select(upd => upd.DayMenuId).Distinct().ToArray();
+           
+            foreach (int id in dayids)
+            {
+                StringBuilder strbild = new StringBuilder();
+                List<User> bookingUsers = repo.GetUsersMadeOrder(id);
+                strbild.AppendLine("<table>");
+                strbild.AppendLine("<thead><tr><th><th><th>Старое блюдо</th><th>Новое блюдо</th></tr></thead>");
+                strbild.AppendLine("<tbody>");
+
+                foreach (var mdch in mesdto.UpdatedDayMenu.Where(dm=>dm.DayMenuId==id).ToList())
+                {
+                    Dish olddish = repo.GetRepositoryAsync<Dish>().Find(mdch.OldDishId);
+                    Dish newdish = repo.GetRepositoryAsync<Dish>().Find(mdch.NewDishId);
+                    strbild.AppendLine("<tr>");
+                    strbild.AppendFormat("<td>{0}</td><td>{1}</td><td>{2}</td>", mdch.Category, olddish.Title,
+                        newdish.Title);
+                    strbild.AppendLine("</tr>");
+                }
+                strbild.AppendLine("</tbody>");
+                strbild.AppendLine("</table>");
+                List<User> userBooking =repo.GetUsersMadeOrder(id);
+                SendEmailAsync(userBooking, MessageTopic.MenuChanged, mesdto.DateTime,
+                   strbild.ToString());
+            }
+       }
     }
 }

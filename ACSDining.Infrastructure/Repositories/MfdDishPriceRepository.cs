@@ -165,6 +165,8 @@ namespace ACSDining.Infrastructure.Repositories
             }
             menuFd.TotalPrice = menuforday.TotalPrice;
 
+            repository.Context.Entry(menuFd).State = EntityState.Modified;
+            ////repository.Context.MenuForWeeks.Attach(mfw);
         }
     }
 }

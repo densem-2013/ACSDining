@@ -24,15 +24,15 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        public void GetExcellTestApi()
+        public void GetExcellPaimentsTestApi()
         {
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-                                      @"ACSDining.Web\ExcelFiles\Paiments.xls";
+            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
+            //                          @"ACSDining.Web\ExcelFiles\Paiments.xls";
             //GetExcelController excelApi = new GetExcelController(_unitOfWork);
             GetExcelService excelService = new GetExcelService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             WeekYearDto wyDto = new WeekYearDto
             {
-                Week = 22,
+                Week = 23,
                 Year = 2016
             };
             ForExcelDataDto feDto = new ForExcelDataDto
@@ -42,18 +42,18 @@ namespace UnitTestProject1
             };
             string result = excelService.GetExcelFileFromPaimentsModel(feDto);
             Assert.IsNotNull(result);
-            Process.Start(_path);
+            Process.Start(result);
         }
         [TestMethod]
         public void GetOrdersExcellTestApi()
         {
-            string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-                                      @"ACSDining.Web\ExcelFiles\PlanOrders.xls";
+            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
+            //                          @"ACSDining.Web\ExcelFiles\PlanOrders.xls";
             //GetExcelController excelApi = new GetExcelController(_unitOfWork);
             GetExcelService excelService = new GetExcelService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             WeekYearDto wyDto = new WeekYearDto
             {
-                Week = 22,
+                Week = 23,
                 Year = 2016
             };
             ForExcelDataDto feDto = new ForExcelDataDto
@@ -61,9 +61,9 @@ namespace UnitTestProject1
                 WeekYear = wyDto,
                 DataString = "test string"
             };
-            string result = excelService.GetExcelFromPlanOrdersModel(feDto);
+            string result = excelService.GetExcelFileFromOrdersModel(feDto);
             Assert.IsNotNull(result);
-            Process.Start(_path);
+            Process.Start(result);
         }
 
         [TestMethod]

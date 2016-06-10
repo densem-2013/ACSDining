@@ -17,6 +17,7 @@ namespace ACSDining.Infrastructure.Services
         Task<bool> DeleteMenuForWeek(int menuid);
         MenuForWeek FindById(int menuid);
 
+        MenuForWeek GetWeekMenuMfdContains(int mfdid);
         WorkingWeek GetWorkWeekByWeekYear(WeekYearDto wyDto);
     }
 
@@ -59,6 +60,11 @@ namespace ACSDining.Infrastructure.Services
         public WeekMenuDto GetWeekMenuDto(WeekYearDto wyDto)
         {
             return _repository.MapWeekMenuDto(wyDto);
+        }
+
+        public MenuForWeek GetWeekMenuMfdContains(int mfdid)
+        {
+            return _repository.GetWeekMenuMfdContains(mfdid);
         }
     }
 }

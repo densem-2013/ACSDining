@@ -6,11 +6,9 @@ using System.Linq;
 using System.Web.Hosting;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.Employee;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Infrastructure.UnitOfWork;
 using Bytescout.Spreadsheet;
 using Bytescout.Spreadsheet.Constants;
 using Font = System.Drawing.Font;
@@ -37,7 +35,6 @@ namespace ACSDining.Infrastructure.Repositories
             int workDayCount = workWeek.WorkingDays.Count(wd => wd.IsWorking);
             int catLength = repository.GetRepositoryAsync<DishType>().GetAll().Count;
             List<UserWeekPaimentDto> paimentList = dto.UserWeekPaiments;
-            //WeekYearDto wyDto = dto.WeekYearDto;
             //Цены за  каждое блюдо в меню на рабочей неделе
             double[] unitPrices = dto.WeekDishPrices;
             int dishcount = workDayCount*catLength;
@@ -69,6 +66,10 @@ namespace ACSDining.Infrastructure.Repositories
                 if (workSheet != null)
                 {
 
+                    string endcolname = GetExcelColumnName(dishcount + 6);
+                    string allstr = string.Format("A1:{0}{1}", endcolname, paimentList.Count + 6);
+                    workSheet.Range(allstr).Font = new Font("Arial", 13, FontStyle.Bold);
+
                     workSheet.Cell(1, 0).Value = "№";
                     workSheet.Range("A2:A5").Merge();
 
@@ -81,7 +82,6 @@ namespace ACSDining.Infrastructure.Repositories
                     range.Merge();
                     workSheet.Cell("A1").MergedWithCell.Value = "Оплаты на " + feDto.DataString;
                     range.AlignmentHorizontal = AlignmentHorizontal.Centered;
-                    //Color bordercolor = Color.FromArgb(179, 15, 83);
                     int i = 0;
                     string str;
                     string colname;
@@ -95,8 +95,6 @@ namespace ACSDining.Infrastructure.Repositories
                             workSheet.Cell(1, j[0]*catLength + 3).Value = elementAtOrDefault.DayOfWeek.Name;
                         str = String.Format("{0}2:{1}2", colname, colname_2);
                         workSheet.Range(str).Merge();
-                        //workSheet.Cell(1, j[0] * catLength + 3).RightBorderStyle = LineStyle.Double;
-                        //workSheet.Cell(1, j[0] * catLength + 3).LeftBorderStyle = LineStyle.Double;
                     }
                     i += dishcount + 2;
                     colname = GetExcelColumnName(i + 1);
@@ -125,7 +123,25 @@ namespace ACSDining.Infrastructure.Repositories
                     str = String.Format("{0}2:{1}5", colname, colname);
                     workSheet.Range(str).Merge();
                     workSheet.Range(str).Rotation = 90;
+                    workSheet.Columns[i].Width = 90;
+
+                    colname = GetExcelColumnName(dishcount + 2);
+                    workSheet.Cell(3, 2).Value = "Цена за одну порцию, грн";
+                    str = String.Format("C4:{0}4", colname);
+                    workSheet.Range(str).Merge();
+                    workSheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
+
+                    i = paimentList.Count + 5;
+                    str = String.Format("A{0}:B{1}", i + 1, i + 1);
+                    workSheet.Range(str).Merge();
+                    workSheet.Cell(i, 0).MergedWithCell.Value = "Итого";
+                    workSheet.Cell(i, 0).AlignmentHorizontal = AlignmentHorizontal.Right;
+
+
                     workSheet.Columns[i].Width = 120;
+
+                    workSheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
+                    workSheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
 
                     i = 2;
                     for (int j = 0; j < workDayCount; j++)
@@ -135,21 +151,50 @@ namespace ACSDining.Infrastructure.Repositories
                             colname = GetExcelColumnName(3 + j*catLength + k);
                             workSheet.Cell(2, 2 + j*catLength + k).Value = dishCategories[k];
                             workSheet.Range(colname + "3").Rotation = 90;
+                            if ((k) % 4 != 0)
+                            {
+                                workSheet.Cell(2, 2 + j * catLength + k).LeftBorderStyle = LineStyle.Thin;
+                            }
+                            workSheet.Cell(2, 2 + j * catLength + k).RightBorderStyle = LineStyle.Thin;
                         }
                     }
-                    colname = GetExcelColumnName(dishcount + 2);
-                    workSheet.Cell(3, 2).Value = "Цена за одну порцию, грн";
-                    str = String.Format("C4:{0}4", colname);
-                    workSheet.Range(str).Merge();
-                    workSheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
+
+
                     double[] dishprices = unitPrices;
                     for (int j = 0; j < dishcount; j++)
                     {
                         colname = GetExcelColumnName(i + j);
                         workSheet.Cell(4, i + j).Value = dishprices[j];
+                        if ((j) % 4 != 0)
+                        {
+                            workSheet.Cell(4, j + 2).LeftBorderStyle = LineStyle.Thin;
+                        }
+                        workSheet.Cell(4, j + 2).RightBorderStyle = LineStyle.Thin;
                     }
+
+                    i = paimentList.Count + 5;
+
+                    for (int j = 0; j < dishcount; j++)
+                    {
+
+                        colname = GetExcelColumnName(j + 3);
+                        workSheet.Cell(i, j + 2).Value = unitPricesTotal[j];
+                        if ((j) % 4 != 0)
+                        {
+                            workSheet.Cell(i, j + 2).LeftBorderStyle = LineStyle.Thin;
+                        }
+                        workSheet.Cell(i, j + 2).RightBorderStyle = LineStyle.Thin;
+                    }
+                    colname = GetExcelColumnName(dishcount + 3);
+                    workSheet.Cell(i, dishcount + 2).Value = unitPricesTotal[dishcount];
+                    colname = GetExcelColumnName(dishcount + 4);
+                    workSheet.Cell(i, dishcount + 3).Value = paimentList.Sum(up => up.Paiment);
+                    colname = GetExcelColumnName(dishcount + 5);
+                    workSheet.Cell(i, dishcount + 4).Value = paimentList.Sum(up => up.Balance);
+
+
                     i = 5;
-                    Color contentColor = Color.FromArgb(192, 225, 245);
+                    Color contentColor = Color.FromArgb(227, 238, 245);
                     Color nullColor = Color.FromArgb(6, 84, 156);
                     for (int j = 0; j < paimentList.Count; j++)
                     {
@@ -158,7 +203,6 @@ namespace ACSDining.Infrastructure.Repositories
                         workSheet.Cell(i + j, 0).Value = j + 1;
                         workSheet.Cell(i + j, 1).Value = userpai.UserName;
                         workSheet.Cell(i + j, 1).ShrinkToFit = true;
-                        //workSheet.Cell(i + j, 1).Font = new Font("Arial", 15, FontStyle.Bold);
                         if (ev)
                         {
                             workSheet.Cell(i + j, 0).FillPattern = PatternStyle.Solid;
@@ -182,12 +226,11 @@ namespace ACSDining.Infrastructure.Repositories
                                 workSheet.Cell(i + j, k + 2).FillPatternForeColor = contentColor;
 
                             }
-                           // bool itsnulval = userpai.WeekPaiments[k] == 0.00;
-                            if (itsnulval)
+                            if ((k) % 4 != 0 )
                             {
-                                workSheet.Cell(i + j, k + 2).FillPattern = PatternStyle.Solid;
-                                workSheet.Cell(i + j, k + 2).FillPatternForeColor = nullColor;
+                                workSheet.Cell(i + j, k + 2).LeftBorderStyle = LineStyle.Thin;
                             }
+                            workSheet.Cell(i + j, k + 2).RightBorderStyle = LineStyle.Thin;
                         }
 
                         colname = GetExcelColumnName(dishcount + 2);
@@ -199,7 +242,6 @@ namespace ACSDining.Infrastructure.Repositories
 
                         }
                         colname = GetExcelColumnName(dishcount + 3);
-                        //workSheet.Cell(i + j, dishcount + 3).Value = paimentList[j].Paiment;
                         if (ev)
                         {
                             workSheet.Cell(i + j, dishcount + 3).FillPattern = PatternStyle.Solid;
@@ -220,80 +262,42 @@ namespace ACSDining.Infrastructure.Repositories
                         {
                             workSheet.Cell(i + j, dishcount + 5).FillPattern = PatternStyle.Solid;
                             workSheet.Cell(i + j, dishcount + 5).FillPatternForeColor = contentColor;
-
                         }
-
-                        //if ((i + j)%2 == 0) continue;
-                        //var striprangestr = string.Format("A{0}:{2}{1}", i + j, i + j, endcolname);
-                        //workSheet.Range(striprangestr).FillPattern = PatternStyle.Solid;
-                        //workSheet.Range(striprangestr).FillPatternBackColor = contentColor;
+                        workSheet.Cell(i + j, dishcount + 5).TopBorderStyle = LineStyle.Medium;
+                        workSheet.Cell(i + j, dishcount + 5).RightBorderStyle = LineStyle.Medium;
+                        workSheet.Cell(i + j, dishcount + 5).BottomBorderStyle = LineStyle.Medium;
                     }
-                    i = 5;
-                    i += paimentList.Count;
-                    str = String.Format("A{0}:B{1}", i + 1, i + 1);
-                    workSheet.Range(str).Merge();
-                    workSheet.Cell(i, 0).MergedWithCell.Value = "Итого";
-                    workSheet.Cell(i, 0).AlignmentHorizontal = AlignmentHorizontal.Right;
-                    for (int j = 0; j < dishcount; j++)
-                    {
-                        colname = GetExcelColumnName(j + 3);
-                        workSheet.Cell(i, j + 2).Value = unitPricesTotal[j];
-                    }
-                    colname = GetExcelColumnName(dishcount + 3);
-                    workSheet.Cell(i, dishcount + 2).Value = unitPricesTotal[dishcount];
-                    colname = GetExcelColumnName(dishcount + 4);
-                    workSheet.Cell(i, dishcount + 3).Value = paimentList.Sum(up => up.Paiment);
-                    colname = GetExcelColumnName(dishcount + 5);
-                    workSheet.Cell(i, dishcount + 4).Value = paimentList.Sum(up => up.Balance);
-
-
-                    string endcolname = GetExcelColumnName(dishcount + 6);
-                    string allstr = string.Format("A1:{0}{1}", endcolname, paimentList.Count + 6);
-
-                    string headerstr = string.Format("C{0}:{2}{1}", 1, 2, endcolname);
+                    colname = GetExcelColumnName(dishcount + 1);
+                    string headerstr = string.Format("C{0}:{2}{1}", 1, 2, colname);
                     workSheet.Range(headerstr).AlignmentHorizontal = AlignmentHorizontal.Centered;
                     string headerusnamesstr = string.Format("A{0}:B{1}", 2, 5);
                     workSheet.Range(headerusnamesstr).AlignmentHorizontal = AlignmentHorizontal.Centered;
                     workSheet.Range(headerusnamesstr).AlignmentVertical = AlignmentVertical.Centered;
                     string usernames = string.Format("B{0}:B{1}", 6, paimentList.Count + 5);
                     workSheet.Range(usernames).AlignmentHorizontal = AlignmentHorizontal.Left;
-                    //string userpaistr = string.Format("C{0}:{2}{1}", 4, paimentList.Count + 5, endcolname);
-                    //workSheet.Range(userpaistr).NumberFormatString = "#,##0.00";
-                    //workSheet.Range(userpaistr).AlignmentHorizontal = AlignmentHorizontal.Centered;
-
-                    //workSheet.Range(allstr).Columns.AutoFit();
-                    //string headerstr = string.Format("C{0}:{2}{1}", 1, 3, endcolname);
                     string userquantistr = string.Format("C{0}:{2}{1}", 5, paimentList.Count + 6, endcolname);
-                    workSheet.Range(userquantistr).NumberFormatString = "0.0";
+                    //workSheet.Range(userquantistr).NumberFormatString = "0.0";
                     workSheet.Range(userquantistr).AlignmentHorizontal = AlignmentHorizontal.Centered;
                     string sumnotestart = GetExcelColumnName(dishcount + 2);
                     string sumnotend = GetExcelColumnName(dishcount + 5);
                     string sumcol = string.Format("{0}{1}:{2}{3}", sumnotestart, 5, sumnotend, paimentList.Count + 7);
                     workSheet.Range(sumcol).NumberFormatString = "#,##0.00";
                     workSheet.Range(sumcol).AlignmentHorizontal = AlignmentHorizontal.Centered;
-                    //string allstr = string.Format("A{0}:{2}{1}", 1, userWeekOrders.Count + 6, endcolname);
-                    workSheet.Columns[0].Width = 30;
-                    workSheet.Columns[1].Width = 180;
-                    workSheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
-                    workSheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
-                    workSheet.Range(allstr).Font = new Font("Arial", 12, FontStyle.Bold);
-                    for (int j = 5; j <paimentList.Count+6; j++)
+                    workSheet.Columns[0].Width = 40;
+                    workSheet.Columns[1].Width = 250;
+                    //worksheet.Columns[1].AutoFit();
+
+                    for (int j = 0; j < paimentList.Count + 6; j++)
                     {
-                        workSheet.Rows[j].Height=22;
-                        workSheet.Rows[j].AlignmentVertical=AlignmentVertical.Centered;
+                        workSheet.Rows[j].Height = (uint)((j != 2) ? 35 : 120);
+                        workSheet.Rows[j].AlignmentVertical = AlignmentVertical.Centered;
                     }
-                    // Define filename
-                    //string fileName = string.Format(@"{0}\ExcelData.xlsx",
-                    //    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
 
                     //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-                    //               @"ACSDining.Web\ExcelFiles\Paiments.xls";
+                    //               @"ACSDining.Web\ExcelFiles\Оплаты.xls";
 
                     string _path = HostingEnvironment.MapPath("~/ExcelFiles/Оплаты.xls");
-                    //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-                    //                          @"ACSDining.Web\ExcelFiles\Orders.xlsx";
-                    // Save this data as a file
-                    //worksheet.DisplayAlerts = false;
+
                     // delete output file if exists already
                     if (File.Exists(_path))
                     {
@@ -354,7 +358,7 @@ namespace ACSDining.Infrastructure.Repositories
             // Create new Spreadsheet
             Spreadsheet document = new Spreadsheet();
 
-            document.Workbook.Worksheets.DeleteAll();
+            //document.Workbook.Worksheets.DeleteAll();
             // Get worksheet by name
             Worksheet worksheet = document.Workbook.Worksheets.Add("Заявки фактические");
             string titlerang = String.Format("A1:{0}1", GetExcelColumnName(dishcount + 3));
@@ -368,10 +372,49 @@ namespace ACSDining.Infrastructure.Repositories
             worksheet.Range("B2:B5").Merge();
             worksheet.Range("B2:B5").AlignmentHorizontal = AlignmentHorizontal.Centered;
 
-            int i = 0;
             string str;
             string colname;
             string colname_2;
+            string endcolname = GetExcelColumnName(dishcount + 3);
+            string allstr = string.Format("A{0}:{2}{1}", 1, userWeekOrders.Count + 6, endcolname);
+
+            colname = GetExcelColumnName(dishcount + 2);
+            worksheet.Cell(2 + 1, 3).Value = "Цена за одну порцию, грн";
+            str = String.Format("C4:{0}4", colname);
+            worksheet.Range(str).Merge();
+            worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
+
+            int i = dishcount + 3;
+            colname = GetExcelColumnName(i);
+            worksheet.Cell(1, i - 1).Value = "Стоимость заказа за неделю";
+            str = String.Format("{0}2:{1}5", colname, colname);
+            worksheet.Range(str).Merge();
+            worksheet.Range(str).Wrap = true;
+            worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
+            worksheet.Columns[i - 1].Width = 100;
+            worksheet.Cell(1, i - 1).ShrinkToFit = true;
+
+            i = userWeekOrders.Count + 5;
+            worksheet.Cell(i, 0).Value = "Всего заказано";
+            str = String.Format("A{0}:B{1}", i + 1, i + 1);
+            worksheet.Range("A2:B5").AlignmentHorizontal = AlignmentHorizontal.Right;
+            worksheet.Range(str).Merge();
+
+            worksheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
+            worksheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
+
+            for (int j = 0; j < dishcount; j++)
+            {
+                worksheet.Cell(4, 2 + j).Value = weekDishPrices[j];
+                if ((j) % 4 != 0)
+                {
+                    worksheet.Cell(4, 2 + j).LeftBorderStyle = LineStyle.Thin;
+                }
+                worksheet.Cell(4, 2 + j).RightBorderStyle = LineStyle.Thin;
+            }
+
+
+            i = 0;
             for (int[] j = {0}; j[0] < workDayCount; j[0]++)
             {
                 colname = GetExcelColumnName(j[0]*catLength + 3);
@@ -382,41 +425,26 @@ namespace ACSDining.Infrastructure.Repositories
                 str = String.Format("{0}2:{1}2", colname, colname_2);
                 worksheet.Range(str).Merge();
             }
-            i += dishcount + 3;
-            colname = GetExcelColumnName(i);
-            worksheet.Cell(1, i - 1).Value = "Стоимость заказа за неделю";
-            str = String.Format("{0}2:{1}5", colname, colname);
-            worksheet.Range(str).Merge();
-            //worksheet.Range(str).Rotation = 90;
-            worksheet.Range(str).Wrap = true;
-            worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
-            worksheet.Columns[i - 1].Width = 100;
-            worksheet.Cell(1, i - 1).ShrinkToFit = true;
 
             i = 2;
             for (int j = 0; j < workDayCount; j++)
             {
                 for (int k = 0; k < catLength; k++)
                 {
-                    colname = GetExcelColumnName(i + 1 + j*catLength + k);
-                    worksheet.Cell(2, i + j*catLength + k).Value = dishCategories[k];
+                    colname = GetExcelColumnName(2 + 1 + j*catLength + k);
+                    worksheet.Cell(2, 2 + j*catLength + k).Value = dishCategories[k];
                     worksheet.Range(colname + "3").Rotation = 90;
+                    if ((k) % 4 != 0)
+                    {
+                        worksheet.Cell(2, 2 + j * catLength + k).LeftBorderStyle = LineStyle.Thin;
+                    }
+                    worksheet.Cell(2, 2 + j * catLength + k).RightBorderStyle = LineStyle.Thin;
                 }
             }
-            colname = GetExcelColumnName(dishcount + 2);
-            worksheet.Cell(i + 1, 3).Value = "Цена за одну порцию, грн";
-            str = String.Format("C4:{0}4", colname);
-            worksheet.Range(str).Merge();
-            worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
-            for (int j = 0; j < dishcount; j++)
-            {
-                worksheet.Cell(4, i + j).Value = weekDishPrices[j];
-            }
             str = string.Format("A1:{0}5", GetExcelColumnName(dishcount + 3));
-            // worksheet.Range(str).Font=new Font("Arial",12,FontStyle.Bold);
             i = 5;
-            string endcolname = GetExcelColumnName(dishcount + 3);
             Color contentColor = Color.FromArgb(224, 232, 241);
+            Color nullColor = Color.FromArgb(6, 84, 156);
             for (int j = 0; j < userWeekOrders.Count; j++)
             {
                 var itsevenrow = (i + j)%2 != 0;
@@ -430,24 +458,27 @@ namespace ACSDining.Infrastructure.Repositories
                     worksheet.Cell(i + j, 1).FillPattern = PatternStyle.Solid;
                     worksheet.Cell(i + j, 1).FillPatternForeColor = contentColor;
                 }
-                worksheet.Cell(i + j, 1).ShrinkToFit = true;
                 for (int k = 0; k < dishcount + 1; k++)
                 {
-                    worksheet.Cell(i + j, k + 2).Value = userweekorder.UserWeekOrderDishes[k];
+                    var celval = userweekorder.UserWeekOrderDishes[k];
+                    if (celval!=0.00)
+                    {
+                        worksheet.Cell(i + j, k + 2).Value = celval;
+                    }
                     if (itsevenrow)
                     {
                         worksheet.Cell(i + j, k + 2).FillPattern = PatternStyle.Solid;
                         worksheet.Cell(i + j, k + 2).FillPatternForeColor = contentColor;
                     }
+                    if ((k) % 4 != 0)
+                    {
+                        worksheet.Cell(i + j, k + 2).LeftBorderStyle = LineStyle.Thin;
+                    }
+                    worksheet.Cell(i + j, k + 2).RightBorderStyle = LineStyle.Thin;
                 }
 
             }
-            i += userWeekOrders.Count;
-            worksheet.Cell(i, 0).Value = "Всего заказано";
-            str = String.Format("A{0}:B{1}", i + 1, i + 1);
-            worksheet.Range("B2:B5").AlignmentHorizontal = AlignmentHorizontal.Right;
-            worksheet.Range(str).Merge();
-
+            i = userWeekOrders.Count + 5;
             Color evcolor = Color.FromArgb(68, 240, 196);
             for (int j = 0; j < workDayCount; j++)
             {
@@ -460,6 +491,11 @@ namespace ACSDining.Infrastructure.Repositories
                         curCell.FillPattern = PatternStyle.Solid;
                         curCell.FillPatternForeColor = evcolor;
                     }
+                    if ((k) % 4 != 0)
+                    {
+                        worksheet.Cell(i, j * catLength + k + 2).LeftBorderStyle = LineStyle.Thin;
+                    }
+                    worksheet.Cell(i, j * catLength + k + 2).RightBorderStyle = LineStyle.Thin;
                 }
             }
             worksheet.Cell(i, dishcount + 2).Value = userWeekOrders.Sum(uo => uo.UserWeekOrderDishes[dishcount]);
@@ -472,19 +508,25 @@ namespace ACSDining.Infrastructure.Repositories
             string usernames = string.Format("A{0}:B{1}", 6, userWeekOrders.Count + 5);
             worksheet.Range(usernames).AlignmentHorizontal = AlignmentHorizontal.Left;
             string userquantistr = string.Format("C{0}:{2}{1}", 5, userWeekOrders.Count + 6, endcolname);
-            worksheet.Range(userquantistr).NumberFormatString = "0.0";
+            //worksheet.Range(userquantistr).NumberFormatString = "#.#";
             worksheet.Range(userquantistr).AlignmentHorizontal = AlignmentHorizontal.Centered;
             string sumcol = string.Format("{0}{1}:{2}{3}", endcolname, 5, endcolname, userWeekOrders.Count + 6);
             worksheet.Range(sumcol).NumberFormatString = "#,##0.00";
             worksheet.Range(sumcol).AlignmentHorizontal = AlignmentHorizontal.Centered;
-            string allstr = string.Format("A{0}:{2}{1}", 1, userWeekOrders.Count + 6, endcolname);
-            worksheet.Columns[0].Width = 30;
-            worksheet.Columns[1].Width = 150;
-            worksheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
-            worksheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
-            worksheet.Range(allstr).Font = new Font("Arial", 12, FontStyle.Bold);
+
+            for (int j = 0; j < userWeekOrders.Count + 6; j++)
+            {
+                worksheet.Rows[j].Height = (uint)((j != 2) ? 35 : 150);
+                worksheet.Rows[j].AlignmentVertical = AlignmentVertical.Centered;
+            }
+
+            worksheet.Range(allstr).Font = new Font("Arial", 13, FontStyle.Bold);
+            worksheet.Columns[0].Width = 40;
+            worksheet.Columns[1].Width = 250;
+            //worksheet.Columns[1].AutoFit();
+
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-            //               @"ACSDining.Web\ExcelFiles\Orders.xls";
+            //               @"ACSDining.Web\ExcelFiles\ЗаявкиФакт.xls";
              string _path = HostingEnvironment.MapPath("~/ExcelFiles/ЗаявкиФакт.xls");
             if (File.Exists(_path))
             {
@@ -523,9 +565,6 @@ namespace ACSDining.Infrastructure.Repositories
             Worksheet worksheet = document.Workbook.Worksheets.Add("Заявки плановые");
 
 
-            string endcolname = GetExcelColumnName(dishcount + 3);
-            string allstr = string.Format("A{0}:{2}{1}", 1, userWeekOrders.Count + 6, endcolname);
-
             string titlerang = String.Format("A1:{0}1", GetExcelColumnName(dishcount + 3));
             Range range = worksheet.Range(titlerang);
             range.Merge();
@@ -533,61 +572,86 @@ namespace ACSDining.Infrastructure.Repositories
             range.AlignmentHorizontal = AlignmentHorizontal.Centered;
             worksheet.Cell(2, 0).Value = "№";
             worksheet.Range("A2:A5").Merge();
+            worksheet.Cell(2, 1).Value = "Ф.И.О.";
             worksheet.Range("B2:B5").Merge();
-            worksheet.Cell(1, 1).MergedWithCell.Value = "Ф.И.О.";
             worksheet.Range("B2:B5").AlignmentHorizontal = AlignmentHorizontal.Centered;
-            int i = 0;
+
             string str;
             string colname;
             string colname_2;
-            for (int[] j = {0}; j[0] < workDayCount; j[0]++)
-            {
-                colname = GetExcelColumnName(j[0]*catLength + 3);
-                colname_2 = GetExcelColumnName(j[0]*catLength + 6);
-                var elementAtOrDefault = workWeek.WorkingDays.Where(wd => wd.IsWorking).ElementAtOrDefault(j[0]);
-                if (elementAtOrDefault != null)
-                    worksheet.Cell(1, j[0]*catLength + 3).Value = elementAtOrDefault.DayOfWeek.Name;
-                str = String.Format("{0}2:{1}2", colname, colname_2);
-                worksheet.Range(str).Merge();
-            }
-            i += dishcount + 3;
+            string endcolname = GetExcelColumnName(dishcount + 3);
+            string allstr = string.Format("A{0}:{2}{1}", 1, userWeekOrders.Count + 6, endcolname);
+
+            colname = GetExcelColumnName(dishcount + 2);
+            worksheet.Cell(2 + 1, 3).Value = "Цена за одну порцию, грн";
+            str = String.Format("C4:{0}4", colname);
+            worksheet.Range(str).Merge();
+            worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
+
+            int i = dishcount + 3;
             colname = GetExcelColumnName(i);
             worksheet.Cell(1, i - 1).Value = "Стоимость заказа за неделю";
             str = String.Format("{0}2:{1}5", colname, colname);
             worksheet.Range(str).Merge();
-            //worksheet.Range(str).Rotation = 90;
             worksheet.Range(str).Wrap = true;
             worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
             worksheet.Columns[i - 1].Width = 100;
             worksheet.Cell(1, i - 1).ShrinkToFit = true;
+
+            i = userWeekOrders.Count + 5;
+            worksheet.Cell(i, 0).Value = "Всего заказано";
+            str = String.Format("A{0}:B{1}", i + 1, i + 1);
+            worksheet.Range("B2:B5").AlignmentHorizontal = AlignmentHorizontal.Right;
+            worksheet.Range(str).Merge();
+
+            worksheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
+            worksheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
+
+            for (int j = 0; j < dishcount; j++)
+            {
+                worksheet.Cell(4, 2 + j).Value = weekDishPrices[j];
+                if ((j) % 4 != 0)
+                {
+                    worksheet.Cell(4, 2 + j).LeftBorderStyle = LineStyle.Thin;
+                }
+                worksheet.Cell(4, 2 + j).RightBorderStyle = LineStyle.Thin;
+            }
+
+
+            i = 0;
+            for (int[] j = { 0 }; j[0] < workDayCount; j[0]++)
+            {
+                colname = GetExcelColumnName(j[0] * catLength + 3);
+                colname_2 = GetExcelColumnName(j[0] * catLength + 6);
+                var elementAtOrDefault = workWeek.WorkingDays.Where(wd => wd.IsWorking).ElementAtOrDefault(j[0]);
+                if (elementAtOrDefault != null)
+                    worksheet.Cell(1, j[0] * catLength + 3).Value = elementAtOrDefault.DayOfWeek.Name;
+                str = String.Format("{0}2:{1}2", colname, colname_2);
+                worksheet.Range(str).Merge();
+            }
 
             i = 2;
             for (int j = 0; j < workDayCount; j++)
             {
                 for (int k = 0; k < catLength; k++)
                 {
-                    colname = GetExcelColumnName(i + 1 + j*catLength + k);
-                    worksheet.Cell(2, i + j*catLength + k).Value = dishCategories[k];
+                    colname = GetExcelColumnName(2 + 1 + j * catLength + k);
+                    worksheet.Cell(2, 2 + j * catLength + k).Value = dishCategories[k];
                     worksheet.Range(colname + "3").Rotation = 90;
+                    if ((k) % 4 != 0)
+                    {
+                        worksheet.Cell(2, 2 + j * catLength + k).LeftBorderStyle = LineStyle.Thin;
+                    }
+                    worksheet.Cell(2, 2 + j * catLength + k).RightBorderStyle = LineStyle.Thin;
                 }
             }
-            colname = GetExcelColumnName(dishcount + 2);
-            worksheet.Cell(i + 1, 3).Value = "Цена за одну порцию, грн";
-            str = String.Format("C4:{0}4", colname);
-            worksheet.Range(str).Merge();
-            worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Centered;
-            for (int j = 0; j < dishcount; j++)
-            {
-                worksheet.Cell(4, i + j).Value = weekDishPrices[j];
-            }
             str = string.Format("A1:{0}5", GetExcelColumnName(dishcount + 3));
-            // worksheet.Range(str).Font=new Font("Arial",12,FontStyle.Bold);
             i = 5;
-
             Color contentColor = Color.FromArgb(224, 232, 241);
+            Color nullColor = Color.FromArgb(6, 84, 156);
             for (int j = 0; j < userWeekOrders.Count; j++)
             {
-                var itsevenrow = (i + j)%2 != 0;
+                var itsevenrow = (i + j) % 2 != 0;
                 PlanUserWeekOrderDto userweekorder = userWeekOrders[j];
                 worksheet.Cell(i + j, 0).Value = j + 1;
                 worksheet.Cell(i + j, 1).Value = userweekorder.UserName;
@@ -601,41 +665,42 @@ namespace ACSDining.Infrastructure.Repositories
                 worksheet.Cell(i + j, 1).ShrinkToFit = true;
                 for (int k = 0; k < dishcount + 1; k++)
                 {
-                    Cell curCell = worksheet.Cell(i + j, k + 2);
-                    curCell.Value = userweekorder.UserWeekOrderDishes[k];
+                    var celval = userweekorder.UserWeekOrderDishes[k];
+                    if (celval != 0.00)
+                    {
+                        worksheet.Cell(i + j, k + 2).Value = celval;
+                    }
                     if (itsevenrow)
                     {
-                        curCell.FillPattern = PatternStyle.Solid;
-                        curCell.FillPatternForeColor = contentColor;
+                        worksheet.Cell(i + j, k + 2).FillPattern = PatternStyle.Solid;
+                        worksheet.Cell(i + j, k + 2).FillPatternForeColor = contentColor;
                     }
-                    //if (k % catLength == 0 && k != 0)
-                    //{
-                    //    curCell.LeftBorderStyle = LineStyle.Dotted;
-                    //}
-                    //if (k % catLength == 0 && k != dishcount)
-                    //{
-                    //    curCell.RightBorderStyle = LineStyle.Dotted;
-                    //}
+                    if ((k) % 4 != 0)
+                    {
+                        worksheet.Cell(i + j, k + 2).LeftBorderStyle = LineStyle.Thin;
+                    }
+                    worksheet.Cell(i + j, k + 2).RightBorderStyle = LineStyle.Thin;
                 }
-            }
-            i += userWeekOrders.Count;
-            worksheet.Cell(i, 0).Value = "Всего заказано";
-            str = String.Format("A{0}:B{1}", i + 1, i + 1);
-            worksheet.Range(str).Merge();
-            worksheet.Range(str).AlignmentHorizontal = AlignmentHorizontal.Right;
 
+            }
+            i = userWeekOrders.Count + 5;
             Color evcolor = Color.FromArgb(68, 240, 196);
             for (int j = 0; j < workDayCount; j++)
             {
                 for (int k = 0; k < catLength; k++)
                 {
-                    Cell curCell = worksheet.Cell(i, j*catLength + k + 2);
-                    curCell.Value = summaryDishQuantities[j*catLength + k];
-                    if (j%2 == 0)
+                    Cell curCell = worksheet.Cell(i, j * catLength + k + 2);
+                    curCell.Value = summaryDishQuantities[j * catLength + k];
+                    if (j % 2 == 0)
                     {
                         curCell.FillPattern = PatternStyle.Solid;
                         curCell.FillPatternForeColor = evcolor;
                     }
+                    if ((k) % 4 != 0)
+                    {
+                        worksheet.Cell(i, j * catLength + k + 2).LeftBorderStyle = LineStyle.Thin;
+                    }
+                    worksheet.Cell(i, j * catLength + k + 2).RightBorderStyle = LineStyle.Thin;
                 }
             }
             worksheet.Cell(i, dishcount + 2).Value = userWeekOrders.Sum(uo => uo.UserWeekOrderDishes[dishcount]);
@@ -648,21 +713,25 @@ namespace ACSDining.Infrastructure.Repositories
             string usernames = string.Format("A{0}:B{1}", 6, userWeekOrders.Count + 5);
             worksheet.Range(usernames).AlignmentHorizontal = AlignmentHorizontal.Left;
             string userquantistr = string.Format("C{0}:{2}{1}", 5, userWeekOrders.Count + 6, endcolname);
-            worksheet.Range(userquantistr).NumberFormatString = "0.0";
+            //worksheet.Range(userquantistr).NumberFormatString = "#.#";
             worksheet.Range(userquantistr).AlignmentHorizontal = AlignmentHorizontal.Centered;
             string sumcol = string.Format("{0}{1}:{2}{3}", endcolname, 5, endcolname, userWeekOrders.Count + 6);
             worksheet.Range(sumcol).NumberFormatString = "#,##0.00";
             worksheet.Range(sumcol).AlignmentHorizontal = AlignmentHorizontal.Centered;
-            worksheet.Columns[0].Width = 30;
-            worksheet.Columns[1].Width = 150;
+            worksheet.Columns[0].Width = 40;
+            worksheet.Columns[1].Width = 250;
+            //worksheet.Columns[1].AutoFit();
+            worksheet.Range(allstr).Font = new Font("Arial", 13, FontStyle.Bold);
 
-            worksheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
-            worksheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
-            worksheet.Range(allstr).Font = new Font("Arial", 12, FontStyle.Bold);
+            for (int j = 0; j < userWeekOrders.Count + 6; j++)
+            {
+                worksheet.Rows[j].Height = (uint)((j != 2) ? 35 : 150);
+                worksheet.Rows[j].AlignmentVertical = AlignmentVertical.Centered;
+            }
 
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-            //               @"ACSDining.Web\ExcelFiles\PlanOrders.xls";
-            string _path = HostingEnvironment.MapPath("~/ExcelFiles/ЗаявкиПлан.xls");
+            //               @"ACSDining.Web\ExcelFiles\ЗаявкиПлан.xls";
+             string _path = HostingEnvironment.MapPath("~/ExcelFiles/ЗаявкиПлан.xls");
             if (File.Exists(_path))
             {
                 File.Delete(_path);
@@ -711,7 +780,7 @@ namespace ACSDining.Infrastructure.Repositories
             range.AlignmentHorizontal = AlignmentHorizontal.Centered;
             worksheet.Columns[0].Width = 180;
             worksheet.Cell(1, 1).Value = "Наименование блюд";
-            worksheet.Columns[1].Width = 350;
+            worksheet.Columns[1].Width = 450;
             worksheet.Columns[2].Width = 90;
             worksheet.Columns[3].Width = 120;
             worksheet.Rows[0].Height = 50;
@@ -736,14 +805,20 @@ namespace ACSDining.Infrastructure.Repositories
                 for (int j = 0; j < mfd.Dishes.Count; j++)
                 {
                     worksheet.Cell(strcount + j + 1 + i, 0).Value = mfd.Dishes[j].Category;
-                    worksheet.Cell(strcount + j + 1 + i, 1).Value = mfd.Dishes[j].Title +
-                                                                (!string.IsNullOrEmpty(mfd.Dishes[j].Description)
-                                                                    ? ":" + mfd.Dishes[j].Description
-                                                                    : null);
+                    worksheet.Cell(strcount + j + 1 + i, 0).Indent = 2;
+                    worksheet.Cell(strcount + j + 1 + i, 1).Value = mfd.Dishes[j].Title;
+                    worksheet.Cell(strcount + j + 1 + i, 1).Indent = 2;
+                    bool deskexists = !string.IsNullOrEmpty(mfd.Dishes[j].Description);
+                    if (deskexists)
+                    {
+                        worksheet.Cell(strcount + j + 1 + i, 1).Value = mfd.Dishes[j].Title + ":" +
+                                                                        mfd.Dishes[j].Description;
+                        worksheet.Cell(strcount + j + 1 + i, 1).Font = new Font("Arial", 12, FontStyle.Bold);
+                    }
                     worksheet.Cell(strcount + j + 1 + i, 1).Wrap = true;
                     worksheet.Cell(strcount + j + 1 + i, 2).Value = mfd.Dishes[j].Price;
                     worksheet.Cell(strcount + j + 1 + i, 2).NumberFormatString = "#,##0.00";
-                    worksheet.Rows[strcount + j + 1 + i].Height = 50;
+                    worksheet.Rows[strcount + j + 1 + i].Height = (uint) (!deskexists ? 70 : 90);
                     worksheet.Rows[strcount + j + 1 + i].AlignmentVertical = AlignmentVertical.Centered;
                 }
                 string sumdaytotal = string.Format("D{0}:D{1}", strcount + 2 + i, strcount + 1 + i + catLength);
@@ -761,11 +836,12 @@ namespace ACSDining.Infrastructure.Repositories
             worksheet.Cell(daycount * (catLength + 1) + 2, 3).AlignmentHorizontal = AlignmentHorizontal.Centered;
             worksheet.Cell(daycount * (catLength + 1) + 2, 3).NumberFormatString = "#,##0.00";
 
-            worksheet.Rows[daycount * (catLength + 1) + 2].Height = 50;
+            worksheet.Rows[daycount * (catLength + 1) + 2].Height = 60;
             worksheet.Rows[daycount * (catLength + 1) + 2].AlignmentVertical = AlignmentVertical.Centered;
             worksheet.Range(allstr).OuterBorderStyle = LineStyle.Medium;
             worksheet.Range(allstr).InnerBorderStyle = LineStyle.Medium;
             worksheet.Range(allstr).Font = new Font("Arial", 14, FontStyle.Bold);
+
 
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //               @"ACSDining.Web\ExcelFiles\Menu.xls";

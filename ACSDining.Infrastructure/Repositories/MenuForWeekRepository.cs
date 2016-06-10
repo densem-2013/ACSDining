@@ -53,21 +53,6 @@ namespace ACSDining.Infrastructure.Repositories
                 .FirstOrDefault(ww => ww.WeekNumber == wyDto.Week && ww.Year.YearNumber == wyDto.Year);
         }
 
-        public static MenuForDay GetCurrentMenuForDay(this IRepositoryAsync<MenuForWeek> repository)
-        {
-            WorkingWeek curWorkingWeek =
-                repository.GetRepositoryAsync<MenuForWeek>().WorkWeekByWeekYear(YearWeekHelp.GetCurrentWeekYearDto());
-            WorkingDay curWorkingDay =
-                curWorkingWeek.WorkingDays.FirstOrDefault(
-                    wd => wd.DayOfWeek.Id == (((int) DateTime.Now.DayOfWeek + 1))%7);
-            return
-                repository.GetRepositoryAsync<MenuForDay>()
-                    .Query()
-                    .Include(mfd => mfd.DishPriceMfdRelations.Select(mp => mp.DishPrice))
-                    .Select()
-                    .FirstOrDefault(mfd => curWorkingDay != null && mfd.WorkingDay.Id == curWorkingDay.Id);
-        }
-
         public static WeekMenuDto MapWeekMenuDto(this IRepositoryAsync<MenuForWeek> repository, WeekYearDto wyDto)
         {
             MenuForWeek wmenu = repository.GetWeekMenuByWeekYear(wyDto);
@@ -123,6 +108,21 @@ namespace ACSDining.Infrastructure.Repositories
                 WeekYear = wyDto
             };
             return dtoModel;
+        }
+
+        public static MenuForWeek GetWeekMenuMfdContains(this IRepositoryAsync<MenuForWeek> repository, int mfdid)
+        {
+            MenuForWeek mfw =
+               repository.Query()
+                   .Include(wm => wm.MenuForDay.Select(dm => dm.DishPriceMfdRelations.Select(dp => dp.Dish.DishType)))
+                   .Include(wm => wm.MenuForDay.Select(dm => dm.DishPriceMfdRelations.Select(dp => dp.DishPrice)))
+                   .Include(wm => wm.MenuForDay.Select(dm => dm.DishPriceMfdRelations.Select(dp => dp.Dish.DishDetail)))
+                   .Include(wm => wm.Orders)
+                   .Include(wm => wm.WorkingWeek.Year)
+                   .Include(wm => wm.WorkingWeek.WorkingDays.Select(d => d.DayOfWeek))
+                   .Select()
+                   .FirstOrDefault(mw => mw.MenuForDay.Select(md => md.ID).Contains(mfdid));
+            return mfw;
         }
     }
 }
