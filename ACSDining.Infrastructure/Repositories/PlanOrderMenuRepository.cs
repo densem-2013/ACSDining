@@ -21,7 +21,7 @@ namespace ACSDining.Infrastructure.Repositories
                     om =>
                         om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&
                         om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year)
-                .OrderBy(wp => wp.User.UserName)
+                .OrderBy(wp => wp.User.LastName)
                 .ToList();
             return pagedOrders;
         }

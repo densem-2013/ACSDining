@@ -105,7 +105,12 @@ namespace ACSDining.Infrastructure.HelpClasses
             };
         }
 
+        public static bool IsCurrentWeekYearDto(WeekYearDto wyDto)
+        {
+            WeekYearDto curwyDto = GetCurrentWeekYearDto();
+            return curwyDto.Week == wyDto.Week && curwyDto.Year == wyDto.Year;
 
+        }
         #endregion
     }
 }

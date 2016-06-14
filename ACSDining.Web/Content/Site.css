@@ -1145,3 +1145,14 @@ select.input-small {
 .ui-datepicker-inline.ui-datepicker.ui-widget.ui-widget-content.ui-helper-clearfix.ui-corner-all {
     display: inline-block !important;
 }
+tr.allowedit {
+    background-color: #f48aa5 !important;
+    font-size: 15px;
+    color: #000080;
+}
+#ordesTable td>input[type="text"] {
+    width: 60px;
+}
+#orderquant >select {
+    width: 60px !important;
+}

@@ -162,8 +162,8 @@ window.app.su_Service = (function() {
 
     var baseOrdersUri = "/api/Orders/";
     var serviceOrdersUrls = {
-        weekorders: function (factorplan) { return baseOrdersUri + factorplan },
-       // planweekorders: function() { return baseOrdersUri + "plan"  },
+        factweekorders: function () { return baseOrdersUri + "fact" },
+        planweekorders: function() { return baseOrdersUri + "plan"  },
         updateWeekOrder: function() { return baseOrdersUri + "update" },
         createOrder: function() { return baseOrdersUri + "create" },
         calcsummary: function() { return baseOrdersUri + "summary/" } 
@@ -246,9 +246,9 @@ window.app.su_Service = (function() {
         ApplyWorkWeek: function(wwDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.workweekapply(), wwDto);
         },
-        LoadWeekNumbers: function() {
-            return ajaxRequest("get", serviceWeekMenuUrls.weekNumbers());
-        },
+        //LoadWeekNumbers: function() {
+        //    return ajaxRequest("get", serviceWeekMenuUrls.weekNumbers());
+        //},
         UpdateWeekMenu: function(item) {
             return ajaxRequest("put", baseWeekMenuUri + "update", item);
         },
@@ -281,8 +281,11 @@ window.app.su_Service = (function() {
             return ajaxRequest("put", serviceDishesUrls.updateDeleted(), updel);
         },
         //Orders
-        LoadWeekOrders: function(wyDto,factorplan) {
-            return ajaxRequest("put", serviceOrdersUrls.weekorders(factorplan), wyDto);
+        LoadFactWeekOrders: function(wyDto) {
+            return ajaxRequest("put", serviceOrdersUrls.factweekorders(), wyDto);
+        },
+        LoadPlanWeekOrders: function (wyDto) {
+            return ajaxRequest("put", serviceOrdersUrls.planweekorders(), wyDto);
         },
         UpdateOrder: function(item) {
             return ajaxRequest("put", serviceOrdersUrls.updateWeekOrder(), item);

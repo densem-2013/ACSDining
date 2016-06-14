@@ -70,6 +70,9 @@
         self.Summary = ko.observable(summ.toFixed(2));
         self.Note = ko.observable(new noteValueModel(item.note));
         self.LastWeekBalance = ko.observable(item.prevWeekBalance);
+        self.isHovering = ko.observable(false);
+
+        self.IsSelectedRow = ko.observable(false);
     }
     var paimentViewModel = function() {
         var self = this;
@@ -99,6 +102,17 @@
         self.UnitPrices = ko.observableArray([]);
         self.UnitPricesTotal = ko.observableArray([]);
 
+        self.SUCanChangeOrder = ko.observable();
+
+
+        self.rowclicked = function() {
+
+            ko.utils.arrayForEach(self.UserPaiments(), function(obj) {
+
+                obj.IsSelectedRow(obj.isHovering() && self.SUCanChangeOrder());
+
+            });
+        };
 
         self.TotalNeedWeekPaiment = ko.dependentObservable(function () {
             var tatalneedpai = 0;
@@ -261,19 +275,18 @@
                     window.location.assign(res.fileName);
                 });
         };
+
         self.LoadPaiments = function (wyDto) {
-
             app.su_Service.GetPaiments( wyDto).then(function (resp) {
-
                 if (resp != null) {
-
                         self.WeekYear(resp.weekYearDto);
                         self.UnitPrices(resp.weekDishPrices);
                         self.UnitPricesTotal(resp.summaryDishPaiments);
                         self.DaysOfWeek(resp.dayNames);
-                        self.UserPaiments(ko.utils.arrayMap(resp.userWeekPaiments,function(item) {
+                        self.UserPaiments(ko.utils.arrayMap(resp.userWeekPaiments, function(item) {
                             return new userPaimentModel(item);
                         }));
+                        self.SUCanChangeOrder(resp.suCanChangeOrder);
                 } else {
                     if (!self.IsCurrentWeek()) {
                         modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading;
+using System.Timers;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.Identity;
+using Timer = System.Threading.Timer;
 
 namespace ACSDining.Infrastructure.HelpClasses
 {
@@ -20,28 +21,24 @@ namespace ACSDining.Infrastructure.HelpClasses
             // 2nd parameter is optional parameters for the callback.
             // 3rd parameter is telling the timer when to start.
             // 4th parameter is telling the timer how often to run.
-            Timer timer = new Timer(TimerElapsed, null, new TimeSpan(0), new TimeSpan(1, 0, 0));
+            //Timer timer = new Timer(TimerElapsed, null, new TimeSpan(0), new TimeSpan(0, 1, 0));
+            var timer = new System.Timers.Timer
+            {
+                Interval = 3600000, 
+                Enabled = true
+            };
+            timer.Elapsed += TimerElapsed;
         }
 
         // The callback, no inside the method used above.
         // This will run every  hour.
-        private static void TimerElapsed(object o)
+        private static void TimerElapsed(object o, System.Timers.ElapsedEventArgs e)
         {
-            if (DateTime.Now.Hour == 9)
+            if (e.SignalTime.Hour == 9)
             {
-                WeekYearDto wyDto = YearWeekHelp.GetCurrentWeekYearDto();
                 using (ApplicationDbContext _db = new ApplicationDbContext())
                 {
-                    WorkingDay workday =
-                        _db.WorkingDays.Include(wd => wd.WorkingWeek.Year)
-                            .FirstOrDefault(
-                                wd =>
-                                    wd.WorkingWeek.WeekNumber == wyDto.Week &&
-                                    wd.WorkingWeek.Year.YearNumber == wyDto.Year);
-                    if (workday != null && workday.IsWorking)
-                    {
                         _db.DayFactToPlan();
-                    }
                 }
             }
         }

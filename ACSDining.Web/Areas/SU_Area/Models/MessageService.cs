@@ -43,46 +43,55 @@ namespace ACSDining.Web.Areas.SU_Area.Models
 
         static MessageService()
         {
-            NetworkCredential crident = null;
-            try
+            if (string.Equals(Settings.Smtp.Network.UserName, "robot@ia.ua"))
             {
-                crident = new System.Net.NetworkCredential(Settings.Smtp.Network.UserName,
-                    Settings.Smtp.Network.Password);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-            if (Settings != null)
-            {
-                Client = new SmtpClient
+                Client = new SmtpClient(Settings.Smtp.Network.Host, Settings.Smtp.Network.Port)
                 {
-                    Host = Settings.Smtp.Network.Host,
-                    Port = Settings.Smtp.Network.Port,
-                    Credentials = crident,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    //UseDefaultCredentials = Settings.Smtp.Network.DefaultCredentials,
-                    EnableSsl = Settings.Smtp.Network.EnableSsl,
-                    Timeout = 60000
+                    Credentials = new NetworkCredential(Settings.Smtp.Network.UserName, Settings.Smtp.Network.Password),
+                    EnableSsl = Settings.Smtp.Network.EnableSsl
                 };
+            }
+            else
+            {
+                NetworkCredential crident = null;
+                try
+                {
+                    crident = new System.Net.NetworkCredential(Settings.Smtp.Network.UserName,
+                        Settings.Smtp.Network.Password);
+                }
+                catch (Exception)
+                {
 
+                    throw;
+                }
+
+                if (Settings != null)
+                {
+                    Client = new SmtpClient
+                    {
+                        Host = Settings.Smtp.Network.Host,
+                        Port = Settings.Smtp.Network.Port,
+                        Credentials = crident,
+                        DeliveryMethod = SmtpDeliveryMethod.Network,
+                        //UseDefaultCredentials = Settings.Smtp.Network.DefaultCredentials,
+                        EnableSsl = Settings.Smtp.Network.EnableSsl,
+                        Timeout = 60000
+                    };
+
+                }
             }
         }
 
         public static void SendEmailAsync(List<User> users, MessageTopic topic, string datastring = null,
             string message = null)
         {
-            //SmtpClient Smtp = new SmtpClient("srv-terminal", 25);
-            //Smtp.Credentials = new NetworkCredential("robot@ia.ua", "");
-            //Smtp.EnableSsl = false;
+            
             MailMessage email = new MailMessage
             {
                 From =
-                    new MailAddress(Settings.Smtp.Network.UserName, "Администрация столовой", System.Text.Encoding.UTF8),
-                DeliveryNotificationOptions =
-                    DeliveryNotificationOptions.OnFailure
+                    new MailAddress(Settings.Smtp.Network.UserName/*"robot@ia.ua"*/, "Администрация столовой", System.Text.Encoding.UTF8)//,
+                //DeliveryNotificationOptions =
+                //    DeliveryNotificationOptions.OnFailure
             };
             users.ForEach(u =>
             {
@@ -101,6 +110,9 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             {
                 //Task.Run(()=>).Wait();
                 Client.Send(email);
+                //WatchdogMailMessage(users.Select(u => u.Email).ToList(), string.Format(template, datastring, message),
+                //    "Администрация столовой");
+
             }
             catch (Exception)
             {
@@ -116,6 +128,7 @@ namespace ACSDining.Web.Areas.SU_Area.Models
                 : topic == MessageTopic.Registration ? "RegistrationCompleted" : "MenuCreateCompleted";
             var templateFilePath = HostingEnvironment.MapPath("~/Areas/SU_Area/Views/SU_/EmailTemplates/") + template +
                                    ".html";
+            //string templateFilePath = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", @"ACSDining.Web\Areas\SU_Area\Views\SU_\EmailTemplates\") + template + ".html";
             string body;
             try
             {
@@ -159,5 +172,50 @@ namespace ACSDining.Web.Areas.SU_Area.Models
                    strbild.ToString());
             }
        }
+        public static void WatchdogMailMessage(List<string> messageTo, string body, string subject)
+        {
+
+            //var watchdogSettings = new WatchdogSettings();
+
+            var mailMessage = new MailMessage();
+
+            try
+            {
+
+                var smtpServerName = "srv-terminal";
+
+                using (var smtpClient = new SmtpClient(smtpServerName))
+                {
+
+                    smtpClient.Port = 25;
+                    smtpClient.EnableSsl = false;
+                    //smtpClient.UseDefaultCredentials = false;
+                    mailMessage.From = new MailAddress("robot@ia.ua");
+
+                    //foreach (var address in messageTo.Where(address => !string.IsNullOrEmpty(address)))
+                    //{
+
+                    //    mailMessage.To.Add(new MailAddress(address));
+
+                    //}
+                    mailMessage.To.Add(new MailAddress("pyatnarik2006@mail.ru"));
+                    mailMessage.Subject =  subject;
+
+                    mailMessage.IsBodyHtml = false;
+
+                    mailMessage.Body = body;
+
+                    smtpClient.Send(mailMessage);
+
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
     }
 }

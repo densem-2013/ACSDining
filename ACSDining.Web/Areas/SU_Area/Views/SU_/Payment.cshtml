@@ -52,7 +52,7 @@
             </colgroup>
             <tbody>
                 <!--ko foreach: pagedList-->
-                <tr>
+                <tr data-bind="singleClick: $root.rowclicked, hover:isHovering, css:{allowedit: IsSelectedRow }">
                     <td>
                         <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
                     </td>
@@ -64,22 +64,26 @@
                     <!--/ko-->
                     <td class="lastTD"><span data-bind="text: Summary"></span></td>
                     <!--ko with:Paiment-->
-                    <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
-                        <!--ko if: isEditMode-->
-                        <input type="text" data-bind="value:formattedPaiment, event:{focusout: function(){$data.onFocusOut(); $root.update($parent); } }">
-                        <!--/ko-->
-                        <!--ko ifnot: isEditMode-->
-                        <span data-bind="text: Paiment"></span>
-                        <!--/ko-->
+                    <!--ko if: $parent.IsSelectedRow-->
+                    <td class="lastTD" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseover: doubleClick , mouseout: function(){ hasFocus=false} }">
+
+                        <input type="text" data-bind="value:formattedPaiment,  hasFocus: isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.update($parent); } }">
+
                     </td>
+                    <!--/ko-->
+                    <!--ko ifnot: $parent.IsSelectedRow-->
+                    <td class="lastTD">
+                        <span data-bind="text: Paiment"></span>
+                    </td>
+                    <!--/ko-->
                     <!--/ko-->
                     <td class="lastTD"><span data-bind="text: Balance"></span></td>
                     <!--ko with: Note-->
-                    <td class="lastTD" style="min-width: 60px" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick }, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">
-                        <!--ko if: isEditMode-->
-                        <input type="text" data-bind="value:Note,event:{focusout: function(){$data.onFocusOut(); $root.noteUpdate($parent);} }">
+                    <td class="lastTD" style="min-width: 60px" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseover: doubleClick , mouseout: function(){ hasFocus=false}}">
+                        <!--ko if: $parent.IsSelectedRow-->
+                        <input type="text" data-bind="value:Note, hasFocus: isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.noteUpdate($parent);} }">
                         <!--/ko-->
-                        <!--ko ifnot: isEditMode-->
+                        <!--ko ifnot: $parent.IsSelectedRow-->
                         <span data-bind="text: Note"></span>
                         <!--/ko-->
                     </td>
@@ -96,13 +100,21 @@
                     <td class="footheader"><span data-bind="text: TotalBalance" style="font-weight: bold"></span></td>
                     <td class="footheader"></td>
                 </tr>
+            </tbody>
+            <colgroup>
+                <col data-bind="attr:{class: 'col-sm-'+ Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3 )}" />
+                <col data-bind="attr:{class: 'col-sm-'+ Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}" />
+                <col class="col-sm-2" />
+                <col data-bind="attr:{class: 'col-sm-'+ Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}" />
+            </colgroup>
+            <tfoot>
                 <tr>
-                    <td colspan="3" class="t-header">
-                        <button type="button" class="btn btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
+                    <td data-bind="attr:{colspan:Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3 )}" class="t-header">
+                        <button type="button" class="btn btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}" style="float: right">
                             <span class="glyphicon glyphicon-hand-left"></span>
                         </button>
                     </td>
-                    <td data-bind="attr:{colspan:(DaysOfWeek().length*$root.Categories().length-15)}" class="t-header">
+                    <td data-bind="attr:{colspan:Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}" class="t-header">
                         <div>
                             <span class="glyphicon ">Страница </span>
                             <span class="label-info " data-bind=" text: pageIndex()+1"></span>
@@ -110,12 +122,12 @@
                             <span class="label-info " data-bind=" text: maxPageIndex()+1"></span>
                         </div>
                     </td>
-                    <td colspan="3" class="t-header">
+                    <td colspan="2" class="t-header">
                         <button type="button" class="btn btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
                             <span class="glyphicon glyphicon-hand-right"> </span>
                         </button>
                     </td>
-                    <td data-bind="attr:{colspan:(DaysOfWeek().length*$root.Categories().length-5)}" class="t-header">
+                    <td data-bind="attr:{colspan:Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3 +3)}" class="t-header">
                         <div>
                             <span> Отображать </span>
                             <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>
@@ -123,8 +135,8 @@
                         </div>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+            </tfoot>
+</table>
     </div>
 </div>
     <div id="modalMessage" class="modal">
@@ -148,10 +160,4 @@
     @Scripts.Render("~/bundles/WeekPaiments")
     <script type="text/javascript">
 
-        //$('.nav.navbar-nav li').eq(1).addClass('active');
-        //$('.menu li ').click(function (e) {
-
-        //    $('.menu li ').removeClass('active');
-        //    $('.menu li ').eq( 1 ).addClass('active');
-        //});
     </script>

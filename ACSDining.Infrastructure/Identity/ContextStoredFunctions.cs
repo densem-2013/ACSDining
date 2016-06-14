@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Threading.Tasks;
 using ACSDining.Infrastructure.DTO;
 using UpdateUserOrderDto = ACSDining.Infrastructure.DTO.SuperUser.Orders.UpdateUserOrderDto;
@@ -35,11 +36,14 @@ namespace ACSDining.Infrastructure.Identity
         /// и закрывает возможность редактирования заказа на этот день для клиентов
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="workdayid"></param>
         /// <returns></returns>
-        public static void DayFactToPlan(this ApplicationDbContext context)
+        public static void DayFactToPlan(this ApplicationDbContext context, int? workdayid = null)
         {
-            context.Database.ExecuteSqlCommand("exec DayFactToPlan");
+            var workdayidParametr = new SqlParameter("@WDayId", workdayid ?? SqlInt32.Null);
+            context.Database.ExecuteSqlCommand("exec DayFactToPlan @WDayId", workdayidParametr);
         }
+
         #endregion
 
         #region Заявки

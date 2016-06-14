@@ -27,7 +27,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         private ApplicationDbContext _db;
         private readonly IMenuForWeekService _weekmenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
-        private readonly IOrderMenuService _orderMenuService;
         private readonly IMfdDishPriceService _mfdDishPriceService;
 
         public WeekMenuController(IUnitOfWorkAsync unitOfWork)
@@ -35,7 +34,6 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             _unitOfWork = unitOfWork;
             _db = _unitOfWork.GetContext();
             _weekmenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
-            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _mfdDishPriceService=new MfdDishPriceService(_unitOfWork.RepositoryAsync<MfdDishPriceRelations>());
         }
 
@@ -142,7 +140,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             List<User> users = userManager.Users.ToList();
 
-            //MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
+            MessageService.SendEmailAsync(users, MessageTopic.MenuCreated, messageDto.DateTime);
 
             return Ok(true);
         }

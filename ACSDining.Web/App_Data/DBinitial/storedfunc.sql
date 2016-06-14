@@ -9,7 +9,7 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE FUNCTION "CurrentWeekYear"()
+CREATE FUNCTION [dbo].[CurrentWeekYear]()
 RETURNS @curweekyear TABLE 
 (
 	[WEEK] integer,
@@ -18,7 +18,7 @@ RETURNS @curweekyear TABLE
 AS
 	begin
 	-- Add the SELECT statement with parameter references here
-	INSERT @curweekyear SELECT DATEPART(WEEK,DATEADD(WEEK,-1,DATEADD(DAY,-1,GETDATE()))) , DATEPART(YEAR,GETDATE()) ;
+	INSERT @curweekyear SELECT DATEPART(WEEK,DATEADD(WEEK,-1,GETDATE())) , DATEPART(YEAR,GETDATE()) ;
 	return
 	end
 GO
@@ -27,7 +27,7 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Возвращает номер недели и год для следующей недели>
 -- =============================================
-CREATE FUNCTION GetNextWeekYear 
+CREATE FUNCTION [dbo].[GetNextWeekYear] 
 (	)
 RETURNS @nextweekyear TABLE 
 (
@@ -37,7 +37,26 @@ RETURNS @nextweekyear TABLE
 AS
 	begin
 	-- Add the SELECT statement with parameter references here
-	INSERT @nextweekyear SELECT DATEPART(WEEK,DATEADD(DAY,-1,GETDATE())) , DATEPART(YEAR,GETDATE()) ;
+	INSERT @nextweekyear SELECT DATEPART(WEEK,GETDATE()) , DATEPART(YEAR,GETDATE()) ;
+	return
+	end
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Возвращает номер недели и год для предыдущей недели>
+-- =============================================
+CREATE FUNCTION  [dbo].[GetPrevWeekYear] 
+(	)
+RETURNS @prevweekyear TABLE 
+(
+	[WEEK] integer,
+	[YEAR] integer
+)
+AS
+begin
+	-- Add the SELECT statement with parameter references here
+	INSERT @prevweekyear SELECT DATEPART(WEEK,DATEADD(WEEK,-2,GETDATE())) , DATEPART(YEAR,DATEADD(WEEK,-2,GETDATE())) ;
 	return
 	end
 GO
@@ -496,13 +515,13 @@ GO
 -- Create date: <Create Date, ,>
 -- Description:	<Возвращает id текущего рабочего дня>
 -- =============================================
-CREATE FUNCTION "GetCurrentWorkDayId"()
+CREATE FUNCTION [dbo].[GetCurrentWorkDayId]()
 RETURNS INT
 BEGIN
 	DECLARE @wdid int,@curweek INT,@year INT,@weekday INT
 	SET @curweek=DATEPART(WEEK,DATEADD(WEEK,-1,DATEADD(DAY,-1,GETDATE())))
 	SET @year=DATEPART(YEAR,GETDATE())
-	SET @weekday=DATEPART(WEEKDAY,DATEADD(DAY,-1,GETDATE()))
+	SET @weekday=DATEPART(WEEKDAY,GETDATE())
 	
 	SET @wdid=(SELECT WDAYS.[Id] FROM [ACS_Dining].[dbo].[WorkingDay] WDAYS
 	INNER JOIN [ACS_Dining].[dbo].[WorkingWeek] WWEKS
@@ -971,7 +990,7 @@ BEGIN
 	  ON  DayOrderMenu.MenuForDay_ID=PLANDOMENU.MenuForDay_ID 
 	 INNER JOIN MenuForDay
 	 ON  MenuForDay.ID=DayOrderMenu.MenuForDay_ID 
-	 AND MenuForDay.OrderCanBeChanged=1  AND MenuForDay.DayMenuCanBeChanged=1
+	 --AND MenuForDay.OrderCanBeChanged=1  AND MenuForDay.DayMenuCanBeChanged=1
 	 AND MenuForDay.WorkingDay_Id<=@WDAYID
 	  INNER JOIN WeekOrderMenu
 	  ON DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id 
@@ -991,17 +1010,19 @@ BEGIN
 	ON PlannedDayOrderMenu.Id=planrels.PlannedDayOrderMenuId
 	INNER JOIN MenuForDay
 	ON MenuForDay.ID=PlannedDayOrderMenu.MenuForDay_ID 
-	AND MenuForDay.OrderCanBeChanged=1  AND MenuForDay.DayMenuCanBeChanged=1
+	--AND MenuForDay.OrderCanBeChanged=1  AND MenuForDay.DayMenuCanBeChanged=1
 	AND MenuForDay.WorkingDay_Id<=@WDAYID
 	INNER JOIN PlannedWeekOrderMenu
 	ON PlannedDayOrderMenu.PlannedWeekOrderMenu_Id=PlannedWeekOrderMenu.Id
 	AND  PlannedWeekOrderMenu.MenuForWeek_ID=@WEEKMENUID
 	INNER JOIN DayOrderMenu
 	ON DayOrderMenu.MenuForDay_ID=MenuForDay.ID
+	INNER JOIN WeekOrderMenu
+	ON DayOrderMenu.WeekOrderMenu_Id=WeekOrderMenu.Id
 	INNER JOIN DishQuantityRelations
 	ON DishQuantityRelations.DayOrderMenuId= DayOrderMenu.Id AND DishQuantityRelations.DishTypeId=planrels.DishTypeId
 	INNER JOIN	AspNetUsers AS USERS 
-	ON USERS.Id=PlannedWeekOrderMenu.[User_Id] 
+	ON USERS.Id=PlannedWeekOrderMenu.[User_Id] and WeekOrderMenu.[User_Id]=PlannedWeekOrderMenu.[User_Id]
 	INNER JOIN AspNetUserRoles AS USROLES 
 	ON USROLES.UserId = USERS.Id and USERS.IsExisting=1
 	INNER JOIN AspNetRoles AS ROLES 
@@ -1009,9 +1030,34 @@ BEGIN
 	
 	--ЗАКРЫВАЕМ ВОЗМОЖНОСТЬ РЕДАКТИРОВАНИЯ МЕНЮ ДЛЯ ПОЛЬЗОВАТЕЛЯ 
 	--И ЗАКАЗОВ ДЛЯ КЛИЕНТОВ
-	UPDATE MenuForDay
-	SET [OrderCanBeChanged]=0,  [DayMenuCanBeChanged]=0
-	WHERE MenuForDay.MenuForWeek_ID=@WEEKMENUID AND MenuForDay.WorkingDay_Id<=@WDAYID
+	--UPDATE MenuForDay
+	--SET [OrderCanBeChanged]=0,  [DayMenuCanBeChanged]=0
+	--WHERE MenuForDay.MenuForWeek_ID=@WEEKMENUID AND MenuForDay.WorkingDay_Id<=@WDAYID
+	
+	--Проверяем, что этот день является первым рабочим днём недели
+	declare @minwdid int;
+	
+	select @minwdid=MIN(MenuForDay.WorkingDay_Id) from MenuForDay
+	where MenuForDay.MenuForWeek_ID=@WEEKMENUID
+	
+	if @minwdid!=@WDAYID return
+	
+	--Находим id меню прошлой недели 
+	declare @prevweekmenuid int
+	select @prevweekmenuid=MenuForWeek.ID from MenuForWeek
+	inner join WorkingWeek
+	on WorkingWeek.ID=MenuForWeek.WorkingWeek_ID
+	inner join [ACS_Dining].[dbo].[Year] Years
+	on Years.Id=WorkingWeek.Year_Id
+	inner join  [dbo].[GetPrevWeekYear]() prev
+	on prev.[WEEK]=WorkingWeek.WeekNumber and prev.[YEAR]=Years.YearNumber
+	
+	--Закрываем возможность редактирования заказов и оплат за прошлую неделю для суперюзера
+	if @prevweekmenuid is null return
+	update MenuForWeek
+	set SUCanChangeOrder=0
+	where ID=@prevweekmenuid
+	
 END
 GO
 -- =============================================

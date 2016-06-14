@@ -72,38 +72,34 @@
                                 </tbody>
                             </table>
                         </div>
-                        @*<div class="main_content_background">
-    <div class="main_content">*@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-sm-3 " id="rightPart">
-                                    <div class="input-group date form-control">
-                                        <div class="sidebar-nav">
-                                            <div class="navbar navbar-default" role="navigation">
-                                                <div class="navbar-header">
-                                                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
-                                                        <span class="sr-only">Toggle navigation</span>
-                                                        <span class="icon-bar"></span>
-                                                        <span class="icon-bar"></span>
-                                                        <span class="icon-bar"></span>
-                                                    </button>
-                                                    @*<span class="visible-xs navbar-brand">Sidebar menu</span>*@
-                                                </div>
-                                                <div class="navbar-collapse collapse sidebar-navbar-collapse">
-                                                    <ul class="nav navbar-nav">
-                                                        <li><a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a></li>
-                                                        <li><a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a></li>
-                                                        <li><a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a></li>
-                                                        <li><a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a></li>
-                                                        <li><a href="@Url.RouteUrl(new {action = "AccountManagement", controller = "SU_", area = "SU_Area"})">Управление пользователями</a></li>
-                                                    </ul>
-                                                </div><!--/.nav-collapse -->
+                                    <div class="sidebar-nav">
+                                        <div class="navbar navbar-default" role="navigation">
+                                            <div class="navbar-header">
+                                                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+                                                    <span class="sr-only">Toggle navigation</span>
+                                                    <span class="icon-bar"></span>
+                                                    <span class="icon-bar"></span>
+                                                    <span class="icon-bar"></span>
+                                                </button>
+                                                @*<span class="visible-xs navbar-brand">Sidebar menu</span>*@
                                             </div>
+                                            <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                                                <ul class="nav navbar-nav">
+                                                    <li><a href="@Url.RouteUrl(new {action = "WeekMenu", controller = "SU_", area = "SU_Area"})">Меню</a></li>
+                                                    <li><a href="@Url.RouteUrl(new {action = "Orders", controller = "SU_", area = "SU_Area"})">Заявки</a></li>
+                                                    <li><a href="@Url.RouteUrl(new {action = "Dishes", controller = "SU_", area = "SU_Area"})">Блюда</a></li>
+                                                    <li><a href="@Url.RouteUrl(new {action = "Payment", controller = "SU_", area = "SU_Area"})">Оплаты</a></li>
+                                                    <li><a href="@Url.RouteUrl(new {action = "AccountManagement", controller = "SU_", area = "SU_Area"})">Управление пользователями</a></li>
+                                                </ul>
+                                            </div><!--/.nav-collapse -->
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-3 ">
-                                    <div class="input-group date form-control" id="datepick" data-provide="datepicker" data-bind="datepicker: myDate">
+                                    <div class="date" id="datepick" data-provide="datepicker" data-bind="datepicker: myDate">
 
                                     </div>
                                 </div>
@@ -113,11 +109,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @*<div class="row">
-                                <div class="container-fluid">*@
                                     @RenderBody()
-                                @*</div>
-                            </div>*@
                         </div>
                         </div>
                         <div id="footer">

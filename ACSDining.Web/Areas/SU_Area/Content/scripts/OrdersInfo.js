@@ -44,9 +44,9 @@
         };
 
         self.doubleClick = function () {
-                self.beenChanged(false);
-                self.Store(self.Quantity());
-                self.isEditMode(true);
+            self.beenChanged(false);
+            self.Store(self.Quantity());
+            self.isEditMode(true);
         };
 
         self.onFocusOut = function () {
@@ -75,9 +75,13 @@
 
         self.WeekIsPaid = ko.observable(userWeekOrder.weekIsPaid);
 
-        self.UserWeekOrderDishes = ko.observableArray(ko.utils.arrayMap(userWeekOrder.userWeekOrderDishes,function(item) {
+        self.UserWeekOrderDishes = ko.observableArray(ko.utils.arrayMap(userWeekOrder.userWeekOrderDishes, function(item) {
             return new quantValueModel(item);
         }));
+        self.isHovering = ko.observable(false);
+
+        self.IsSelectedRow = ko.observable(false);
+        
     };
 
     var weekOrdersModel = function () {
@@ -133,6 +137,17 @@
 
         }.bind(self));
 
+        self.rowclicked = function () {
+
+            ko.utils.arrayForEach(self.WeekUserOrderModels(), function (obj) {
+
+                obj.IsSelectedRow(obj.isHovering() && self.SUCanChangeOrder() && self.ItsFact());
+
+            });
+
+            //clickitem.IsSelectedRow(true);
+        };
+
         self.CurNextTitle = ko.pureComputed(function () {
             if (self.IsCurrentWeek()) {
                 return "Текущая неделя";
@@ -179,25 +194,28 @@
             return sum.toFixed(2);
         });
 
-        self.update = function (wuOrder, index, quantity) {
+        self.update = function (wuOrder, index, object) {
+            object.onFocusOut();
+            if (object.beenChanged()) {
+                self.BeenChanged(true);
+                var catlengh = self.Categories().length;
+                var daynumber = Math.ceil(index / catlengh);
+                var catnumber = index - (daynumber - 1) * catlengh;
 
-            var catlengh = self.Categories().length;
-            var daynumber = Math.ceil(index / catlengh);
-            var catnumber = index - (daynumber - 1) * catlengh;
+                var userweekorder = {
+                    DayOrderId: wuOrder.DayOrdIdArray()[daynumber - 1],
+                    CategoryId: catnumber,
+                    Quantity: object.Quantity()
+                };
 
-            var userweekorder = {
-                DayOrderId: wuOrder.DayOrdIdArray()[daynumber - 1],
-                CategoryId: catnumber,
-                Quantity: quantity
-            };
+                self.CalcSummaryDishQuantyties(wuOrder, daynumber, catnumber);
 
-            self.CalcSummaryDishQuantyties(wuOrder,daynumber, catnumber);
-
-            app.su_Service.UpdateOrder(userweekorder).then(function (res) {
-                if (res) {
-                    wuOrder.BeenChanged(false);
-                }
-            });
+                app.su_Service.UpdateOrder(userweekorder).then(function(res) {
+                    if (res) {
+                        wuOrder.BeenChanged(false);
+                    }
+                });
+            }
         };
 
 
@@ -275,9 +293,15 @@
         };
 
         var loadWeekOrders = function (wyDto1, foplan) {
-            app.su_Service.LoadWeekOrders(wyDto1,foplan).then(function(resp1) {
-                updateViewModel(resp1);
-            }, onError);
+            if (foplan === "fact") {
+                app.su_Service.LoadFactWeekOrders(wyDto1).then(function (resp1) {
+                    updateViewModel(resp1);
+                }, onError);
+            } else {
+                app.su_Service.LoadPlanWeekOrders(wyDto1).then(function (resp1) {
+                    updateViewModel(resp1);
+                }, onError);
+            }
         };
 
 
@@ -296,7 +320,6 @@
         self.changeSelected = function(checkval) {
 
             self.ItsFact(checkval);
-
             loadWeekOrders(self.WeekYear(), checkval);
             return true;
         };

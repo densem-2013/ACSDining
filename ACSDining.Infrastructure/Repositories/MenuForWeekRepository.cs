@@ -56,7 +56,7 @@ namespace ACSDining.Infrastructure.Repositories
         public static WeekMenuDto MapWeekMenuDto(this IRepositoryAsync<MenuForWeek> repository, WeekYearDto wyDto)
         {
             MenuForWeek wmenu = repository.GetWeekMenuByWeekYear(wyDto);
-            if (wmenu == null && repository.GetAll().Count == 0)
+            if (wmenu == null && YearWeekHelp.IsCurrentWeekYearDto(wyDto))
             {
                 repository.Context.CreateNewWeekMenu(wyDto);
                 wmenu = repository.GetWeekMenuByWeekYear(wyDto);

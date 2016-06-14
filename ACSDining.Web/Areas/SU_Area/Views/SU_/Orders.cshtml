@@ -43,39 +43,35 @@
             </colgroup>
             <tbody>
             <!--ko foreach: pagedList-->
-            <tr>
-                <td>
-                    <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
-                </td>
-                <td class="rights"><span data-bind="text: UserName"></span></td>
-
-                <!--ko foreach: UserWeekOrderDishes-->
-                @* <div style="border-bottom: 1px solid;" data-bind="event : { mouseover: doubleClick ,mouseout: function(){ hasFocus=false; }}">*@
-                @*<td class="orderquant" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseenter: onmouseenter , mouseleave:function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parent,$index()+1,$data.Quantity()); } }}">*@
-                <td class="orderquant" data-bind="event : { mouseover: doubleClick , mouseout: function(){ hasFocus=false}}">
-                    <!--ko ifnot: $root.SUCanChangeOrder-->
-                    <span data-bind="text: Quantity"></span>
+                <tr data-bind="singleClick: $root.rowclicked, hover: isHovering, css:{ allowedit: IsSelectedRow  }">
+                    <td>
+                        <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
+                    </td>
+                    <td class="rights"><span data-bind="text: UserName"></span></td>
+                    <!--ko foreach: UserWeekOrderDishes-->
+                    <!--ko ifnot: $parent.IsSelectedRow-->
+                    <td class="orderquant">
+                        <span data-bind="text: Quantity"></span>
+                    </td>
                     <!--/ko-->
-                    <!--ko if: $root.SUCanChangeOrder-->
-                    <!--ko ifnot: $data.isEditMode()-->
-                    <span data-bind="text: Quantity"></span>
+                    <!--ko if: $parent.IsSelectedRow-->
+                    <td class="orderquant" data-bind="event : { mouseover: doubleClick , mouseout: function(){ hasFocus=false}}">
+                        <!--ko ifnot: isEditMode-->
+                        <span data-bind="text: Quantity"></span>
+                        <!--/ko-->
+                        <!-- ko if: isEditMode -->
+                        <!-- ko if: ($index() % 4 === 0) -->
+                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, hasFocus:isEditMode,event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
+                        <!--/ko-->
+                        <!-- ko ifnot: ($index() % 4 === 0) -->
+                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, hasFocus:isEditMode,event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
+                        <!--/ko-->
+                        <!--/ko-->
+                    </td>
                     <!--/ko-->
-                    <!-- ko if: $data.isEditMode() -->
-                    <!-- ko if: ($index() % 4 === 0) -->
-                    <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity,hasFocus:isEditMode,event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parent,$index()+1,$data.Quantity()); } }}"></select>
-                    @*<select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity"></select>*@
                     <!--/ko-->
-                    <!-- ko ifnot: ($index() % 4 === 0) -->
-                    <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity,hasFocus:isEditMode,event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parent,$index()+1,$data.Quantity()); } }}"></select>
-                    @*<select class="input-small" data-bind="options: $root.QuantValues, value: Quantity"></select>*@
-                    <!--/ko-->
-                    <!--/ko-->
-                    <!--/ko-->
-                </td>
-                <!--/ko-->
-
-                <th style="text-align: center"><span data-bind="text: WeekSummaryPrice"></span></th>
-            </tr>
+                    <th style="text-align: center"><span data-bind="text: WeekSummaryPrice"></span></th>
+                </tr>
             <!--/ko-->
             <tr>
                 <th class="t-header" style="padding: 2px !important" colspan="2"><span>Всего заказано</span></th>
@@ -84,34 +80,42 @@
                 <!--/ko-->
                 <th class="t-header" style="padding: 2px !important; font-weight: bold;" data-bind="text: WeekTotal"></th>
             </tr>
-            <tr>
-                <td class="t-header" colspan="6">
-                    <button type="button" style="float: right" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
-                        <span class="glyphicon glyphicon-hand-left"></span>
-                    </button>
-                </td>
-                <td class="t-header" data-bind="attr:{colspan:($root.DaysOfWeek().length*$root.Categories().length-15)}">
-                    <div style="text-align: center; min-width: 200px">
-                        <span class="glyphicon ">Страница </span>
-                        <span class="label-info " data-bind=" text: pageIndex()+1"></span>
-                        <span> из </span>
-                        <span class="label-info" data-bind=" text: maxPageIndex()+1"></span>
-                    </div>
-                </td>
-                <td class="t-header" colspan="6">
-                    <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
-                        <span class="glyphicon glyphicon-hand-right"></span>
-                    </button>
-                </td>
-                <td class="t-header" colspan="6">
-                    <div style="min-width: 350px">
-                        <span> Отображать </span>
-                        <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>
-                        <span> элементов на странице</span>
-                    </div>
-                </td>
-            </tr>
             </tbody>
+            <colgroup>
+                <col data-bind="attr:{class: 'col-sm-'+ Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3 )}" />
+                <col data-bind="attr:{class: 'col-sm-'+ Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}" />
+                <col class="col-sm-2" />
+                <col data-bind="attr:{class: 'col-sm-'+ Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}" />
+            </colgroup>
+            <tfoot>
+                <tr>
+                    <td class="t-header" data-bind="attr:{colspan: Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}">
+                        <button type="button" style="float: right" class="btn btn-default btn-circle" data-bind="click: previousPage, css:{disabled: pageIndex() === 0}">
+                            <span class="glyphicon glyphicon-hand-left"></span>
+                        </button>
+                    </td>
+                    <td class="t-header" data-bind="attr:{colspan: Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}">
+                        <div style="text-align: center; min-width: 200px">
+                            <span class="glyphicon ">Страница </span>
+                            <span class="label-info " data-bind=" text: pageIndex()+1"></span>
+                            <span> из </span>
+                            <span class="label-info" data-bind=" text: maxPageIndex()+1"></span>
+                        </div>
+                    </td>
+                    <td class="t-header" colspan="2">
+                        <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
+                            <span class="glyphicon glyphicon-hand-right"></span>
+                        </button>
+                    </td>
+                    <td class="t-header" data-bind="attr:{colspan: Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3)}">
+                        <div style="min-width:350px">
+                            <span> Отображать </span>
+                            <select class="input-sm" data-bind="options: $root.PageSizes, value: pageSize"></select>
+                            <span> элементов на странице</span>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>

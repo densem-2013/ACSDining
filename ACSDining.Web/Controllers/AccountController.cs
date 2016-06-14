@@ -136,7 +136,7 @@ namespace ACSDining.Web.Controllers
                         if (usprincrezult != null)
                         {
                             double defaultDebt;
-                            double.TryParse(WebConfigurationManager./*OpenWebConfiguration(HostingEnvironment.MapPath("/Web.config")).*/AppSettings["defaultCreditValue"], out defaultDebt);
+                            double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
                             user = new User
                             {
                                 FirstName = usprincrezult.GivenName,
@@ -203,43 +203,43 @@ namespace ACSDining.Web.Controllers
                             return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         }
                     }
-                    else
-                    {
-                        double defaultDebt;
-                        double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
-                        user = new User
-                        {
-                            FirstName = DateTime.Now.Second.ToString(),
-                            LastName = "NewUser",
-                            Email = "test.test@test",
-                            UserName = model.LogIn,
-                            LastLoginTime = DateTime.UtcNow,
-                            RegistrationDate = DateTime.UtcNow,
-                            EmailConfirmed = true,
-                            AllowableDebt = defaultDebt,
-                            SecurityStamp = Guid.NewGuid().ToString(),
-                            PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
-                        };
+                    //else
+                    //{
+                    //    double defaultDebt;
+                    //    double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
+                    //    user = new User
+                    //    {
+                    //        FirstName = DateTime.Now.Second.ToString(),
+                    //        LastName = "NewUser",
+                    //        Email = "test.test@test",
+                    //        UserName = model.LogIn,
+                    //        LastLoginTime = DateTime.UtcNow,
+                    //        RegistrationDate = DateTime.UtcNow,
+                    //        EmailConfirmed = true,
+                    //        AllowableDebt = defaultDebt,
+                    //        SecurityStamp = Guid.NewGuid().ToString(),
+                    //        PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
+                    //    };
 
-                        var res = UserManager.CreateAsync(user, model.Password).Result;
-                        if (res == IdentityResult.Success)
-                        {
-                            await UserManager.AddToRoleAsync(user.Id, "Employee");
-                        }
+                    //    var res = UserManager.CreateAsync(user, model.Password).Result;
+                    //    if (res == IdentityResult.Success)
+                    //    {
+                    //        await UserManager.AddToRoleAsync(user.Id, "Employee");
+                    //    }
 
-                        await
-                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                                shouldLockout: false);
+                    //    await
+                    //        _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                    //            shouldLockout: false);
 
-                        user.LastLoginTime = DateTime.UtcNow;
-                        Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
-                        user.LastLoginTime = DateTime.Now;
-                        await
-                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                                shouldLockout: false);
+                    //    user.LastLoginTime = DateTime.UtcNow;
+                    //    Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
+                    //    user.LastLoginTime = DateTime.Now;
+                    //    await
+                    //        _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                    //            shouldLockout: false);
 
-                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
-                    }
+                    //    return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
+                    //}
                     ModelState.AddModelError("", "Неудачная попытка входа.");
                     return View(model);
 

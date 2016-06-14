@@ -8,7 +8,7 @@ namespace ACSDining.Infrastructure.Repositories
     public static class OrderMenuRepository
     {
       public static List<WeekOrderMenu> OrdersMenuByWeekYear(this IRepositoryAsync<WeekOrderMenu> repository,
-            WeekYearDto wyDto, int? pageSize = null, int? page = null)
+            WeekYearDto wyDto)
         {
             List<WeekOrderMenu> pagedOrders = repository.Query()
                 .Include(om => om.User)
@@ -21,16 +21,9 @@ namespace ACSDining.Infrastructure.Repositories
                     om =>
                         om.MenuForWeek.WorkingWeek.WeekNumber == wyDto.Week &&
                         om.MenuForWeek.WorkingWeek.Year.YearNumber == wyDto.Year)
-                .OrderBy(wp => wp.User.UserName)
+                .OrderBy(wp => wp.User.LastName)
                 .ToList();
-            if (pageSize != null && page != null)
-            {
-                pagedOrders =
-                    pagedOrders.OrderBy(po => po.User.LastName)
-                        .Skip(pageSize.Value*(page.Value - 1))
-                        .Take(pageSize.Value)
-                        .ToList();
-            }
+            
             return pagedOrders;
         }
 
@@ -60,7 +53,7 @@ namespace ACSDining.Infrastructure.Repositories
                 .Select().Where(
                     om => om.DayOrderMenus.Select(dom => dom.MenuForDay.ID).Contains(daymenuid)).ToList();
 
-            return whohasweekorder.Select(wom => wom.User).ToList();
+            return whohasweekorder.Select(wom => wom.User).Distinct().ToList();
         }
 
         public static int GetCountByWeekYear(this IRepositoryAsync<WeekOrderMenu> repository, WeekYearDto wyDto)

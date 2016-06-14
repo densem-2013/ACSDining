@@ -43,17 +43,19 @@ namespace ACSDining.Infrastructure.Identity
             //string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
 
             string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
+            //string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/storedfunc.sql");
 
             InitializeIdentityForEf(context, _path);
-            var dishes = GetDishesFromXml(context, _path);
-            CreateWorkingDays(context);
-            CreateMenuForWeek(context, dishes);
-            _path = _path.Replace(@"DishDetails", "Employeers");
-            GetUsersFromXml(context, _path);
-            CreateOrders(context);
-            _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
+            //var dishes = GetDishesFromXml(context, _path);
+            //CreateWorkingDays(context);
+            //CreateMenuForWeek(context, dishes);
+            //_path = _path.Replace(@"DishDetails", "Employeers");
+            //GetUsersFromXml(context, _path);
+            //CreateOrders(context);
+            //_path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
             //_path = _path.Replace(@"DishDetails.xml", "storedfunc.sql");
             Utility.CreateStoredFuncs(_path);
+            //context.DayFactToPlan();
             base.Seed(context);
         }
 
@@ -175,25 +177,25 @@ namespace ACSDining.Infrastructure.Identity
                 }
 
 
-                User userEmpl = userManager.FindByName("employee");
-                if (userEmpl == null)
-                {
-                    userEmpl = new User
-                    {
-                        UserName = "employee",
-                        Email = "densem-2013@yandex.ua",
-                        FirstName = "Employee",
-                        LastName = "User",
-                        LastLoginTime = DateTime.UtcNow,
-                        SecurityStamp = Guid.NewGuid().ToString(),
-                        RegistrationDate = DateTime.UtcNow,
-                        AllowableDebt = 200,
-                        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
-                    };
-                    IdentityRole emplrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
-                    userEmpl.Roles.Add(new IdentityUserRole {RoleId = emplrole.Id, UserId = userEmpl.Id});
-                    context.Entry(userEmpl).State = EntityState.Added;
-                }
+                //User userEmpl = userManager.FindByName("employee");
+                //if (userEmpl == null)
+                //{
+                //    userEmpl = new User
+                //    {
+                //        UserName = "employee",
+                //        Email = "densem-2013@yandex.ua",
+                //        FirstName = "Employee",
+                //        LastName = "User",
+                //        LastLoginTime = DateTime.UtcNow,
+                //        SecurityStamp = Guid.NewGuid().ToString(),
+                //        RegistrationDate = DateTime.UtcNow,
+                //        AllowableDebt = 200,
+                //        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                //    };
+                //    IdentityRole emplrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
+                //    userEmpl.Roles.Add(new IdentityUserRole {RoleId = emplrole.Id, UserId = userEmpl.Id});
+                //    context.Entry(userEmpl).State = EntityState.Added;
+                //}
 
                 //пустые блюда для каждой категории
                 List<DishType> dishTypes = context.DishTypes.OrderBy(dt => dt.Id).ToList();
@@ -388,7 +390,7 @@ namespace ACSDining.Infrastructure.Identity
                             //TotalPrice = dishes.Select(d => d.Price).Sum(),
                             DayMenuCanBeChanged =
                                 week == 0 /*&& ((int) DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9*/,
-                            OrderCanBeChanged = true//week == 0 && ((int)DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9
+                            OrderCanBeChanged = week == 0 //&& ((int)DateTime.Now.DayOfWeek) >= i - 1 && DateTime.Now.Hour < 9
                         };
                         mfdDishPriceRelationses.AddRange(dishes.Select(d=>new MfdDishPriceRelations
                         {

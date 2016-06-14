@@ -149,6 +149,7 @@ div.panel.panel-default > table {
     font-size: 14px !important;
     height: 30px !important;
     vertical-align: middle !important;
+    min-width: 45px;
     /*-moz-min-width: 60px;
     -ms-min-width: 60px;
     -o-min-width: 60px;
@@ -161,6 +162,7 @@ div.panel.panel-default > table {
     height: 30px !important;
     text-align: center;
     vertical-align: middle !important;
+    min-width: 45px;
     /*-moz-min-width: 52px;
     -ms-min-width: 52px;
     -o-min-width: 52px;

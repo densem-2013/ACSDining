@@ -133,7 +133,6 @@
     <Compile Include="DTO\SuperUser\Dishes\UpdateDishDeleted.cs" />
     <Compile Include="DTO\SuperUser\Orders\ForExcelDataDto.cs" />
     <Compile Include="DTO\SuperUser\Menu\MenuForDayDto.cs" />
-    <Compile Include="DTO\Employee\UserDayOrderDto.cs" />
     <Compile Include="DTO\SuperUser\Orders\PlanUserWeekOrderDto.cs" />
     <Compile Include="DTO\SuperUser\Orders\PlanWeekOrderDto.cs" />
     <Compile Include="DTO\SuperUser\Accounts\UpdateAccountEmailDto.cs" />
