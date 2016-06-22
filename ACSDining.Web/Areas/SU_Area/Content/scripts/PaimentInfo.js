@@ -11,7 +11,22 @@
     excelButtonDiv.append(sendButtonInput);
     $("#forpaibutton").css({ "padding": "0" }).append(excelButtonDiv);
     //$('#rightPart').css({ 'width': '20%', "padding-left": "5px" });
-   
+
+    $("#submenu td:nth-child(2)").removeClass("t-label").addClass("navlink").css({ "padding": "0 15px 25px 10px","font-size":"28px" }).text("Оплаты");
+
+    $("#submenu td:first-child").attr({ 'data-bind': "text: CurNextTitle" });
+    var butdiv = $("<div>").css({ "display": "inline-flex" });
+    var curweekbut = $("<input/>")
+        .attr({ 'data-bind': "click: GoToCurrentWeekPaiments, visible: !IsCurrentWeek()", "id": "curweek", "type": "button", "value": "Перейти на текущую неделю" })
+        .addClass("btn btnaddmenu");
+    butdiv.append(curweekbut);
+
+    var nextweekbut = $("<input/>")
+        .attr({ 'data-bind': "click: GoToNextWeekPaimens, visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Перейти на следующую неделю" })
+        .addClass("btn btnaddmenu");
+    butdiv.append(nextweekbut);
+    $("#submenu td:last-child").append(butdiv);
+
     var noteValueModel = function (value) {
 
         var self = this;
@@ -86,14 +101,18 @@
 
         self.BeenChanged = ko.observable(false);
 
-        self.myDate = ko.observable(new Date());
+        self.myDate = ko.observable(/*new Date()*/);
 
         self.CurrentWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
         self.WeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
+        self.NextWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
+
         self.IsNextWeekYear = ko.observable();
+
         self.Title = ko.observable("");
+
         self.Message = ko.observable();
 
         self.BeenChanged = ko.observable(false);
@@ -101,6 +120,8 @@
         self.Categories = ko.observableArray([]);
         self.UnitPrices = ko.observableArray([]);
         self.UnitPricesTotal = ko.observableArray([]);
+
+        self.IsNextWeekMenuExists = ko.observable();
 
         self.SUCanChangeOrder = ko.observable();
 
@@ -151,6 +172,13 @@
         self.IsCurrentWeek = ko.pureComputed(function () {
 
             var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
+            return res;
+
+        }.bind(self));
+
+        self.IsNextWeekYear = ko.pureComputed(function () {
+
+            var res = self.NextWeekYear().week === self.WeekYear().week && self.NextWeekYear().year === self.WeekYear().year;
             return res;
 
         }.bind(self));
@@ -287,6 +315,7 @@
                             return new userPaimentModel(item);
                         }));
                         self.SUCanChangeOrder(resp.suCanChangeOrder);
+                        localStorage.setItem("LastPaimView", ko.mapping.toJSON({ Week: wyDto.week, Year: wyDto.year }));
                 } else {
                     if (!self.IsCurrentWeek()) {
                         modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
@@ -304,6 +333,9 @@
 
 
         self.myDate.subscribe = ko.computed(function () {
+
+            if (self.myDate() == undefined) return;
+
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
             if (needObj != undefined && !isNaN(takedWeek)) {
@@ -322,6 +354,7 @@
         }, self);
 
         self.WeekTitle = ko.computed(function () {
+            if (self.WeekYear().week === undefined) return "";
             var options = {
                 weekday: "long",
                 year: "numeric",
@@ -340,16 +373,42 @@
         }.bind(self));
 
 
+        self.GoToNextWeekPaimens = function () {
+            self.SetMyDateByWeek(self.NextWeekYear());
+        };
+
+
+        self.GoToCurrentWeekPaiments = function () {
+            self.SetMyDateByWeek(self.CurrentWeekYear());
+        };
+
         self.init = function () {
 
             app.su_Service.GetCategories().then(function (resp) {
                 self.Categories(resp);
             }, onError);
 
-            app.su_Service.GetCurrentWeekYear().then(function (resp) {
+            app.su_Service.GetCurrentWeekYear().then(function(resp) {
 
                 self.CurrentWeekYear(resp);
-                
+
+            }, onError).then(function() {
+
+                var lastweekyear = localStorage.getItem("LastPaimView");
+                if (lastweekyear == null) {
+                    localStorage.setItem("LastPaimView", ko.mapping.toJSON({ Week: self.CurrentWeekYear().week, Year: self.CurrentWeekYear().year}));
+                    self.SetMyDateByWeek(self.CurrentWeekYear());
+                } else {
+                    var obj = ko.mapping.fromJSON(lastweekyear);
+                    self.SetMyDateByWeek({ week: obj.Week(), year: obj.Year() });
+                }
+            });
+            app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function (nextDto) {
+                self.NextWeekYear(nextDto);
+            }, onError);
+
+            app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
+                self.IsNextWeekMenuExists(respnext);
             }, onError);
         }
 

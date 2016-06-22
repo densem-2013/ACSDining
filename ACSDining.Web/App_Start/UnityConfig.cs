@@ -1,13 +1,9 @@
 using System;
-using System.Data.Entity;
 using System.Web;
-////using ACSDining.Core.DataContext;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Infrastructure.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;

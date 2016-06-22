@@ -68,7 +68,7 @@ IF NOT @OCBCRES = 1 RETURN
 	INNER JOIN WorkingWeek
 	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
 	INNER JOIN WorkingDay
-	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.IsWorking=1 AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
+	ON WorkingDay.Id=MenuForDay.WorkingDay_Id /*AND WorkingDay.IsWorking=1 */AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
 	ORDER BY DayOrderMenu.Id, DishType.Id
 	
 	--добавляем недельные оплаты на заказы из этого меню
@@ -131,7 +131,7 @@ IF NOT @OCBCRES = 1 RETURN
 	INNER JOIN WorkingWeek
 	ON WorkingWeek.ID=MenuForWeek.WorkingWeek_ID 
 	INNER JOIN WorkingDay
-	ON WorkingDay.Id=MenuForDay.WorkingDay_Id AND WorkingDay.IsWorking=1 AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
+	ON WorkingDay.Id=MenuForDay.WorkingDay_Id /*AND WorkingDay.IsWorking=1 */AND WorkingDay.WorkingWeek_ID=WorkingWeek.ID
 	ORDER BY PlannedDayOrderMenu.Id, DishType.Id
 END
 GO
@@ -189,5 +189,25 @@ BEGIN
 	exec TODOONDELETEUSER @USERID
 	DELETE FROM dbo.AspNetUsers WHERE ID=@USERID
 	FETCH NEXT FROM USER_DEL_CURSOR INTO @USERID
+END
+GO
+
+CREATE TRIGGER "dbo"."todoon_mfd_update" ON dbo.MfdDishPriceRelations
+AFTER INSERT
+AS
+DECLARE  @MENUID INT, @WEEKORDMENUID INT
+SELECT @MENUID=[MenuForDayId] FROM INSERTED 
+
+DECLARE MFD_UPDATE_CURSOR CURSOR
+SCROLL
+FOR SELECT wordmenu.[Id] FROM [ACS_Dining].[dbo].[WeekOrderMenu] wordmenu
+inner join [ACS_Dining].[dbo].[DayOrderMenu] dort
+on dort.[WeekOrderMenu_Id]=wordmenu.[Id] and dort.[MenuForDay_ID]=@MENUID
+OPEN MFD_UPDATE_CURSOR
+FETCH NEXT FROM MFD_UPDATE_CURSOR INTO @WEEKORDMENUID
+WHILE @@FETCH_STATUS=0
+BEGIN
+	exec UpdateBalanceByWeekOrderId @WEEKORDMENUID
+	FETCH NEXT FROM MFD_UPDATE_CURSOR INTO @WEEKORDMENUID
 END
 GO

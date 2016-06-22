@@ -1,4 +1,6 @@
-﻿using ACSDining.Core.Domains;
+﻿using System;
+using System.Web.Configuration;
+using ACSDining.Core.Domains;
 
 namespace ACSDining.Infrastructure.DTO.SuperUser.Accounts
 {
@@ -10,10 +12,10 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Accounts
         public string LastLoginTime { get; set; }
         public double Balance { get; set; }
         public string RegistrationDate { get; set; }
-        //Пользователь может делать заказ
-        public bool CanMakeBooking { get; set; }
         //Пользователь существует( не удалён из Active Directory)
         public bool IsExisting { get; set; }
+        //Проверять допустимый кредитный лимит
+        public bool CheckDebt { get; set; }
 
         public static AccountDto MapDto(User user)
         {
@@ -24,7 +26,7 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Accounts
                 FullName = user.LastName + " " + user.FirstName,
                 LastLoginTime = user.LastLoginTime.ToShortDateString(),
                 RegistrationDate = user.RegistrationDate.ToShortDateString(),
-                CanMakeBooking = user.CanMakeBooking,
+                CheckDebt = user.CheckDebt,
                 IsExisting = user.IsExisting,
                 Balance = user.Balance
             };

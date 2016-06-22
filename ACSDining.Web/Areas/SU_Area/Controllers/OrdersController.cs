@@ -66,15 +66,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest("Bad Request Object");
             }
-            try
-            {
-                _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
-            }
-            catch (Exception)
-            {
-                    
-                throw;
-            }
+            _unitOfWork.GetContext().UpdateDishQuantityBySu(userOrderDto);
 
             return Ok(true);
         }

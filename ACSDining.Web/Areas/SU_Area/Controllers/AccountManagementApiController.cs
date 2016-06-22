@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.DTO.SuperUser.Accounts;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.UnitOfWork;
@@ -69,11 +70,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         [HttpPut]
-        [Route("updateMakeBook")]
-        public async Task<IHttpActionResult> UpdateAccountMakeBook([FromBody] UpdateMakeBookDto accountMakeBookDto)
+        [Route("updateCheckDebt")]
+        public async Task<IHttpActionResult> UpdateAccountCheckDebt([FromBody] UpdateCheckDebtDto accountCheckDebtDto)
         {
-            User user = await UserManager.FindByIdAsync(accountMakeBookDto.UserId);
-            user.CanMakeBooking = accountMakeBookDto.CanMakeBooking;
+            User user = await UserManager.FindByIdAsync(accountCheckDebtDto.UserId);
+            user.CheckDebt = accountCheckDebtDto.CheckDebt;
             _unitOfWork.GetContext().Entry(user).State = EntityState.Modified;
             await _unitOfWork.SaveChangesAsync();
             return Ok(true);
@@ -87,6 +88,31 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             user.IsExisting = accountExistsDto.IsExisting;
             _unitOfWork.GetContext().Entry(user).State = EntityState.Modified;
             await _unitOfWork.SaveChangesAsync();
+            return Ok(true);
+        }
+        /// <summary>
+        /// Получить текущий размер допустимой величины кредита
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("debt")]
+        public async Task<IHttpActionResult> GetDebt()
+        {
+            int debt;
+            int.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out debt);
+            return Ok(debt);
+        }
+
+        [HttpPut]
+        [Route("updateDebt")]
+        public async Task<IHttpActionResult> UpdateAllowDebt([FromBody] int debt)
+        {
+            Configuration Config =
+               WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
+            Config.AppSettings.Settings.Remove("defaultCreditValue");
+            Config.AppSettings.Settings.Add("defaultCreditValue", debt.ToString());
+            Config.Save();
+
             return Ok(true);
         }
 

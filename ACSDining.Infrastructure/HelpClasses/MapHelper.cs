@@ -39,7 +39,6 @@ namespace ACSDining.Infrastructure.HelpClasses
         public static string[] GetCategoriesStrings(IUnitOfWorkAsync unitOfWorkAsync)
         {
             var cats = unitOfWorkAsync.RepositoryAsync<DishType>();
-
             string[] categories = cats.Queryable()
                 .Select(dt => dt.Category)
                 .AsQueryable()

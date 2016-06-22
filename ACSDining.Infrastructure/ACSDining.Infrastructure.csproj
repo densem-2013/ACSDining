@@ -126,6 +126,7 @@
     <Compile Include="DTO\Employee\EmployeeWeekOrderDto.cs" />
     <Compile Include="DTO\Employee\OrderDayMenuDto.cs" />
     <Compile Include="DTO\Employee\OrderDishDto.cs" />
+    <Compile Include="DTO\Employee\SetAsPrevDto.cs" />
     <Compile Include="DTO\SuperUser\Menu\ForMenuExcelDto.cs" />
     <Compile Include="DTO\SuperUser\Menu\MenuUpdateMessageDto.cs" />
     <Compile Include="DTO\SuperUser\Accounts\AccountDto.cs" />
@@ -138,7 +139,7 @@
     <Compile Include="DTO\SuperUser\Accounts\UpdateAccountEmailDto.cs" />
     <Compile Include="DTO\SuperUser\Menu\UpdateDishDto.cs" />
     <Compile Include="DTO\SuperUser\Accounts\UpdateExistingDto.cs" />
-    <Compile Include="DTO\SuperUser\Accounts\UpdateMakeBookDto.cs" />
+    <Compile Include="DTO\SuperUser\Accounts\UpdateCheckDebtDto.cs" />
     <Compile Include="DTO\SuperUser\Paiments\NoteUpdateDto.cs" />
     <Compile Include="DTO\SuperUser\Paiments\UpdateWeekPaimentDto.cs" />
     <Compile Include="DTO\Employee\UserWeekOrderDto.cs" />
@@ -160,9 +161,9 @@
     <Compile Include="Identity\ApplicationDbInitializer.cs" />
     <Compile Include="Identity\ContextStoredFunctions.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
-    <Compile Include="Migrations\201605291303139_Initial.cs" />
-    <Compile Include="Migrations\201605291303139_Initial.Designer.cs">
-      <DependentUpon>201605291303139_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201606160719095_Initial.cs" />
+    <Compile Include="Migrations\201606160719095_Initial.Designer.cs">
+      <DependentUpon>201606160719095_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -203,11 +204,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201605291303139_Initial.resx">
-      <DependentUpon>201605291303139_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201606160719095_Initial.resx">
+      <DependentUpon>201606160719095_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

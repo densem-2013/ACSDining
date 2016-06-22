@@ -2,8 +2,12 @@
 /// <reference path="../knockout-3.2.0.js" />
 /// <reference path="~/Scripts/knockout-3.2.0.js" />
 /// <reference path="~/Scripts/knockout-2.2.1.debug.js" />
-/// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
+/// <reference path="~/Areas/EmployeeArea/Content/scripts/app.EmployeeService.js" />
 /// <reference path="~/Content/app/jquery-1.10.2.js" />
+/// <reference path="~/Scripts/knockout.mapping-latest.debug.js" />
+/// <reference path="~/Scripts/bootstrap.js" />
+/// <reference path="~/Areas/EmployeeArea/Content/scripts/app.EmployeeService.js" />
+/// <reference path="~/Scripts/knockout-3.3.0.debug.js" />
 (function() {
 
     $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
@@ -84,13 +88,13 @@
 
         self.UserDayOrders = ko.observableArray([]);
 
+        self.Store = ko.observable();
+
         self.Title = ko.observable("");
 
         self.Message = ko.observable("");
 
-        self.myDate = ko.observable(new Date());
-
-        self.Categories = ko.observableArray([]);
+        self.myDate = ko.observable();
 
         self.WeekSummaryPrice = ko.observable(0);
 
@@ -118,19 +122,15 @@
 
         self.HasBalance = ko.observable();
         self.HasSummary = ko.observable();
-
-        //self.DaysOfWeek = ko.observableArray([]);
+        self.CheckDebt = ko.observable();
         self.PreviosweekBalance = ko.observable(0);
         self.BeenChanged = ko.observable(false);
         self.AllowDebt = ko.observable();
-        self.Balance = ko.dependentObservable(function () {
-            //var bal1 = self.WeekPaiment();
+        self.Balance = ko.dependentObservable(function() {
             var bal1 = parseFloat(self.HasBalance());
             var bal2 = self.WeekSummaryPrice();
             var bal3 = parseFloat(self.HasSummary());
-            //var bal3 = self.PreviosweekBalance();
-            //var bal = ;
-            return bal1 +bal3- bal2;//- bal3;
+            return bal1 + bal3 - bal2;
         });
 
 
@@ -141,16 +141,16 @@
 
         }.bind(self));
 
-        self.HoverDesciption = ko.dependentObservable(function () {
-            var hovday = ko.utils.arrayFirst(self.UserDayOrders(), function (item) {
-                return ko.utils.arrayFirst(item.Dishes(),function(dish) {
+        self.HoverDesciption = ko.dependentObservable(function() {
+            var hovday = ko.utils.arrayFirst(self.UserDayOrders(), function(item) {
+                return ko.utils.arrayFirst(item.Dishes(), function(dish) {
                     return dish.isHovering();
                 });
             });
-            if (hovday==null) {
+            if (hovday == null) {
                 return "";
             }
-            var hovitem = ko.utils.arrayFirst(hovday.Dishes(), function (dish) {
+            var hovitem = ko.utils.arrayFirst(hovday.Dishes(), function(dish) {
                 return dish.isHovering();
             });
             return hovitem == null ? "" : (hovitem.Description() === "") ? "Описание блюда отсутствует" : hovitem.Description();
@@ -189,6 +189,7 @@
         }.bind(self);
 
         self.WeekTitle = ko.computed(function() {
+            if (self.WeekYear().week === undefined) return "";
             var options = {
                 weekday: "long",
                 year: "numeric",
@@ -209,7 +210,9 @@
 
         var loadUserWeekOrder = function(wyDto1) {
 
-            app.su_Service.LoadUserWeekOrder(wyDto1).then(function(resp) {
+            if (wyDto1.Week === 0) return;
+
+            app.EmployeeService.LoadUserWeekOrder(wyDto1).then(function(resp) {
                 if (resp) {
                     self.OrderId(resp.weekOrderId);
                     self.WeekIsPaid(resp.weekIsPaid);
@@ -228,8 +231,10 @@
                     self.PreviosweekBalance(resp.prevWeekBalance);
                     self.WeekPaiment(resp.weekPaiment);
                     self.AllowDebt(resp.allowDebt);
+                    self.CheckDebt(resp.checkDebt);
+                    localStorage.setItem("LastEmployeeView", ko.mapping.toJSON({ Week: wyDto1.Week, Year: wyDto1.Year }));
                 } else {
-                    modalShow("Сообщение", "На выбранную Вами дату Ваших заказов не было . Будьте внимательны!");
+                    modalShow("Сообщение", "На выбранную Вами дату Ваших заказов не было!");
                 }
 
 
@@ -237,17 +242,24 @@
 
         }
 
+        self.checkallowedit = function (orderCanBeChanged) {
+            if (orderCanBeChanged === false) {
+
+                modalShow("Сообщение", "На выбранный Вами день редактирование заказа недоступно!");
+                setTimeout(function() {
+                    $("#modalMessage").modal("hide");
+                }, 2000);
+            }
+
+        };
+
         self.GoToNextWeekOrder = function() {
-
             self.SetMyDateByWeek(self.NextWeekYear());
-
         };
 
 
         self.GoToCurrentWeekOrder = function() {
-
             self.SetMyDateByWeek(self.CurrentWeekYear());
-
         };
 
         self.CalcSummary = function(beenchanged) {
@@ -265,7 +277,7 @@
             self.WeekSummaryPrice(sum.toFixed(2));
         };
 
-        self.update = function(dayord, catnumber, quantity) {
+        self.update = function (dayord, catnumber, quantity) {
 
             var userweekorder = {
                 DayOrderId: dayord.DayOrderId(),
@@ -274,33 +286,29 @@
             };
 
             self.CalcSummary();
-            
-            if (self.Balance() < -1 * self.AllowDebt()) {
+
+            if (self.CheckDebt() && (self.Balance() < -1 * self.AllowDebt())) {
 
                 modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
 
                 loadUserWeekOrder(self.WeekYear());
+
                 return;
             };
-            app.su_Service.UserWeekUpdateOrder(userweekorder).then(function(res) {
+            app.EmployeeService.UserWeekUpdateOrder(userweekorder).then(function(res) {
                 self.BeenChanged(false);
                 if (res === "noordchenged") {
                     dayord.OrderCanByChanged(false);
                     modalShow("Внимание!", "Редактирование заявки на этот день уже закрыто. Если Вам необходио внести изменения в заказ на этот день, обратитесь к администрации столовой.")
-                }//else
-                //if (res === "nocanMakeBooking") {
-                //    //dayord.OrderCanByChanged(false);
-                //    modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
-
-                //    loadUserWeekOrder(self.WeekYear());
-                //}else {
-                //    self.HasBalance(res.toFixed(2));
-                //}
+                }
             });
         };
 
 
         self.myDate.subscribe = ko.computed(function() {
+
+            if (self.myDate() == undefined) return;
+
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
             if (needObj != undefined) {
@@ -320,42 +328,126 @@
 
         self.applyEmail = function() {
 
-            app.su_Service.SetEmail(self.Email());
+            app.EmployeeService.SetEmail(self.Email());
             $("#emailComfirm").modal("hide");
 
         };
 
+        self.setasprev = function () {
+
+            var asPrevObj;
+            app.EmployeeService.GetPrevWeekOrderQuantity(self.OrderId()).then(function(resp) {
+                asPrevObj = {
+                    OrderId: resp.prevWeekOrdId,
+                    DayNames: resp.dayNames,
+                    Prevquants: resp.prevquants
+                };
+                ko.utils.arrayForEach(self.UserDayOrders(), function (dayobj, dayindex) {
+                    var dnind;
+                    var dnfirst = ko.utils.arrayFirst(asPrevObj.DayNames, function (item, ind) {
+                        dnind = ind;
+                        return item === dayobj.DayName();
+                    });
+                    if (dayobj.OrderCanByChanged() === true && dnfirst !== null) {
+                        var dishcount = dayobj.Dishes().length;
+                        ko.utils.arrayForEach(dayobj.Dishes(), function (dish, dishindex) {
+                            dish.OrderQuantity(new quantValueModel(asPrevObj.Prevquants[dishcount * dnind + dishindex]));
+                        });
+                    }
+                });
+            }).then(function() {
+
+                self.CalcSummary();
+
+                if (self.CheckDebt() && (self.Balance() < -1 * self.AllowDebt())) {
+
+                    modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
+
+                    loadUserWeekOrder(self.WeekYear());
+                    return;
+                }else {
+                    app.EmployeeService.SetOrderAsPrevWeek(self.OrderId()).then(function (resp) {
+                        if (resp === true) {
+                            loadUserWeekOrder(self.WeekYear());
+                        }
+                    });
+                };
+            });
+
+        };
+
+        self.allbyone = function () {
+                ko.utils.arrayForEach(self.UserDayOrders(), function (dayobj, dayindex) {
+                if (dayobj.OrderCanByChanged() === true ) {
+                    var dishcount = dayobj.Dishes().length;
+                    ko.utils.arrayForEach(dayobj.Dishes(), function (dish, dishindex) {
+                        dish.OrderQuantity(new quantValueModel(1));
+                    });
+                }
+            });
+            self.CalcSummary();
+
+            if (self.CheckDebt() && (self.Balance() < -1 * self.AllowDebt())) {
+
+                modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
+
+                loadUserWeekOrder(self.WeekYear());
+
+                return;
+            } else {
+                app.EmployeeService.SetAllByOne(self.OrderId()).then(function (resp) {
+                    if (resp === true) {
+                        loadUserWeekOrder(self.WeekYear());
+                    }
+                });
+            };
+        };
 
         self.init = function() {
 
-            app.su_Service.GetCategories().then(function(resp) {
-                self.Categories(resp);
-                app.su_Service.GetCurrentWeekYearForEmployee().then(function(resp2) {
-                    self.CurrentWeekYear(resp2);
+            app.EmployeeService.GetCurrentWeekYearForEmployee().then(function (resp2) {
 
-                }, onError);
-            }, onError);
+                self.CurrentWeekYear(resp2);
 
-            app.su_Service.GetUserNextWeekYear().then(function(nextWeekYear) {
+            }, onError)
+                .then(function () {
+
+                var lastweekyear = localStorage.getItem("LastEmployeeView");
+                var obj = ko.mapping.fromJSON(lastweekyear);
+
+                if (lastweekyear == null || obj.Week == undefined) {
+                    localStorage.setItem("LastEmployeeView", ko.mapping.toJSON({ Week: self.CurrentWeekYear().week, Year: self.CurrentWeekYear().year }));
+                    self.SetMyDateByWeek(self.CurrentWeekYear());
+                }
+                else {
+                 if (obj.Week() === 0) {
+                     self.SetMyDateByWeek(self.CurrentWeekYear());
+                 }
+                 else {
+                    self.SetMyDateByWeek({ week: obj.Week(), year: obj.Year() });
+                 }
+                }
+
+            });
+
+            app.EmployeeService.GetUserNextWeekYear().then(function(nextWeekYear) {
                 self.NextWeekYear(nextWeekYear);
             });
 
-            app.su_Service.CanCreateOrderOnNextWeek().then(function(cancreatenext) {
+            app.EmployeeService.CanCreateOrderOnNextWeek().then(function(cancreatenext) {
                 self.NextWeekOrderExist(cancreatenext);
             }, onError);
 
-            app.su_Service.IsEmailExists().then(function(exists) {
+            app.EmployeeService.IsEmailExists().then(function(exists) {
                 self.HasEmail(exists);
                 if (!exists) {
                     $("#emailComfirm").modal("show");
                 }
             });
 
-        };
+        }
         self.init();
-
     }
-
     ko.applyBindings(new weekUserOrderModel());
 
 }());

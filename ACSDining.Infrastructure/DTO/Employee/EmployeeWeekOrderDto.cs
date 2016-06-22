@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Web.Configuration;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Identity;
 
@@ -18,19 +19,30 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public double PrevWeekBalance { get; set; }
         public double WeekPaiment { get; set; }
         public double AllowDebt { get; set; }
-        public static EmployeeWeekOrderDto MapDto(ApplicationDbContext context, WeekPaiment weekPaiment,WeekYearDto wyDto)
+        public bool CheckDebt { get; set; }
+
+        public static EmployeeWeekOrderDto MapDto(ApplicationDbContext context, WeekPaiment weekPaiment,
+            WeekYearDto wyDto)
         {
+            double defaultDebt;
+            double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
+
             return new EmployeeWeekOrderDto
             {
                 WeekOrderId = weekPaiment.WeekOrderMenu.Id,
-                DayOrders = weekPaiment.WeekOrderMenu.DayOrderMenus.Where(dom => dom.MenuForDay.WorkingDay.IsWorking).Select(OrderDayMenuDto.MapDto).ToList(),
+                DayOrders =
+                    weekPaiment.WeekOrderMenu.DayOrderMenus.Where(dom => dom.MenuForDay.WorkingDay.IsWorking)
+                        .Select(OrderDayMenuDto.MapDto)
+                        .ToList(),
                 WeekOrderDishes = context.FactDishQuantByWeekOrderId(weekPaiment.WeekOrderMenu.Id).Result,
                 WeekIsPaid = weekPaiment.WeekIsPaid,
                 Balance = weekPaiment.WeekOrderMenu.User.Balance,
                 WeekYear = wyDto,
                 PrevWeekBalance = weekPaiment.PreviousWeekBalance,
                 WeekPaiment = weekPaiment.Paiment,
-                AllowDebt = weekPaiment.WeekOrderMenu.User.AllowableDebt
+                //AllowDebt = weekPaiment.WeekOrderMenu.User.AllowableDebt
+                AllowDebt = defaultDebt,
+                CheckDebt = weekPaiment.WeekOrderMenu.User.CheckDebt
             };
         }
     }

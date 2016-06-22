@@ -308,8 +308,7 @@
     <Compile Include="Areas\SU_Area\Controllers\GetExcelController.cs" />
     <Compile Include="Areas\SU_Area\Controllers\SU_Controller.cs" />
     <Compile Include="Areas\SU_Area\Controllers\WeekMenuController.cs" />
-    <Compile Include="Areas\SU_Area\Models\EmailMessageModels.cs" />
-    <Compile Include="Areas\SU_Area\Models\PoolRequestModelBinder.cs" />
+    <Compile Include="Areas\SU_Area\Models\UpdateBalanceService.cs" />
     <Compile Include="Areas\SU_Area\SU_AreaAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Global.asax.cs">
@@ -325,8 +324,8 @@
     <Content Include="App_Data\DBinitial\DishDetails.xml" />
     <Content Include="App_Data\DBinitial\Employeers.xml" />
     <Content Include="App_Data\DBinitial\storedfunc.sql" />
+    <Content Include="App_Data\DBinitial\storedproc.sql" />
     <Content Include="App_Data\DBinitial\storedtriggers.sql" />
-    <Content Include="App_Data\DBinitial\storedview.sql" />
     <Content Include="App_Data\DBinitial\TestProc.sql" />
     <Content Include="Areas\SU_Area\Content\scripts\AccountsInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\app.su_Service.js" />
@@ -479,10 +478,10 @@
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Areas\SU_Area\Views\Shared\_LayoutForPaiments.cshtml" />
-    <Content Include="ExcelFiles\Menu.xls" />
-    <Content Include="ExcelFiles\Orders.xls" />
-    <Content Include="ExcelFiles\Paiments.xls" />
-    <Content Include="ExcelFiles\PlanOrders.xls" />
+    <Content Include="ExcelFiles\ЗаявкиПлан.xls" />
+    <Content Include="ExcelFiles\ЗаявкиФакт.xls" />
+    <Content Include="ExcelFiles\Оплаты.xls" />
+    <Content Include="Areas\EmployeeArea\Content\scripts\app.EmployeeService.js" />
     <None Include="Properties\PublishProfiles\Dining_package.pubxml" />
     <None Include="Properties\PublishProfiles\Dining_profile.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

@@ -16,10 +16,6 @@ namespace ACSDining.Infrastructure.Repositories
         public static List<DishModelDto> DishesByCategory(this IRepositoryAsync<MfdDishPriceRelations> repository,
             string category, int? menufordayid = null)
         {
-            //if (menufordayid == null)
-            //{
-            //    menufordayid = repository.GetRepositoryAsync<MenuForWeek>().GetCurrentMenuForDay().ID;
-            //}
             return
                 repository.GetRepositoryAsync<Dish>().Query()
                     .Include(d => d.DishDetail)
@@ -149,24 +145,82 @@ namespace ACSDining.Infrastructure.Repositories
             repository.Context.Entry(newdish).State = EntityState.Added;
         }
 
-        public static void UpdateMfdDishes(this IRepositoryAsync<MfdDishPriceRelations> repository, MenuForDayDto menuforday)
+        public static int UpdateMfdDishes(this IRepositoryAsync<MfdDishPriceRelations> repository,
+            MenuForDayDto menuforday)
         {
 
-            MenuForDay menuFd = repository.GetRepositoryAsync<MenuForDay>().Find(menuforday.Id);
+            MenuForDay menuFd =
+                repository.GetRepositoryAsync<MenuForDay>()
+                    .Query()
+                    .Include(mfd => mfd.DishPriceMfdRelations.Select(dp => dp.DishPrice))
+                    .Include(mfd => mfd.DishPriceMfdRelations.Select(dp => dp.Dish))
+                    .Include(mfd => mfd.DishPriceMfdRelations.Select(dp => dp.Dish.DishType))
+                    .Include(mfd => mfd.DayOrderMenus.Select(dp => dp.MenuForDay))
+                    .Include(mfd => mfd.DayOrderMenus.Select(dp => dp.MenuForDay.WorkingDay.DayOfWeek))
+                    .Include(mfd => mfd.DayOrderMenus.Select(dp => dp.WeekOrderMenu.DayOrderMenus))
+                    .Include(mfd => mfd.WorkingDay.WorkingWeek.Year)
+                    .Include(mfd => mfd.DayOrderMenus.Select(dord => dord.WeekOrderMenu.MenuForWeek))
+                    .Select()
+                    .FirstOrDefault(mfd => mfd.ID == menuforday.Id);
 
-            int[] dishidarray = menuforday.Dishes.Select(d => d.DishId).ToArray();
-            menuFd.DishPriceMfdRelations = repository.Queryable().Where(mdp => mdp.MenuForDayId == menuforday.Id).ToList();
-            for (int i = 0; i < dishidarray.Length; i++)
+            if (menuFd != null)
             {
-                MfdDishPriceRelations rel=menuFd.DishPriceMfdRelations.ElementAt(i);
-                rel.DishId = dishidarray[i];
-                rel.DishPrice = repository.GetDishPrice(menuforday.Dishes.ElementAt(i).Price);
-                repository.Context.Entry(rel).State=EntityState.Modified;
-            }
-            menuFd.TotalPrice = menuforday.TotalPrice;
+                int changedishid = menuforday.Dishes.Select(d => d.DishId)
+                        .FirstOrDefault(id => ! menuFd.DishPriceMfdRelations.Select(dp => dp.DishId).Contains(id));
+                if (changedishid==0)
+                {
+                    for (int i = 0; i < menuFd.DishPriceMfdRelations.Count; i++)
+                    {
+                        if (menuFd.DishPriceMfdRelations.ElementAt(i).DishPrice!=repository.GetDishPrice(menuforday.Dishes.ElementAt(i).Price))
+                        {
+                            changedishid = menuFd.DishPriceMfdRelations.ElementAt(i).DishId;
+                        }
+                    }
+                }
 
-            repository.Context.Entry(menuFd).State = EntityState.Modified;
-            ////repository.Context.MenuForWeeks.Attach(mfw);
+                menuFd.DishPriceMfdRelations = repository.MfdByMenuForDayDto(menuforday);
+                Dish dish =
+                    repository.GetRepositoryAsync<Dish>()
+                        .Query()
+                        .Include(d => d.DishType)
+                        .Include(d => d.CurrentPrice)
+                        .Select()
+                        .FirstOrDefault(d => d.DishID == changedishid);
+                MfdDishPriceRelations rel =
+                    menuFd.DishPriceMfdRelations.FirstOrDefault(
+                        mfd => dish != null && string.Equals(mfd.Dish.DishType.Category, dish.DishType.Category));
+
+                if (rel != null && dish != null)
+                {
+                    rel.DishId = changedishid;
+                    var firstOrDefault = menuforday.Dishes.FirstOrDefault(d => d.DishId == changedishid);
+                    if (firstOrDefault != null)
+                        dish.CurrentPrice = repository.GetDishPrice(firstOrDefault.Price);
+                    rel.DishPrice = dish.CurrentPrice;
+                    repository.Context.Entry(rel).State = EntityState.Modified;
+                    repository.Context.Entry(dish).State = EntityState.Modified;
+
+                    menuFd.TotalPrice = menuforday.TotalPrice;
+
+                    repository.Context.Entry(menuFd).State = EntityState.Modified;
+                    
+                    return dish.DishType.Id;
+                }
+            }
+            return 0;
+        }
+
+        public static List<MfdDishPriceRelations> MfdByMenuForDayDto(
+            this IRepositoryAsync<MfdDishPriceRelations> repository, MenuForDayDto menuforday)
+        {
+            return repository.Query()
+                .Include(mfd => mfd.DishPrice)
+                .Include(mfd => mfd.MenuForDay.WorkingDay.WorkingWeek)
+                .Include(mfd => mfd.MenuForDay.DayOrderMenus.Select(dom => dom.WeekOrderMenu.DayOrderMenus))
+                .Include(mfd => mfd.MenuForDay.DayOrderMenus.Select(dom => dom.MenuForDay.DishPriceMfdRelations))
+                .Select()
+                .Where(mdp => mdp.MenuForDayId == menuforday.Id)
+                .ToList();
         }
     }
 }

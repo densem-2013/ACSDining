@@ -3,6 +3,7 @@
 /// <reference path="~/Scripts/jquery-ui-i18n.min.js" />
 /// <reference path="~/Scripts/knockout-3.3.0.debug.js" />
 /// <reference path="~/Areas/SU_Area/Content/scripts/app.su_Service.js" />
+/// <reference path="~/Scripts/knockout.mapping-latest.debug.js" />
 (function () {
 
     $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
@@ -28,8 +29,21 @@
     var excelButtonDiv = $('<div></div>').css({ 'whith': "100%", 'padding': "10px" });
     var sendButtonInput = $('<input type="button" id="btExcel" class="btn btn-info" value="Выгрузить в Excel" data-bind="click: GetExcel"/>');
     excelButtonDiv.append(sendButtonInput);
-    $('#forpaibutton').append(excelButtonDiv);
-    //$(".container").css({ 'marginLeft': 0 });
+    $("#forpaibutton").append(excelButtonDiv);
+
+
+    $("#submenu td:first-child").attr({ 'data-bind': "text: CurNextTitle" });
+    var butdiv = $("<div>").css({ "display": "inline-flex" });
+    var curweekbut = $("<input/>")
+        .attr({ 'data-bind': "click: GoToCurrentWeekOrders, visible: !IsCurrentWeek()", "id": "curweek", "type": "button", "value": "Перейти на текущую неделю" })
+        .addClass("btn btnaddmenu");
+    butdiv.append(curweekbut);
+
+    var nextweekbut = $("<input/>")
+        .attr({ 'data-bind': "click: GoToNextWeekOrders,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Перейти на следующую неделю" })
+        .addClass("btn btnaddmenu");
+    butdiv.append(nextweekbut);
+    $("#submenu td:last-child").append(butdiv);
 
     var quantValueModel = function (value) {
 
@@ -40,7 +54,8 @@
 
         self.beenChanged = ko.observable(false);
         self.clicked = function (item) {
-                $(item).focusin();
+            $(item).focusin();
+            //event.preventDefault();
         };
 
         self.doubleClick = function () {
@@ -70,7 +85,6 @@
 
         self.BeenChanged = ko.observable(false);
 
-
         self.WeekPaid = ko.observable(userWeekOrder.weekPaid);
 
         self.WeekIsPaid = ko.observable(userWeekOrder.weekIsPaid);
@@ -78,6 +92,7 @@
         self.UserWeekOrderDishes = ko.observableArray(ko.utils.arrayMap(userWeekOrder.userWeekOrderDishes, function(item) {
             return new quantValueModel(item);
         }));
+
         self.isHovering = ko.observable(false);
 
         self.IsSelectedRow = ko.observable(false);
@@ -91,11 +106,13 @@
 
         self.Message = ko.observable("");
 
-        self.myDate = ko.observable(new Date());
+        self.myDate = ko.observable();
 
         self.CurrentWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
         self.WeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
+
+        self.NextWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
         self.Categories = ko.observableArray([]);
 
@@ -130,22 +147,29 @@
 
         self.PlanWeekDishPrices = ko.observableArray([]);
 
+        self.IsNextWeekMenuExists = ko.observable();
+
         self.IsCurrentWeek = ko.pureComputed(function () {
 
             var res = self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
             return res;
 
         }.bind(self));
+        
+        self.IsNextWeekYear = ko.pureComputed(function() {
 
-        self.rowclicked = function () {
+            var res = self.NextWeekYear().week === self.WeekYear().week && self.NextWeekYear().year === self.WeekYear().year;
+            return res;
 
+        }.bind(self));
+
+        self.rowclicked = function (item,event) {
             ko.utils.arrayForEach(self.WeekUserOrderModels(), function (obj) {
 
-                obj.IsSelectedRow(obj.isHovering() && self.SUCanChangeOrder() && self.ItsFact());
+                    obj.IsSelectedRow(obj.isHovering() && self.SUCanChangeOrder()/* && self.ItsFact()==="fact"*/);
 
-            });
+                });
 
-            //clickitem.IsSelectedRow(true);
         };
 
         self.CurNextTitle = ko.pureComputed(function () {
@@ -196,7 +220,7 @@
 
         self.update = function (wuOrder, index, object) {
             object.onFocusOut();
-            if (object.beenChanged()) {
+            if (object.beenChanged()===true) {
                 self.BeenChanged(true);
                 var catlengh = self.Categories().length;
                 var daynumber = Math.ceil(index / catlengh);
@@ -227,6 +251,7 @@
         }.bind(self);
 
         self.WeekTitle = ko.computed(function () {
+            if (self.WeekYear().week === undefined) return "";
             var options = {
                 weekday: "long",
                 year: "numeric",
@@ -274,6 +299,7 @@
 
         var updateViewModel = function(resp1) {
             if (resp1 != null) {
+                if (resp1.weekYearDto.week === self.WeekYear().week && resp1.weekYearDto.year === self.WeekYear().year && self.WeekUserOrderModels().length!==0) return;
                 self.WeekYear(resp1.weekYearDto);
                 self.DaysOfWeek(resp1.dayNames);
 
@@ -285,6 +311,9 @@
                 self.SummaryDishQuantities(resp1.summaryDishQuantities);
                 self.WeekDishPrices(resp1.weekDishPrices);
                 self.SUCanChangeOrder(resp1.suCanChangeOrder);
+                localStorage.setItem("LastOrderView", ko.mapping.toJSON({ Week: resp1.weekYearDto.week, Year: resp1.weekYearDto.year }));
+                var lastfactval = localStorage.getItem("FactValue");
+                self.ItsFact(lastfactval || "fact");
             } else {
                 if (!self.IsCurrentWeek()) {
                     modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
@@ -295,10 +324,12 @@
         var loadWeekOrders = function (wyDto1, foplan) {
             if (foplan === "fact") {
                 app.su_Service.LoadFactWeekOrders(wyDto1).then(function (resp1) {
+                    localStorage.setItem("FactValue","fact");
                     updateViewModel(resp1);
                 }, onError);
             } else {
                 app.su_Service.LoadPlanWeekOrders(wyDto1).then(function (resp1) {
+                    localStorage.setItem("FactValue", "plan");
                     updateViewModel(resp1);
                 }, onError);
             }
@@ -325,18 +356,21 @@
         };
 
         self.myDate.subscribe = ko.computed(function () {
+
+            if (self.myDate() == undefined) return;
+
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
             if (needObj != undefined && !isNaN(takedWeek)) {
                 var curweek = needObj.week;
-                if (!isNaN(takedWeek) && takedWeek !== curweek) {
+                if (!isNaN(takedWeek) /*&& takedWeek !== curweek*/) {
                     var weekyear = {
                         Week: takedWeek,
                         Year: self.myDate().getFullYear()
                     };
                     if (!isNaN(weekyear.Week) && !isNaN(weekyear.Year)) {
 
-                        loadWeekOrders(weekyear,self.ItsFact());
+                        loadWeekOrders(weekyear, self.ItsFact());
                     }
                 };
             };
@@ -354,6 +388,15 @@
                 });
         };
 
+        self.GoToNextWeekOrders = function () {
+            self.SetMyDateByWeek(self.NextWeekYear());
+        };
+
+
+        self.GoToCurrentWeekOrders = function () {
+            self.SetMyDateByWeek(self.CurrentWeekYear());
+        };
+
         self.init = function () {
             app.su_Service.GetCategories().then(function (resp) {
                 self.Categories(resp);
@@ -365,10 +408,26 @@
 
             }, onError)
                 .then(function () {
-                    self.SetMyDateByWeek(self.CurrentWeekYear());
-                }
-            );
 
+                    var lastweekyear = localStorage.getItem("LastOrderView");
+                    var lastfactval = localStorage.getItem("FactValue");
+                    self.ItsFact(lastfactval || "fact");
+                    if (lastweekyear == null) {
+                        localStorage.setItem("LastOrderView", ko.mapping.toJSON({ Week: self.CurrentWeekYear().week, Year: self.CurrentWeekYear().year }));
+                        self.SetMyDateByWeek(self.CurrentWeekYear());
+                    } else {
+                        var obj = ko.mapping.fromJSON(lastweekyear);
+                        self.SetMyDateByWeek({week:obj.Week(),year:obj.Year()});
+                    }
+                });
+
+            app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function (nextDto) {
+                self.NextWeekYear(nextDto);
+            }, onError);
+
+            app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
+                self.IsNextWeekMenuExists(respnext);
+            }, onError);
 
         }
 

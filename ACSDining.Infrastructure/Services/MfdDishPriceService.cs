@@ -19,7 +19,7 @@ namespace ACSDining.Infrastructure.Services
         //Преобразовать блюдо в DishModelDto
         DishModelDto GetDishModelDto(Dish dish, int menufordayid);
         //Обновить дневное меню
-        void UpdateMenuForDay(MenuForDayDto dayMenuDto);
+        int UpdateMenuForDay(MenuForDayDto dayMenuDto);
     }
     public class MfdDishPriceService : Service<MfdDishPriceRelations>, IMfdDishPriceService
     {
@@ -55,9 +55,9 @@ namespace ACSDining.Infrastructure.Services
             _repository.InsertDish(dish);
         }
 
-        public void UpdateMenuForDay(MenuForDayDto dayMenuDto)
+        public int UpdateMenuForDay(MenuForDayDto dayMenuDto)
         {
-            _repository.UpdateMfdDishes(dayMenuDto);
+            return _repository.UpdateMfdDishes(dayMenuDto);
         }
 
     }

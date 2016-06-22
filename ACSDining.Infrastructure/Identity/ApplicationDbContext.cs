@@ -47,24 +47,10 @@ namespace ACSDining.Infrastructure.Identity
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-            //modelBuilder.Entity<MenuForDay>()
-            //    .HasMany(mfd => mfd.Dishes).WithMany(m => m.MenusForDay)
-            //    .Map(t => t.MapLeftKey("MenuID")
-            //        .MapRightKey("DishID")
-            //        .ToTable("MFD_Dishes"));
             modelBuilder.Conventions.Add(new FunctionsConvention<ApplicationDbContext>("dbo"));
             base.OnModelCreating(modelBuilder);
         }
-
-        //public virtual ObjectResult<WeekUserOrder> GetWeekUserOrderDishQuantyties(WeekYearDto wyDto)
-        //{
-        //    var weekParameter = new ObjectParameter("week", wyDto.Week);
-        //    var yearParameter = new ObjectParameter("year", wyDto.Year);
-        //    return
-        //        ((IObjectContextAdapter) this).ObjectContext.ExecuteFunction<WeekUserOrder>(
-        //            "GetUserWeekOrderDishes week,year", weekParameter, yearParameter);
-        //}
- 
+        
         public static ApplicationDbContext Create()
         {
              return new ApplicationDbContext();

@@ -2,21 +2,29 @@
     Layout = "~/Areas/SU_Area/Views/Shared/_LayoutForPaiments.cshtml";
 }
 
-<div class="col-sm-12  object-non-visible" data-animation-effect="fadeIn" style="margin-left: 0" id="ordersObject">
+<div data-animation-effect="fadeIn" id="paimentsObject">
     <div class="panel panel-default" id="mfwPanel">
 
-        <table class="table table-striped table-bordered fixed  table-hover" id="ordesTable">
+        <table class="table table-striped table-bordered fixed  table-responsive table-condensed table-hover" id="ordesTable">
 
+            <colgroup>
+                <col class="col-sm-1" />
+                <col class="col-sm-3" />
+                <!--ko foreach: WeekDishPrices-->
+                <col class="col-sm-1" />
+                <!--/ko-->
+                <col class="col-sm-3" />
+            </colgroup>
             <thead>
 
-            <tr>
-                <th class="t-header" style="padding: 2px !important" rowspan="4"><span>№</span></th>
-                <th class="t-header" style="padding: 2px !important; text-align: center" rowspan="4"><span>Ф.И.О</span></th>
-                <!--ko foreach: DaysOfWeek-->
-                <th colspan="4" class="t-header" style="padding: 2px !important; text-align: center; height: 40px !important"><span data-bind="text:$data"></span></th>
-                <!--/ko-->
-                <th rowspan="4" class="t-header" style="padding: 2px !important; text-align: center; white-space: normal !important;"><span>Стоимость заказа за неделю</span></th>
-            </tr>
+                <tr>
+                    <th class="t-header" style="padding: 2px !important" rowspan="4"><span>№</span></th>
+                    <th class="t-header" style="padding: 2px !important; text-align: center" rowspan="4" colspan="3"><span>Ф.И.О</span></th>
+                    <!--ko foreach: DaysOfWeek-->
+                    <th colspan="4" class="t-header" style="padding: 2px !important; text-align: center; height: 40px !important"><span data-bind="text:$data"></span></th>
+                    <!--/ko-->
+                    <th rowspan="4" class="t-header" colspan="3" style="padding: 2px !important; text-align: center; white-space: normal !important;"><span>Стоимость заказа за неделю</span></th>
+                </tr>
                 <tr data-bind="foreach: DaysOfWeek" id="groups">
                     <!--ko foreach: $root.Categories-->
                     <th class="thvert">
@@ -24,62 +32,62 @@
                     </th>
                     <!--/ko-->
                 </tr>
-            <tr>
-                <th style="text-align: center" data-bind="attr:{colspan: WeekDishPrices().length}"><span>Цена за одну порцию, грн</span></th>
-            </tr>
-            <tr>
-                <!--ko foreach: WeekDishPrices-->
-                <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data.toFixed(2)"></span></th>
-                <!--/ko-->
-            </tr>
+                <tr>
+                    <th style="text-align: center" data-bind="attr:{colspan: WeekDishPrices().length}"><span>Цена за одну порцию, грн</span></th>
+                </tr>
+                <tr>
+                    <!--ko foreach: WeekDishPrices-->
+                    <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data.toFixed(2)"></span></th>
+                    <!--/ko-->
+                </tr>
             </thead>
             <colgroup>
-                <col class="col-sm-1"/> 
-                <col class="col-sm-3" /> 
+                <col class="col-sm-1" />
+                <col class="col-sm-3" />
                 <!--ko foreach: WeekDishPrices-->
-                <col class="col-sm-1" /> 
+                <col class="col-sm-1" />
                 <!--/ko-->
-                <col class="col-sm-3" /> 
+                <col class="col-sm-3" />
             </colgroup>
             <tbody>
-            <!--ko foreach: pagedList-->
-                <tr data-bind="singleClick: $root.rowclicked, hover: isHovering, css:{ allowedit: IsSelectedRow  }">
+                <!--ko foreach: pagedList-->
+                <tr data-bind="click: $root.rowclicked, hover: isHovering, css:{ allowedit: IsSelectedRow  }">
                     <td>
                         <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
                     </td>
-                    <td class="rights"><span data-bind="text: UserName"></span></td>
+                    <td class="rights" colspan="3"><span data-bind="text: UserName"></span></td>
                     <!--ko foreach: UserWeekOrderDishes-->
-                    <!--ko ifnot: $parent.IsSelectedRow-->
+                    <!--ko ifnot: $parent.IsSelectedRow() && $root.ItsFact()==='fact'-->
                     <td class="orderquant">
                         <span data-bind="text: Quantity"></span>
                     </td>
                     <!--/ko-->
-                    <!--ko if: $parent.IsSelectedRow-->
-                    <td class="orderquant" data-bind="event : { mouseover: doubleClick , mouseout: function(){ hasFocus=false}}">
+                    <!--ko if: $parent.IsSelectedRow() && $root.ItsFact()==='fact' -->
+                    <td class="orderquant" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseover: doubleClick , mouseout: function(){ hasFocus = false}}">
                         <!--ko ifnot: isEditMode-->
                         <span data-bind="text: Quantity"></span>
                         <!--/ko-->
                         <!-- ko if: isEditMode -->
                         <!-- ko if: ($index() % 4 === 0) -->
-                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, hasFocus:isEditMode,event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
+                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, hasFocus:isEditMode, event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
                         <!--/ko-->
                         <!-- ko ifnot: ($index() % 4 === 0) -->
-                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, hasFocus:isEditMode,event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
+                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, hasFocus:isEditMode, event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
                         <!--/ko-->
                         <!--/ko-->
                     </td>
                     <!--/ko-->
                     <!--/ko-->
-                    <th style="text-align: center"><span data-bind="text: WeekSummaryPrice"></span></th>
+                    <th style="text-align: center" colspan="3"><span data-bind="text: WeekSummaryPrice"></span></th>
                 </tr>
-            <!--/ko-->
-            <tr>
-                <th class="t-header" style="padding: 2px !important" colspan="2"><span>Всего заказано</span></th>
-                <!--ko foreach: SummaryDishQuantities-->
-                <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data"></span></th>
                 <!--/ko-->
-                <th class="t-header" style="padding: 2px !important; font-weight: bold;" data-bind="text: WeekTotal"></th>
-            </tr>
+                <tr>
+                    <th class="t-header" style="padding: 2px !important" colspan="4"><span>Всего заказано</span></th>
+                    <!--ko foreach: SummaryDishQuantities-->
+                    <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data"></span></th>
+                    <!--/ko-->
+                    <th class="t-header" colspan="3" style="padding: 2px !important; font-weight: bold;" data-bind="text: WeekTotal"></th>
+                </tr>
             </tbody>
             <colgroup>
                 <col data-bind="attr:{class: 'col-sm-'+ Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3 )}" />
@@ -102,7 +110,7 @@
                             <span class="label-info" data-bind=" text: maxPageIndex()+1"></span>
                         </div>
                     </td>
-                    <td class="t-header" colspan="2">
+                    <td class="t-header" data-bind="attr:{colspan: Math.ceil($root.DaysOfWeek().length*$root.Categories().length/3 - 1)}">
                         <button type="button" class="btn btn-default btn-circle" data-bind="click: nextPage, css:{disabled: pageIndex() === maxPageIndex()}" style="float: left">
                             <span class="glyphicon glyphicon-hand-right"></span>
                         </button>

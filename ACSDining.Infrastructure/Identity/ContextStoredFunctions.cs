@@ -19,6 +19,7 @@ namespace ACSDining.Infrastructure.Identity
         /// </summary>
         /// <param name="context"></param>
         /// <param name="wyDto">Объект, содержащий номера недели и года для запроса</param>
+        /// <param name="witoutnowork"></param>
         /// <returns></returns>
         public static async Task<string[]> GetDayNames(this ApplicationDbContext context, WeekYearDto wyDto, bool witoutnowork=false)
         {
@@ -42,6 +43,34 @@ namespace ACSDining.Infrastructure.Identity
         {
             var workdayidParametr = new SqlParameter("@WDayId", workdayid ?? SqlInt32.Null);
             context.Database.ExecuteSqlCommand("exec DayFactToPlan @WDayId", workdayidParametr);
+        }
+
+        /// <summary>
+        /// Переводит все существующие фактические заявки на меню текущего дня в плановые
+        /// и закрывает возможность редактирования заказа на этот день для клиентов
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="orderid"></param>
+        /// <returns></returns>
+        public static void UpdateBalanceByWeekOrderId(this ApplicationDbContext context, int orderid)
+        {
+            var orderidParametr = new SqlParameter("@orderid", orderid);
+            context.Database.ExecuteSqlCommand("exec UpdateBalanceByWeekOrderId @orderid", orderidParametr);
+        }
+
+        /// <summary>
+        /// Обновляем баланс по тем пользователям, которые 
+        /// заказали ненулевое количество изменяемого блюда в данном дневном меню
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="daymenuid"></param>
+        /// <param name="dishtypeid"></param>
+        /// <returns></returns>
+        public static void UpdateBalanceByDayMenuDishTypeId(this ApplicationDbContext context, int daymenuid,int dishtypeid)
+        {
+            var daymenuidParametr = new SqlParameter("@daymenuid", daymenuid);
+            var dishtypeidParametr = new SqlParameter("@dishtypeid", dishtypeid);
+            context.Database.ExecuteSqlCommand("exec UpdateBalanceByDayMenuDishTypeId @daymenuid,@dishtypeid", daymenuidParametr, dishtypeidParametr);
         }
 
         #endregion
@@ -174,6 +203,49 @@ namespace ACSDining.Infrastructure.Identity
 
             context.Database.ExecuteSqlCommand("exec UpdateDishQuantity @Dayorderid,@Dishtypeid,@Quantity",
                 dayorderidParameter, dishtypeidParameter, quantityParameter);
+        }
+
+        /// <summary>
+        /// Обновляет пользовательский заказ со стороны SU - только факт
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="userOrderDto"></param>
+        /// <returns></returns>
+        public static void UpdateDishQuantityBySu(this ApplicationDbContext context, UpdateUserOrderDto userOrderDto)
+        {
+            var dayorderidParameter = new SqlParameter("@Dayorderid", userOrderDto.DayOrderId);
+            var dishtypeidParameter = new SqlParameter("@Dishtypeid", userOrderDto.CategoryId);
+            var quantityParameter = new SqlParameter("@Quantity", userOrderDto.Quantity);
+
+            context.Database.ExecuteSqlCommand("exec UpdateDishQuantityBySU @Dayorderid,@Dishtypeid,@Quantity",
+                dayorderidParameter, dishtypeidParameter, quantityParameter);
+        }
+
+        /// <summary>
+        /// Обновляет пользовательский заказ со стороны SU - только факт
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="weekorderid"></param>
+        /// <returns></returns>
+        public static void OrderAllByOne(this ApplicationDbContext context, int weekorderid)
+        {
+            var weekorderidParameter = new SqlParameter("@WeekOrdId", weekorderid);
+
+            context.Database.ExecuteSqlCommand("exec OrderAllByOne @WeekOrdId", weekorderidParameter);
+        }
+
+        /// <summary>
+        /// Создаёт такой же заказ на данной неделе 
+        ///  как и на предыдущей для данного пользователя
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="weekorderid"></param>
+        /// <returns></returns>
+        public static void OrderAsPrewWeek(this ApplicationDbContext context, int weekorderid)
+        {
+            var weekorderidParameter = new SqlParameter("@WeekOrdId", weekorderid);
+
+            context.Database.ExecuteSqlCommand("exec OrderAsPrevWeek @WeekOrdId", weekorderidParameter);
         }
 
         #endregion

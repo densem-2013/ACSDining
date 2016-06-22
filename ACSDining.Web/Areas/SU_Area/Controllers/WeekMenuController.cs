@@ -186,15 +186,16 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
             {
                 return BadRequest(ModelState);
             }
-            _mfdDishPriceService.UpdateMenuForDay(menuforday);
+            int dishtypeid=_mfdDishPriceService.UpdateMenuForDay(menuforday);
 
             MenuForWeek mfw = _unitOfWork.RepositoryAsync<MenuForWeek>().GetWeekMenuMfdContains(menuforday.Id);
 
             mfw.SummaryPrice = mfw.MenuForDay.Sum(mw => mw.TotalPrice);
 
-            _unitOfWork.GetContext().Entry(mfw).State = EntityState.Modified;
-            _unitOfWork.SaveChanges();
+           _unitOfWork.GetContext().SaveChanges();
 
+           _unitOfWork.GetContext().UpdateBalanceByDayMenuDishTypeId(menuforday.Id, dishtypeid);
+            
             return StatusCode(HttpStatusCode.OK);
         }
         // DELETE api/WeekMenu/5

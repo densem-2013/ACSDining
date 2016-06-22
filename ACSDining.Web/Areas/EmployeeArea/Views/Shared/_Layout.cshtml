@@ -12,7 +12,7 @@
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/themes/base/css")
     @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/ViewModel")
+    @Scripts.Render("~/bundles/EmployeeViewModel")
     @RenderSection("scripts", required: false)
 </head>
 <body class="pagebg">
@@ -34,7 +34,7 @@
                                         <div style="text-align: right;">
                                             @if (Session["EmployeeFullname"] != null)
                                             {
-                                                <span> Вы вошли как, @Session["EmployeeFullname"]<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})"> Выход </a></span>
+                                                <span> Вы вошли как, @Session["EmployeeFullname"] &nbsp;&nbsp;<a href="@Url.RouteUrl(new {action = "LogOff", controller = "Account", area = ""})">Выход <span class="glyphicon glyphicon-log-out"></span></a></span>
                                             }
                                             else
                                             {

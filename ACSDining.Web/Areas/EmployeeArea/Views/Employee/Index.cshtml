@@ -2,25 +2,23 @@
     ViewBag.Title = "Заказ блюда";
 }
 
-<div id="submenu">
-    <table class="table table-responsive">
-       <tbody>
-        <tr>
-            <td class="navlink" data-bind="text: CurNextTitle"></td>
-            <td class="t-label"  style="width: 40%; padding: 2px;">
-                <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn btnaddmenu" data-bind=" click: GoToCurrentWeekOrder,visible: !IsCurrentWeek() " />
-            </td>
-            <td class="t-label"  style="width: 40%; padding: 2px;">
-                <input type="button" id="btnaddmenu" class="btn btnaddmenu enabled" value="Редактировать заказ на следующую неделю" data-bind=" click: GoToNextWeekOrder,visible: !IsNextWeekYear() && NextWeekOrderExist()" />
-            </td>
-            <td class="navlink" data-bind="text: 'Ваш текущий баланс: ' + Balance().toFixed(2)"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+    <div id="submenu">
+        <table class="table table-responsive">
+           <tbody>
+            <tr>
+                <td class="navlink" data-bind="text: CurNextTitle"></td>
+                <td class="t-label"  style="width: 40%; padding: 2px;">
+                    <input type="button" value="Перейти на текущую неделю" id="curweek" class="btn btnaddmenu" data-bind=" click: GoToCurrentWeekOrder, visible: !IsCurrentWeek() " />
+                </td>
+                <td class="t-label"  style="width: 40%; padding: 2px;">
+                    <input type="button" id="btnaddmenu" class="btn btnaddmenu enabled" value="Редактировать заказ на следующую неделю" data-bind=" click: GoToNextWeekOrder,visible: !IsNextWeekYear() && NextWeekOrderExist()" />
+                </td>
+                <td class="navlink" data-bind="text: 'Ваш текущий баланс: ' + Balance().toFixed(2)"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-<div class="main_content_background">
-    <div class="main_content">
         <div class="row">
             <div class="col-sm-12">
                 <div class="col-sm-3 ">
@@ -41,7 +39,16 @@
                                     <th class="t-header col-sm-1"><span>День недели</span></th>
                                     <th class="t-header col-sm-2"><span>Категория блюда</span></th>
                                     <th class="t-header col-sm-7"><span>Название</span></th>
-                                    <th class="t-header col-sm-1"><span>Заказать</span></th>
+                                    <th class="t-header col-sm-1"><span>Заказать</span>
+                                        <div id="ordButtonsDiv" class="  btn-group-sm" style="padding-top: 3px;">
+                                            <button type="button" class="btn-circle btn-xs btn-default" data-bind="click: allbyone,visible: IsNextWeekYear()||IsCurrentWeek(), tooltip: {title: 'Заказать всё по одному', placement: 'left',container: 'body'}" style="float: left; padding-right: 2px;">
+                                                <span class="glyphicon glyphicon-pencil" style="font-size: 8px">1</span>
+                                            </button>
+                                            <button type="button" class="btn-circle btn-xs btn-defaul" data-bind="click: setasprev,visible: IsNextWeekYear()||IsCurrentWeek(),tooltip: {title: 'Заказать всё как на прошлой неделе', placement: 'right',container: 'body'}" style="float: right; padding-left: 2px;">
+                                                <span class="glyphicon glyphicon-backward" style="font-size: 8px"></span>
+                                            </button>
+                                        </div>
+                                    </th>
                                     <th class="t-header col-sm-2" colspan="2"><span>Стоимость</span></th>
                                 </tr>
                             </thead>
@@ -65,13 +72,11 @@
                                         </div>
                                         <!--/ko-->
                                     </td>
-                                    <td style="vertical-align: middle; text-align: center;">
+                                    <td style="vertical-align: middle; text-align: center;" data-bind="click: function(){$root.checkallowedit($data.OrderCanByChanged());}">
                                         <!--ko if: OrderCanByChanged-->
                                         <!--ko foreach: Dishes-->
                                         <!--ko with: OrderQuantity-->
-                                        <div style="border-bottom: 1px solid;" data-bind="event : { mouseover: doubleClick,  mouseleave: function(){ hasFocus=false}},  css: { menu_hover : $parent.isHovering}">
-                                            @*<div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element)}, event : { dblclick: doubleClick },  css: { menu_hover : $parent.isHovering}, tooltip: {title: 'DoubleClick For Edit', placement: 'top',container: 'body'}">*@
-
+                                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element); }, event : { mouseover: doubleClick,  mouseleave: function(){ hasFocus=false}},  css: { menu_hover : $parent.isHovering}">
                                             <!--ko ifnot: isEditMode -->
                                             <span data-bind=" text: Quantity">
                                             </span>
@@ -124,8 +129,6 @@
             </div>
         </div>
 
-    </div>
-</div>
 <div id="modalMessage" class="modal">
 
     <div class="modal-dialog">
@@ -135,7 +138,6 @@
                     <h1 data-bind="text: Title"></h1>
                 </div>
                 <div class="modal-body">
-                    @*<input type="text" data-bind="value: Message" />*@
                     <span data-bind="text: Message"></span>
                 </div>
                 <div class="modal-footer">

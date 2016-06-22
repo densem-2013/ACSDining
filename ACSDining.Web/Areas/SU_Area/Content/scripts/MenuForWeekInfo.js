@@ -10,38 +10,38 @@
 
     $("#menucontainer span").attr({ 'data-bind': "text: WeekTitle" });
 
-    $("ul.nav.navbar-nav li:first-child").addClass("active"); 
+    $("ul.nav.navbar-nav li:first-child").addClass("active");
     $("#autorizeMessage span").css({ 'paddingLeft': "160px" });
-    var sendButtonDiv = $('<div></div>').css({ 'whith': '100%','padding':'10px' });
+    var sendButtonDiv = $('<div></div>').css({ 'whith': '100%', 'padding': '10px' });
     var sendOrderedMessageButtonInput = $('<input type="button" id="btSend" class="btn btn-success" value="Отправить сообщение заказавщим" data-bind="click: SendBooking, visible: ForEmailExistsObject"/>');
     sendButtonDiv.append(sendOrderedMessageButtonInput);
     $('#datepick').append(sendButtonDiv);
-   // $('.wrapper').css({ 'margin': 'auto' });
+    // $('.wrapper').css({ 'margin': 'auto' });
     //sendButtonDiv.insertAfter($('#datepick'));
     $("#submenu td:first-child").attr({ 'data-bind': "text: CurNextTitle" });
-    var curweekbut=$("<input/>")
-    .attr({ 'data-bind': "click: GoToCurrentWeekMenu,visible: !IsCurrentWeekYear()" , "id": "curweek" ,  "type": "button" ,  "value": "Перейти на текущую неделю" })
-    .addClass("btn btnaddmenu");
+    var curweekbut = $("<input/>")
+        .attr({ 'data-bind': "click: GoToCurrentWeekMenu,visible: !IsCurrentWeekYear()", "id": "curweek", "type": "button", "value": "Перейти на текущую неделю" })
+        .addClass("btn btnaddmenu");
     $("#submenu td:nth-child(2)").append(curweekbut);
 
-    var btWorkDays=$("<input/>")
-    .attr({ 'data-bind': "click: WorkWeekApply,visible: !WorkingDaysAreSelected()", "id": "btWorkDays", "type": "button", "value": "Подтвердить рабочие дни" })
-    .addClass("btn btnaddmenu");
+    var btWorkDays = $("<input/>")
+        .attr({ 'data-bind': "click: WorkWeekApply,visible: !WorkingDaysAreSelected()", "id": "btWorkDays", "type": "button", "value": "Подтвердить рабочие дни" })
+        .addClass("btn btnaddmenu");
     $("#submenu td:nth-child(3)").append(btWorkDays);
 
     var btasbook = $("<input/>")
-    .attr({ 'data-bind': "click: SetAsOrderable,visible: WorkingDaysAreSelected()&&!OrderCanBeCreated()", "type": "button", "value": "Подтвердить возможность заказа по меню" })
-    .addClass("btn btnaddmenu");
+        .attr({ 'data-bind': "click: SetAsOrderable,visible: WorkingDaysAreSelected()&&!OrderCanBeCreated()", "type": "button", "value": "Подтвердить возможность заказа по меню" })
+        .addClass("btn btnaddmenu");
     $("#submenu td:nth-child(3)").append(btasbook);
 
     var nextweekbut = $("<input/>")
-    .attr({ 'data-bind': "click: GoToNextWeekMenu,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Редактировать меню на следующую неделю" })
-    .addClass("btn btnaddmenu");
+        .attr({ 'data-bind': "click: GoToNextWeekMenu,visible: !IsNextWeekYear() && IsNextWeekMenuExists()", "type": "button", "value": "Редактировать меню на следующую неделю" })
+        .addClass("btn btnaddmenu");
     $("#submenu td:last-child").append(nextweekbut);
 
     var nextweekcreatebut = $("<input/>")
-    .attr({ 'data-bind': "click: CreateNextWeekMenu,visible: !IsNextWeekYear() && !IsNextWeekMenuExists()", "type": "button", "value": "Создать меню на следующую неделю" })
-    .addClass("btn btnaddmenu");
+        .attr({ 'data-bind': "click: CreateNextWeekMenu,visible: !IsNextWeekYear() && !IsNextWeekMenuExists()", "type": "button", "value": "Создать меню на следующую неделю" })
+        .addClass("btn btnaddmenu");
     $("#submenu td:last-child").append(nextweekcreatebut);
 
     var excelButtonDiv = $('<div></div>').css({ 'whith': '100%', 'padding': '10px' });
@@ -69,7 +69,7 @@
         };
         self.isHovering = ko.observable(false);
     }
-    
+
     var menuForDayInfo = function(object, isworking) {
 
         var self = this;
@@ -128,7 +128,7 @@
 
         self.Message = ko.observable("");
 
-        self.myDate = ko.observable(new Date());
+        self.myDate = ko.observable(/*new Date()*/);
 
         self.DishesByCategory = ko.observableArray([]);
 
@@ -149,10 +149,10 @@
         self.WorkWeekDays = ko.observableArray([]);
 
         self.DayNames = ko.observableArray([]);
-        
-        self.IsNextWeekYear = ko.pureComputed(function () {
 
-            var res=self.NextWeekYear().week === self.WeekYear().week && self.NextWeekYear().year === self.WeekYear().year;
+        self.IsNextWeekYear = ko.pureComputed(function() {
+
+            var res = self.NextWeekYear().week === self.WeekYear().week && self.NextWeekYear().year === self.WeekYear().year;
             return res;
 
         }.bind(self));
@@ -166,9 +166,9 @@
                 $(seltor).animate({ opacity: "-=0.8" }, 1000).animate({ opacity: "+=0.8" }, 1000);
             }, 1000);
         };
-        
 
-    //Сигнализирует, что есть пользователи, которым нужно отправить сообщение об изменении меню
+
+        //Сигнализирует, что есть пользователи, которым нужно отправить сообщение об изменении меню
         self.ForEmailExistsObject = ko.pureComputed(function() {
             var res = self.UpdatedDayMenus().length > 0;
             if (res) {
@@ -177,7 +177,7 @@
             return self.UpdatedDayMenus().length > 0;
         }.bind(self));
 
-        self.IsCurrentWeekYear = ko.pureComputed(function () {
+        self.IsCurrentWeekYear = ko.pureComputed(function() {
 
             return self.CurrentWeekYear().week === self.WeekYear().week && self.CurrentWeekYear().year === self.WeekYear().year;
 
@@ -187,7 +187,7 @@
 
         self.ChangeSaved = ko.observable(false);
 
-        self.CurNextTitle = ko.pureComputed(function () {
+        self.CurNextTitle = ko.pureComputed(function() {
             if (self.IsCurrentWeekYear()) {
                 return "Текущая неделя";
             } else if (self.IsNextWeekYear()) {
@@ -204,13 +204,15 @@
             $("#modalMessage").modal("show");
 
         };
-        // Callback for error responses from the server.
+
+// Callback for error responses from the server.
         function onError(error) {
 
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         };
 
         self.WeekTitle = ko.computed(function () {
+            if (self.WeekYear().week === undefined) return "";
             var options = {
                 weekday: "long",
                 year: "numeric",
@@ -304,8 +306,9 @@
             }, onError);
         }
 
-        self.showDishes = function (searchdish, index) {
-            if (!self.MFD_models()[index].DayMenuCanBeChanged()) {
+        self.showDishes = function(searchdish, index) {
+            var flag = self.MFD_models()[index].DayMenuCanBeChanged();
+            if (!flag) {
                 modalShow("Создание меню", "Редактирование меню на этот день уже недоступно");
             } else {
                 if (self.WorkingDaysAreSelected()) {
@@ -329,7 +332,7 @@
             return true;
         }
 
-        self.SetMyDateByWeek = function (wyDto) {
+        self.SetMyDateByWeek = function(wyDto) {
             var firstDay = new Date(wyDto.year, 0, 1).getDay();
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week);
@@ -337,6 +340,8 @@
         }.bind(self);
 
         self.loadWeekMenu = function (wyDto) {
+
+            if (wyDto.Week === self.WeekYear().week && wyDto.Year === self.WeekYear().year) return;
 
             app.su_Service.LoadWeekMenu(wyDto).then(function(resp) {
                     if (resp != null) {
@@ -353,14 +358,13 @@
                         app.su_Service.IsNextWeekMenuExists().then(function(respnext) {
                             self.IsNextWeekMenuExists(respnext);
                         }, onError);
+                        localStorage.setItem("LastWeekMenu", ko.mapping.toJSON({ Week: wyDto.Week, Year: wyDto.Year }));
                     } else {
-                        if (!self.IsCurrentWeekYear()) {
-                            modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
-                        }
+                        modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
                     }
                 },
                 onError);
-            
+
         }
 
 
@@ -369,11 +373,14 @@
         };
 
 
-        self.GoToCurrentWeekMenu = function () {
+        self.GoToCurrentWeekMenu = function() {
             self.SetMyDateByWeek(self.CurrentWeekYear());
         };
 
-        self.myDate.subscribe = ko.computed(function() {
+        self.myDate.subscribe = ko.computed(function () {
+
+            if (self.myDate() == undefined) return;
+
             var takedWeek = self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
             if (needObj != undefined) {
@@ -384,13 +391,12 @@
                         Year: self.myDate().getFullYear()
                     };
                     if (!isNaN(weekyear.Week) && !isNaN(weekyear.Year)) {
-
                         self.loadWeekMenu(weekyear);
                     }
                 };
             };
         }, self);
-        
+
         self.applyChanges = function() {
 
             var catIndex = ko.utils.arrayFirst(ko.utils.arrayMap(self.Categories(), function(cat, ind) {
@@ -414,7 +420,7 @@
                 var exists = ko.utils.arrayFirst(self.UpdatedDayMenus(), function(item) {
                     return item === mfdupdate.Id();
                 });
-                if (exists==null) {
+                if (exists == null) {
                     self.UpdatedDayMenus.push({
                         DayMenuId: mfdupdate.Id(),
                         OldDishId: mfdupdate.Dishes()[catIndex].DishId(),
@@ -436,29 +442,17 @@
 
             $("#modalbox").modal("hide");
         }
-
-        //self.DeleteNextWeekMenu = function() {
-        //    var menuid = self.MenuId();
-        //    app.su_Service.DeleteNextWeekMenu(menuid).then(function () {
-
-        //        app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
-        //            self.IsNextWeekMenuExists(respnext);
-        //        }, onError);
-
-        //        self.SetMyDateByWeek(self.CurrentWeekYear());
-        //    }, onError);
-        //}
-
+        
         self.CreateNextWeekMenu = function() {
             app.su_Service.CreateNextWeekMenu().then(function(res) {
 
-                    self.NextWeekYear(res);
+                self.NextWeekYear(res);
 
-                    app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
-                        self.IsNextWeekMenuExists(respnext);
-                    }, onError);
+                app.su_Service.IsNextWeekMenuExists().then(function(respnext) {
+                    self.IsNextWeekMenuExists(respnext);
+                }, onError);
 
-                    self.SetMyDateByWeek(self.NextWeekYear());
+                self.SetMyDateByWeek(self.NextWeekYear());
             });
         };
 
@@ -491,8 +485,8 @@
                 self.UpdatedDayMenus([]);
             }, onError);
         };
-        
-        self.SetAsOrderable=function() {
+
+        self.SetAsOrderable = function() {
 
             var orderablemessage = {
                 WeekMenuId: self.MenuId(),
@@ -507,11 +501,11 @@
             var wwdaysarray = ko.utils.arrayMap(self.MFD_models(), function(item) {
                 return item.IsWorking();
             });
-            var sendwdaysobj= {
+            var sendwdaysobj = {
                 MenuId: self.MenuId(),
                 WorkDays: wwdaysarray
             }
-            app.su_Service.ApplyWorkWeek(sendwdaysobj).then(function (res) {
+            app.su_Service.ApplyWorkWeek(sendwdaysobj).then(function(res) {
 
                 self.WorkingDaysAreSelected(res);
 
@@ -519,39 +513,49 @@
 
         };
 
-        self.GetExcel = function () {
+        self.GetExcel = function() {
             var forexcel = {
-                MenuId:self.MenuId(),
+                MenuId: self.MenuId(),
                 WeekYear: self.WeekYear(),
                 MenuTitle: self.WeekTitle()
             }
             app.su_Service.GetMenuExcel(forexcel)
-                .then(function (res) {
+                .then(function(res) {
                     window.location.assign(res.fileName);
                 });
         };
 
-        self.init = function () {
-            app.su_Service.GetCategories().then(function (resp) {
+        self.init = function() {
+            app.su_Service.GetCategories().then(function(resp) {
                 self.Categories(resp);
             }, onError);
 
 
-            app.su_Service.GetCurrentWeekYear().then(function (resp) {
-
+            app.su_Service.GetCurrentWeekYear().then(function(resp) {
                 self.CurrentWeekYear(resp);
-            }, onError);
+            }, onError).then(function() {
 
-            app.su_Service.IsNextWeekMenuExists().then(function (respnext) {
-                self.IsNextWeekMenuExists(respnext);
-            }, onError);
+                var lastweekyear = localStorage.getItem("LastWeekMenu");
+                if (lastweekyear == null) {
+                    localStorage.setItem("LastWeekMenu", ko.mapping.toJSON({ Week: self.CurrentWeekYear().week, Year: self.CurrentWeekYear().year }));
+                    self.SetMyDateByWeek(self.CurrentWeekYear());
+                } else {
+                    var obj = ko.mapping.fromJSON(lastweekyear);
+                    self.SetMyDateByWeek({ week: obj.Week(), year: obj.Year() });
+                }
 
-            app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function (nextDto) {
-                self.NextWeekYear(nextDto);
-            }, onError);
-            if (!self.WorkingDaysAreSelected()) {
-                performEffect('#btWorkDays');
-            }
+                app.su_Service.IsNextWeekMenuExists().then(function(respnext) {
+                    self.IsNextWeekMenuExists(respnext);
+                }, onError);
+
+                app.su_Service.GetNextWeekYear(self.CurrentWeekYear()).then(function(nextDto) {
+                    self.NextWeekYear(nextDto);
+                }, onError);
+                if (!self.WorkingDaysAreSelected()) {
+                    performEffect("#btWorkDays");
+                }
+            });
+
         };
         self.init();
 

@@ -7,7 +7,7 @@ namespace ACSDining.Infrastructure.Services
     public interface IDishQuantityRelationsService : IService<DishQuantityRelations>
     {
         //Получить связи на заказанное количество блюд в указанной фактической дневной заявке на указанное меню рабочего дня
-        List<DishQuantityRelations> GetByDayOrderMenuForDay(int dayorderid, int menufordayid);
+        List<DishQuantityRelations> GetByDayOrderMenuForDay(int dayorderid);
 
     }
 
@@ -21,9 +21,9 @@ namespace ACSDining.Infrastructure.Services
             _repository = repository;
         }
 
-        public List<DishQuantityRelations> GetByDayOrderMenuForDay(int dayorderid, int menufordayid)
+        public List<DishQuantityRelations> GetByDayOrderMenuForDay(int dayorderid)
         {
-            return _repository.GetRelationsListByDayIdMenuId(dayorderid, menufordayid);
+            return _repository.GetRelationsListByDayOrdId(dayorderid);
         }
     }
 }

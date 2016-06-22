@@ -26,7 +26,7 @@ namespace ACSDining.Core.Domains
         public User()
             : base()
         {
-            CanMakeBooking = true;
+            CheckDebt = true;
             IsExisting = true;
         }
         
@@ -41,13 +41,11 @@ namespace ACSDining.Core.Domains
         public virtual DateTime LastLoginTime { get; set; }
 
         public double Balance { get; set; }
-        //Допустимый размер задолженности
-        public double AllowableDebt { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
         public virtual DateTime RegistrationDate { get; set; }
-        public virtual bool CanMakeBooking { get; set; }
+        public virtual bool CheckDebt { get; set; }
         public virtual bool IsExisting { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, string> manager)

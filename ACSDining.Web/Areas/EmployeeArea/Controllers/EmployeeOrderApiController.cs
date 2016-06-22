@@ -12,6 +12,7 @@ using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.DTO.SuperUser.Orders;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.SU_Area.Models;
 using Microsoft.Ajax.Utilities;
@@ -33,7 +34,7 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         public EmployeeOrderApiController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
-            _db = ((UnitOfWork) unitOfWorkAsync).GetContext();
+            _db = unitOfWorkAsync.GetContext();
             _weekMenuService = new MenuForWeekService(_unitOfWork.RepositoryAsync<MenuForWeek>());
             _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
             _weekPaimentService = new WeekPaimentService(_unitOfWork.RepositoryAsync<WeekPaiment>());
@@ -62,8 +63,6 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
             if (weekPaiment != null)
             {
                 model = EmployeeWeekOrderDto.MapDto(_db, weekPaiment, wyDto);
-                //return Content(HttpStatusCode.BadRequest,
-                //    string.Format(" menu on week {0} year {1} not created", wyDto.Week, wyDto.Year));
             }
 
 
@@ -112,10 +111,6 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             User curuser = _db.Users.Find(userid);
 
-            //if (!curuser.CanMakeBooking)
-            //{
-            //    return Ok("nocanMakeBooking");
-            //}
             _unitOfWork.GetContext().UpdateDishQuantity(userOrderDto);
 
             return Ok(curuser.Balance);
@@ -166,8 +161,6 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         public async Task<IHttpActionResult> IsCurWeek([FromBody] WeekYearDto wyDto)
         {
             WeekYearDto curWeekYearDto = YearWeekHelp.GetCurrentWeekYearDto();
-            // WeekYearDto nextWeekYearDto = YearWeekHelp.GetNextWeekYear(curWeekYearDto);
-
             return Ok(wyDto.Week == curWeekYearDto.Week && wyDto.Year == curWeekYearDto.Year);
         }
 
@@ -235,6 +228,40 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
                 MessageService.SendEmailAsync(new List<User>() {curUser}, MessageTopic.Registration);
             }
             return Ok(res > 0);
+        }
+        [HttpPut]
+        [Route("getprevweekorder")]
+        [ResponseType(typeof(SetAsPrevDto))]
+        public async Task<SetAsPrevDto> GetPrevOrd([FromBody] int weekordid)
+        {
+            return _unitOfWork.RepositoryAsync<WeekOrderMenu>().GetSetAsPrevDtoById(weekordid);
+        }
+
+
+        [HttpPut]
+        [Route("setasprev")]
+        [ResponseType(typeof(bool))]
+        public async Task<IHttpActionResult> SetAsPrevWeek([FromBody] int weekordid)
+        {
+            //_unitOfWork.RepositoryAsync<WeekOrderMenu>().PrevOrdersMenuById(weekordid);
+            //_unitOfWork.GetContext().SaveChanges();
+            //_unitOfWork.GetContext().UpdateBalanceByWeekOrderId(weekordid);
+
+            _unitOfWork.GetContext().OrderAsPrewWeek(weekordid);
+
+            return Ok(true);
+        }
+
+
+        [HttpPut]
+        [Route("allbyone")]
+        [ResponseType(typeof(bool))]
+        public async Task<IHttpActionResult> OrderAllByOne([FromBody] int weekordid)
+        {
+            _unitOfWork.GetContext().OrderAllByOne(weekordid);
+            _unitOfWork.GetContext().UpdateBalanceByWeekOrderId(weekordid);
+
+            return Ok(true);
         }
     }
 }

@@ -20,6 +20,21 @@
     divadd.append($("<span>").addClass("glyphicon glyphicon-search"));
     $("#submenu td:nth-child(3)").append(divadd);
 
+    var divallowdebt = $("<div>").attr({ "id": "allowDebt" });
+    divallowdebt.append($("<span>").text("Допустимый кредит : ").css({"padding":"5px"}));
+    var debtInput = $("<input/>")
+   .attr({ 'data-bind': "value: CurrentDebt, visible: DebtChangeMode", "type": "text", "class": "form-control" });
+    divallowdebt.append(debtInput);
+    var spanDebt = $("<span>").attr({ "data-bind": "text: CurrentDebt() +' грн', visible:!DebtChangeMode()" }).css({"width":"100px","font-size": "20px","text-align":"center"});
+    divallowdebt.append(spanDebt);
+    var changebut = $("<button>").attr({ "id": "changebut", "type": "button", "class": "btn btn-default btn-circle", "data-bind": "click: setDebtChangeMode, visible:!DebtChangeMode()" });
+    changebut.append($("<span>").addClass("glyphicon glyphicon-edit"));
+    divallowdebt.append(changebut);
+    var savebut = $("<button>").attr({ "id": "savebut", "type": "button", "class": "btn btn-default btn-circle", "data-bind": "click: DebtSave, visible:DebtChangeMode" });
+    savebut.append($("<span>").addClass("glyphicon glyphicon-save"));
+    divallowdebt.append(savebut);
+    $("#submenu td:nth-child(4)").append(divallowdebt);
+
     var emailValueModel = function (email) {
         var self = this;
         self.isEditMode = ko.observable(false);
@@ -42,7 +57,7 @@
         self.LastLoginTime = ko.observable(account.lastLoginTime);
         self.RegistrationDate = ko.observable(account.registrationDate);
         self.Balance = ko.observable(account.balance.toFixed(2));
-        self.CanMakeBooking = ko.observable(account.canMakeBooking);
+        self.CheckDebt = ko.observable(account.checkDebt);
         self.IsExisting = ko.observable(account.isExisting);
     };
 
@@ -63,7 +78,8 @@
             return res;
 
         });
-
+        self.CurrentDebt = ko.observable();
+        self.DebtChangeMode = ko.observable(false);
         function onError(error) {
             self.Message("Error: " + error.status + " " + error.statusText);
         }
@@ -72,7 +88,15 @@
         //        self.loadAccounts();
         //    }, onError);
         //};
+        self.setDebtChangeMode = function() {
+            self.DebtChangeMode(true);
+        };
 
+        self.DebtSave = function () {
+
+            app.su_Service.UpdateAllowDebt(self.CurrentDebt());
+            self.DebtChangeMode(false);
+        };
         self.pageSize = ko.observable(7);
 
         self.pageIndex = ko.observable(0);
@@ -158,13 +182,13 @@
             }
             app.su_Service.UpdateAccountEmail(forupdate);
         }
-        self.bookupdate=function(account) {
+        self.debtupdate = function (account) {
 
             var formbupdate = {
                 UserId: account.UserId(),
-                CanMakeBooking: !account.CanMakeBooking()
+                CheckDebt: !account.CheckDebt()
             }
-            app.su_Service.UpdateAccountMakebook(formbupdate);
+            app.su_Service.UpdateAccountCheckDebt(formbupdate);
             return true;
         }
         self.existsupdate = function (account) {
@@ -180,7 +204,9 @@
         self.init = function () {
 
             self.loadAccounts();
-
+            app.su_Service.GetDebt().then(function(result) {
+                self.CurrentDebt(result);
+            });
         };
 
         self.init();

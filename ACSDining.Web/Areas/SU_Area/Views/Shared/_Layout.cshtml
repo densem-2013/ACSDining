@@ -33,7 +33,7 @@
                                         <div style="text-align: right;">
                                             @if (Session["FullName"] != null)
                                             {
-                                                <span> Вы вошли как, @Session["FullName"]<a href="@Url.RouteUrl(new { action = "LogOff", controller = "Account", area = "" })"> Выход </a></span>
+                                                <span> Вы вошли как, @Session["FullName"]  &nbsp;&nbsp;<a href="@Url.RouteUrl(new { action = "LogOff", controller = "Account", area = "" })"> Выход <span class="glyphicon glyphicon-log-out"></span></a></span>
                                             }
                                             else
                                             {

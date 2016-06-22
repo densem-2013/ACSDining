@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.Validation;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -8,7 +6,6 @@ using System.Web.Http.Description;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO;
-using ACSDining.Infrastructure.DTO.SuperUser;
 using ACSDining.Infrastructure.DTO.SuperUser.Paiments;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;

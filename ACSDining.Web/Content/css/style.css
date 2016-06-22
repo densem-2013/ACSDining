@@ -135,11 +135,11 @@ div.panel.panel-default > table {
     width: 100%;
     background-color: #DAF0FD;
 }
-#ordersObject {
+/*#ordersObject {
     margin-left: 0;
     padding-left: 0;
     padding-right: 0;
-}
+}*/
 div.panel.panel-default > table {
     width: 100%;
     background-color: rgb(236, 245, 249);
@@ -149,7 +149,7 @@ div.panel.panel-default > table {
     font-size: 14px !important;
     height: 30px !important;
     vertical-align: middle !important;
-    min-width: 45px;
+    /*min-width: 45px;*/
     /*-moz-min-width: 60px;
     -ms-min-width: 60px;
     -o-min-width: 60px;
@@ -162,7 +162,7 @@ div.panel.panel-default > table {
     height: 30px !important;
     text-align: center;
     vertical-align: middle !important;
-    min-width: 45px;
+    /*min-width: 45px;*/
     /*-moz-min-width: 52px;
     -ms-min-width: 52px;
     -o-min-width: 52px;
@@ -170,7 +170,7 @@ div.panel.panel-default > table {
     min-width: 52px;*/
 }
 
-#paimentsObject{   
+#paimentsObject, #ordersObject{   
     padding-left: 5px!important;
     padding-right: 15px !important;
     font-size: 11px;

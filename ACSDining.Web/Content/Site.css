@@ -1083,10 +1083,13 @@ select.input-small {
 .modal-body th {
      color: darkcyan;
  }
- #searchItems  {
-     display: inline-flex;
-     padding: 5px;
- }
+#searchItems, #allowDebt {
+    display: inline-flex;
+    padding: 5px;
+}
+#allowDebt span {
+    white-space: nowrap;
+}
  #searchItems > * {
      padding: 5px;
  }
@@ -1155,4 +1158,13 @@ tr.allowedit {
 }
 #orderquant >select {
     width: 60px !important;
+}
+.overlimit {
+    background-color: #f15e78  !important;  
+      border: 2px solid black !important;
+}
+.overlimit td {
+    border: 1px black solid !important;
+    font-size: 16px !important;
+    color: black !important;
 }

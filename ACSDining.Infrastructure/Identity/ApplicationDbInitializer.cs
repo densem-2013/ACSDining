@@ -46,16 +46,16 @@ namespace ACSDining.Infrastructure.Identity
             //string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/storedfunc.sql");
 
             InitializeIdentityForEf(context, _path);
-            //var dishes = GetDishesFromXml(context, _path);
-            //CreateWorkingDays(context);
-            //CreateMenuForWeek(context, dishes);
-            //_path = _path.Replace(@"DishDetails", "Employeers");
-            //GetUsersFromXml(context, _path);
-            //CreateOrders(context);
-            //_path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
+            var dishes = GetDishesFromXml(context, _path);
+            CreateWorkingDays(context);
+            CreateMenuForWeek(context, dishes);
+            _path = _path.Replace(@"DishDetails", "Employeers");
+            GetUsersFromXml(context, _path);
+            CreateOrders(context);
+            _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
             //_path = _path.Replace(@"DishDetails.xml", "storedfunc.sql");
             Utility.CreateStoredFuncs(_path);
-            //context.DayFactToPlan();
+            context.DayFactToPlan();
             base.Seed(context);
         }
 
@@ -177,25 +177,24 @@ namespace ACSDining.Infrastructure.Identity
                 }
 
 
-                //User userEmpl = userManager.FindByName("employee");
-                //if (userEmpl == null)
-                //{
-                //    userEmpl = new User
-                //    {
-                //        UserName = "employee",
-                //        Email = "densem-2013@yandex.ua",
-                //        FirstName = "Employee",
-                //        LastName = "User",
-                //        LastLoginTime = DateTime.UtcNow,
-                //        SecurityStamp = Guid.NewGuid().ToString(),
-                //        RegistrationDate = DateTime.UtcNow,
-                //        AllowableDebt = 200,
-                //        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
-                //    };
-                //    IdentityRole emplrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
-                //    userEmpl.Roles.Add(new IdentityUserRole {RoleId = emplrole.Id, UserId = userEmpl.Id});
-                //    context.Entry(userEmpl).State = EntityState.Added;
-                //}
+                User userEmpl = userManager.FindByName("employee");
+                if (userEmpl == null)
+                {
+                    userEmpl = new User
+                    {
+                        UserName = "employee",
+                        Email = "densem-2013@yandex.ua",
+                        FirstName = "Employee",
+                        LastName = "User",
+                        LastLoginTime = DateTime.UtcNow,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        RegistrationDate = DateTime.UtcNow,
+                        PasswordHash = userManager.PasswordHasher.HashPassword("777123")
+                    };
+                    IdentityRole emplrole = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "Employee"));
+                    userEmpl.Roles.Add(new IdentityUserRole { RoleId = emplrole.Id, UserId = userEmpl.Id });
+                    context.Entry(userEmpl).State = EntityState.Added;
+                }
 
                 //пустые блюда для каждой категории
                 List<DishType> dishTypes = context.DishTypes.OrderBy(dt => dt.Id).ToList();
@@ -316,7 +315,8 @@ namespace ACSDining.Infrastructure.Identity
                         WorkingDay workday = new WorkingDay
                         {
                             IsWorking = j < 5,
-                            DayOfWeek = context.Days.FirstOrDefault(d => d.Id == j + 1)
+                            DayOfWeek = context.Days.FirstOrDefault(d => d.Id == j + 1)//,
+                           // DateTime = YearWeekHelp.GetDateTimeForInit(i,j)
 
                         };
                         workingWeek.WorkingDays.Add(workday);
@@ -428,9 +428,9 @@ namespace ACSDining.Infrastructure.Identity
                 //System.Configuration.ConfigurationFileMap fileMap = new ConfigurationFileMap(HostingEnvironment.MapPath("~/Web.config")); //Path to your config fileWebConfigurationManager.AppSettings["sulogin"]
                 //System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenMappedMachineConfiguration(fileMap);
                 string configpath = userpath.Replace("App_Data/DBinitial/DishDetails.xml", "Web.config");
-                double defaultDebt;
+                //double defaultDebt;
                 //double.TryParse(WebConfigurationManager.OpenWebConfiguration(configpath).AppSettings.Settings["defaultCreditValue"].Value, out defaultDebt);double defaultDebt;
-                double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
+                //double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
                 var collection = xml.Root.Descendants("Employeer");
                 try
                 {
@@ -456,8 +456,8 @@ namespace ACSDining.Infrastructure.Identity
                                     RegistrationDate = DateTime.UtcNow,
                                     LastLoginTime = DateTime.UtcNow,
                                     IsExisting = true,
-                                    CanMakeBooking = true,
-                                    AllowableDebt = defaultDebt
+                                    CheckDebt = true//,
+                                    //AllowableDebt = defaultDebt
                                 };
                         }
                         return null;

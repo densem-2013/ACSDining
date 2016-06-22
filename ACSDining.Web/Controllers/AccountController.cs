@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
 using System.Threading.Tasks;
 using System.Web;
@@ -10,6 +11,8 @@ using Microsoft.AspNet.Identity.Owin;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Web.Models.ViewModels;
 using ACSDining.Core.Domains;
+using ACSDining.Web.Areas.SU_Area.Models;
+using Microsoft.Ajax.Utilities;
 using NLog;
 
 namespace ACSDining.Web.Controllers
@@ -88,7 +91,7 @@ namespace ACSDining.Web.Controllers
                                     shouldLockout: false);
                         if (passres == SignInStatus.Success)
                         {
-                            if (await UserManager.IsInRoleAsync(user.Id, "Employee") )
+                            if (await UserManager.IsInRoleAsync(user.Id, "Employee"))
                             {
                                 user.LastLoginTime = DateTime.UtcNow;
                                 Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
@@ -118,25 +121,23 @@ namespace ACSDining.Web.Controllers
                             if (userchangePass != null)
                             {
                                 userchangePass.PasswordHash = _userManager.PasswordHasher.HashPassword(model.Password);
-                               var  updateres=_userManager.Update(userchangePass);
-                               if (updateres==IdentityResult.Success)
-                               {
-                                   await Login(model, returnUrl);
-                                    
+                                var updateres = _userManager.Update(userchangePass);
+                                if (updateres == IdentityResult.Success)
+                                {
+                                    await Login(model, returnUrl);
+
                                 }
                             }
                         }
                     }
                     else
                     {
-                        UserPrincipal u = new UserPrincipal(_ad) { SamAccountName = model.LogIn };
+                        UserPrincipal u = new UserPrincipal(_ad) {SamAccountName = model.LogIn};
                         PrincipalSearcher search = new PrincipalSearcher(u);
-                        UserPrincipal usprincrezult = (UserPrincipal)search.FindOne();
+                        UserPrincipal usprincrezult = (UserPrincipal) search.FindOne();
                         search.Dispose();
                         if (usprincrezult != null)
                         {
-                            double defaultDebt;
-                            double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
                             user = new User
                             {
                                 FirstName = usprincrezult.GivenName,
@@ -146,8 +147,9 @@ namespace ACSDining.Web.Controllers
                                 LastLoginTime = DateTime.UtcNow,
                                 RegistrationDate = DateTime.UtcNow,
                                 EmailConfirmed = true,
-                                AllowableDebt = defaultDebt,
-                                PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
+                                PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password),
+                                CheckDebt = true,
+                                IsExisting = true
                             };
                         }
 
@@ -155,26 +157,33 @@ namespace ACSDining.Web.Controllers
                         if (res == IdentityResult.Success)
                         {
                             if (user != null) await UserManager.AddToRoleAsync(user.Id, "Employee");
+
+
+                            var signres = await
+                                _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                    shouldLockout: false);
+
+                            user = await UserManager.FindByNameAsync(model.LogIn);
+
+                            if (user != null && signres == SignInStatus.Success)
+                            {
+                                user.LastLoginTime = DateTime.UtcNow;
+                                Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
+                                if (!user.Email.IsNullOrWhiteSpace())
+                                {
+                                    MessageService.SendEmailAsync(new List<User>(new[] {user}),
+                                        MessageTopic.Registration);
+                                }
+                            }
+                            return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         }
-
-                        await
-                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                                shouldLockout: false);
-
-                        if (user != null)
-                        {
-                            user.LastLoginTime = DateTime.UtcNow;
-                            Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
-                        }
-
-                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
                     }
                     return RedirectToLocal(returnUrl);
 
                 case SignInStatus.LockedOut:
                     ModelState.AddModelError("", "Ваша учётная запись заблокирована.");
                     return View(model);
-
+                    
                 case SignInStatus.Failure:
                     var specuser = UserManager.FindByName(model.LogIn);
                     if (specuser != null)
@@ -203,43 +212,43 @@ namespace ACSDining.Web.Controllers
                             return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         }
                     }
-                    //else
-                    //{
-                    //    double defaultDebt;
-                    //    double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
-                    //    user = new User
-                    //    {
-                    //        FirstName = DateTime.Now.Second.ToString(),
-                    //        LastName = "NewUser",
-                    //        Email = "test.test@test",
-                    //        UserName = model.LogIn,
-                    //        LastLoginTime = DateTime.UtcNow,
-                    //        RegistrationDate = DateTime.UtcNow,
-                    //        EmailConfirmed = true,
-                    //        AllowableDebt = defaultDebt,
-                    //        SecurityStamp = Guid.NewGuid().ToString(),
-                    //        PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
-                    //    };
+                    else
+                    {
+                        //double defaultDebt;
+                        //double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
+                        user = new User
+                        {
+                            FirstName = DateTime.Now.Second.ToString(),
+                            LastName = "NewUser",
+                            Email = "test.test@test",
+                            UserName = model.LogIn,
+                            LastLoginTime = DateTime.UtcNow,
+                            RegistrationDate = DateTime.UtcNow,
+                            EmailConfirmed = true,
+                            //AllowableDebt = defaultDebt,
+                            SecurityStamp = Guid.NewGuid().ToString(),
+                            PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
+                        };
 
-                    //    var res = UserManager.CreateAsync(user, model.Password).Result;
-                    //    if (res == IdentityResult.Success)
-                    //    {
-                    //        await UserManager.AddToRoleAsync(user.Id, "Employee");
-                    //    }
+                        var res = UserManager.CreateAsync(user, model.Password).Result;
+                        if (res == IdentityResult.Success)
+                        {
+                            await UserManager.AddToRoleAsync(user.Id, "Employee");
+                        }
 
-                    //    await
-                    //        _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                    //            shouldLockout: false);
+                        await
+                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                shouldLockout: false);
 
-                    //    user.LastLoginTime = DateTime.UtcNow;
-                    //    Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
-                    //    user.LastLoginTime = DateTime.Now;
-                    //    await
-                    //        _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                    //            shouldLockout: false);
+                        user.LastLoginTime = DateTime.UtcNow;
+                        Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
+                        user.LastLoginTime = DateTime.Now;
+                        await
+                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
+                                shouldLockout: false);
 
-                    //    return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
-                    //}
+                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
+                    }
                     ModelState.AddModelError("", "Неудачная попытка входа.");
                     return View(model);
 
@@ -249,7 +258,7 @@ namespace ACSDining.Web.Controllers
             }
         }
 
-       
+
         // POST: /Account/LogOff
         [HttpGet]
         //[ValidateAntiForgeryToken]

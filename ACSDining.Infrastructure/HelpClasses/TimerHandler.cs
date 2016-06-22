@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Timers;
 using ACSDining.Core.Domains;
-using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.Identity;
-using Timer = System.Threading.Timer;
 
 namespace ACSDining.Infrastructure.HelpClasses
 {

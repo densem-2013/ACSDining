@@ -14,6 +14,7 @@ using System.Web.Hosting;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.Repositories;
+using Microsoft.Ajax.Utilities;
 
 namespace ACSDining.Web.Areas.SU_Area.Models
 {
@@ -89,11 +90,11 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             MailMessage email = new MailMessage
             {
                 From =
-                    new MailAddress(Settings.Smtp.Network.UserName/*"robot@ia.ua"*/, "Администрация столовой", System.Text.Encoding.UTF8)//,
+                    new MailAddress(Settings.Smtp.Network.UserName, "Администрация столовой", System.Text.Encoding.UTF8)//,
                 //DeliveryNotificationOptions =
                 //    DeliveryNotificationOptions.OnFailure
             };
-            users.ForEach(u =>
+            users.Where(u => !u.Email.IsNullOrWhiteSpace()).ForEach(u =>
             {
                 email.To.Add(new MailAddress(u.Email, u.LastName + " " + u.FirstName));
             });
@@ -108,11 +109,9 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             email.IsBodyHtml = true;
             try
             {
-                //Task.Run(()=>).Wait();
+               
                 Client.Send(email);
-                //WatchdogMailMessage(users.Select(u => u.Email).ToList(), string.Format(template, datastring, message),
-                //    "Администрация столовой");
-
+               
             }
             catch (Exception)
             {
@@ -152,8 +151,8 @@ namespace ACSDining.Web.Areas.SU_Area.Models
             {
                 StringBuilder strbild = new StringBuilder();
                 List<User> bookingUsers = repo.GetUsersMadeOrder(id);
-                strbild.AppendLine("<table>");
-                strbild.AppendLine("<thead><tr><th><th><th>Старое блюдо</th><th>Новое блюдо</th></tr></thead>");
+                strbild.AppendLine("<table class='table-responsive table-striped'>");
+                //strbild.AppendLine("<thead><tr><th><th><th>Старое блюдо</th><th>Новое блюдо</th></tr></thead>");
                 strbild.AppendLine("<tbody>");
 
                 foreach (var mdch in mesdto.UpdatedDayMenu.Where(dm=>dm.DayMenuId==id).ToList())
@@ -172,50 +171,6 @@ namespace ACSDining.Web.Areas.SU_Area.Models
                    strbild.ToString());
             }
        }
-        public static void WatchdogMailMessage(List<string> messageTo, string body, string subject)
-        {
-
-            //var watchdogSettings = new WatchdogSettings();
-
-            var mailMessage = new MailMessage();
-
-            try
-            {
-
-                var smtpServerName = "srv-terminal";
-
-                using (var smtpClient = new SmtpClient(smtpServerName))
-                {
-
-                    smtpClient.Port = 25;
-                    smtpClient.EnableSsl = false;
-                    //smtpClient.UseDefaultCredentials = false;
-                    mailMessage.From = new MailAddress("robot@ia.ua");
-
-                    //foreach (var address in messageTo.Where(address => !string.IsNullOrEmpty(address)))
-                    //{
-
-                    //    mailMessage.To.Add(new MailAddress(address));
-
-                    //}
-                    mailMessage.To.Add(new MailAddress("pyatnarik2006@mail.ru"));
-                    mailMessage.Subject =  subject;
-
-                    mailMessage.IsBodyHtml = false;
-
-                    mailMessage.Body = body;
-
-                    smtpClient.Send(mailMessage);
-
-                }
-
-            }
-
-            catch (Exception ex)
-            {
-                throw;
-            }
-
-        }
+      
     }
 }

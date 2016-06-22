@@ -186,23 +186,12 @@ window.app.su_Service = (function() {
     var baseAccountsUri = "/api/Account/";
     var serviceAccountsUrls = {
         accounts: function() { return baseAccountsUri + "All" },
-        updateEmail: function () { return baseAccountsUri + "updateEmail" },
-        updateMakeBook: function () { return baseAccountsUri + "updateMakeBook" },
-        updateExists: function () { return baseAccountsUri + "updateExists" },
+        updateEmail: function() { return baseAccountsUri + "updateEmail" },
+        updateCheckDebt: function() { return baseAccountsUri + "updateCheckDebt" },
+        updateExists: function() { return baseAccountsUri + "updateExists" },
+        debt: function() { return baseAccountsUri + "debt" },
+        updateDebt: function() { return baseAccountsUri + "updateDebt" },
         deleteAccount: function(id) { return baseAccountsUri + "delete/" + id }
-    }
-
-    var baseUserWeekOrder = "/api/Employee/";
-    var serviceUserWeekOrders = {
-        currentweek: function() { return baseUserWeekOrder + "curWeekYear"; },
-        nextWeekOrderExists: function() { return baseUserWeekOrder + "nextWeekOrderExists" },
-        isNextWeekYear: function() { return baseUserWeekOrder + "isNextWeekYear" },
-        isCurWeekYear: function() { return baseUserWeekOrder + "isCurWeekYear" },
-        updateuserweek: function() { return baseUserWeekOrder + "update" },
-        canCreateOrderOnNextWeek: function() { return baseUserWeekOrder + "canCreateOrderOnNextWeek" },
-        nextWeekYear: function() { return baseUserWeekOrder + "nextWeekYear" },
-        emailexists: function() { return baseUserWeekOrder + "emailexists" },
-        setemail: function() { return baseUserWeekOrder + "setemai" }
     }
 
     var baseExcelUri = "/api/GetExcel/";
@@ -246,9 +235,6 @@ window.app.su_Service = (function() {
         ApplyWorkWeek: function(wwDto) {
             return ajaxRequest("put", serviceWeekMenuUrls.workweekapply(), wwDto);
         },
-        //LoadWeekNumbers: function() {
-        //    return ajaxRequest("get", serviceWeekMenuUrls.weekNumbers());
-        //},
         UpdateWeekMenu: function(item) {
             return ajaxRequest("put", baseWeekMenuUri + "update", item);
         },
@@ -316,45 +302,20 @@ window.app.su_Service = (function() {
         UpdateAccountEmail: function(accountEmail) {
             return ajaxRequest("put", serviceAccountsUrls.updateEmail(), accountEmail);
         },
-        UpdateAccountMakebook: function (accmakebook) {
-            return ajaxRequest("put", serviceAccountsUrls.updateMakeBook(), accmakebook);
+        UpdateAccountCheckDebt: function (accmakebook) {
+            return ajaxRequest("put", serviceAccountsUrls.updateCheckDebt(), accmakebook);
         },
         UpdateAccountExists: function (acexists) {
             return ajaxRequest("put", serviceAccountsUrls.updateExists(), acexists);
         },
+        UpdateAllowDebt: function (debt) {
+            return ajaxRequest("put", serviceAccountsUrls.updateDebt(), debt);
+        },
+        GetDebt: function () {
+            return ajaxRequest("get", serviceAccountsUrls.debt());
+        },
         DeleteAccount: function(accountId) {
             return ajaxRequest("delete", serviceAccountsUrls.deleteAccount(accountId));
-        },
-        //Employee
-        GetCurrentWeekYearForEmployee: function() {
-            return ajaxRequest("get", serviceUserWeekOrders.currentweek());
-        },
-        LoadUserWeekOrder: function(wyDto) {
-            return ajaxRequest("put", baseUserWeekOrder, wyDto);
-        },
-        GetUserNextWeekYear: function() {
-            return ajaxRequest("get", serviceUserWeekOrders.nextWeekYear());
-        },
-        IsNextWeekYear: function(wyDto) {
-            return ajaxRequest("put", serviceUserWeekOrders.isNextWeekYear(), wyDto);
-        },
-        IsCurWeekYear: function(wyDto) {
-            return ajaxRequest("put", serviceUserWeekOrders.isCurWeekYear(), wyDto);
-        },
-        NextWeekOrderExists: function() {
-            return ajaxRequest("get", serviceUserWeekOrders.nextWeekOrderExists());
-        },
-        UserWeekUpdateOrder: function(item) {
-            return ajaxRequest("put", serviceUserWeekOrders.updateuserweek(), item);
-        },
-        CanCreateOrderOnNextWeek: function() {
-            return ajaxRequest("get", serviceUserWeekOrders.canCreateOrderOnNextWeek());
-        },
-        IsEmailExists: function() {
-            return ajaxRequest("get", serviceUserWeekOrders.emailexists());
-        },
-        SetEmail: function(email) {
-            return ajaxRequest("put", serviceUserWeekOrders.setemail(), email);
         }
     };
 

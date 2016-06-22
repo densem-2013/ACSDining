@@ -1,6 +1,5 @@
 using System;
 using System.Data.Entity.Migrations;
-using System.Web.Hosting;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 
@@ -8,7 +7,6 @@ namespace ACSDining.Infrastructure.Migrations
 {
     internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
-       // private string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
         string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
                                      @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
 
