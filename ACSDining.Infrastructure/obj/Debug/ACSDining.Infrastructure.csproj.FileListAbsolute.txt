@@ -372,3 +372,16 @@ E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastruc
 E:\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csproj.GenerateResource.Cache
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.Migrations.Initial.resources
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\obj\Debug\ACSDining.Infrastructure.csproj.GenerateResource.Cache
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Web.Infrastructure.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Helpers.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Mvc.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Razor.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Razor.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Helpers.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Mvc.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Razor.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Razor.xml

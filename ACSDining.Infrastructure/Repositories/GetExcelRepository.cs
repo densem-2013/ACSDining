@@ -751,7 +751,8 @@ namespace ACSDining.Infrastructure.Repositories
         public static string GetMenuExcelFile(this IRepositoryAsync<MenuForWeek> repository, ForMenuExcelDto dto)
         {
             WeekMenuDto weekMenuDto = repository.MapWeekMenuDto(dto.WeekYear);
-
+            WorkingWeek wweek = repository.WorkWeekByWeekYear(dto.WeekYear);
+            string[] daynames = wweek.WorkingDays.Where(wd => wd.IsWorking).OrderBy(wd=>wd.DayOfWeek.Id).Select(wd => wd.DayOfWeek.Name).ToArray();
             string[] dishCategories = MapHelper.GetCategoriesStrings(repository.Context);
             int daycount = weekMenuDto.WorkWeekDays.Count(d => d);
             int catLength = dishCategories.Length;
@@ -798,7 +799,7 @@ namespace ACSDining.Infrastructure.Repositories
                 int strcount = i*catLength + 2;
                 string colname = string.Format("A{0}:D{1}", strcount + 1 + i, strcount + 1 + i);
                 worksheet.Range(colname).Merge();
-                worksheet.Cell(strcount + i, 0).MergedWithCell.Value = weekMenuDto.DayNames[i];
+                worksheet.Cell(strcount + i, 0).MergedWithCell.Value = daynames[i];
                 worksheet.Range(colname).AlignmentHorizontal = AlignmentHorizontal.Centered;
                 worksheet.Range(colname).FillPattern = PatternStyle.Solid;
                 worksheet.Range(colname).FillPatternForeColor = Color.FromArgb(144, 164, 187);

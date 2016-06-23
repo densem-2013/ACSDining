@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Web.Mvc;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.Repositories;
+using ACSDining.Infrastructure.UnitOfWork;
+using NLog;
 
 namespace ACSDining.Infrastructure.HelpClasses
 {
     public static class TimerHandler
     {
+        public static Logger Logger = LogManager.GetLogger("TimerHandler");
+
         public static void Init()
         {
             //StartChecking();
@@ -25,96 +31,46 @@ namespace ACSDining.Infrastructure.HelpClasses
                 Enabled = true
             };
             timer.Elapsed += TimerElapsed;
+
+            try
+            {
+                Logger.Trace("Version: {0}", Environment.Version);
+                Logger.Trace("OS: {0}", Environment.OSVersion);
+                Logger.Trace("Command: {0}", Environment.CommandLine);
+
+                NLog.Targets.FileTarget tar =
+                    (NLog.Targets.FileTarget) LogManager.Configuration.FindTargetByName("run_log");
+                tar.DeleteOldFileOnStartup = true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Ошибка работы с логом: {0}", e.Message);
+            }
         }
 
         // The callback, no inside the method used above.
         // This will run every  hour.
         private static void TimerElapsed(object o, System.Timers.ElapsedEventArgs e)
         {
-            if (e.SignalTime.Hour == 9)
+            Logger.Trace("DateTime: {0}, e.SignalTime.Hour= {1}", DateTime.Now, e.SignalTime.Hour);
+            if (e.SignalTime.Hour <= 9) return;
+            int daynum = (int) e.SignalTime.DayOfWeek;
+            IUnitOfWorkAsync unitofwork = DependencyResolver.Current.GetService<IUnitOfWorkAsync>();
+            WorkingWeek currWorkingWeek =
+                unitofwork.RepositoryAsync<MenuForWeek>().WorkWeekByWeekYear(YearWeekHelp.GetCurrentWeekYearDto());
+
+            using (ApplicationDbContext db = new ApplicationDbContext())
             {
-                using (ApplicationDbContext _db = new ApplicationDbContext())
+                MenuForDay menuForDay =
+                    db.MenuForDays.Include("WorkingDay.DayOfWeek").ToList()
+                        .Where(mfd => currWorkingWeek.WorkingDays.Select(wd => wd.Id).Contains(mfd.WorkingDay.Id))
+                        .FirstOrDefault(d => d.WorkingDay.DayOfWeek.Id == daynum);
+                if (menuForDay != null  && (menuForDay.DayMenuCanBeChanged || menuForDay.OrderCanBeChanged))
                 {
-                        _db.DayFactToPlan();
+                    db.DayFactToPlan();
+                    Logger.Trace("DayFactToPlan was executed !!!");
                 }
             }
-        }
-
-        /// <summary>
-        /// Отмена редактирования меню и заказов у которых истёк срок для редактирования
-        /// Для меню на день - это 9.00 текущего дня в системе
-        /// </summary>
-        private static void StartChecking()
-        {
-            using (ApplicationDbContext context = new ApplicationDbContext())
-            {
-                int year = DateTime.Now.Year;
-                int day = (int) DateTime.Now.DayOfWeek;
-                int week = YearWeekHelp.CurrentWeek();
-                List<MenuForWeek> weekmenus =
-                    context.MenuForWeeks.Include("MenuForDay").Include("WorkingWeek.Year").ToList();
-                weekmenus.ForEach(x =>
-                {
-                    if (x.WorkingWeek.Year.YearNumber == year &&
-                        (x.WorkingWeek.WeekNumber == week || x.WorkingWeek.WeekNumber == week + 1))
-                    {
-                        x.OrderCanBeCreated = true;
-                       // x.MenuCanBeChanged = true;
-                        context.Entry(x).State = EntityState.Modified;
-                        x.MenuForDay.ToList().ForEach(y =>
-                        {
-                            if (y.ID > day)
-                            {
-                                y.DayMenuCanBeChanged = true;
-                            }
-                            if (y.ID == day)
-                            {
-                                y.DayMenuCanBeChanged = DateTime.Now.Hour < 9;
-                            }
-                            if (y.ID < day)
-                            {
-                                y.DayMenuCanBeChanged = false;
-                            }
-                            context.Entry(y).State = EntityState.Modified;
-                        });
-                    }
-                    else
-                    {
-                        x.OrderCanBeCreated = false;
-                       // x.MenuCanBeChanged = false;
-                        context.Entry(x).State = EntityState.Modified;
-                        x.MenuForDay.ToList().ForEach(y =>
-                        {
-                            y.DayMenuCanBeChanged = false;
-                            context.Entry(y).State = EntityState.Modified;
-                        });
-                    }
-                });
-                context.SaveChanges();
-            }
-
-        }
-
-        private static void FakeStartChecking()
-        {
-            using (ApplicationDbContext context = new ApplicationDbContext())
-            {
-                List<MenuForWeek> weekmenus =
-                    context.MenuForWeeks.Include("MenuForDay").Include("WorkingWeek.Year").ToList();
-                weekmenus.ForEach(x =>
-                {
-                    x.OrderCanBeCreated = true;
-                   // x.MenuCanBeChanged = true;
-                    x.MenuForDay.ToList().ForEach(y =>
-                    {
-                        y.DayMenuCanBeChanged = true;
-                        context.Entry(y).State = EntityState.Modified;
-                    });
-                    context.Entry(x).State = EntityState.Modified;
-                });
-                context.SaveChanges();
-            }
-            
         }
     }
 }

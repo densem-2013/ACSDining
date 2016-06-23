@@ -358,3 +358,15 @@ E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLoc
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\Bytescout.Spreadsheet.xml
 E:\GitProjects\ACSDining\ACSDining.Core\obj\Debug\ACSDining.Core.csprojResolveAssemblyReference.cache
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Mvc.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Razor.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Razor.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Mvc.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Razor.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Razor.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\NLog.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\NLog.xml
