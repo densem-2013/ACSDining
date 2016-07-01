@@ -13,11 +13,7 @@ namespace ACSDining.Web
         public void ConfigureAuth(IAppBuilder app)
         {
             // Настройка контекста базы данных, диспетчера пользователей и диспетчера входа для использования одного экземпляра на запрос
-            //app.CreatePerOwinContext(ApplicationDbContext.Create);
-            //app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
-            //app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
-            //app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
-
+            
             app.CreatePerOwinContext(() => DependencyResolver.Current.GetService<ApplicationDbContext>());
             app.CreatePerOwinContext(() => DependencyResolver.Current.GetService<ApplicationUserManager>());
             app.CreatePerOwinContext(() => DependencyResolver.Current.GetService<ApplicationSignInManager>());

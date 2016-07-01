@@ -153,7 +153,7 @@ DECLARE  @MENUID INT,@NEXTWEEKMENUID INT, @USERID NVARCHAR(128), @CURWORKDAYID I
 SET @NEXTWEEKMENUID=(SELECT MenuForWeek.ID FROM MenuForWeek
 	INNER JOIN WorkingWeek
 	ON MenuForWeek.[WorkingWeek_ID]=WorkingWeek.[ID]
-	INNER JOIN dbo.GetNextWeekYear()NEXTWEEK
+	INNER JOIN dbo.GetNextWeekYear(null,null)NEXTWEEK
 	ON NEXTWEEK.[WEEK]=WorkingWeek.[WeekNumber]
 	INNER JOIN [ACS_Dining].[dbo].[Year] YEARS
 	ON YEARS.[YearNumber]=NEXTWEEK.[YEAR] AND YEARS.ID=WorkingWeek.[Year_Id]

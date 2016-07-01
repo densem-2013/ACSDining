@@ -212,43 +212,7 @@ namespace ACSDining.Web.Controllers
                             return RedirectToAction("Index", "Employee", new {Area = "EmployeeArea"});
                         }
                     }
-                    else
-                    {
-                        //double defaultDebt;
-                        //double.TryParse(WebConfigurationManager.AppSettings["defaultCreditValue"], out defaultDebt);
-                        user = new User
-                        {
-                            FirstName = DateTime.Now.Second.ToString(),
-                            LastName = "NewUser",
-                            Email = "test.test@test",
-                            UserName = model.LogIn,
-                            LastLoginTime = DateTime.UtcNow,
-                            RegistrationDate = DateTime.UtcNow,
-                            EmailConfirmed = true,
-                            //AllowableDebt = defaultDebt,
-                            SecurityStamp = Guid.NewGuid().ToString(),
-                            PasswordHash = UserManager.PasswordHasher.HashPassword(model.Password)
-                        };
 
-                        var res = UserManager.CreateAsync(user, model.Password).Result;
-                        if (res == IdentityResult.Success)
-                        {
-                            await UserManager.AddToRoleAsync(user.Id, "Employee");
-                        }
-
-                        await
-                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                                shouldLockout: false);
-
-                        user.LastLoginTime = DateTime.UtcNow;
-                        Session["EmployeeFullname"] = user.LastName + " " + user.FirstName;
-                        user.LastLoginTime = DateTime.Now;
-                        await
-                            _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe,
-                                shouldLockout: false);
-
-                        return RedirectToAction("Index", "Employee", new { Area = "EmployeeArea" });
-                    }
                     ModelState.AddModelError("", "Неудачная попытка входа.");
                     return View(model);
 
@@ -261,7 +225,6 @@ namespace ACSDining.Web.Controllers
 
         // POST: /Account/LogOff
         [HttpGet]
-        //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             Session["FullName"] = null;
@@ -289,12 +252,6 @@ namespace ACSDining.Web.Controllers
             base.Dispose(disposing);
         }
 
-        //private void CheckSUCridentCorrect()
-        //{
-        //    ApplicationDbContext context = HttpContext.GetOwinContext().Get<ApplicationDbContext>();
-        //    IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "SuperUser"));
-        //    User suUser = UserManager.Users.FirstOrDefault(u => u.Roles.Select(r => r.RoleId).Contains(role.Id));
-        //}
 
         #region Вспомогательные приложения
         // Используется для защиты от XSRF-атак при добавлении внешних имен входа

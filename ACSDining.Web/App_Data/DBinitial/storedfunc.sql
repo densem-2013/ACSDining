@@ -28,16 +28,30 @@ GO
 -- Description:	<Возвращает номер недели и год для следующей недели>
 -- =============================================
 CREATE FUNCTION [dbo].[GetNextWeekYear] 
-(	)
+(	
+	@week int = null,
+	@year int = null
+)
 RETURNS @nextweekyear TABLE 
 (
-	[WEEK] integer,
-	[YEAR] integer
+	[WEEK] int ,
+	[YEAR] int 
 )
 AS
 	begin
 	-- Add the SELECT statement with parameter references here
+	if @week is null
+	begin
 	INSERT @nextweekyear SELECT DATEPART(WEEK,DATEADD(DAY,-1,GETDATE())) , DATEPART(YEAR,DATEADD(DAY,-1,GETDATE())) ;
+	end
+	else
+	begin
+	declare @needdate date
+		select @needdate=CONVERT(date,convert(char(10),cast(@year as CHAR(10)) +'-01-01'))
+		set @needdate=DATEADD(WEEK,@week,@needdate)
+		INSERT @nextweekyear
+		SELECT DatePart(ww,@needdate), DatePart(yy,@needdate)
+	end
 	return
 	end
 GO

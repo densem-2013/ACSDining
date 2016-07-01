@@ -1,14 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.UnitOfWork;
 using ACSDining.Infrastructure.DTO.SuperUser.Orders;
 using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
-using ACSDining.Infrastructure.Services;
 
 namespace ACSDining.Web.Areas.SU_Area.Controllers
 {
@@ -16,13 +13,11 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
     [RoutePrefix("api/Orders")]
     public class OrdersController : ApiController
     {
-        private readonly IOrderMenuService _orderMenuService;
         private readonly IUnitOfWorkAsync _unitOfWork;
 
         public OrdersController(IUnitOfWorkAsync unitOfWorkAsync)
         {
             _unitOfWork = unitOfWorkAsync;
-            _orderMenuService = new OrderMenuService(_unitOfWork.RepositoryAsync<WeekOrderMenu>());
         }
 
         //Получить все фактические заявки на неделю 

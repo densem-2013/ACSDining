@@ -5,7 +5,9 @@ using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.DTO.SuperUser.Orders;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.Repositories;
 using ACSDining.Infrastructure.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -86,6 +88,18 @@ namespace UnitTestProject1
             string result = excelService.GetMenuExcel(feDto);
             Assert.IsNotNull(result);
             Process.Start(_path);
+        }
+
+        [TestMethod]
+        public void GetWeekTitleTestApi()
+        {
+            WeekYearDto wyDto = new WeekYearDto
+            {
+                Week = 26,
+                Year = 2016
+            };
+            string rezult = YearWeekHelp.GetWeekTitle(_unitOfWork.RepositoryAsync<MenuForWeek>(), wyDto);
+            Assert.IsNotNull(rezult);
         }
     }
 }

@@ -370,3 +370,15 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\NLog.dll
 C:\Soft\GitProjects\ACSDining\ACSDining.Core\bin\Debug\NLog.xml
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\NLog.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Mvc.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Razor.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Razor.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.dll
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\NLog.xml
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Mvc.xml
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Razor.xml
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Razor.xml
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.xml
+E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.xml

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web.Hosting;
 using ACSDining.Core.Domains;
+using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.Employee;
 using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.HelpClasses;
@@ -295,9 +297,8 @@ namespace ACSDining.Infrastructure.Repositories
 
                     //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
                     //               @"ACSDining.Web\ExcelFiles\Оплаты.xls";
-
-                    string _path = HostingEnvironment.MapPath("~/ExcelFiles/Оплаты.xls");
-
+                    string pathstr = string.Format("~/ExcelFiles/Оплаты_{0}.xls", YearWeekHelp.GetWeekTitle(repository.GetRepositoryAsync<MenuForWeek>(), dto.WeekYearDto));
+                    string _path = HostingEnvironment.MapPath(pathstr);
                     // delete output file if exists already
                     if (File.Exists(_path))
                     {
@@ -527,7 +528,8 @@ namespace ACSDining.Infrastructure.Repositories
 
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //               @"ACSDining.Web\ExcelFiles\ЗаявкиФакт.xls";
-             string _path = HostingEnvironment.MapPath("~/ExcelFiles/ЗаявкиФакт.xls");
+            string pathstr = string.Format("~/ExcelFiles/ЗаявкиФакт_{0}.xls", YearWeekHelp.GetWeekTitle(repository.GetRepositoryAsync<MenuForWeek>(), feDto.WeekYear));
+            string _path = HostingEnvironment.MapPath(pathstr);
             if (File.Exists(_path))
             {
                 File.Delete(_path);
@@ -731,7 +733,8 @@ namespace ACSDining.Infrastructure.Repositories
 
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //               @"ACSDining.Web\ExcelFiles\ЗаявкиПлан.xls";
-             string _path = HostingEnvironment.MapPath("~/ExcelFiles/ЗаявкиПлан.xls");
+            string pathstr = string.Format("~/ExcelFiles/ЗаявкиПлан_{0}.xls", YearWeekHelp.GetWeekTitle(repository.GetRepositoryAsync<MenuForWeek>(), feDto.WeekYear));
+            string _path = HostingEnvironment.MapPath(pathstr);
             if (File.Exists(_path))
             {
                 File.Delete(_path);
@@ -847,12 +850,21 @@ namespace ACSDining.Infrastructure.Repositories
             //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
             //               @"ACSDining.Web\ExcelFiles\Menu.xls";
 
-            string _path = HostingEnvironment.MapPath("~/ExcelFiles/Меню.xls");
+            string pathstr = string.Format("~/ExcelFiles/Меню_{0}.xls", YearWeekHelp.GetWeekTitle(repository, dto.WeekYear));
+            string _path = HostingEnvironment.MapPath(pathstr);
             if (File.Exists(_path))
             {
                 File.Delete(_path);
             }
-            document.SaveAs(_path);
+            try
+            {
+                document.SaveAs(_path);
+            }
+            catch (Exception)
+            {
+                    
+                throw;
+            }
 
             // Close document
             document.Close();
@@ -861,5 +873,6 @@ namespace ACSDining.Infrastructure.Repositories
         }
 
         #endregion
+
     }
 }

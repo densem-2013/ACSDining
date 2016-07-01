@@ -211,6 +211,27 @@
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         };
 
+        self.FirstDay = ko.pureComputed(function() {
+
+            var first = ko.utils.arrayFirst(self.MFD_models(), function(item) {
+                return item.IsWorking() === true;
+            });
+
+            return ko.utils.arrayIndexOf(self.MFD_models(), first);
+
+        });
+        self.LastDay = ko.pureComputed(function () {
+            var lastindex;
+            ko.utils.arrayForEach(self.MFD_models(), function (item, index) {
+                if (item.IsWorking() === true) {
+                    lastindex = index;
+                };
+            });
+
+            return lastindex;
+
+        });
+
         self.WeekTitle = ko.computed(function () {
             if (self.WeekYear().week === undefined) return "";
             var options = {
@@ -224,9 +245,9 @@
 
             var week = self.WeekYear().week;
             var d = new Date("Jan 01, " + year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week) + (3600000 * 24 * self.FirstDay());
             var n1 = new Date(w);
-            var n2 = new Date(w + 345600000);
+            var n2 = new Date(w + 3600000 * 24 * ( self.LastDay() - self.FirstDay()));
             return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
 

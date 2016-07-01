@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Identity;
@@ -15,6 +18,8 @@ namespace ACSDining.Infrastructure.HelpClasses
     {
         public static Logger Logger = LogManager.GetLogger("TimerHandler");
 
+        //static readonly ManualResetEvent TimerFired = new ManualResetEvent(false);
+
         public static void Init()
         {
             //StartChecking();
@@ -25,12 +30,7 @@ namespace ACSDining.Infrastructure.HelpClasses
             // 3rd parameter is telling the timer when to start.
             // 4th parameter is telling the timer how often to run.
             //Timer timer = new Timer(TimerElapsed, null, new TimeSpan(0), new TimeSpan(0, 1, 0));
-            var timer = new System.Timers.Timer
-            {
-                Interval = 3600000, 
-                Enabled = true
-            };
-            timer.Elapsed += TimerElapsed;
+          
 
             try
             {
@@ -41,6 +41,15 @@ namespace ACSDining.Infrastructure.HelpClasses
                 NLog.Targets.FileTarget tar =
                     (NLog.Targets.FileTarget) LogManager.Configuration.FindTargetByName("run_log");
                 tar.DeleteOldFileOnStartup = true;
+                var timer = new System.Timers.Timer
+                {
+                    Interval = 3600000,
+                    Enabled = true,
+                    AutoReset = true
+                };
+                timer.Elapsed += TimerElapsed;
+                timer.Start();
+                //TimerFired.WaitOne();
             }
             catch (Exception e)
             {
@@ -52,8 +61,8 @@ namespace ACSDining.Infrastructure.HelpClasses
         // This will run every  hour.
         private static void TimerElapsed(object o, System.Timers.ElapsedEventArgs e)
         {
-            Logger.Trace("DateTime: {0}, e.SignalTime.Hour= {1}", DateTime.Now, e.SignalTime.Hour);
-            if (e.SignalTime.Hour <= 9) return;
+            Logger.Trace("DateTime: {0}, e.SignalTime.Hour= {1}", DateTime.Now, e.SignalTime/*e.SignalTime.Hour*/);
+            if (e.SignalTime.Hour < 9) return;
             int daynum = (int) e.SignalTime.DayOfWeek;
             IUnitOfWorkAsync unitofwork = DependencyResolver.Current.GetService<IUnitOfWorkAsync>();
             WorkingWeek currWorkingWeek =
@@ -65,12 +74,25 @@ namespace ACSDining.Infrastructure.HelpClasses
                     db.MenuForDays.Include("WorkingDay.DayOfWeek").ToList()
                         .Where(mfd => currWorkingWeek.WorkingDays.Select(wd => wd.Id).Contains(mfd.WorkingDay.Id))
                         .FirstOrDefault(d => d.WorkingDay.DayOfWeek.Id == daynum);
-                if (menuForDay != null  && (menuForDay.DayMenuCanBeChanged || menuForDay.OrderCanBeChanged))
+                if (menuForDay != null && (menuForDay.DayMenuCanBeChanged || menuForDay.OrderCanBeChanged))
                 {
                     db.DayFactToPlan();
                     Logger.Trace("DayFactToPlan was executed !!!");
+                    string _dirpath = HostingEnvironment.MapPath("~/ExcelFiles/");
+
+                    string[] filePaths = Directory.GetFiles(_dirpath, "*.xls");
+                    foreach (var filename in filePaths)
+                    {
+                        if (File.Exists(filename))
+                        {
+                            File.Delete(filename);
+                            Logger.Trace("File {0} was deleted!", filename);
+                        }
+                    }
                 }
             }
+
+            //TimerFired.Set();
         }
     }
 }

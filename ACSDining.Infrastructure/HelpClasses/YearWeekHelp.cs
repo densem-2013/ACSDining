@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Web.Mvc;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.DTO;
+using ACSDining.Infrastructure.Identity;
+using ACSDining.Infrastructure.Repositories;
+using ACSDining.Infrastructure.UnitOfWork;
 using DayOfWeek = System.DayOfWeek;
 
 namespace ACSDining.Infrastructure.HelpClasses
@@ -22,7 +28,7 @@ namespace ACSDining.Infrastructure.HelpClasses
             return myCal.GetWeekOfYear(curDay, myCwr, myFirstDow);
         };
 
-        public static DateTime FirstDateOfWeekIso8601(int year, int weekOfYear, int daynum)
+        public static DateTime DateOfWeekIso8601(int year, int weekOfYear, int daynum)
         {
             DateTime jan1 = new DateTime(year, 1, 1);
             int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
@@ -36,10 +42,23 @@ namespace ACSDining.Infrastructure.HelpClasses
             {
                 weekNum -= 1;
             }
-            var result = firstThursday.AddDays(weekNum * 7);
-            return result.AddDays(-3 + daynum);
-        }
 
+            var result = firstThursday.AddDays(weekNum * 7);
+
+            return result.AddDays(-4 + daynum);
+        }
+        public static string GetWeekTitle(IRepositoryAsync<MenuForWeek> menuRepositoryAsync, WeekYearDto dto)
+        {
+            WorkingWeek workWeek = menuRepositoryAsync
+                          .WorkWeekByWeekYear(dto);
+            int mindayId = workWeek.WorkingDays.Where(wd => wd.IsWorking).Min(wd => wd.DayOfWeek.Id);
+            int maxdayId = workWeek.WorkingDays.Where(wd => wd.IsWorking).Max(wd => wd.DayOfWeek.Id);
+            DateTime firstday = DateOfWeekIso8601(dto.Year, dto.Week, mindayId);
+            DateTime lastday = DateOfWeekIso8601(dto.Year, dto.Week, maxdayId);
+            List<Core.Domains.DayOfWeek> days = menuRepositoryAsync.Context.Days.ToList();
+            CultureInfo myCi = new CultureInfo("uk-UA");
+            return string.Format("Неделя_{0}-{1}-{2}", dto.Week, firstday.Date.ToString("ddd_dd_MM_yy", myCi), lastday.Date.ToString("ddd_dd_MM_yy",myCi));
+        }
         //Get Last Week Number of Year
         public static Func<int, int> YearWeekCount = (int year) =>
         {

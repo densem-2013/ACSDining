@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Threading.Tasks;
@@ -41,7 +42,11 @@ namespace ACSDining.Infrastructure.Identity
         /// <returns></returns>
         public static void DayFactToPlan(this ApplicationDbContext context, int? workdayid = null)
         {
-            var workdayidParametr = new SqlParameter("@WDayId", workdayid ?? SqlInt32.Null);
+            var workdayidParametr = new SqlParameter("@WDayId", workdayid);
+            if (workdayid==null)
+            {
+                workdayidParametr.Value = DBNull.Value;
+            }
             context.Database.ExecuteSqlCommand("exec DayFactToPlan @WDayId", workdayidParametr);
         }
 
@@ -286,13 +291,20 @@ namespace ACSDining.Infrastructure.Identity
         /// <param name="context"></param>
         /// <param name="userweekpaiDto"></param>
         /// <returns></returns>
-        public static void UpdateWeekPaiment(this ApplicationDbContext context, UpdateWeekPaimentDto userweekpaiDto)
+        public static double UpdateWeekPaiment(this ApplicationDbContext context, UpdateWeekPaimentDto userweekpaiDto)
         {
             var paiidParameter = new SqlParameter("@Paid", userweekpaiDto.Id);
             var paivalueParameter = new SqlParameter("@PaiValue", userweekpaiDto.Paiment);
+            //var curBalanceParameter = new SqlParameter
+            //{
+            //    ParameterName = "@CurBalance",
+            //    DbType = DbType.Double,
+            //    Direction = ParameterDirection.Output
+            //};
 
-            context.Database.ExecuteSqlCommand("exec UpdateWeekPaiment @Paid,@PaiValue",
-                paiidParameter, paivalueParameter);
+            return context.Database.SqlQuery<double>("exec UpdateWeekPaiment @Paid,@PaiValue",
+                paiidParameter, paivalueParameter).FirstOrDefaultAsync().Result;
+             //Convert.ToDouble(curBalanceParameter.Value);
         }
     #endregion
 

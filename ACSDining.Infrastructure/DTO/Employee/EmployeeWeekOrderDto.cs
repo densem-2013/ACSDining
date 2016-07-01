@@ -20,7 +20,7 @@ namespace ACSDining.Infrastructure.DTO.Employee
         public double WeekPaiment { get; set; }
         public double AllowDebt { get; set; }
         public bool CheckDebt { get; set; }
-
+        public string[] DayNames { get; set; }
         public static EmployeeWeekOrderDto MapDto(ApplicationDbContext context, WeekPaiment weekPaiment,
             WeekYearDto wyDto)
         {
@@ -40,9 +40,9 @@ namespace ACSDining.Infrastructure.DTO.Employee
                 WeekYear = wyDto,
                 PrevWeekBalance = weekPaiment.PreviousWeekBalance,
                 WeekPaiment = weekPaiment.Paiment,
-                //AllowDebt = weekPaiment.WeekOrderMenu.User.AllowableDebt
                 AllowDebt = defaultDebt,
-                CheckDebt = weekPaiment.WeekOrderMenu.User.CheckDebt
+                CheckDebt = weekPaiment.WeekOrderMenu.User.CheckDebt,
+                DayNames = context.GetDayNames(wyDto).Result
             };
         }
     }

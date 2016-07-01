@@ -478,11 +478,9 @@
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\css\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Areas\SU_Area\Views\Shared\_LayoutForPaiments.cshtml" />
-    <Content Include="ExcelFiles\ЗаявкиПлан.xls" />
-    <Content Include="ExcelFiles\ЗаявкиФакт.xls" />
-    <Content Include="ExcelFiles\Оплаты.xls" />
     <Content Include="Areas\EmployeeArea\Content\scripts\app.EmployeeService.js" />
     <Content Include="NLog.config" />
+    <Content Include="logs\Application.log" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -547,7 +545,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\EmployeeArea\Models\" />
-    <Folder Include="logs\" />
+    <Folder Include="ExcelFiles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

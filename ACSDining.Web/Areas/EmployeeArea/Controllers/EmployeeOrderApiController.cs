@@ -243,10 +243,6 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         [ResponseType(typeof(bool))]
         public async Task<IHttpActionResult> SetAsPrevWeek([FromBody] int weekordid)
         {
-            //_unitOfWork.RepositoryAsync<WeekOrderMenu>().PrevOrdersMenuById(weekordid);
-            //_unitOfWork.GetContext().SaveChanges();
-            //_unitOfWork.GetContext().UpdateBalanceByWeekOrderId(weekordid);
-
             _unitOfWork.GetContext().OrderAsPrewWeek(weekordid);
 
             return Ok(true);
@@ -263,5 +259,6 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
 
             return Ok(true);
         }
-    }
+
+   }
 }

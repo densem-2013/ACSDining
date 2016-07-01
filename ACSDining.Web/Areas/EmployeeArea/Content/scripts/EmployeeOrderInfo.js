@@ -110,6 +110,8 @@
 
         self.HasEmail = ko.observable();
 
+        self.DayNames = ko.observableArray([]);
+
         self.IsNextWeekYear = ko.pureComputed(function() {
             var res = self.NextWeekYear().week === self.WeekYear().week && self.NextWeekYear().year === self.WeekYear().year;
             return res;
@@ -188,24 +190,7 @@
             self.myDate(new Date(w));
         }.bind(self);
 
-        self.WeekTitle = ko.computed(function() {
-            if (self.WeekYear().week === undefined) return "";
-            var options = {
-                weekday: "long",
-                year: "numeric",
-                month: "short",
-                day: "numeric"
-            };
-            var year = self.WeekYear().year;
-            var firstDay = new Date(year, 0, 1).getDay();
-
-            var week = self.WeekYear().week;
-            var d = new Date("Jan 01, " + year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
-            var n1 = new Date(w);
-            var n2 = new Date(w + 345600000);
-            return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
-        }.bind(self));
+       
 
 
         var loadUserWeekOrder = function(wyDto1) {
@@ -217,7 +202,7 @@
                     self.OrderId(resp.weekOrderId);
                     self.WeekIsPaid(resp.weekIsPaid);
                     self.WeekYear(resp.weekYear);
-                    //self.DaysOfWeek(resp.dayNames);
+                    self.DayNames(resp.dayNames);
                     var summary = resp.weekOrderDishes.pop();
                     self.WeekSummaryPrice(summary.toFixed(2));
                     self.HasSummary(summary.toFixed(2));
@@ -226,7 +211,6 @@
                         var dishcount = object.dishes.length;
                         var start = resp.weekOrderDishes.slice(index * dishcount, (index + 1) * dishcount);
                         return new userDayOrderInfo(object, start);
-
                     }));
                     self.PreviosweekBalance(resp.prevWeekBalance);
                     self.WeekPaiment(resp.weekPaiment);
@@ -241,6 +225,43 @@
             }, onError);
 
         }
+        self.FirstDay = ko.pureComputed(function () {
+            var day = self.UserDayOrders()[0].DayName();
+            return ko.utils.arrayIndexOf(self.DayNames(), day);
+
+        });
+
+        self.LastDay = ko.pureComputed(function () {
+            var lastindex = self.UserDayOrders().length;
+            var day = self.UserDayOrders()[lastindex-1].DayName();
+            ko.utils.arrayForEach(self.DayNames(), function (item, index) {
+                if (item === day) {
+                    lastindex = index;
+                };
+            });
+
+            return lastindex;
+        });
+
+        self.WeekTitle = ko.computed(function () {
+
+            if (self.WeekYear().week === undefined || self.UserDayOrders().length===0) return "";
+            var options = {
+                weekday: "long",
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            };
+            var year = self.WeekYear().year;
+            var firstDay = new Date(year, 0, 1).getDay();
+
+            var week = self.WeekYear().week;
+            var d = new Date("Jan 01, " + year + " 01:00:00");
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week) + (3600000 * 24 * self.FirstDay());
+            var n1 = new Date(w);
+            var n2 = new Date(w + 3600000 * 24 * (self.LastDay() - self.FirstDay()));
+            return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+        }.bind(self));
 
         self.checkallowedit = function (orderCanBeChanged) {
             if (orderCanBeChanged === false) {

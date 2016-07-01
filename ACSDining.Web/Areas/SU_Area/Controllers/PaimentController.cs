@@ -45,23 +45,19 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
 
             WeekPaimentDto dto = WeekPaimentDto.GetMapDto(_unitOfWork.RepositoryAsync<WeekPaiment>(), wyDto);
 
-            return await  Task.FromResult(dto);
+            return await Task.FromResult(dto);
         }
 
-       
+
 
         [HttpPut]
         [Route("updatePaiment")]
-        [ResponseType(typeof(double))]
-        public async Task<IHttpActionResult> UpdatePaiment([FromBody]UpdateWeekPaimentDto upwpDto)
+        [ResponseType(typeof (double))]
+        public async Task<double> UpdatePaiment([FromBody] UpdateWeekPaimentDto upwpDto)
         {
-            if (upwpDto == null)
-            {
-                return BadRequest();
-            }
-            _unitOfWork.GetContext().UpdateWeekPaiment(upwpDto);
+            double balance = _unitOfWork.GetContext().UpdateWeekPaiment(upwpDto);
 
-            return Ok(true);
+            return balance;
         }
 
         [HttpPut]
@@ -74,7 +70,7 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
                 return BadRequest();
             }
             ApplicationDbContext db = _unitOfWork.GetContext();
-            WeekPaiment wpai = db.WeekPaiments.Include("WeekOrderMenu").FirstOrDefault(wp=>wp.Id==upNoteDto.Id);
+            WeekPaiment wpai = db.WeekPaiments.Include("WeekOrderMenu").FirstOrDefault(wp => wp.Id == upNoteDto.Id);
             if (wpai != null)
             {
                 wpai.Note = upNoteDto.Note;

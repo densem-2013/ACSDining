@@ -97,11 +97,13 @@
 
         self.DaysOfWeek = ko.observableArray([]);
 
+        self.AllDayNames = ko.observableArray([]);
+
         self.TotalCount = ko.observable();
 
         self.BeenChanged = ko.observable(false);
 
-        self.myDate = ko.observable(/*new Date()*/);
+        self.myDate = ko.observable();
 
         self.CurrentWeekYear = ko.observable(new WeekYear({ week: 0, year: 0 }));
 
@@ -277,9 +279,9 @@
                 Id: uspaiobj.PaiId(),
                 Paiment: uspaiobj.Paiment().Paiment()
             }
-            self.CalcBalance(uspaiobj);
+            //self.CalcBalance(uspaiobj);
             app.su_Service.UpdatePaiment(forupdate).then(function(res) {
-                self.BeenChanged(!res);
+                uspaiobj.Balance(res.toFixed(2));
             });
         };
 
@@ -315,7 +317,8 @@
                             return new userPaimentModel(item);
                         }));
                         self.SUCanChangeOrder(resp.suCanChangeOrder);
-                        localStorage.setItem("LastPaimView", ko.mapping.toJSON({ Week: wyDto.week, Year: wyDto.year }));
+                        self.AllDayNames(resp.allDayNames);
+                        localStorage.setItem("LastPaimView", ko.mapping.toJSON({ Week: wyDto.Week, Year: wyDto.Year }));
                 } else {
                     if (!self.IsCurrentWeek()) {
                         modalShow("Сообщение", "На выбранную Вами дату не было создано меню для заказа. Будьте внимательны!");
@@ -353,7 +356,20 @@
             };
         }, self);
 
+        self.FirstDay = ko.pureComputed(function () {
+            var day = self.DaysOfWeek()[0];
+            return ko.utils.arrayIndexOf(self.AllDayNames(), day);
+
+        });
+
+        self.LastDay = ko.pureComputed(function () {
+            var lastindex = self.DaysOfWeek().length;
+            var day = self.DaysOfWeek()[lastindex - 1];
+            return ko.utils.arrayIndexOf(self.AllDayNames(), day);
+        });
+
         self.WeekTitle = ko.computed(function () {
+
             if (self.WeekYear().week === undefined) return "";
             var options = {
                 weekday: "long",
@@ -366,10 +382,11 @@
 
             var week = self.WeekYear().week;
             var d = new Date("Jan 01, " + year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week) + (3600000 * 24 * self.FirstDay());
             var n1 = new Date(w);
-            var n2 = new Date(w + 345600000);
+            var n2 = new Date(w + 3600000 * 24 * (self.LastDay() - self.FirstDay()));
             return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
+
         }.bind(self));
 
 
@@ -395,7 +412,7 @@
             }, onError).then(function() {
 
                 var lastweekyear = localStorage.getItem("LastPaimView");
-                if (lastweekyear == null) {
+                if (lastweekyear==null ) {
                     localStorage.setItem("LastPaimView", ko.mapping.toJSON({ Week: self.CurrentWeekYear().week, Year: self.CurrentWeekYear().year}));
                     self.SetMyDateByWeek(self.CurrentWeekYear());
                 } else {

@@ -143,6 +143,8 @@
 
         self.DaysOfWeek = ko.observableArray([]);
 
+        self.AllDayNames = ko.observableArray([]);
+
         self.WeekDishPrices = ko.observableArray([]);
 
         self.PlanWeekDishPrices = ko.observableArray([]);
@@ -250,8 +252,21 @@
             self.myDate(new Date(w));
         }.bind(self);
 
+        self.FirstDay = ko.pureComputed(function () {
+            var day = self.DaysOfWeek()[0];
+            return ko.utils.arrayIndexOf(self.AllDayNames(), day);
+
+        });
+
+        self.LastDay = ko.pureComputed(function () {
+            var lastindex = self.DaysOfWeek().length;
+            var day = self.DaysOfWeek()[lastindex - 1];
+            return ko.utils.arrayIndexOf(self.AllDayNames(), day);
+        });
+
         self.WeekTitle = ko.computed(function () {
-            if (self.WeekYear().week === undefined) return "";
+
+            if (self.WeekYear().week === undefined ) return "";
             var options = {
                 weekday: "long",
                 year: "numeric",
@@ -263,9 +278,9 @@
 
             var week = self.WeekYear().week;
             var d = new Date("Jan 01, " + year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week);
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week) + (3600000 * 24 * self.FirstDay());
             var n1 = new Date(w);
-            var n2 = new Date(w + 345600000);
+            var n2 = new Date(w + 3600000 * 24 * (self.LastDay() - self.FirstDay()));
             return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
         }.bind(self));
 
@@ -299,9 +314,10 @@
 
         var updateViewModel = function(resp1) {
             if (resp1 != null) {
-                if (resp1.weekYearDto.week === self.WeekYear().week && resp1.weekYearDto.year === self.WeekYear().year && self.WeekUserOrderModels().length!==0) return;
+                if (resp1.weekYearDto.week === self.WeekYear().week && resp1.weekYearDto.year === self.WeekYear().year && self.WeekUserOrderModels().length!== 0) return;
                 self.WeekYear(resp1.weekYearDto);
                 self.DaysOfWeek(resp1.dayNames);
+                self.AllDayNames(resp1.allDayNames);
 
                 self.WeekUserOrderModels(ko.utils.arrayMap(resp1.userWeekOrders, function(uwoObject) {
                     var summaryprice = uwoObject.userWeekOrderDishes.pop();
@@ -417,7 +433,7 @@
                         self.SetMyDateByWeek(self.CurrentWeekYear());
                     } else {
                         var obj = ko.mapping.fromJSON(lastweekyear);
-                        self.SetMyDateByWeek({week:obj.Week(),year:obj.Year()});
+                        self.SetMyDateByWeek({week: obj.Week(), year: obj.Year()});
                     }
                 });
 

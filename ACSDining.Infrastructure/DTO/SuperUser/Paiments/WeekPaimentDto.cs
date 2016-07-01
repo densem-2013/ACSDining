@@ -15,6 +15,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Paiments
         public double[] SummaryDishPaiments { get; set; }
         //названия рабочих дней недели
         public string[] DayNames { get; set; }
+        //названия всех дней недели
+        public string[] AllDayNames { get; set; }
         //цены на единицу каждого блюда
         public double[] WeekDishPrices { get; set; }
         //su может редактировать заявку и оплату
@@ -35,7 +37,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Paiments
                 SummaryDishPaiments = context.SumWeekPaimentsByDishes(wyDto).Result,
                 DayNames = context.GetDayNames(wyDto,true).Result,
                 WeekDishPrices = context.GetWeekDishPrices(wyDto).Result,
-                SuCanChangeOrder = menuForWeek.SUCanChangeOrder
+                SuCanChangeOrder = menuForWeek.SUCanChangeOrder,
+                AllDayNames = context.GetDayNames(wyDto).Result
             };
         }
     }

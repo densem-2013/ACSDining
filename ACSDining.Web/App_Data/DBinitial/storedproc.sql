@@ -610,7 +610,16 @@ BEGIN
 	--добавляем остаток по оплате с прошлой недели
 	select @curbalance=-1*@curbalance+WeekPaiment.PreviousWeekBalance + WeekPaiment.Paiment
 	from WeekPaiment where WeekPaiment.WeekOrderMenu_Id=@weekorderid
-	
+	--Получаем запрашиваемую неделю
+	declare @week int,@year int
+	select @week=wweek.WeekNumber, @year=years.YearNumber from WeekOrderMenu
+	inner join MenuForWeek
+	on MenuForWeek.ID=WeekOrderMenu.MenuForWeek_ID 
+	inner join WorkingWeek wweek
+	on wweek.ID=MenuForWeek.WorkingWeek_ID
+	inner join dbo.[Year] years
+	on years.Id=wweek.Year_Id
+	where WeekOrderMenu.Id=@weekorderid
 	--Получаем ID меню на следующую неделю
 	declare @userid nvarchar(128)
 	select @userid=[User_Id] from WeekOrderMenu where WeekOrderMenu.Id=@weekorderid
@@ -619,7 +628,7 @@ BEGIN
     SET @NEXTWEEKMENUID=(SELECT MenuForWeek.ID FROM MenuForWeek
 	INNER JOIN WorkingWeek
 	ON MenuForWeek.[WorkingWeek_ID]=WorkingWeek.[ID]
-	INNER JOIN dbo.GetNextWeekYear()NEXTWEEK
+	INNER JOIN dbo.GetNextWeekYear(@week,@year) NEXTWEEK
 	ON NEXTWEEK.[WEEK]=WorkingWeek.[WeekNumber]
 	INNER JOIN [ACS_Dining].[dbo].[Year] YEARS
 	ON YEARS.[YearNumber]=NEXTWEEK.[YEAR] AND YEARS.ID=WorkingWeek.[Year_Id])
@@ -655,7 +664,7 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Обновляет значение оплаты за заказ на текущую неделю а также текущий баланс пользователя>
 -- =============================================
-CREATE  PROC [dbo].[UpdateWeekPaiment]
+CREATE PROC [dbo].[UpdateWeekPaiment]
 		-- Add the parameters for the stored procedure here
 	@weekpaimentid int,
 	@paiment float
@@ -672,6 +681,10 @@ BEGIN
 	DECLARE @weekorderid INT
 	SELECT @weekorderid=WeekPaiment.[WeekOrderMenu_Id] FROM WeekPaiment WHERE WeekPaiment.Id=@weekpaimentid
 	EXEC UpdateBalanceByWeekOrderId @weekorderid
+		
+	select Balance from AspNetUsers
+	inner join WeekOrderMenu
+	on WeekOrderMenu.Id=@weekorderid and WeekOrderMenu.[User_Id]=AspNetUsers.Id
 		
 END
 GO

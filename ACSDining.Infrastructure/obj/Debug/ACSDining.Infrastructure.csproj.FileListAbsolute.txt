@@ -385,3 +385,16 @@ C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Razo
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.xml
 C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Razor.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.Web.Infrastructure.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Helpers.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Mvc.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Razor.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Razor.dll
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Helpers.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Mvc.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Razor.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.xml
+E:\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Razor.xml
