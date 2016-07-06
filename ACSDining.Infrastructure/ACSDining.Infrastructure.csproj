@@ -180,6 +180,7 @@
     <Compile Include="DTO\SuperUser\Menu\WorkWeekDto.cs" />
     <Compile Include="DTO\SuperUser\Orders\UpdateUserOrderDto.cs" />
     <Compile Include="DTO\SuperUser\Orders\WeekUserOrder.cs" />
+    <Compile Include="DTO\UpdateAllWeekOrderDto.cs" />
     <Compile Include="DTO\WeekYearDTO.cs" />
     <Compile Include="HelpClasses\MapHelper.cs" />
     <Compile Include="HelpClasses\TestHelper.cs" />

@@ -327,6 +327,7 @@
     <Content Include="App_Data\DBinitial\storedproc.sql" />
     <Content Include="App_Data\DBinitial\storedtriggers.sql" />
     <Content Include="App_Data\DBinitial\TestProc.sql" />
+    <Content Include="App_Data\DBinitial\userdefinedtypes.sql" />
     <Content Include="Areas\SU_Area\Content\scripts\AccountsInfo.js" />
     <Content Include="Areas\SU_Area\Content\scripts\app.su_Service.js" />
     <Content Include="Areas\SU_Area\Content\scripts\DishesInfo.js" />

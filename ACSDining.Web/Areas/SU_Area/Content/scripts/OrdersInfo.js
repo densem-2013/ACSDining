@@ -120,7 +120,7 @@
 
         self.SUCanChangeOrder = ko.observable();
 
-        self.FirstCourseValues = [0, 0.5, 1, 2, 3, 4, 5];
+        self.FirstCourseValues = [0, 0.5, 1, 1.5, 2, 3, 4, 5];
 
         self.QuantValues = [0, 1, 2, 3, 4, 5];
         self.PlanFactValues = ["fact", "plan"];

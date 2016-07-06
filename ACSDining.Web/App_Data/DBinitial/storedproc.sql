@@ -821,3 +821,83 @@ BEGIN
 	
 	--SELECT * from dbo.FactDishQuantByWeekOrderId(@weekorderid)
 END
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Обновляет пользовательский заказ по id недельного заказа используя значения 
+-- Id дневных заказов и массив значений количеств заказанных блюд>
+-- =============================================
+CREATE PROCEDURE [dbo].[UpdateAllQuantitiesOnWeekOrder] 
+	-- Add the parameters for the stored procedure here
+	@DayordidArray AS dbo.DayOrdArray READONLY, --workdays ids
+	@weekordid int, -- weekorderid
+	@QuantArray AS dbo.QuantArray READONLY -- order dish quantity array
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	Declare @planweekordid int, @dayordid int, @plandayordid int, @dishtypecount int,
+	 @mfdid int, @dishtypeid int, @dishquant float
+	 
+	select @dishtypecount=COUNT(*) from DishType
+	
+	select @planweekordid=planword.Id from PlannedWeekOrderMenu planword
+	inner join WeekOrderMenu weekord
+	on weekord.MenuForWeek_ID=planword.MenuForWeek_ID and weekord.Id=@weekordid
+	
+	 IF OBJECT_ID('tempdb..#ActiveOrderQuantity') IS NOT NULL DROP TABLE #ActiveOrderQuantity
+	 
+	 -- tempare table for QuantArray
+	 Create Table  #ActiveOrderQuantity(
+		 RowID int IDENTITY(1, 1), 
+		 QuantVal float
+	)
+	 -- Insert the resultset we want to loop through
+		-- into the temporary table
+		INSERT INTO #ActiveOrderQuantity (QuantVal)
+		select quant from dbo.QuantArray
+	 
+	 declare @NumberQuants int, @RowCount int
+	 set @NumberQuants=@@ROWCOUNT
+	 set @RowCount=1
+	 
+	 IF OBJECT_ID('tempdb..#ActiveDayOrders') IS NOT NULL DROP TABLE #ActiveDayOrders
+	 
+	  Create Table  #ActiveDayOrders(
+			 RowID int IDENTITY(1, 1), 
+			 DayOrdId int
+		)
+	 -- Insert the resultset we want to loop through
+		-- into the temporary table
+		INSERT INTO #ActiveDayOrders (DayOrdId)
+		select dayord from dbo.DayOrdArray
+		
+		
+	 declare @NumberDayOrds int
+	 set @NumberDayOrds=@@ROWCOUNT
+	 
+	declare @i int, @j int
+	set @i=1
+	
+	while @RowCount<=@NumberQuants
+	begin
+		select @dishquant=QuantVal from #ActiveOrderQuantity
+		where RowID=@RowCount
+		
+		update drels
+		set  [DishQuantityId]=DQUA.[Id]
+		from DishQuantityRelations drels
+		inner join  #ActiveDayOrders
+		on RowID=@i and DayOrdId=drels.DayOrderMenuId
+		inner join DishType
+		on DishType.Id=drels.DishTypeId and DishType.Id=(@i-1)%@dishtypecount+1
+		inner join  DishQuantity AS DQUA
+		on DQUA.[Quantity]=@dishquant
+		
+		set @RowCount = @RowCount+1
+	end
+	
+END
+GO

@@ -52,7 +52,7 @@ namespace ACSDining.Infrastructure.Identity
             _path = _path.Replace(@"DishDetails", "Employeers");
             GetUsersFromXml(context, _path);
             CreateOrders(context);
-            _path = _path.Replace(@"Employeers.xml", "storedfunc.sql");
+            _path = _path.Replace(@"Employeers.xml", "userdefinedtypes.sql");
             //_path = _path.Replace(@"DishDetails.xml", "storedfunc.sql");
             Utility.CreateStoredFuncs(_path);
             context.DayFactToPlan();
@@ -108,6 +108,7 @@ namespace ACSDining.Infrastructure.Identity
                     new DishQuantity {Quantity = 0.0},
                     new DishQuantity {Quantity = 0.5},
                     new DishQuantity {Quantity = 1.0},
+                    new DishQuantity {Quantity = 1.5},
                     new DishQuantity {Quantity = 2.0},
                     new DishQuantity {Quantity = 3.0},
                     new DishQuantity {Quantity = 4.0},
@@ -503,7 +504,7 @@ namespace ACSDining.Infrastructure.Identity
 
             double[][] coursesnums =
             {
-                new[] {0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0},
+                new[] {0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 1.5},
                 new[] {0, 0, 1.0, 1.0, 1.0, 1.0, 2.0},
                 new[] {0, 1.0},
                 new[] {0, 1.0}

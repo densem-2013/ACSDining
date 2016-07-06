@@ -20,7 +20,12 @@ namespace ACSDining.Infrastructure.HelpClasses
                 var server = new Server(new ServerConnection(connection));
                 server.ConnectionContext.ExecuteNonQuery(script);
 
-                var _path = path.Replace("storedfunc", "storedproc");
+                var _path = path.Replace("userdefinedtypes", "storedfunc");
+                file = new FileInfo(_path);
+                script = file.OpenText().ReadToEnd();
+                server.ConnectionContext.ExecuteNonQuery(script);
+
+                _path = path.Replace("storedfunc", "storedproc");
                 file = new FileInfo(_path);
                 script = file.OpenText().ReadToEnd();
                 server.ConnectionContext.ExecuteNonQuery(script);
