@@ -1168,3 +1168,6 @@ tr.allowedit {
     font-size: 16px !important;
     color: black !important;
 }
+#allowEdit {
+    display: inline-flex;
+}

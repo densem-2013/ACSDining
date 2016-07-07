@@ -41,10 +41,10 @@
                                     <th class="t-header col-sm-7"><span>Название</span></th>
                                     <th class="t-header col-sm-1"><span>Заказать</span>
                                         <div id="ordButtonsDiv" class="  btn-group-sm" style="padding-top: 3px;">
-                                            <button type="button" class="btn-circle btn-xs btn-default" data-bind="click: allbyone,visible: IsNextWeekYear()||IsCurrentWeek(), tooltip: {title: 'Заказать всё по одному', placement: 'left',container: 'body'}" style="float: left; padding-right: 2px;">
+                                            <button type="button" class="btn-circle btn-xs btn-info" data-bind="click: allbyone,visible: IsNextWeekYear()||IsCurrentWeek(), tooltip: {title: 'Заказать всё по одному', placement: 'left',container: 'body'}" style="float: left; padding-right: 2px;">
                                                 <span class="glyphicon glyphicon-pencil" style="font-size: 8px">1</span>
                                             </button>
-                                            <button type="button" class="btn-circle btn-xs btn-defaul" data-bind="click: setasprev,visible: IsNextWeekYear()||IsCurrentWeek(),tooltip: {title: 'Заказать всё как на прошлой неделе', placement: 'right',container: 'body'}" style="float: right; padding-left: 2px;">
+                                            <button type="button" class="btn-circle btn-xs btn-info" data-bind="click: setasprev,visible: IsNextWeekYear()||IsCurrentWeek(),tooltip: {title: 'Заказать всё как на прошлой неделе', placement: 'right',container: 'body'}" style="float: right; padding-left: 2px;">
                                                 <span class="glyphicon glyphicon-backward" style="font-size: 8px"></span>
                                             </button>
                                         </div>
@@ -53,75 +53,97 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!--ko foreach: UserDayOrders -->
-                                <tr>
-                                    <td style="vertical-align: middle; text-align: center">
-                                        <span data-bind="text: DayName"></span>
-                                    </td>
-                                    <td>
-                                        <!-- ko foreach: Dishes-->
-                                        <div style="border-bottom: 1px solid; text-align: right" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
-                                            <span data-bind="text: Category() + ' : '"></span>
-                                        </div>
+                             <!--ko if: IsEditAllowed-->
+                            <tr>
+                                <td colspan="6" class="t-header">
+                                    <div id="allowEdit">
+                                        <!--ko ifnot: IsEditEnable-->
+                                        <span data-bind=" text: 'Перейти к редактированию заказа : '" style="padding: 5px; white-space: nowrap"></span>
+                                        <button type="button" class="btn  btn-xs btn-success btn-circle" data-bind="click: SetEditMode">
+                                            <span class="glyphicon glyphicon-edit"></span>
+                                        </button>
                                         <!--/ko-->
-                                    </td>
-                                    <td>
-                                        <!-- ko foreach: Dishes-->
-                                        <div style="border-bottom: 1px solid;" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
-                                            <span data-bind="text: $data.Title"></span>
-                                        </div>
+                                        <!--ko if: IsEditEnable-->
+                                        <span data-bind=" text: 'Подтвердить заказ'" style="padding: 5px; white-space: nowrap"></span>
+                                        <button type="button" class="btn  btn-xs btn-warning btn-circle" data-bind="click: OrderSave">
+                                            <span class="glyphicon glyphicon-save"></span>
+                                        </button>
                                         <!--/ko-->
-                                    </td>
-                                    <td style="vertical-align: middle; text-align: center;" data-bind="click: function(){$root.checkallowedit($data.OrderCanByChanged());}">
-                                        <!--ko if: OrderCanByChanged-->
-                                        <!--ko foreach: Dishes-->
-                                        <!--ko with: OrderQuantity-->
-                                        <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element); }, event : { mouseover: doubleClick,  mouseleave: function(){ hasFocus=false}},  css: { menu_hover : $parent.isHovering}">
-                                            <!--ko ifnot: isEditMode -->
-                                            <span data-bind=" text: Quantity">
+                                    </div>
+                                </td>
+                            </tr>
+                            <!--/ko-->
+                            <!--ko foreach: UserDayOrders -->
+                            <tr>
+                                <td style="vertical-align: middle; text-align: center">
+                                    <span data-bind="text: DayName"></span>
+                                </td>
+                                <td>
+                                    <!-- ko foreach: Dishes-->
+                                    <div style="border-bottom: 1px solid; text-align: right" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
+                                        <span data-bind="text: Category() + ' : '"></span>
+                                    </div>
+                                    <!--/ko-->
+                                </td>
+                                <td>
+                                    <!-- ko foreach: Dishes-->
+                                    <div style="border-bottom: 1px solid;" data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
+                                        <span data-bind="text: $data.Title"></span>
+                                    </div>
+                                    <!--/ko-->
+                                </td>
+                                <td style="vertical-align: middle; text-align: center;" data-bind="click: function(){$root.checkallowedit($data.OrderCanByChanged());}">
+                                    <!--ko if: OrderCanByChanged-->
+                                    <!--ko foreach: Dishes-->
+                                    <!--ko with: OrderQuantity-->
+                                    <div style="border-bottom: 1px solid;" data-bind="singleClick: function(){$data.clicked($element); },   css: { menu_hover : $parent.isHovering}">
+                                        <!--ko ifnot: isEditMode -->
+                                        <span data-bind=" text: Quantity">
                                             </span>
-                                            <!--/ko-->
-                                            <!-- ko if: isEditMode -->
-                                            <!-- ko if: ($index() % 4 === 0) -->
-                                            <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}"></select>
-                                            <!--/ko-->
-                                            <!-- ko ifnot: ($index() % 4 === 0) -->
-                                            <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity , hasFocus:isEditMode, event:{focusout: function(){$data.onFocusOut(); if($data.beenChanged()){$root.BeenChanged(true); $root.update($parents[1],$index()+1,$data.Quantity()); } }}"></select>
-                                            <!--/ko-->
-                                            <!--/ko-->
-                                        </div>
+                                        <!--/ko-->
+                                        <!-- ko if: isEditMode -->
+                                        <!-- ko if: ($index() % 4 === 0) -->
+                                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity,click: $root.CalcSummary"></select>
+                                        <!--/ko-->
+                                        <!-- ko ifnot: ($index() % 4 === 0) -->
+                                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity,click: $root.CalcSummary "></select>
                                         <!--/ko-->
                                         <!--/ko-->
-                                        <!--/ko-->
-                                        <!--ko ifnot: OrderCanByChanged-->
-                                        <!--ko foreach: Dishes-->
-                                        <!--ko with: OrderQuantity-->
-                                        <div style="border-bottom: 1px solid;">
-                                            <span data-bind="text: Quantity"></span>
-                                        </div>
-                                        <!--/ko-->
-                                        <!--/ko-->
-                                        <!--/ko-->
-                                    </td>
-                                    <td style="text-align: right">
-                                        <!--ko foreach: Dishes-->
-                                        <div data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
-                                            <span data-bind="text:  Price" style="border-bottom: 1px solid"></span><br />
-                                        </div>
-                                        <!--/ko-->
-                                    </td>
-                                    <td style="text-align: right; vertical-align: middle; height: 100%">
-                                        <span data-bind="text: DayOrderSummary"></span>
-                                    </td>
+                                    </div>
+                                    <!--/ko-->
+                                    <!--/ko-->
+                                    <!--/ko-->
+                                    <!--ko ifnot: OrderCanByChanged-->
+                                    <!--ko foreach: Dishes-->
+                                    <!--ko with: OrderQuantity-->
+                                    <div style="border-bottom: 1px solid;">
+                                        <span data-bind="text: Quantity"></span>
+                                    </div>
+                                    <!--/ko-->
+                                    <!--/ko-->
+                                    <!--/ko-->
+                                </td>
+                                <td style="text-align: right">
+                                    <!--ko foreach: Dishes-->
+                                    <div data-bind=" hover: isHovering,  css: { menu_hover : isHovering}">
+                                        <span data-bind="text:  Price" style="border-bottom: 1px solid"></span><br/>
+                                    </div>
+                                    <!--/ko-->
+                                </td>
+                                <td style="text-align: right; vertical-align: middle; height: 100%">
+                                    <span data-bind="text: DayOrderSummary"></span>
+                                </td>
 
-                                </tr>
-                                <!--/ko-->
+                            </tr>
+                            <!--/ko-->
                             </tbody>
                             <tfoot>
-                                <tr>
-                                    <td colspan="5" style="text-align: right !important" class="t-header"><span style="font-weight: bold">Итого</span></td>
-                                    <td class="t-header"><span data-bind="text: WeekSummaryPrice" style="font-weight: bold"></span></td>
-                                </tr>
+                            <tr>
+                                <td class="t-header"></td>
+                                <td colspan="3" class="t-header"></td>
+                                <td style="text-align: right !important" class="t-header"><span style="font-weight: bold">Итого</span></td>
+                                <td class="t-header"><span data-bind="text: WeekSummaryPrice" style="font-weight: bold"></span></td>
+                            </tr>
                             </tfoot>
                         </table>
                     </div>

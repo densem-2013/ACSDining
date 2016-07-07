@@ -168,7 +168,7 @@
         self.rowclicked = function (item,event) {
             ko.utils.arrayForEach(self.WeekUserOrderModels(), function (obj) {
 
-                    obj.IsSelectedRow(obj.isHovering() && self.SUCanChangeOrder()/* && self.ItsFact()==="fact"*/);
+                obj.IsSelectedRow(obj.isHovering() === true && self.SUCanChangeOrder() === true/* && self.ItsFact()==="fact"*/);
 
                 });
 

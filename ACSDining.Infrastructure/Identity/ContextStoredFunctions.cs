@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Linq;
 using System.Threading.Tasks;
 using ACSDining.Infrastructure.DTO;
+using ACSDining.Infrastructure.HelpClasses;
 using UpdateUserOrderDto = ACSDining.Infrastructure.DTO.SuperUser.Orders.UpdateUserOrderDto;
 using UpdateWeekPaimentDto = ACSDining.Infrastructure.DTO.SuperUser.Paiments.UpdateWeekPaimentDto;
 using WeekUserOrder = ACSDining.Infrastructure.DTO.SuperUser.Orders.WeekUserOrder;
@@ -208,6 +211,33 @@ namespace ACSDining.Infrastructure.Identity
 
             context.Database.ExecuteSqlCommand("exec UpdateDishQuantity @Dayorderid,@Dishtypeid,@Quantity",
                 dayorderidParameter, dishtypeidParameter, quantityParameter);
+        }
+
+        /// <summary>
+        /// Обновляет пользовательский заказ по id недельного заказа используя значения 
+        ///Id дневных заказов и массив значений количеств заказанных блюд
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="userWeekOrderDto"></param>
+        /// <returns></returns>
+        public static void UpdateAllQuantitiesOnWeekOrder(this ApplicationDbContext context,
+            UpdateAllWeekOrderDto userWeekOrderDto)
+        {
+                var dayorderarrayidParameter = new SqlParameter("@DayOrderIdArray",
+                    MapHelper.CreateDataTable(userWeekOrderDto.DayOrdIds, "dayord"))
+                {
+                    TypeName = "dbo.DayOrdArray",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var weekordidParameter = new SqlParameter("@weekordid", userWeekOrderDto.WeekOrdId);
+                var quantitiesParameter = new SqlParameter("@quantities", MapHelper.CreateDataTable(userWeekOrderDto.QuantArray, "quant"))
+                {
+                    TypeName = "dbo.QuantArray",
+                    SqlDbType = SqlDbType.Structured
+                };
+                context.Database.ExecuteSqlCommand(
+                    "exec UpdateAllQuantitiesOnWeekOrder @DayOrderIdArray, @weekordid, @quantities", dayorderarrayidParameter, weekordidParameter, quantitiesParameter);
+            
         }
 
         /// <summary>

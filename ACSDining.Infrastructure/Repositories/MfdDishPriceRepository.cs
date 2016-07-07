@@ -24,6 +24,7 @@ namespace ACSDining.Infrastructure.Repositories
                     .Include(d => d.MfdDishPriceRelations)
                     .Select()
                     .Where(d => string.Equals(d.DishType.Category, category))
+                    .OrderBy(d=>d.Title)
                     .Select(d => repository.GetDishModelDto(d, menufordayid))
                     .ToList();
         }

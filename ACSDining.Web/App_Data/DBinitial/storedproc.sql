@@ -748,7 +748,10 @@ BEGIN
 	inner join MenuForDay
 	on DayOrderMenu.MenuForDay_ID=MenuForDay.ID and MenuForDay.OrderCanBeChanged=1
 	inner join WorkingDay
-	on MenuForDay.WorkingDay_Id=WorkingDay.Id and WorkingDay.IsWorking=1
+	on MenuForDay.WorkingDay_Id=WorkingDay.Id and WorkingDay.IsWorking=1	
+	
+	exec UpdateBalanceByWeekOrderId  @weekorderid
+	
     -- Insert statements for procedure here
 	SELECT * from dbo.FactDishQuantByWeekOrderId(@weekorderid)
 END
@@ -830,7 +833,7 @@ GO
 -- =============================================
 CREATE PROCEDURE [dbo].[UpdateAllQuantitiesOnWeekOrder] 
 	-- Add the parameters for the stored procedure here
-	@DayordidArray AS dbo.DayOrdArray READONLY, --workdays ids
+	@DayordidArray AS dbo.DayOrdArray READONLY, --workdays ids those who ordercanbechanged=true
 	@weekordid int, -- weekorderid
 	@QuantArray AS dbo.QuantArray READONLY -- order dish quantity array
 AS
@@ -839,7 +842,7 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 	Declare @planweekordid int, @dayordid int, @plandayordid int, @dishtypecount int,
-	 @mfdid int, @dishtypeid int, @dishquant float
+	 @dishtypeid int, @dishquant float
 	 
 	select @dishtypecount=COUNT(*) from DishType
 	
@@ -857,7 +860,7 @@ BEGIN
 	 -- Insert the resultset we want to loop through
 		-- into the temporary table
 		INSERT INTO #ActiveOrderQuantity (QuantVal)
-		select quant from dbo.QuantArray
+		select quant from @QuantArray
 	 
 	 declare @NumberQuants int, @RowCount int
 	 set @NumberQuants=@@ROWCOUNT
@@ -872,32 +875,33 @@ BEGIN
 	 -- Insert the resultset we want to loop through
 		-- into the temporary table
 		INSERT INTO #ActiveDayOrders (DayOrdId)
-		select dayord from dbo.DayOrdArray
+		select dayord from @DayordidArray
 		
 		
 	 declare @NumberDayOrds int
 	 set @NumberDayOrds=@@ROWCOUNT
-	 
-	declare @i int, @j int
-	set @i=1
-	
+	 	
 	while @RowCount<=@NumberQuants
 	begin
 		select @dishquant=QuantVal from #ActiveOrderQuantity
 		where RowID=@RowCount
 		
+		set @dishtypeid=case when @RowCount%@dishtypecount=0 then @dishtypecount else @RowCount%@dishtypecount end
+		select @dayordid=DayOrdId from #ActiveDayOrders where RowID=ceiling((@RowCount-1)/@dishtypecount)+1
+		
 		update drels
 		set  [DishQuantityId]=DQUA.[Id]
 		from DishQuantityRelations drels
-		inner join  #ActiveDayOrders
-		on RowID=@i and DayOrdId=drels.DayOrderMenuId
 		inner join DishType
-		on DishType.Id=drels.DishTypeId and DishType.Id=(@i-1)%@dishtypecount+1
+		on DishType.Id=drels.DishTypeId and DishType.Id=@dishtypeid
 		inner join  DishQuantity AS DQUA
 		on DQUA.[Quantity]=@dishquant
+		where drels.DayOrderMenuId=@dayordid
 		
 		set @RowCount = @RowCount+1
 	end
+	
+	exec UpdateBalanceByWeekOrderId  @weekordid
 	
 END
 GO

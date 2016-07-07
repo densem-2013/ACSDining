@@ -3,6 +3,7 @@ using ACSDining.Infrastructure.DAL;
 using ACSDining.Infrastructure.DTO;
 using ACSDining.Infrastructure.DTO.SuperUser.Menu;
 using ACSDining.Infrastructure.DTO.SuperUser.Orders;
+using ACSDining.Infrastructure.HelpClasses;
 using ACSDining.Infrastructure.Identity;
 using ACSDining.Infrastructure.Services;
 using ACSDining.Web.Areas.EmployeeArea.Controllers;
@@ -114,6 +115,13 @@ namespace UnitTestProject1
         public void EmployeDtoGetTest()
         {
             EmployeeOrderApiController emplorderapi=new EmployeeOrderApiController(_unitOfWork);
+        }
+
+        [TestMethod]
+        public void CreateUsersForReport()
+        {
+            string usersstring = "Денисенко А.,Киричок А.,Панченко В.,Секретный С.,Швец А.,Лукъянов А.";
+            Utility.CreateUsersForReport(_unitOfWork.GetContext(),usersstring);
         }
     }
 }

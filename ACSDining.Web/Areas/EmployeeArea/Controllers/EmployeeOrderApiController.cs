@@ -255,7 +255,16 @@ namespace ACSDining.Web.Areas.EmployeeArea.Controllers
         public async Task<IHttpActionResult> OrderAllByOne([FromBody] int weekordid)
         {
             _unitOfWork.GetContext().OrderAllByOne(weekordid);
-            _unitOfWork.GetContext().UpdateBalanceByWeekOrderId(weekordid);
+
+            return Ok(true);
+        }
+
+        [HttpPut]
+        [Route("updateAll")]
+        [ResponseType(typeof(bool))]
+        public async Task<IHttpActionResult> UpdateAll([FromBody] UpdateAllWeekOrderDto uaDto)
+        {
+            _unitOfWork.GetContext().UpdateAllQuantitiesOnWeekOrder(uaDto);
 
             return Ok(true);
         }

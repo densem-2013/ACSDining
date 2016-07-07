@@ -382,3 +382,15 @@ E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.Razor.xml
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Razor.xml
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.xml
 E:\GitProjects\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\NLog.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.Mvc.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.Razor.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Razor.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.dll
+E:\ACSDining\ACSDining.Core\bin\Debug\NLog.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.Mvc.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.Razor.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Razor.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.xml
+E:\ACSDining\ACSDining.Core\bin\Debug\System.Web.WebPages.Deployment.xml

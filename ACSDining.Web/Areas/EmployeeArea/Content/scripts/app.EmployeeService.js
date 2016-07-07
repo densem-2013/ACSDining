@@ -159,7 +159,8 @@ window.app.EmployeeService = (function() {
         setemail: function() { return baseUserWeekOrder + "setemai" },
         prevweekorder: function () { return baseUserWeekOrder + "getprevweekorder" },
         setasprev: function () { return baseUserWeekOrder + "setasprev" },
-        allbyone: function () { return baseUserWeekOrder + "allbyone" }
+        allbyone: function () { return baseUserWeekOrder + "allbyone" },
+        updateAll: function () { return baseUserWeekOrder + "updateAll" }
     }
 
     function ajaxRequest(type, url, data) {
@@ -216,6 +217,9 @@ window.app.EmployeeService = (function() {
     	},
     	SetAllByOne: function (weekord) {
     	    return ajaxRequest("put", serviceUserWeekOrders.allbyone(), weekord);
+    	},
+    	UpdateAll: function (weekord) {
+    	    return ajaxRequest("put", serviceUserWeekOrders.updateAll(), weekord);
     	}
     };
 })();

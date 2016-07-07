@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using ACSDining.Core.Domains;
 using ACSDining.Infrastructure.Identity;
@@ -53,6 +55,18 @@ namespace ACSDining.Infrastructure.HelpClasses
         public static string[] GetCategoriesStrings(ApplicationDbContext _db)
         {
             return _db.DishTypes.Select(dt => dt.Category).ToArray();
+        }
+
+
+        public static DataTable CreateDataTable<T>(IEnumerable<T> ids,string colname)
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add(colname, typeof(T));
+            foreach (T val in ids)
+            {
+                table.Rows.Add(val);
+            }
+            return table;
         }
     }
 }
