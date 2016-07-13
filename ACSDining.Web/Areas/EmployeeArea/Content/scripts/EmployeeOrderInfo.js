@@ -316,32 +316,32 @@
             self.WeekSummaryPrice(sum.toFixed(2));
         };
 
-        self.update = function (dayord, catnumber, quantity) {
+        //self.update = function (dayord, catnumber, quantity) {
 
-            var userweekorder = {
-                DayOrderId: dayord.DayOrderId(),
-                CategoryId: catnumber,
-                Quantity: quantity
-            };
+        //    var userweekorder = {
+        //        DayOrderId: dayord.DayOrderId(),
+        //        CategoryId: catnumber,
+        //        Quantity: quantity
+        //    };
 
-            self.CalcSummary();
+        //    self.CalcSummary();
 
-            if (self.CheckDebt() && (self.Balance() < -1 * self.AllowDebt())) {
+        //    if (self.CheckDebt() && (self.Balance() < -1 * self.AllowDebt())) {
 
-                modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
+        //        modalShow("Внимание!", "Ваш текущий баланс превышает допустимый лимит задолженности. Заказ не может быть принят.");
 
-                loadUserWeekOrder(self.WeekYear());
+        //        loadUserWeekOrder(self.WeekYear());
 
-                return;
-            };
-            app.EmployeeService.UserWeekUpdateOrder(userweekorder).then(function(res) {
-                self.BeenChanged(false);
-                if (res === "noordchenged") {
-                    dayord.OrderCanByChanged(false);
-                    modalShow("Внимание!", "Редактирование заявки на этот день уже закрыто. Если Вам необходио внести изменения в заказ на этот день, обратитесь к администрации столовой.")
-                }
-            });
-        };
+        //        return;
+        //    };
+        //    app.EmployeeService.UserWeekUpdateOrder(userweekorder).then(function(res) {
+        //        self.BeenChanged(false);
+        //        if (res === "noordchenged") {
+        //            dayord.OrderCanByChanged(false);
+        //            modalShow("Внимание!", "Редактирование заявки на этот день уже закрыто. Если Вам необходио внести изменения в заказ на этот день, обратитесь к администрации столовой.")
+        //        }
+        //    });
+        //};
 
 
         self.myDate.subscribe = ko.computed(function() {

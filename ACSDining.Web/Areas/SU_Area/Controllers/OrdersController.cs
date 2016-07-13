@@ -53,15 +53,25 @@ namespace ACSDining.Web.Areas.SU_Area.Controllers
         }
 
         //Изменить фактическую заявку указанного списка пользователей на меню соответствующей недели в году
+        //[HttpPut]
+        //[Route("update")]
+        //public async Task<IHttpActionResult> UpdateWeekOrder([FromBody] UpdateUserOrderDto userOrderDto)
+        //{
+        //    if (userOrderDto == null)
+        //    {
+        //        return BadRequest("Bad Request Object");
+        //    }
+        //    _unitOfWork.GetContext().UpdateDishQuantityBySu(userOrderDto);
+
+        //    return Ok(true);
+        //}
+
         [HttpPut]
         [Route("update")]
-        public async Task<IHttpActionResult> UpdateWeekOrder([FromBody] UpdateUserOrderDto userOrderDto)
+        [ResponseType(typeof(bool))]
+        public async Task<IHttpActionResult> UpdateAll([FromBody] UpdateAllWeekOrderDto uaDto)
         {
-            if (userOrderDto == null)
-            {
-                return BadRequest("Bad Request Object");
-            }
-            _unitOfWork.GetContext().UpdateDishQuantityBySu(userOrderDto);
+            _unitOfWork.GetContext().UpdateAllQuantitiesOnWeekOrder(uaDto);
 
             return Ok(true);
         }

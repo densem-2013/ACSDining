@@ -415,6 +415,9 @@ td.orderquant{
     min-width: 50px;*/   
     text-align: center;
 }
+.orderquant select.input-small{
+    width: 43px;
+}
 
 td.weekmenu div{
     padding: 5px; /* border: solid 1px #e8eef4; */
@@ -1170,4 +1173,7 @@ tr.allowedit {
 }
 #allowEdit {
     display: inline-flex;
+}
+.rightBorder {
+    border-right: 2px black solid !important;
 }

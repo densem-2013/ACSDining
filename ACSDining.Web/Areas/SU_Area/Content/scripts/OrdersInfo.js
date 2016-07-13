@@ -71,7 +71,7 @@
     }
 
 
-    var weekUserOrderModel = function (userWeekOrder,sumprice) {
+    var weekUserOrderModel = function(userWeekOrder, sumprice) {
 
         var self = this;
 
@@ -80,7 +80,9 @@
         self.OrderId = ko.observable(userWeekOrder.orderId);
 
         self.UserName = ko.observable(userWeekOrder.userName);
+
         self.DayOrdIdArray = ko.observableArray(userWeekOrder.dayOrdIdArray);
+
         self.WeekSummaryPrice = ko.observable(sumprice.toFixed(2));
 
         self.BeenChanged = ko.observable(false);
@@ -96,7 +98,20 @@
         self.isHovering = ko.observable(false);
 
         self.IsSelectedRow = ko.observable(false);
-        
+
+        self.IsEditEnable = ko.observable(false);
+
+        self.CalcSummary = function(weekDishPrices) {
+            var userweeksum = 0;
+
+            ko.utils.arrayForEach(self.UserWeekOrderDishes(), function (item, index) {
+
+                userweeksum += item.Quantity() * weekDishPrices[index];
+            });
+
+            self.WeekSummaryPrice(userweeksum.toFixed(2));
+        }
+
     };
 
     var weekOrdersModel = function () {
@@ -135,6 +150,8 @@
 
         });
 
+        self.Store = ko.observableArray([]);
+
         self.BeenChanged = ko.observable(false);
 
         self.SummaryDishQuantities = ko.observableArray([]);
@@ -165,15 +182,12 @@
 
         }.bind(self));
 
-        self.rowclicked = function (item,event) {
-            ko.utils.arrayForEach(self.WeekUserOrderModels(), function (obj) {
-
-                obj.IsSelectedRow(obj.isHovering() === true && self.SUCanChangeOrder() === true/* && self.ItsFact()==="fact"*/);
-
-                });
-
-        };
-
+        self.IsEditOn = ko.pureComputed(function() {
+            return ko.utils.arrayFirst(self.WeekUserOrderModels(), function(model) {
+                return model.IsEditEnable() === true;
+            }) != null;
+        }.bind(self));
+        
         self.CurNextTitle = ko.pureComputed(function () {
             if (self.IsCurrentWeek()) {
                 return "Текущая неделя";
@@ -197,54 +211,27 @@
             modalShow("Внимание, ошибка! ", "Error: " + error.status + " " + error.statusText);
         }
 
-        self.CalcSummaryDishQuantyties = function(wuord, daynum, catnum) {
+        self.CalcSummaryDishQuantyties = function(wuord) {
             var catlengh = self.Categories().length;
-            var userweeksum = 0;
-            var sumbydish = 0;
-            ko.utils.arrayForEach(wuord.UserWeekOrderDishes(), function(item, index) {
-                userweeksum += item.Quantity() * self.WeekDishPrices()[index];
+            ko.utils.arrayForEach(wuord.DayOrdIdArray, function(dayid, daynum) {
+                ko.utils.arrayForEach(self.Categories(), function (category, catnum) {
+                    var sumbydish = 0;
+                    ko.utils.arrayForEach(self.WeekUserOrderModels(), function(object) {
+                        sumbydish += object.UserWeekOrderDishes()[catlengh * daynum + catnum].Quantity();
+                    });
+                    self.SummaryDishQuantities.replace(self.SummaryDishQuantities()[catlengh * daynum + catnum], sumbydish);
+                });
             });
-            wuord.WeekSummaryPrice(userweeksum.toFixed(2));
-
-            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(object, ind) {
-                sumbydish += object.UserWeekOrderDishes()[catlengh * (daynum - 1) + catnum - 1].Quantity();
-            });
-            self.SummaryDishQuantities.replace(self.SummaryDishQuantities()[catlengh * (daynum-1) + catnum -1], sumbydish);
         };
 
         self.WeekTotal = ko.pureComputed(function() {
             var sum = 0;
-            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(object, ind) {
+            ko.utils.arrayForEach(self.WeekUserOrderModels(), function(object) {
                 sum += parseFloat(object.WeekSummaryPrice());
             });
             return sum.toFixed(2);
         });
-
-        self.update = function (wuOrder, index, object) {
-            object.onFocusOut();
-            if (object.beenChanged()===true) {
-                self.BeenChanged(true);
-                var catlengh = self.Categories().length;
-                var daynumber = Math.ceil(index / catlengh);
-                var catnumber = index - (daynumber - 1) * catlengh;
-
-                var userweekorder = {
-                    DayOrderId: wuOrder.DayOrdIdArray()[daynumber - 1],
-                    CategoryId: catnumber,
-                    Quantity: object.Quantity()
-                };
-
-                self.CalcSummaryDishQuantyties(wuOrder, daynumber, catnumber);
-
-                app.su_Service.UpdateOrder(userweekorder).then(function(res) {
-                    if (res) {
-                        wuOrder.BeenChanged(false);
-                    }
-                });
-            }
-        };
-
-
+        
         self.SetMyDateByWeek = function (wyDto) {
             var firstDay = new Date(wyDto.year, 0, 1).getDay();
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
@@ -368,6 +355,7 @@
 
             self.ItsFact(checkval);
             loadWeekOrders(self.WeekYear(), checkval);
+            //self.SetMyDateByWeek(self.WeekYear());
             return true;
         };
 
@@ -379,7 +367,7 @@
             var needObj = self.WeekYear();
             if (needObj != undefined && !isNaN(takedWeek)) {
                 var curweek = needObj.week;
-                if (!isNaN(takedWeek) /*&& takedWeek !== curweek*/) {
+                if (!isNaN(takedWeek) ) {
                     var weekyear = {
                         Week: takedWeek,
                         Year: self.myDate().getFullYear()
@@ -411,6 +399,96 @@
 
         self.GoToCurrentWeekOrders = function () {
             self.SetMyDateByWeek(self.CurrentWeekYear());
+        };
+
+
+        self.IsEditAllowed = ko.pureComputed(function () {
+
+            
+            return self.IsCurrentWeek() === true || self.IsNextWeekYear() === true;
+
+        }.bind(self));
+
+        self.SetEditMode = function (userWeekOrderModel) {
+            self.Store([]);
+            ko.utils.arrayForEach(userWeekOrderModel.UserWeekOrderDishes(), function (item) {
+                item.isEditMode(true);
+            });
+            var arr = ko.utils.arrayMap(userWeekOrderModel.UserWeekOrderDishes(), function (quant) {
+
+                    return quant.Quantity();
+            });
+
+            self.Store.pushAll(arr);
+
+            userWeekOrderModel.IsEditEnable(true);
+        };
+        self.CancelEditMode = function (userWeekOrderModel) {
+            console.log(self.Store());
+            ko.utils.arrayForEach(userWeekOrderModel.UserWeekOrderDishes(), function ( item, index) {
+                item.Quantity(self.Store()[index]);
+                item.isEditMode(false);
+            });
+            userWeekOrderModel.CalcSummary(self.WeekDishPrices());
+            self.CalcSummaryDishQuantyties(userWeekOrderModel);
+            userWeekOrderModel.IsEditEnable(false);
+        };
+
+        self.rowclicked = function (item, event) {
+
+                if (self.IsEditOn()&& self.ItsFact()!=="plan") {
+                    modalShow("Сообщение", "Подтвердите или отмените редактирование предыдущей заявки!");
+                    setTimeout(function () {
+                        $("#modalMessage").modal("hide");
+                    }, 2000);
+                    return;
+                };
+
+                if (self.IsEditAllowed() === false) {
+                    modalShow("Сообщение", "На выбранную Вами неделю редактирование заявок уже недоступно!");
+                    setTimeout(function() {
+                        $("#modalMessage").modal("hide");
+                    }, 2000);
+                    return;
+                }
+                var iseditable = false;
+
+                ko.utils.arrayForEach(self.WeekUserOrderModels(), function(obj) {
+                    iseditable = obj.isHovering() === true && self.SUCanChangeOrder() === true;
+                    obj.IsSelectedRow(iseditable);
+                });
+
+                var editableObj = ko.utils.arrayFirst(self.WeekUserOrderModels(), function(obj) {
+                    return obj.IsSelectedRow() === true;
+                });
+
+                self.SetEditMode(editableObj);
+        };
+
+        self.OrderSave = function (userWeekOrderModel) {
+            
+            var quantarr = ko.utils.arrayMap(userWeekOrderModel.UserWeekOrderDishes(), function (quar) {
+                return quar.Quantity();
+            });
+
+            var forsaveobj = {
+                DayOrdIds: userWeekOrderModel.DayOrdIdArray(),
+                WeekOrdId: userWeekOrderModel.OrderId(),
+                QuantArray: quantarr
+            }
+            
+            ko.utils.arrayForEach(userWeekOrderModel.UserWeekOrderDishes(), function (quant) {
+                quant.isEditMode(false);
+            });
+
+            app.su_Service.UpdateOrder(forsaveobj).then(function (res) {
+                if (res) {
+                   
+                    self.CalcSummaryDishQuantyties(userWeekOrderModel);
+
+                    userWeekOrderModel.IsEditEnable(false);
+                }
+            },onError);
         };
 
         self.init = function () {

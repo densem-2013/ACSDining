@@ -25,7 +25,7 @@ namespace ACSDining.Web.Controllers
         private readonly PrincipalContext _ad;
         public AccountController( ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
-           _ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
+           //_ad = new PrincipalContext(ContextType.Domain, "srv-main.infocom-ltd.com", @"infocom-ltd\ldap_ro", "240#gbdj");
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -77,8 +77,8 @@ namespace ACSDining.Web.Controllers
 
             // Сбои при входе не приводят к блокированию учетной записи
             // Чтобы ошибки при вводе пароля инициировали блокирование учетной записи, замените на shouldLockout: true
-            var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
-            //var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
+            //var result = await SignInManager.ValidateUserFromAd(model.LogIn, model.Password);
+            var result = await _signInManager.PasswordSignInAsync(model.LogIn, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:

@@ -16,6 +16,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Orders
         public double[] SummaryDishQuantities { get; set; }
         //названия рабочих дней недели
         public string[] DayNames { get; set; }
+        //названия всех дней недели
+        public string[] AllDayNames { get; set; }
         //цены на единицу каждого блюда
         public double[] WeekDishPrices { get; set; }
         //SU может редактировать заказ
@@ -41,7 +43,8 @@ namespace ACSDining.Infrastructure.DTO.SuperUser.Orders
                     weekOrderMenus.Select(woDto => PlanUserWeekOrderDto.MapDto(context, woDto)).ToList(),
                 DayNames = context.GetDayNames(wyDto, true).Result,
                 WeekDishPrices = context.GetWeekDishPrices(wyDto).Result,
-                SummaryDishQuantities = context.GetPlanSumWeekUserCounts(wyDto).Result
+                SummaryDishQuantities = context.GetPlanSumWeekUserCounts(wyDto).Result,
+                AllDayNames = context.GetDayNames(wyDto).Result
             };
         }
     }

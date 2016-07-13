@@ -171,7 +171,7 @@ div.panel.panel-default > table {
 }
 
 #paimentsObject, #ordersObject{   
-    padding-left: 5px!important;
+    /*padding-left: 5px!important;*/
     padding-right: 15px !important;
     font-size: 11px;
 }
@@ -257,4 +257,7 @@ table th,table td {
     text-align: center !important;
     border-color: #a7bac5;    
     border-collapse: separate;
+}
+select.input-small{
+	with: 50px;
 }

@@ -235,8 +235,16 @@ namespace ACSDining.Infrastructure.Identity
                     TypeName = "dbo.QuantArray",
                     SqlDbType = SqlDbType.Structured
                 };
+            try
+            {
                 context.Database.ExecuteSqlCommand(
                     "exec UpdateAllQuantitiesOnWeekOrder @DayOrderIdArray, @weekordid, @quantities", dayorderarrayidParameter, weekordidParameter, quantitiesParameter);
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
             
         }
 

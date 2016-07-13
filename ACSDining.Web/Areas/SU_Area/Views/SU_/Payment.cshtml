@@ -18,10 +18,10 @@
             </colgroup>
             <thead>
                 <tr>
-                    <th class="t-header" style="padding: 2px !important" rowspan="4"><span>№</span></th>
-                    <th class="t-header" style="text-align: center; padding: 2px !important" rowspan="4"><span>Ф.И.О</span></th>
+                    <th class="t-header rightBorder" style="padding: 2px !important" rowspan="4"><span>№</span></th>
+                    <th class="t-header rightBorder" style="text-align: center; padding: 2px !important" rowspan="4"><span>Ф.И.О</span></th>
                     <!--ko foreach: DaysOfWeek-->
-                    <th class="t-header" style="text-align: center; padding: 2px !important; height: 40px !important" colspan="4" ><span data-bind="text:$data"></span></th>
+                    <th class="t-header rightBorder" style="text-align: center; padding: 2px !important; height: 40px !important" colspan="4"><span data-bind="text:$data"></span></th>
                     <!--/ko-->
                     <th class="thvert t-header" rowspan="4" style="vertical-align: bottom !important">
                         <div class="verticalText">Сумма за неделю</div>
@@ -38,15 +38,15 @@
                 </tr>
                 <tr data-bind="foreach: DaysOfWeek" id="groups">
                     <!--ko foreach: $root.Categories-->
-                    <th class="thvert">
+                    <th class="thvert" data-bind="css:{rightBorder:$index() % 4 === 3}">
                         <div class="verticalText" data-bind="text: $data"></div>
                     </th>
                     <!--/ko-->
                 </tr>
-                <tr><th data-bind="attr:{colspan:UnitPrices().length }" style="text-align: center"><span>Цена за одну порцию, грн</span></th></tr>
+                <tr><th class="rightBorder" data-bind="attr:{colspan:UnitPrices().length }" style="text-align: center"><span>Цена за одну порцию, грн</span></th></tr>
                 <tr>
                     <!--ko foreach: UnitPrices-->
-                    <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data.toFixed(2)"></span></th>
+                    <th class="t-header" style="padding: 2px !important" data-bind="css:{rightBorder:$index() % 4 === 3}"><span data-bind="text: $data.toFixed(2)"></span></th>
                     <!--/ko-->
                 </tr>
             </thead>
@@ -64,12 +64,12 @@
             <tbody>
                 <!--ko foreach: pagedList-->
                 <tr data-bind="singleClick: $root.rowclicked, hover:isHovering, css:{allowedit: IsSelectedRow }">
-                    <td>
+                    <td class="rightBorder">
                         <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
                     </td>
-                    <td class="rights"><span data-bind="text: UserName"></span></td>
+                    <td class="rights rightBorder"><span data-bind="text: UserName"></span></td>
                     <!--ko foreach: DishPaiments-->
-                    <td>
+                    <td data-bind="css:{rightBorder:$index() % 4 === 3}">
                         <span data-bind="text:$data.toFixed(2)"></span>
                     </td>
                     <!--/ko-->
@@ -83,14 +83,14 @@
                     </td>
                     <!--/ko-->
                     <!--ko ifnot: $parent.IsSelectedRow-->
-                    <td class="lastTD">
+                    <td class="lastTD" style="background-color: mediumturquoise">
                         <span data-bind="text: Paiment"></span>
                     </td>
                     <!--/ko-->
                     <!--/ko-->
                     <td class="lastTD"><span data-bind="text: Balance"></span></td>
                     <!--ko with: Note-->
-                    <td class="lastTD" style="min-width: 60px" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseover: doubleClick , mouseout: function(){ hasFocus=false}}">
+                    <td class="lastTD" style="min-width: 60px; background-color: mediumturquoise" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseover: doubleClick , mouseout: function(){ hasFocus=false}}">
                         <!--ko if: $parent.IsSelectedRow-->
                         <input type="text" data-bind="value:Note, hasFocus: isEditMode, event:{focusout: function(){$data.onFocusOut(); $root.noteUpdate($parent);} }">
                         <!--/ko-->
@@ -102,9 +102,9 @@
                 </tr>
                 <!--/ko-->
                 <tr>
-                    <td class="t-header" colspan="2"><span>Итого</span></td>
+                    <td class="t-header rightBorder" colspan="2"><span>Итого</span></td>
                     <!--ko foreach: UnitPricesTotal-->
-                    <td class="footheader"><span data-bind="text:$data.toFixed(2)" style="font-weight: bold"></span></td>
+                    <td class="footheader" data-bind="css:{rightBorder:$index() % 4 === 3}"><span data-bind="text:$data.toFixed(2)" style="font-weight: bold"></span></td>
                     <!--/ko-->
                     <td class="footheader"><span data-bind="text: TotalNeedWeekPaiment" style="font-weight: bold"></span></td>
                     <td class="footheader"><span data-bind="text: TotalWeekPaiment" style="font-weight: bold"></span></td>

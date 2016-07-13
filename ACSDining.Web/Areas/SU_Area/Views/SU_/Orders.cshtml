@@ -18,26 +18,26 @@
             <thead>
 
                 <tr>
-                    <th class="t-header" style="padding: 2px !important" rowspan="4"><span>№</span></th>
-                    <th class="t-header" style="padding: 2px !important; text-align: center" rowspan="4" colspan="3"><span>Ф.И.О</span></th>
+                    <th class="t-header rightBorder" style="padding: 2px !important" rowspan="4"><span>№</span></th>
+                    <th class="t-header rightBorder" style="padding: 2px !important; text-align: center" rowspan="4" colspan="3"><span>Ф.И.О</span></th>
                     <!--ko foreach: DaysOfWeek-->
-                    <th colspan="4" class="t-header" style="padding: 2px !important; text-align: center; height: 40px !important"><span data-bind="text:$data"></span></th>
+                    <th colspan="4" class="t-header rightBorder" style="padding: 2px !important; text-align: center; height: 40px !important"><span data-bind="text:$data"></span></th>
                     <!--/ko-->
                     <th rowspan="4" class="t-header" colspan="3" style="padding: 2px !important; text-align: center; white-space: normal !important;"><span>Стоимость заказа за неделю</span></th>
                 </tr>
                 <tr data-bind="foreach: DaysOfWeek" id="groups">
                     <!--ko foreach: $root.Categories-->
-                    <th class="thvert">
+                    <th class="thvert" data-bind="css:{rightBorder:$index() % 4 === 3}">
                         <div class="verticalText" data-bind="text: $data"></div>
                     </th>
                     <!--/ko-->
                 </tr>
                 <tr>
-                    <th style="text-align: center" data-bind="attr:{colspan: WeekDishPrices().length}"><span>Цена за одну порцию, грн</span></th>
+                    <th style="text-align: center" class="rightBorder" data-bind="attr:{colspan: WeekDishPrices().length}"><span>Цена за одну порцию, грн</span></th>
                 </tr>
                 <tr>
                     <!--ko foreach: WeekDishPrices-->
-                    <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data.toFixed(2)"></span></th>
+                    <th class="t-header" style="padding: 2px !important" data-bind="css:{rightBorder:$index() % 4 === 3}"><span data-bind="text: $data.toFixed(2)"></span></th>
                     <!--/ko-->
                 </tr>
             </thead>
@@ -52,39 +52,51 @@
             <tbody>
                 <!--ko foreach: pagedList-->
                 <tr data-bind="click: $root.rowclicked, hover: isHovering, css:{ allowedit: IsSelectedRow  }">
-                    <td>
+                    <td class="rightBorder">
                         <span data-bind="text: $root.pageIndex() * $root.pageSize() + $index() + 1"></span>
                     </td>
-                    <td class="rights" colspan="3"><span data-bind="text: UserName"></span></td>
+                    <td class="rights rightBorder" colspan="3"><span data-bind="text: UserName"></span></td>
                     <!--ko foreach: UserWeekOrderDishes-->
                     <!--ko ifnot: $parent.IsSelectedRow() && $root.ItsFact()==='fact'-->
-                    <td class="orderquant">
+                    <td class="orderquant" data-bind="css:{rightBorder:$index() % 4 === 3}">
                         <span data-bind="text: Quantity"></span>
                     </td>
                     <!--/ko-->
                     <!--ko if: $parent.IsSelectedRow() && $root.ItsFact()==='fact' -->
-                    <td class="orderquant" data-bind="singleClick: function(){$data.clicked($element)}, event : { mouseover: doubleClick , mouseout: function(){ hasFocus = false}}">
+                    <td class="orderquant" data-bind="css:{rightBorder:$index() % 4 === 3}">
                         <!--ko ifnot: isEditMode-->
                         <span data-bind="text: Quantity"></span>
                         <!--/ko-->
                         <!-- ko if: isEditMode -->
                         <!-- ko if: ($index() % 4 === 0) -->
-                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, hasFocus:isEditMode, event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
+                        <select class="input-small" data-bind="options: $root.FirstCourseValues, value: Quantity, clickBubble: false, click:function(){ $parent.CalcSummary($root.WeekDishPrices());}"></select>
                         <!--/ko-->
                         <!-- ko ifnot: ($index() % 4 === 0) -->
-                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, hasFocus:isEditMode, event:{focusout: function(){ $root.update($parent,$index()+1,$data); }}"></select>
+                        <select class="input-small" data-bind="options: $root.QuantValues, value: Quantity, clickBubble: false, click:function(){ $parent.CalcSummary($root.WeekDishPrices());}"></select>
                         <!--/ko-->
                         <!--/ko-->
                     </td>
                     <!--/ko-->
                     <!--/ko-->
-                    <th style="text-align: center" colspan="3"><span data-bind="text: WeekSummaryPrice"></span></th>
+                    <th style="text-align: center" colspan="3">
+                        <!--ko if: IsSelectedRow() && $root.ItsFact()==='fact' && IsEditEnable() -->
+                        <div id="editdiv" style="display: inline-flex; padding: 5px; background-color: rgba(166, 217, 244, 0.68); border-radius: 10px; ">
+                            <button type="button" class="btn  btn-xs btn-warning btn-circle" data-bind="clickBubble: false, click: function(){ $root.OrderSave($data); },tooltip: {title: 'Сохранить', placement: 'top'}">
+                                <span class="glyphicon glyphicon-save" style="color:black"></span>
+                            </button>
+                            <button type="button" class="btn  btn-xs btn-danger btn-circle" data-bind="clickBubble: false, click: function(){ $root.CancelEditMode($data); },tooltip: {title: 'Отмена', placement: 'top'}">
+                                <span class="glyphicon glyphicon-remove-circle" style="color:black"></span>
+                            </button>
+                        </div>
+                        <!--/ko-->
+                        <span data-bind="text: WeekSummaryPrice"></span>
+                    </th>
                 </tr>
                 <!--/ko-->
                 <tr>
-                    <th class="t-header" style="padding: 2px !important" colspan="4"><span>Всего заказано</span></th>
+                    <th class="t-header rightBorder" style="padding: 2px !important" colspan="4"><span>Всего заказано</span></th>
                     <!--ko foreach: SummaryDishQuantities-->
-                    <th class="t-header" style="padding: 2px !important"><span data-bind="text: $data"></span></th>
+                    <th class="t-header" style="padding: 2px !important" data-bind="css:{rightBorder:$index() % 4 === 3}"><span data-bind="text: $data"></span></th>
                     <!--/ko-->
                     <th class="t-header" colspan="3" style="padding: 2px !important; font-weight: bold;" data-bind="text: WeekTotal"></th>
                 </tr>
