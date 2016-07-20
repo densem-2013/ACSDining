@@ -404,8 +404,8 @@
 
         self.IsEditAllowed = ko.pureComputed(function () {
 
-            
-            return self.IsCurrentWeek() === true || self.IsNextWeekYear() === true;
+            return self.SUCanChangeOrder()===true;
+            //return self.IsCurrentWeek() === true || self.IsNextWeekYear() === true;
 
         }.bind(self));
 

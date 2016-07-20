@@ -1087,3 +1087,7 @@ E:\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.dll
 E:\GitProjects\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.xml
 E:\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.dll
 E:\ACSDining\ACSDining.Web\bin\Bytescout.Spreadsheet.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.SqlServer.ConnectionInfo.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.SqlServer.Management.Sdk.Sfc.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.SqlServer.Smo.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Web\bin\Microsoft.SqlServer.SmoExtended.dll

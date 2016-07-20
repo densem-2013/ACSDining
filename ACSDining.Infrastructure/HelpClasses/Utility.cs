@@ -32,7 +32,7 @@ namespace ACSDining.Infrastructure.HelpClasses
                 script = file.OpenText().ReadToEnd();
                 server.ConnectionContext.ExecuteNonQuery(script);
 
-                _path = path.Replace("storedfunc", "storedproc");
+                _path = _path.Replace("storedfunc", "storedproc");
                 file = new FileInfo(_path);
                 script = file.OpenText().ReadToEnd();
                 server.ConnectionContext.ExecuteNonQuery(script);

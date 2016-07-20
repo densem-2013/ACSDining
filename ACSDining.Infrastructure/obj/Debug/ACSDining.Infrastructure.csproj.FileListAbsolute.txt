@@ -411,3 +411,7 @@ E:\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.Razor.xml
 E:\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.xml
 E:\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.xml
 E:\ACSDining\ACSDining.Infrastructure\bin\Debug\System.Web.WebPages.Razor.xml
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.SqlServer.ConnectionInfo.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.SqlServer.Management.Sdk.Sfc.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.SqlServer.Smo.dll
+C:\Soft\GitProjects\ACSDining\ACSDining.Infrastructure\bin\Debug\Microsoft.SqlServer.SmoExtended.dll

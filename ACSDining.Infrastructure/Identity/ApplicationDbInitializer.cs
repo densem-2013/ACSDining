@@ -26,7 +26,6 @@ namespace ACSDining.Infrastructure.Identity
         public double Price { get; set; }
         public DishDetail DishDetail { get; set; }
     }
-    //public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
         public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
 
@@ -34,16 +33,7 @@ namespace ACSDining.Infrastructure.Identity
 
         protected override void Seed(ApplicationDbContext context)
         {
-            //if (System.Diagnostics.Debugger.IsAttached == false)
-            //    System.Diagnostics.Debugger.Launch();
-
-            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"ACSDining.Infrastructure\bin\Debug", "") +
-            //                          @"ACSDining.Web\App_Data\DBinitial\DishDetails.xml";
-
-            //string _path = AppDomain.CurrentDomain.BaseDirectory + @"App_Data\DBinitial\DishDetails.xml";
-
             string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/DishDetails.xml");
-            //string _path = HostingEnvironment.MapPath("~/App_Data/DBinitial/storedfunc.sql");
 
             InitializeIdentityForEf(context, _path);
             var dishes = GetDishesFromXml(context, _path);
@@ -53,7 +43,6 @@ namespace ACSDining.Infrastructure.Identity
             GetUsersFromXml(context, _path);
             CreateOrders(context);
             _path = _path.Replace(@"Employeers.xml", "userdefinedtypes.sql");
-            //_path = _path.Replace(@"DishDetails.xml", "storedfunc.sql");
             Utility.CreateStoredFuncs(_path);
             context.DayFactToPlan();
             base.Seed(context);
@@ -72,11 +61,6 @@ namespace ACSDining.Infrastructure.Identity
                     Description = "Can Update List Employee and DiningEmployee"
                 });
             }
-           // WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.MapPath("~/Web.config")).AppSettings.Settings["defaultCreditValue"].Value
-            
-            //string _path = AppDomain.CurrentDomain.BaseDirectory.Replace(@"UnitTestProject1\bin\Debug", "") +
-            //                          @"ACSDining.Web\Web.config";
-            //var config = ConfigurationManager.AppSettings.(_path);
             string sulogin = ConfigurationManager.AppSettings["sulogin"];
             User usersu = userManager.FindByName(sulogin);
             if (usersu == null)
@@ -94,7 +78,6 @@ namespace ACSDining.Infrastructure.Identity
                 };
                 IdentityRole role = context.Roles.FirstOrDefault(r => string.Equals(r.Name, "SuperUser"));
                 usersu.Roles.Add(new IdentityUserRole { RoleId = role.Id, UserId = usersu.Id });
-               // var suresult = userManager.Create(usersu, ConfigurationManager.AppSettings["supass"]);
                 context.Entry(usersu).State=EntityState.Added;
                 context.SaveChanges();
             }

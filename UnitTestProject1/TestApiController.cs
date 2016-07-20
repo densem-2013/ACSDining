@@ -120,7 +120,9 @@ namespace UnitTestProject1
         [TestMethod]
         public void CreateUsersForReport()
         {
-            string usersstring = "Денисенко А.,Киричок А.,Панченко В.,Секретный С.,Швец А.,Лукъянов А.";
+            //string usersstring = "Денисенко А.,Киричок А.,Панченко В.,Секретный С.,Швец А.,Лукъянов А.";
+            //string usersstring = "Кичангин Николай";
+            string usersstring = "Сидоренко Константин";
             Utility.CreateUsersForReport(_unitOfWork.GetContext(),usersstring);
         }
     }
