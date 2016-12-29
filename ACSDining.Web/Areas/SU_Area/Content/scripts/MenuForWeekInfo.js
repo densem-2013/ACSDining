@@ -242,10 +242,10 @@
             };
             var year = self.WeekYear().year;
             var firstDay = new Date(year, 0, 1).getDay();
-
             var week = self.WeekYear().week;
             var d = new Date("Jan 01, " + year + " 01:00:00");
-            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (week) + (3600000 * 24 * self.FirstDay());
+            var weekkorr = year == 2016 ? week : week-1;
+            var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (weekkorr) + (3600000 * 24 * (self.FirstDay()));
             var n1 = new Date(w);
             var n2 = new Date(w + 3600000 * 24 * ( self.LastDay() - self.FirstDay()));
             return "Неделя " + week + ": " + n1.toLocaleDateString("ru-RU", options) + " - " + n2.toLocaleDateString("ru-RU", options);
@@ -354,7 +354,8 @@
         }
 
         self.SetMyDateByWeek = function(wyDto) {
-            var firstDay = new Date(wyDto.year, 0, 1).getDay();
+            var firstDay = new Date(wyDto.year, 0, 1).getDay()+1;
+            //firstDay = firstDay === 0 ? 1 : firstDay;
             var d = new Date("Jan 01, " + wyDto.year + " 01:00:00");
             var w = d.getTime() - (3600000 * 24 * (firstDay - 1)) + 604800000 * (wyDto.week);
             self.myDate(new Date(w));
@@ -402,7 +403,7 @@
 
             if (self.myDate() == undefined) return;
 
-            var takedWeek = self.myDate().getWeek() - 1;
+            var takedWeek = self.myDate().getFullYear() == 2017 ? self.myDate().getWeek() : self.myDate().getWeek() - 1;
             var needObj = self.WeekYear();
             if (needObj != undefined) {
                 var curweek = needObj.week;

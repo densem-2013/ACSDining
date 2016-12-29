@@ -79,7 +79,7 @@ namespace ACSDining.Infrastructure.HelpClasses
             if (wyDto.Week >= 52)
             {
                 DateTime lastDay = new DateTime(wyDto.Year, 12, 31);
-                if (lastDay.DayOfWeek < DayOfWeek.Thursday || wyDto.Week == 53)
+                if ((wyDto.Week == 52 && lastDay.DayOfWeek > DayOfWeek.Thursday) || wyDto.Week == 53)
                 {
                     result.Week = 1;
                     result.Year = wyDto.Year + 1;
